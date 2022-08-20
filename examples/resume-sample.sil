@@ -1,0 +1,187 @@
+\begin[papersize=a4, class=resilient.resume]{document}
+\use[module=packages.url]
+\use[module=packages.textsubsuper]
+% Suitable font with thin, italic, lightweight bold italic, bold...
+\font[family=Lato, size=12pt]
+% Nice green tint:
+%\style:redefine[name=cv:color, as=_cv:color, inherit=true]{\color[color=#59b24c]}%
+% Nice red tint:
+%\style:redefine[name=cv:color, as=_cv:color, inherit=true]{\color[color=#b94051]}%
+
+\begin{resume}
+  \firstname{Sherlock}
+  \lastname{Holmes}
+  \begin{contact}
+    \street{221b Baker Street}
+    \city{London NW1 6XE}
+    \phone{+44 7890 123456}
+    \email{sherlock.holmes@sile.org}
+  \end{contact}
+  \picture[src=examples/sherlock.png]
+
+  \jobtitle{Consultant Detective}
+
+  \headline{My mind rebels at stagnation. Give me problems, give me work,
+    give me the most abstruse cryptogram, or the most intricate analysis,
+    and I am in my own proper atmosphere.}
+
+  \begin{section}
+    \title{Experience}
+    \begin{entry}
+      \topic{1881–1903}
+      \description{\jobrole{CTO}, Holmes & Watson Detective Agency
+\smallskip
+\begin{itemize}
+        \item{Solved over 50+ criminal investigations}
+        \item{Exposed the criminal organization of Prof. Moriarty}
+\end{itemize}
+      }
+    \end{entry}
+    \begin{entry}
+      \topic{1875–1881}
+      \description{\jobrole{Independent Detective}
+\smallskip
+\begin{itemize}
+        \item{Solved an important number of criminal cases}
+        \item{Close collaboration with Scotland Yard}
+\end{itemize}
+      }
+    \end{entry}
+    \begin{entry}
+      \topic{1872–1875}
+      \description{\jobrole{Lab Scientist}, St. Bartholowew’s Hospital, London
+\smallskip
+\begin{itemize}
+        \item{Dissected a large variety of rodents & reptiles}
+        \item{Explored the fields of forensic analysis & analytical chemistry}
+\end{itemize}
+      }
+    \end{entry}
+  \end{section}
+
+  \begin{section}
+    \title{Key skills}
+    \begin{entry}
+      \topic{Investigation}
+      \description{\begin{itemize}
+  \item{Forensics}
+  \item{Disguises – wearing & recognizing}
+  \item{Practical knowledge of British law}
+\end{itemize}}
+    \end{entry}
+    \begin{entry}
+      \topic{Deduction}
+\description{\begin{itemize}
+  \item{Logical, abductive & deductive reasoning}
+  \item{Chemical analysis}
+  \item{Excellent skills at identifying perfumes, newspaper types & bicycle tyres}
+\end{itemize}}
+    \end{entry}
+  \end{section}
+
+  \begin{section}
+    \title{Publications}
+    \begin{entry}
+      \topic{1901}
+      \description{Two communications on ears in the \em{Anthropological Journal.}}
+    \end{entry}
+    \begin{entry}
+      \topic{1897}
+      \description{\em{A contribution to the litterature of tattoos.}}
+    \end{entry}
+    \begin{entry}
+      \topic{1892}
+      \description{\em{Upon the distinction between the ashes of various tobaccos,} monograph, auto-edited.}
+    \end{entry}
+    \begin{entry}
+      \topic{1887}
+      \description{Monograph on polyphonic motets of Lassus, printed for private
+        circulation, said by some experts to be the last word on the subject.}
+    \end{entry}
+    \begin{entry}
+      \topic{1882}
+      \description{Monograph upon the subject of secret writings, 160
+        separate ciphers analyzed.}
+    \end{entry}
+    \begin{entry}
+      \topic{1878–1881}
+      \description{Collection of monographs: \em{On the Dating of Documents,
+        the Tracing of Foosteps & other assorted essays},
+        translated into French by François le Villard.}
+    \end{entry}
+    \begin{entry}
+      \topic{1876}
+      \description{\em{The Practical Handbook of Bee Culture} (out of print).}
+    \end{entry}
+  \end{section}
+
+  \begin{section}
+    \title{Languages}
+    \begin{entry}
+      \topic{English}
+      \description{\ranking[value=5, scale=5]}
+    \end{entry}
+    \begin{entry}
+      \topic{French}
+      \description{\ranking[value=4, scale=5]}
+    \end{entry}
+    \begin{entry}
+      \topic{Norwegian}
+      \description{\ranking[value=3, scale=5]}
+    \end{entry}
+  \end{section}
+
+  \begin{section}
+    \title{Education}
+    \begin{entry}
+      \topic{1874–1877}
+      \description{BSc Chemistry, 1\textsuperscript{st}, Cambridge}
+    \end{entry}
+    \begin{entry}
+      \topic{1872–1874}
+      \description{Graduate, Oxford University}
+    \end{entry}
+  \end{section}
+
+  \begin{section}
+    \title{Interests & Hobbies}
+    \begin{entry}
+      \topic{Boxing\break{}& Fencing}
+      \description{Boxing expert, excellent swordsman\par{}Casual practitioner of Japanese self-defense}
+    \end{entry}
+    \begin{entry}
+      \topic{Violin}
+      \description{As a skilled hobbyist, continuing interest in music (especially Lassus)}
+    \end{entry}
+    \begin{entry}
+      \topic{Misc.}
+      \description{Knowledge of golf clubs & expertise in singlesticks}
+    \end{entry}
+  \end{section}
+
+  \begin{section}
+    \title{References}
+    \begin{entry}
+      \topic{1.}
+      \description{John Watson, Doctor, Assistant & Friend\par
+          \phone{+44 1234 567890}\quad
+          \email{john.watson@sile.org}
+      }
+    \end{entry}
+    \begin{entry}
+      \topic{2.}
+      \description{Martha Hudson, Landlady\par
+          \phone{+44 1234 567890}
+      }
+    \end{entry}
+  \end{section}
+\end{resume}
+
+\bigskip
+\begin{center}
+This CV was made with the SILE typesetting system
+
+\href[src=https://sile-typesetter.org/]{https://sile-typesetter.org/}
+\end{center}
+
+\end{document}

@@ -1,0 +1,216 @@
+\begin[papersize=6in x 9in, class=resilient.book]{document}
+\use[module=packages.url]
+\use[module=packages.epigraph]
+\use[module=packages.couyards]
+\style:define[name=epigraph:source:style]{}
+\use[module=packages.dropcaps]
+\use[module=packages.resilient.abbr]
+%
+\language[main=fr]
+\font[family=Libertinus Serif]
+\set[parameter=linebreak.emergencyStretch, value=15%lw]%
+%
+% HACKS/WORKAROUNDS FOR SILE 0.12.x BUGS
+% FIXME \script[src=hacks/hacks]
+% HACKS FOR SILE 0.14.2 BUGS???
+\script{SILE.outputter:_ensureInit()}
+%
+% UGLY: We don't want URLs to be typeset using a typewriter font :)
+% Just cancel the \code command so the default text font is used.
+\define[command=code]{\process}%
+%
+\define[command=smallcaps]{\font[features=+smcp]{\process}}
+\define[command=foreign:en]{\em{\language[main=en]{\process}}}
+\define[command=foreign:gr]{\em{\language[main=und]{\process}}}
+\define[command=JRR]{J.{\abbr:nbsp}R.{\abbr:nbsp}R}
+%
+\footnote:rule
+%
+% Wrapper around the dropcaps...
+% Rationale: The text shows nicer if we keep the default baselineskip stretchability
+% in the whole document, IMHO. It does not play well with the dropped capitals, though,
+% as it has a fixed height not taking into account the effect of that stretchability.
+% We therefore wrap the concerned paragraph in a temporary environment where the
+% stretchability is canceled...
+\script{
+SILE.registerCommand("initial", function (options, content)
+  SILE.settings:temporarily(function()
+    local blSkip = SILE.settings:get("document.baselineskip")
+    SILE.settings:set("document.baselineskip", SILE.nodefactory.vglue(SILE.length(blSkip.height.length)))
+    SILE.call("dropcap", { lines = 2, family = "Zallman Caps", join = true },
+      { options.letter })
+    SILE.process(content)
+    SILE.typesetter:leaveHmode()
+  end)
+end, "Wrapper around dropcap, for baselineskip adjustment")
+}%
+%
+\style:redefine[name=header:odd, as=_hdodd, inherit=true]{
+  \paragraph[align=center]
+  \font[style=italic]
+}%
+\style:redefine[name=header:even, as=_hdeven, inherit=true]{
+  \paragraph[align=center]
+  \font[style=italic]
+}%
+\odd-running-header{Tolkien, le façonnement d’un monde}
+\chapter[numbering=false]{Le conte perdu de Mercure}
+% The actual title had ..."— Tuor et Idril élevés au rang d’astre"
+% Too long with the default styling, and 2-line chapter titles look ugly.
+% Address it later at some point?
+
+\pdf:metadata[key=Title, value=Le conte perdu de Mercure]%
+\pdf:metadata[key=Author, value=Alain Lefèvre]%
+
+\begin{raggedright}
+Alain \smallcaps{Lefèvre}\footnote[mark=†]{Cet article est extrait de \em{Tolkien, le façonnement d’un monde}, \abbr:vol{1},
+Le Dragon de Brume, 2011, \abbr:page{211–216} — avec la permission de l’auteur.}
+\end{raggedright}
+
+\bigskip
+\indent
+
+\begin{epigraph}
+    Une lampe enivrée d’huile, jetant une vive lumière, se vantait d’être plus brillante que le soleil.
+    Mais un souffle de vent ayant sifflé, elle s’éteignit aussitôt. Quelqu’un la ralluma et
+    lui dit : « Éclaire, lampe, et tais-toi : l’éclat des astres ne s’éclipse jamais. »
+    \source{\em{Fables d’Ésope}, « La Lampe », trad. Émile Chambry\footnote{Ésope, \em{Fables}, trad. d’Émile Chambry,
+    Les Belles Lettres, 1927, 5\textsuperscript{e} partie, 232 : « \foreign:gr{Μεθύων λύχνος ἐλαίῳ καὶ φέγγων ἐκαυχᾶτο ὡς ὑπὲρ
+    ἥλιον πλέον λάμπει. Ἀνέμου δὲ πνοῆς συρισάσης, εὐθὺς ἐσβέσθη. Ἐκ δευτέρου δὲ ἅπτων τις εἶπεν αὐτῷ· Φαῖνει, λύχνε,
+    καὶ σίγα· τῶν ἀστέρων τὸ φέγγος οὔποτε ἐκλείπει. Ὅτι οὐ δεῖ τινα ἐν ταῖς δόξαις καὶ τοῖς λαμπροῖς τοῦ βίου
+    τυφοῦσθαι· ὅσα γὰρ ἂν κτήσηταί τις, ξένα τυγχάνει.} »
+    \url[language=fr]{<http://hodoi.fltr.ucl.ac.be/concordances/esope_201a250/texte.htm>} — Dans d’autres versions, la lampe
+    est plus brillante que Vénus : Perry, Ben Edwin (traducteur), \em{Fables: Babrius and Phaedrus}, Loeb Classical Library
+    \abbr:no{436}, 1965 : « \foreign:gr{Μεθύων ἐλαίῳ λύχνος ἐσπέρης ηὔχει πρὸς τοὺς παρόντας, ὡς Ἑωσφόρου κρείσσων,
+    ἅπασι φέγγος ἐκπρεπέστατον λάμπει. ἀνέμου δὲ συρίσαντος εὐθὺς ἐσβέσθη πνοιῇ ῥαπισθείς. ἐκ δὲ δευτέρης ἅπτων εἶπέν τις
+    αὐτῷ “φαῖνε, λύχνε, καὶ σίγα· τῶν ἀστέρων τὸ φέγγος οὐκ ἀποθνῄσκει.”} » ; Gibbs, Laura, \em{Aesop’s Fables}, Oxford
+    University Press, 2002 : « \foreign:en{There was a lamp drunk on his own oil who boasted one evening to everyone present
+    that he was brighter than the Morning Star [Eosphoros] and that his splendour shone more conspicuously than anything
+    else in the world. A sudden puff of wind blew in the lamp’s direction, and its breath extinguished his light. A man
+    lit the lamp once again and said to him, “Shine, lamp, and be silent! The splendour of the stars is not ever
+    extinguished.”} »}}
+\end{epigraph}
+
+\initial[letter=E]{\smallcaps{xception faite de Vénus},
+et évidemment de la Terre elle-même, les planètes n’occupent aucune place particulière dans
+la mythologie de la Terre du Milieu imaginée par Tolkien. Tout au plus avons nous, peut-être, leurs noms elfiques :
+la rouge Carnil et la bleue Luinil, l’humide Nénar et l’ombreuse Lumbar, la glorieuse Alcarinquë et la précieuse
+Elemmirë\footnote{\em{Morgoth’s Ring}, \abbr:page{160} (repris dans \em{The Silmarillion}, ch. 3, \abbr:page{55}).}.
+Dans ses notes, l’auteur semble indiquer que Carnil et Alcarinquë sont Mars et Jupiter ; Lumbar correspond à Saturne
+et Elemmirë serait Mercure. Nénar semble avoir brièvement été associée à Neptune, ce qui pourrait laisser Luinil pour
+Uranus. Cependant, tout ceci pourrait n’avoir été qu’une tentative passagère d’identification de ces « astres » dont la
+création mythologique serait l’œuvre de Varda, un jeu de l’auteur auquel on ne saurait néanmoins accorder trop de
+sérieux — il est difficile de croire que Neptune, invisible à l’œil nu, et Uranus, de très faible éclat, puissent
+raisonnablement figurer au nombre des « étoiles majeures » placées par Varda comme signes dans les cieux
+d’Arda\footnote{Voir commentaire de Christopher Tolkien dans \em{Morgoth’s Ring}, \abbr:page{434–436} ; voir aussi Quiñonez,
+Jorge & Ned Raggett, « \language[main=en]{Nólë I Meneldilo: Lore of the Astronomer} », \em{Vinyar Tengwar} \abbr:no{12},
+juil. 1990 (\abbr:page{5–15}).}.}
+
+Absente de cette étrange liste, Vénus occupe une place autrement plus importante dans l’histoire de la Terre du
+Milieu : étoile du matin et étoile du soir, elle est associée\footnote{Cf. par exemple \em{Letters} \abbr:no{297}
+\abbr:page{385–386} ; trad. fr. \em{Lettres} \abbr:page{538–540}.} à Eärendil qui sillonne le firmament sur sa nef
+Vingilot, accompagné de son épouse Elwing transformée en oiseau blanc. Élevé au rang d’astre par les Valar au terme
+de son long voyage vers le pays bienheureux de Valinor, Eärendil vogue ainsi dans les cieux qu’il illumine de son éclat,
+émanant du Silmaril qui fut jadis arraché de la couronne de Melkor par Beren\footnote{\em{Le Silmarillion}, ch. 24,
+trad. fr. Pierre Alien ; \em{The Silmarillion} \abbr:page{301} pour la version anglaise.} :
+
+\begin{blockquote}
+    Puis les Valar bénirent Vingilot et le firent passer au-dessus de Valinor jusqu’aux limites du monde. Là, il traversa
+    la Porte de la Nuit et s’envola jusqu’aux océans célestes. Splendide était ce mer­veilleux navire, il en sortait une
+    flamme ondulante, vive et pure ; à sa proue était assis Eärendil, le Marin couvert de la poussière étin­celante des gemmes,
+    le Silmaril attaché à son front. En ce navire il voyagea très loin, jusque dans le vide sans étoiles, mais on le voyait
+    le plus souvent le soir ou le matin, paré de l’éclat du levant ou du couchant, quand il revenait à Valinor de ses voyages
+    aux confins du monde.
+\end{blockquote}
+
+Étant une planète inférieure, c’est-à-dire dont l’orbite est plus petite que celle de la Terre, Vénus ne s’aventure
+jamais très loin du Soleil : son élongation maximale est de 47,8°. Au summum de sa luminosité, elle est près de quinze
+fois plus lumineuse que Sirius, l’étoile la plus brillante du ciel. Lorsqu’elle est visible, elle brille de son plus bel
+éclat un peu avant l’aube ou après le coucher du Soleil, d’où son surnom d’étoile du berger ou encore, selon qu’on
+l’observe avant l’aube ou au crépuscule, d’étoile du matin et d’étoile du soir. Les Grecs l’appelaient Éosphoros
+« le porteur de la lumière de l’aurore » (aussi Phosphoros, Lucifer chez les Latins) et Hespéros « Soirée »
+(Vesper chez les Latins). Initialement perçues comme distinctes, ces deux divinités stellaires furent ensuite confondues,
+lorsqu’il fut compris qu’il s’agissait d’un seul astre.
+
+Mercure, l’autre planète inférieure de notre système, ne s’éloigne jamais de plus de 28° du Soleil. Baignée dans sa lueur
+et noyée dans les brumes matinales ou crépusculaires, elle est particulièrement difficile à distinguer. Les meilleurs
+ moments pour avoir une chance raisonnable de l’observer à l’œil nu se situent lorsqu’elle est proche de son aphélie
+(c’est-à-dire à son point le plus éloigné du Soleil), que son élongation est maximale (c’est-à-dire son angle apparent,
+depuis la Terre, avec le Soleil) et que l’inclinaison de l’écliptique est proche de la verticale, de sorte que Mercure
+est suffisamment haute au-dessus de l’horizon\footnote{Ce dernier point dépend donc de la latitude du lieu d’observation.}.
+Autant dire que ces conditions idéales se comptent sur les doigts de la main pour un lieu d’observation donné.
+À plus fort titre encore que Vénus, Mercure n’est donc visible que de rares fois dans l’année, au petit matin ou au
+crépuscule. Comme pour Vénus, les Grecs lui donnèrent, jusqu’au
+\abbr:siecle{iv} siècle avant J.-C., deux noms, selon que l’astre
+était visible avant le lever du soleil ou après son coucher : au temps d’Hésiode, Stilbon « l’étincelant » et Hermaon
+ « l’étoile d’Hermès » ; plus tard on leur substitua simplement les noms d’Apollon et Hermès.
+
+Bien avant Eärendil, ses parents avaient aussi pris la mer, dans l’espoir d’atteindre les Terres de
+l’Ouest\footnote{« \foreign:en{In those days Tuor felt old age creep upon him, and ever a longing for the deeps of the
+Sea grew stronger in his heart. Therefore he built a great ship, and he named it Eärrámë, which is Sea-Wing; and with
+Idril Celebrindal he set sail into the sunset and the West, and came no more into any tale or song. But in after days
+it was sung that Tuor alone of mortal Men was numbered among the elder race, and was joined with the Noldor, whom he
+loved; and his fate is sundered from the fate of Men.} » (\em{The Silmarillion}, ch. 23, \abbr:page{295})} :
+
+\begin{blockquote}
+    En ce temps-là aussi, Tuor sentit la vieillesse l’envahir et sa nostalgie des profondeurs marines devint plus forte que
+    jamais. Il construisit un grand navire, qu’il nomma Eärrámë, l’Aile Marine, et fit voile avec Idril Celebrindal vers
+    l’ouest où le soleil se couche. Ni chant ni récit ne parle plus de lui, mais plus tard, on raconta que Tuor, seul parmi
+    les mortels, fut accepté parmi la race antique et rejoignit les Noldor qu’il aimait tant. Son sort alors fut séparé de
+    celui des Humains.
+\end{blockquote}
+
+Le seul élément certain dont le texte fait état est que Tuor et son épouse Idril ne reparurent jamais en Terre du Milieu.
+Le reste n’est que conjecture, sans « chant ni récit » pour en apporter le témoignage. Nous pouvons décider de croire,
+selon la tradition acceptée, que Tuor et Idril atteignirent effectivement Valinor — ou du moins Tol Eressëa\footnote{Christopher Tolkien
+a omis quelques précisions qui figuraient dans le texte antérieur utilisé pour établir le passage du \em{Silmarillion} juste
+cité \em{supra} (peut-être parce que se pose alors le problème de la transmission du récit). Tuor demeurait à bord de son navire,
+parcourant les mers des terres elfiques ou séjournant dans les ports de Tol Eressëa. Il ne semble pas avoir séjourné sur
+Tol Eressëa (la mention est biffée) et encore moins avoir mis le pied à Valinor, cf. \em{The Shaping of Middle-earth} \abbr:page{186} n. 3,
+trad. fr. \em{la Formation de la Terre du Milieu} \abbr:page{176}. Le destin d’Idril n’est pas explicité. Enfin, pour le rattachement
+de Tuor à la race des Elfes comme relevant du fait de Dieu (Eru), voir aussi \em{Letters} \abbr:no{153} \abbr:page{194}, trad. fr. \em{Lettres} \abbr:page{177}.}
+— mais nous pouvons aussi penser qu’ils furent tous deux perdus à jamais et que le texte ne ferait alors que rapporter leur passage dans le mythe, en dehors des
+temps historiques…
+
+Dans les premières versions de ces légendes, Idril n’accompagnait pas Tuor mais disparaissait plus tard en
+mer\footnote{« Idril a disparu (elle prend la mer de nuit). \foreign:en{Idril has vanished (she set sail at night)}. » (\em{The Book of Lost Tales},
+\abbr:vol{2}, ch. 5, \abbr:page{253} ; trad. fr. Adam Tolkien, \em{le Livre des Contes perdus}, \abbr:vol{2})} et son destin restait alors
+incertain\footnote{« Tuor est parti en Valinor et l’on ne sait rien d’Idril ni d’Elwing. \foreign:en{Tuor is gone to Valinor and nought is
+known of Idril or of Elwing} » (\em{Ibid.} \abbr:page{255})}. Peut-être le rejoignit-elle à la nage, sans néanmoins que l’on sache
+trop comment\footnote{« Comment Idril le suivit à la nage. \foreign:en{How Idril swam after him.} » (\em{Ibid.} \abbr:page{260})} ; à moins qu’elle
+n’eût péri\footnote{« Mort d’Idril ? \foreign:en{Death of Idril?} » (\em{Ibid.} \abbr:page{263})}. Contradictoires et hésitants, ces fragments primitifs
+du conte projettent une ombre bien moins optimiste sur le destin de Tuor et Idril… Et cependant, l’un d’eux se termine par une
+étrange mention, presque sans rapport avec ce qui la précède et qui, pleine d’espoir, ouvre la voie à une interprétation
+inattendue\footnote{« \foreign:en{Tuor and Idril some say sail now in Swanwing and may be seen going swift down the wind at dawn
+and dusk.} » (\em{Ibid.} \abbr:page{255}) ; Aile du Cygne (anglais \foreign:en{Swanwing}, qenya \em{Alqarámë}\kern[width=0.1em]) est ici le nom de leur navire,
+tandis que le premier bateau d’Eärendil se nomme Aileron-d’Aigle (angl. \foreign:en{Eaglepinion}, qenya \em{Earámë} — sous la forme
+quenya \em{Eärrámë}, signifiant à présent Aile Marine, ce dernier nom a finalement été repris pour le navire de Tuor).} :
+
+\begin{blockquote}
+    D’aucuns disent que Tuor et Idril naviguent maintenant à bord d’Aile de Cygne et que l’on peut les voir descendant le vent
+    rapide à l’aube ou au crépuscule.
+\end{blockquote}
+
+Voilà soudain que se profile une autre nef céleste qui, comme celle d’Eärendil ensuite, ne serait visible que le matin et le soir.
+La place de Vénus incombant au fils de Tuor, il serait fort tentant de voir alors dans cette nef une évocation de Mercure, la seule
+autre planète du système solaire qui puisse satisfaire à cette observation\footnote{Une recherche sur Internet nous a appris que
+cette idée avait déjà été pressentie dès 2001, par James D. Allan (que l’on connaît notamment pour sa contribution à
+\em{An Introduction to Elvish}, Bran’s Head Books, 1978),
+cf. le message \abbr:no{5} sur \url{<http://forum.barrowdowns.com/showthread.php?t=2209>} (consulté en octobre 2010).}.
+
+Pour autant, peut-on dire sans se tromper, à cette seule petite phrase, que \JRR. Tolkien avait brièvement envisagé, à cette époque,
+nos deux planètes inférieures comme les navires célestes de ses héros transfigurés ? Ce ne sont pas des \em{Contes perdus} pour
+rien. Les histoires de la Terre du Milieu, mille fois retravaillées et révisées sous la plume de l’écrivain, n’ont pas gardé trace
+d’une telle conception. Il nous plaît néanmoins de voir ici le conte perdu de Mercure, telle qu’il aurait pu être si les récits
+rapportés par le marin anglo-saxon Ælfwine avaient pris une autre orientation que celle que nous leur connaissons…
+
+\begin{epigraph}
+    Les astres dits errants parcourent aussi le zodiaque, tour­nent autour de la terre, se lèvent et se couchent,
+    parfois accélèrent leurs mouvements, parfois les ralentissent, souvent même s’arrêtent. Nul spectacle ne peut être plus beau,
+    plus digne d’admiration.
+    \source{Cicéron, \em{De la nature des dieux}, II, \smallcaps{xl}}
+\end{epigraph}
+
+\couyard[type=6, width=default]
+
+\end{document}
