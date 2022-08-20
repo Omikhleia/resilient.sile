@@ -35,3 +35,13 @@ luarocks --lua-version 5.4 install --server=https://luarocks.org/dev resilient.s
 
 (Adapt to your version of Lua, if need be, and refer to the SILE manual for more
 detailed 3rd-party package installation information.)
+
+## See also
+
+This collection also uses several modules provided separately, that you may find useful on their own.
+
+- [Paragraph boxes, framed boxes and tables](https://github.com/Omikhleia/ptable.sile)
+- [Cross-references](https://github.com/Omikhleia/labelrefs.sile)
+- [Superscripts and subscripts](https://github.com/Omikhleia/textsubsuper.sile)
+- [Barcodes](https://github.com/Omikhleia/barcodes.sile) (for ISBNs, etc.)
+- [Markdown support](https://github.com/Omikhleia/markdown.sile)
