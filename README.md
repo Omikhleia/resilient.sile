@@ -38,10 +38,20 @@ detailed 3rd-party package installation information.)
 
 ## See also
 
-This collection also uses several modules provided separately, that you may find useful on their own.
+This collection also uses several modules now provided separately, that you may find useful on their own.
 
 - [Paragraph boxes, framed boxes and tables](https://github.com/Omikhleia/ptable.sile)
 - [Cross-references](https://github.com/Omikhleia/labelrefs.sile)
 - [Superscripts and subscripts](https://github.com/Omikhleia/textsubsuper.sile)
 - [Barcodes](https://github.com/Omikhleia/barcodes.sile) (for ISBNs, etc.)
 - [Markdown support](https://github.com/Omikhleia/markdown.sile)
+
+## License
+
+All code is under the MIT License.
+
+The documentation is under CC-BY-SA 2.0.
+
+The examples (i.e. anythings in the "examples" folder) have varying licenses and some are
+used by courtesy of the authors. Please check their respective license or ask, in case of
+doubts, for details and exact licensing terms.
