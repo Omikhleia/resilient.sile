@@ -9,6 +9,14 @@ typesetting system provides advanced book classes and tools,
 This is the successor of my previous “[Omikhleia’s classes & packages for SILE](https://github.com/Omikhleia/omikhleia-sile-packages)”,
 fully redesigned for SILE v0.14 or upper, and provided as a separate installable module.
 
+Besides all the changes from SILE v0.12 to v0.14 and its new package and class APIs, this redesign entails
+many more things, with breaking changes (consider it as v2.0 of the former solution).
+
+It therefore comes under a new name (also used as a namespace here and there), **resilient**.
+The name is a pun on "SILE" (as, after all, the initial target was always on redoing a book class that would satisfy my
+requirements), but there will be a bit more to it than that, which might become more visible when the collection
+expands.
+
 WIP - EARLY VERSION - APIs are unstable, with many breaking changes
 
 ## Installation
