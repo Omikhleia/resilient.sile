@@ -1,6 +1,7 @@
 # resilient.sile
 
 [![license](https://img.shields.io/github/license/Omikhleia/resilient.sile)](LICENSE)
+[![Luacheck](https://img.shields.io/github/workflow/status/Omikhleia/resilient.sile/Luacheck?label=Luacheck&logo=Lua)](https://github.com/Omikhleia/resilient.sile/actions?workflow=Luacheck)
 [![Luarocks](https://img.shields.io/luarocks/v/Omikhleia/resilient.sile?label=Luarocks&logo=Lua)](https://luarocks.org/modules/Omikhleia/resilient.sile)
 
 This collection of classes and packages for the [SILE](https://github.com/sile-typesetter/sile)
