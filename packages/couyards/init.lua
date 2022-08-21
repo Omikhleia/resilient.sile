@@ -9,6 +9,18 @@ local base = require("packages.base")
 local package = pl.class(base)
 package._name = "couyards"
 
+-- Trick for ensuring we search resources from the folder containing the package,
+-- wherever installed: get the debug location of a function just defined in
+-- the current file, remove the initial @  and retrieve the dirname.
+local function basepath ()
+  return pl.path.dirname(debug.getinfo(basepath, "S").source:sub(2))
+end
+
+function package:_init (options)
+  self.basepath = basepath()
+  base._init(self, options)
+end
+
 function package:registerCommands ()
   self:registerCommand("couyard", function (options, _)
     SILE.require("packages/svg")
@@ -19,13 +31,13 @@ function package:registerCommands ()
     if width == nil and height == nil then height = "0.9em" end
 
     if n == nil or n < 0 or n > 9 then SU.error("Invalid culs-de-lampe type") end
-    local ornament = "cul-de-lampe-"..n
+    local ornament = self.basepath .. "/culs-de-lampe/" .. "cul-de-lampe-" .. n .. ".svg"
     SILE.typesetter:leaveHmode()
     SILE.call("center", {}, function()
       if height ~= nil then
-        SILE.call("svg", { src = "packages/culs-de-lampe/"..ornament..".svg", height = height })
+        SILE.call("svg", { src = ornament, height = height })
       else
-        SILE.call("svg", { src = "packages/culs-de-lampe/"..ornament..".svg", width = width })
+        SILE.call("svg", { src = ornament, width = width })
       end
     end)
   end)
