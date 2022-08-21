@@ -45,6 +45,7 @@ This collection also uses several modules now provided separately, that you may 
 - [Cross-references](https://github.com/Omikhleia/labelrefs.sile)
 - [Superscripts and subscripts](https://github.com/Omikhleia/textsubsuper.sile)
 - [Barcodes](https://github.com/Omikhleia/barcodes.sile) (for ISBNs, etc.)
+- [Couyards](https://github.com/Omikhleia/couyards.sile) (typographic ornaments)
 - [Markdown support](https://github.com/Omikhleia/markdown.sile)
 
 ## License
