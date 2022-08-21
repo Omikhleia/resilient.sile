@@ -14,6 +14,12 @@ description = {
 }
 dependencies = {
    "lua >= 5.1",
+   "barcodes.sile",
+   "couyards.sile",
+   "labelrefs.sile",
+   "ptable.sile",
+   "textsubsuper.sile",
+   "markdown.sile",
 }
 build = {
   type = "builtin",
