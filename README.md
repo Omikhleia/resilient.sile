@@ -18,11 +18,14 @@ The name is a pun on "SILE" (as, after all, the initial target was always on red
 requirements), but there will be a bit more to it than that, which might become more visible when the collection
 expands.
 
-WIP - EARLY VERSION - APIs are unstable, with many breaking changes
+_WIP - EARLY VERSION_
+
+It basically works, but:
+
+- APIs are unstable, with many breaking changes.
+- The are lots of deprecations warnings.
 
 ## Installation
-
-NOT YET READY
 
 These packages require SILE v0.14 or upper.
 
