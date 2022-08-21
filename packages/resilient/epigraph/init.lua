@@ -1,12 +1,12 @@
 --
 -- An epigraph package for SILE
--- 2021, Didier Willis
+-- 2021, 2022, Didier Willis
 -- License: MIT
 --
 local base = require("packages.base")
 
 local package = pl.class(base)
-package._name = "couyards"
+package._name = "resilient.epigraph"
 
 function package:_init (options)
   base._init(self, options)
@@ -182,14 +182,14 @@ end
 
 package.documentation = [[\begin{document}
 \use[module=packages.lorem]
-\use[module=packages.epigraph]
+\use[module=packages.resilient.epigraph]
 \define[command=randomtext]{\lorem[words=18].}
 \define[command=randomsource]{The Lorem Ipsum Book.}
 
-The \autodoc:package{epigraph} package for SILE can be used to typeset a relevant quotation or
-saying as an epigraph, usually at either the start or end of
+The \autodoc:package{resilient.epigraph} package for SILE can be used to typeset
+a relevant quotation or saying as an epigraph, usually at either the start or end of
 a section. Various handles are provided to tweak the appearance.\footnote{This is
-very loosely inspired from the LaTeX package by the same name.}
+very loosely inspired from the LaTeX \code{epigraph} package.}
 
 The \autodoc:environment{epigraph} environment typesets an epigraph using the provided text.
 An optional source (author, book name, etc.) can also be defined, with

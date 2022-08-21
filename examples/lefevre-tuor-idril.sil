@@ -1,8 +1,8 @@
 \begin[papersize=6in x 9in, class=resilient.book]{document}
 \use[module=packages.url]
-\use[module=packages.epigraph]
-\use[module=packages.couyards]
+\use[module=packages.resilient.epigraph]
 \style:define[name=epigraph:source:style]{}
+\use[module=packages.couyards]
 \use[module=packages.dropcaps]
 \use[module=packages.resilient.abbr]
 %

@@ -9,6 +9,7 @@
 \use[module=packages.couyards]
 \use[module=packages.resilient.lists]
 \use[module=packages.ptable]
+\use[module=packages.framebox]
 \language[main=en]
 \font[family=Libertinus Serif]
 \define[command=codeblock]{\font[family=Libertinus Sans]{\process}}
@@ -24,15 +25,25 @@
 \hbox{}\vfill
 
 \begin{center}
-\font[size=20pt]{Omikhleia’s
+\font[size=20pt]{The resilient collection
 
-classes & packages
+of classes & packages
 
 for SILE
 
 }
 \end{center}
 
+\smallskip
+\begin{center}
+\font[size=16pt]{A redesigned version
+
+of
+
+Omikhleia’s classes & packages
+
+}
+\end{center}
 \vfill
 
 \break
@@ -121,7 +132,7 @@ Trying to do the things right, the \autodoc:package{labelrefs} package was born.
 
 Looking at the sample chapter I had selected, it started and ended with quotations,
 or rather “epigraphs”. It ended with some nice floral motif. So I wrote
-the \autodoc:package{epigraph} and \autodoc:package{couyards}
+the \autodoc:package{resilient.epigraph} and \autodoc:package{couyards}
 packages. I then had almost all the building blocks to typeset this essay, at last.
 
 Yet, even if I did not plan to typeset the whole book again, as stated, I looked
@@ -131,7 +142,7 @@ a solution, in the form of the \autodoc:package{ptable} package and the
 low-level \autodoc:package{parbox} at its core. It also turned to be useful for this very documentation,
 which I had decided to compose using the same tools.
 In the same vein, enumerations and bullet lists were used. I did not really need to
-support many nested levels, but why not anyway. The \autodoc:package{enumitem} package
+support many nested levels, but why not anyway. The \autodoc:package{resilient.lists} package
 was born.
 More marginally, one of the essays included a poem and a discussion of its prosody.
 I wrapped up the \autodoc:package{resilient.poetry} package as a first attempt to address it.
@@ -139,7 +150,7 @@ The book had a fancy “colophon” at its end, where the editor–that is, I–
 authors, contributors and proofreaders. I wanted to play around that idea:
 the \autodoc:package{colophon} package is a somehow experimental approach to it.
 On this journey, small recurring details appeared and were extracted as
-the \autodoc:package{textsubsuper} and \autodoc:package{abbr} packages. When testing,
+the \autodoc:package{textsubsuper} and \autodoc:package{resilient.abbr} packages. When testing,
 I also wanted an easy way to tweak commands without always having to change
 their Lua code, so \autodoc:package{redefine} was written. I have to confess it was
 one of my first packages but, as I progressed, I did not use it that often.
@@ -149,7 +160,7 @@ had to be extended to rely on some of the abovementioned packages. I was
 also concerned that “hooks” did not seem the right way to handle customizations.
 After several false starts, what had begun as a mere adaptation of the
 existing book class gradually became another beast, abstracting styling decisions in the
-\autodoc:package{styles} and \autodoc:package{sectioning} packages–and those also
+\autodoc:package{resilient.styles} and \autodoc:package{resilient.sectioning} packages–and those also
 made their way into several of the previous packages.
 The \code{resilient.book} class logically concluded that journey… Well, my
 dabbling into SILE also produced a few other by-products. To check that my
@@ -201,7 +212,7 @@ It obviously raised issues in my own packages and classes. That was to be expect
 Hence, they received a lot of fixes and improvements. They are now far better than
 what they were when I initially wrote my first preface. Besides other fixes and proposals
 submitted to the SILE core distribution, new packages also came to
-light, such as \autodoc:package{framebox}, \autodoc:package{barcodes/ean13} and the
+light, such as \autodoc:package{framebox}, \autodoc:package{barcodes.ean13} and the
 experimental \autodoc:package{fancytoc} and \autodoc:package{printoptions}.
 SILE reached version 0.12.5 and I even started proposing some of the packages
 described in this document (or modifications of them), for inclusion in the
@@ -250,9 +261,9 @@ FIXME LATER
 
 These are standalone packages users can use in their own documents.
 
-\subsection{epigraph: a lightweight epigraph environment}
+\subsection{resilient.epigraph: a lightweight epigraph environment}
 
-\package-documentation{epigraph}
+\package-documentation{resilient.epigraph}
 
 \subsection{textsubsuper: native superscripts & subscripts}
 
@@ -266,9 +277,11 @@ These are standalone packages users can use in their own documents.
 
 \subsection{couyards: printer’s ornaments}
 
-\package-documentation{couyards}
+(Moved as a separate package)
 
-\subsection{colophon: a shaped & decorated paragraph}
+%\package-documentation{couyards}
+
+\subsection{colophon: shaped & decorated paragraphs}
 
 (No yet migrated)
 
@@ -324,13 +337,13 @@ These packages are not intended to be used alone, but provide utilities
 for other packages. They are therefore mainly aimed at package and
 class writers.
 
-\subsection{styles: style specifications}
+\subsection{resilient.styles: style specifications}
 
 (Migrated, but documention needs refactorings)
 
 %\package-documentation[src=packages/styles]
 
-\subsection{sectioning: an abstraction for sectioning commands}
+\subsection{resilient.sectioning: an abstraction for sectioning commands}
 
 (Migrated, but documention needs refactorings)
 
@@ -393,7 +406,7 @@ division level to the lowest: \autodoc:command{\part}, \autodoc:command{\chapter
 \autodoc:command{\section}, \autodoc:command{\subsection}, \autodoc:command{\subsubsection}.
 
 All sectioning commands obey styles (relying on the
-\autodoc:package{styles} and \autodoc:package{sectioning} packages), which notably
+\autodoc:package{resilient.styles} and \autodoc:package{resilient.sectioning} packages), which notably
 imply that they have a lot of customization possibilities.
 In the following pages, the described behaviors apply to the default
 configuration and styling, out-of-the-box.
@@ -637,7 +650,7 @@ commands are available, as well as \autodoc:command{\header:rule}.
 \subsection{Block-indented quotes}
 
 The class provides the \autodoc:environment{blockquote} environment to typeset simple block-indented
-paragraphs of the kind shown in the \autodoc:package{styles} package documentation. It is sort
+paragraphs of the kind shown in the \autodoc:package{resilient.styles} package documentation. It is sort
 of an extra, but it was so often needed by this author that he decided to include it in
 standard.
 
@@ -706,7 +719,8 @@ The commands are pretty simple and straightforward in this first version, so you
 to the sample CV included in our example repository.
 
 \begin{figure}
-%\img[width=100%fw, src=examples/resume-sample.png]
+\framebox[padding=0]{\img[width=45%fw, src=examples/resume-sample.pdf, page=1]}
+\framebox[padding=0]{\img[width=45%fw, src=examples/resume-sample.pdf, page=2]}
 \caption{A sample CV for a famous detective.}
 \end{figure}
 
