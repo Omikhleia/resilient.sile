@@ -81,15 +81,14 @@ function package.writeToc (_)
   end
 end
 
-local loadToc = function()
+function package.readToc (_)
   if SILE.scratch._tableofcontents and #SILE.scratch._tableofcontents > 0 then
     -- already loaded
     return SILE.scratch._tableofcontents
   end
   local tocfile, _ = io.open(SILE.masterFilename .. '.toc')
   if not tocfile then
-    -- No TOC yet
-    return false
+    return false -- No TOC yet
   end
   local doc = tocfile:read("*all")
   local toc = assert(load(doc))()
@@ -116,7 +115,7 @@ function package:registerCommands ()
     local start = SU.cast("integer", options.start or 0)
     local linking = SU.boolean(options.linking, true)
 
-    local toc = loadToc()
+    local toc = self:readToc()
     if toc == false then
       SILE.call("tableofcontents:notocmessage")
       return
