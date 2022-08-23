@@ -126,11 +126,12 @@ function package:registerCommands ()
       SILE.settings:set(v, SILE.settings.defaults[v])
     end
 
-    if SILE.documentState.documentClass.pushLabelRef then -- Cross-reference support
+    local labelRefs = self.class.packages.labelrefs
+    if labelRefs then -- Cross-reference support
       -- FIXME We recompute the footnote number at least three times (here, on call, on use).
       -- Room for micro-optimization!
       local fn = options.mark or self.class.packages.counters:formatCounter(SILE.scratch.counters.footnote)
-      SILE.documentState.documentClass:pushLabelRef(fn)
+      labelRefs:pushLabelRef(fn)
     end
 
     -- Apply the font before boxing, so relative baselineskip applies #1027
@@ -142,8 +143,8 @@ function package:registerCommands ()
       end)
     end)
 
-    if SILE.documentState.documentClass.popLabelRef then -- Cross-reference support
-      SILE.documentState.documentClass:popLabelRef()
+    if labelRefs then -- Cross-reference support
+      labelRefs:popLabelRef()
     end
 
     SILE.settings:popState()
