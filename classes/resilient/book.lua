@@ -342,7 +342,7 @@ function class:registerCommands ()
     end
   end
 
-  self:registerCommand("figure", function (options, content)
+  self:registerCommand("captioned-figure", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in figure environment") end
     local caption = extractFromTree(content, "caption")
 
@@ -357,7 +357,7 @@ function class:registerCommands ()
     end
   end, "Insert a captioned figure.")
 
-  self:registerCommand("table", function (options, content)
+  self:registerCommand("captioned-table", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in table environment") end
     local caption = extractFromTree(content, "caption")
 
@@ -371,6 +371,14 @@ function class:registerCommands ()
       SILE.call("smallskip")
     end
   end, "Insert a captioned table.")
+
+  self:registerCommand("table", function (options, content)
+    SILE.call("captioned-table", options, content)
+  end, "Alias to captioned-table.")
+
+  self:registerCommand("figure", function (options, content)
+    SILE.call("captioned-figure", options, content)
+  end, "Alias to captioned-figure.")
 
   self:registerCommand("listoffigures", function (_, _)
     local styles = self.packages["resilient.styles"]
