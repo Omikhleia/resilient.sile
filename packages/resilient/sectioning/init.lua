@@ -15,15 +15,6 @@ function package:_init (options)
   self.class:loadPackage("resilient.styles")
 end
 
-local function getMultilevelCounter(id) -- TEMPORARY FIXME
-  local counter = SILE.scratch.counters[id]
-  if not counter then
-    counter = { value= { 0 }, display= { "arabic" }, format = SILE.formatMultilevelCounter }
-    SILE.scratch.counters[id] = counter
-  end
-  return counter
-end
-
 local interWordSpace = function ()
   -- Returns a glue corresponding to the current interword space (depending on settings).
   local fontOpts = SILE.font.loadDefaults({})
@@ -105,8 +96,8 @@ function package:registerCommands ()
           level = secStyle.level,
           display = secStyle.display
         })
-        number = SILE.formatMultilevelCounter(
-          getMultilevelCounter(secStyle.counter), { noleadingzero = true }
+        number = self.class.packages.counters:formatMultilevelCounter(
+          self.class:getMultilevelCounter(secStyle.counter), { noleadingzero = true }
         )
       end
 
@@ -194,99 +185,15 @@ function package:registerCommands ()
     SILE.typesetter:leaveHmode()
   end, "Open a single page")
 
-  -- BEGIN TEMPORARY
-  -- This should go in the core SILE distribution once enough tested...
-
-  SILE.formatMultilevelCounter = function (counter, options)
-    local maxlevel = options and options.level and SU.min(options.level, #counter.value) or #counter.value
-    local minlevel = 1
-    local out = {}
-    if options and SU.boolean(options.noleadingzero, true) then
-      -- skip leading zeros
-      while counter.value[minlevel] == 0 do minlevel = minlevel + 1 end
-    end
-    for x = minlevel, maxlevel do
-      out[x - minlevel + 1] = SILE.formatCounter({ display = counter.display[x], value = counter.value[x] })
-    end
-    return table.concat(out, ".")
-  end
-
-  self:registerCommand("set-multilevel-counter", function (options, _)
-    local value = SU.cast("integer", SU.required(options, "value", "set-multilevel-counter"))
-    local level = SU.cast("integer", SU.required(options, "level", "set-multilevel-counter"))
-
-    local counter = getMultilevelCounter(options.id)
-    local currentLevel = #counter.value
-
-    if level == currentLevel then
-      -- e.g. set to x the level 3 of 1.2.3 => 1.2.x
-      counter.value[level] = value
-    elseif level > currentLevel then
-      -- Fill all missing levels in-between
-      -- e.g. set to x the level 3 of 1 = 1.0...
-      while level - 1 > currentLevel do -- e.g.
-        currentLevel = currentLevel + 1
-        counter.value[currentLevel] = 0
-        counter.display[currentLevel] = counter.display[currentLevel - 1]
-      end
-      -- ... and the 1.0.x with default display (in case the option below is absent)
-      currentLevel = currentLevel + 1
-      counter.value[level] = value
-      counter.display[level] = counter.display[currentLevel - 1]
-    else -- level < currentLevel
-      counter.value[level] = value
-      -- Reset all greater levels
-      -- e.g. set to x the level 2 of 1.2.3 => 1.x
-      while currentLevel > level do
-        counter.value[currentLevel] = nil
-        counter.display[currentLevel] = nil
-        currentLevel = currentLevel - 1
-      end
-    end
-    if options.display then counter.display[currentLevel] = options.display end
-  end, "Sets the counter named by the <id> option to <value>; sets its display type (roman/Roman/arabic) to type <display>.")
-
-
-  self:registerCommand("increment-multilevel-counter", function (options, _)
-    local counter = getMultilevelCounter(options.id)
-    local currentLevel = #counter.value
-    local level = tonumber(options.level) or currentLevel
-    if level == currentLevel then
-      counter.value[level] = counter.value[level] + 1
-    elseif level > currentLevel then
-      while level > currentLevel do
-        currentLevel = currentLevel + 1
-        counter.value[currentLevel] = (options.reset == false) and counter.value[currentLevel -1 ] or 1
-        counter.display[currentLevel] = counter.display[currentLevel - 1]
-      end
-    else -- level < currentLevel
-      counter.value[level] = counter.value[level] + 1
-      while currentLevel > level do
-        if not (options.reset == false) then counter.value[currentLevel] = nil end
-        counter.display[currentLevel] = nil
-        currentLevel = currentLevel - 1
-      end
-    end
-    if options.display then counter.display[currentLevel] = options.display end
-  end, "Increments the value of the multilevel counter <id> at the given <level> or the current level.")
-
-  self:registerCommand("show-multilevel-counter", function (options, _)
-    local counter = getMultilevelCounter(options.id)
-
-    SILE.typesetter:typeset(SILE.formatMultilevelCounter(counter, options))
-  end, "Outputs the value of the multilevel counter <id>.")
-
--- END TEMPORARY
-
 end
 
 package.documentation = [[\begin{document}
 \use[module=packages.resilient.lists]
 
 This package provides a generic framework for sectioning commands, expanding upon
-the concepts introduced in the \autodoc:package{styles} package. Class and package
-implementors are free to use the abstractions proposed here, if they find them
-sound with respect to their goals.
+the concepts introduced in the \autodoc:package{resilient.styles} package.
+Class and package implementors are free to use the abstractions proposed here,
+if they find them sound with respect to their goals.
 
 The core idea is that all sectionning commands could be defined via
 approriate styles and that any user-friendly command for typesetting a section
@@ -318,12 +225,12 @@ all options, as a class would actually do.
 
 \begin{codes}
 self:registerCommand("chapter", function (options, content)\par
-\quad{}options.style = "sectioning:chapter"\par
+\quad{}options.style = "sectioning-chapter"\par
 \quad{}SILE.call("sectioning", options, content)\par
 end, "Begin a new chapter")\par
 \end{codes}
 
-The only assumption here being, obviously, that a \code{sectioning:chapter}
+The only assumption here being, obviously, that a \code{sectioning-chapter}
 style has been appropriately defined to convey all the usual features a sectioning
 command may need. Before introducing its syntax, we need to clarify what “sectioning”
 means for us.
@@ -359,7 +266,7 @@ With these first assumptions in mind, let’s summarize the requirements:
 \end{enumerate}
 
 \smallskip
-With the exception of the two first elements, which are already covered by the \autodoc:package{styles}
+With the exception of the two first elements, which are already covered by the \autodoc:package{resilient.styles}
 package, the rest is new. Here is therefore the specification introduced in this package.
 
 \begin{codes}
@@ -412,7 +319,7 @@ style system. But if implementors play the game and are concerned with separatio
 concerns, it will just do the minimum things it should—and in many cases, it may be so
 simple that one could even do it in SILE language rather than in Lua.
 
-You may remember, from the \autodoc:package{styles} package, that one of the
+You may remember, from the \autodoc:package{resilient.styles} package, that one of the
 rationale for introducing styles was to avoid command “hooks” with different names,
 unknown scopes and effects, and also to formalize our expectations with a
 regular format that one could easily tweak. Resorting to a such a complex specification and

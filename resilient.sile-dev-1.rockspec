@@ -36,5 +36,6 @@ build = {
     ["sile.packages.resilient.lists"]           = "packages/resilient/lists/init.lua",
     ["sile.packages.resilient.headers"]         = "packages/resilient/headers/init.lua",
     ["sile.packages.resilient.epigraph"]        = "packages/resilient/epigraph/init.lua",
+    ["sile.packages.counters"]        = "packages/counters/init.lua",
   }
 }
