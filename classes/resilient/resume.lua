@@ -107,7 +107,7 @@ function class:_init (options)
   self:loadPackage("resilient.headers") -- header facility
 
   -- override foliostyle
-  --self:loadPackage("folio")
+  -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
   self:registerCommand("foliostyle", function (_, content)
     SILE.call("hbox", {}, {}) -- for vfill to be effective
     SILE.call("vfill")

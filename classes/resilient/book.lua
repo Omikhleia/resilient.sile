@@ -68,6 +68,17 @@ function class:_init (options)
   -- override document.parindent default
   SILE.settings:set("document.parindent", "1.25em")
 
+  -- override the standard foliostyle hook to rely on styles
+  -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
+  self:registerCommand("foliostyle", function (_, content)
+    SILE.call("noindent")
+    if SILE.documentState.documentClass:oddPage() then
+      SILE.call("style:apply:paragraph", { name = "folio-odd"}, content)
+    else
+      SILE.call("style:apply:paragraph", { name = "folio-even"}, content)
+    end
+  end)
+
   self:defineStyles()
 end
 
@@ -217,17 +228,6 @@ end
 
 function class:registerCommands ()
   plain:registerCommands()
-
-  -- override the standard foliostyle to rely on styles
-
-  self:registerCommand("foliostyle", function (_, content)
-    SILE.call("noindent")
-    if SILE.documentState.documentClass:oddPage() then
-      SILE.call("style:apply:paragraph", { name = "folio-odd"}, content)
-    else
-      SILE.call("style:apply:paragraph", { name = "folio-even"}, content)
-    end
-  end)
 
   -- Running headers
 
