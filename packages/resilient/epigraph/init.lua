@@ -149,7 +149,7 @@ function package:registerCommands ()
       end
 
       SILE.settings:set("document.parindent", parindent)
-      SILE.call("style:apply", { name = "epigraph:style" }, function()
+      SILE.call("style:apply", { name = "epigraph" }, function()
         SILE.process(content)
         if rule:tonumber() ~= 0 then
           SILE.typesetter:leaveHmode()
@@ -163,7 +163,7 @@ function package:registerCommands ()
           if rule:tonumber() == 0 then
             SILE.typesetter:pushVglue(sourceskipamount)
           end
-          SILE.call("style:apply", { name = "epigraph:source:style" }, function()
+          SILE.call("style:apply", { name = "epigraph-source" }, function()
             SILE.call("raggedleft", {}, source)
           end)
         end
@@ -176,8 +176,8 @@ end
 
 function package:registerStyles ()
   local styles = self.class.packages["resilient.styles"]
-  styles:defineStyle("epigraph:style", {}, { font = { size = -1 } })
-  styles:defineStyle("epigraph:source:style", {}, { font = { style="italic" } })
+  styles:defineStyle("epigraph", {}, { font = { size = -1 } })
+  styles:defineStyle("epigraph-source", {}, { font = { style="italic" } })
 end
 
 package.documentation = [[\begin{document}
@@ -301,20 +301,19 @@ It is also possible to offset the epigraph from the side (left or right) it is a
 \end{epigraph}
 
 If you want to specify what styling the epigraph environment should use, you
-can redefine the \code{epigraph:style} style. By default it will be the same
+can redefine the \code{epigraph} style. By default it will be the same
 as the surrounding document, just smaller.
 The epigraph source is typeset in italic by default. It can be modified too,
-by redefining \code{epigraph:source:style}.\footnote{Refer to our
-\autodoc:package{styles} package for details on how to set and configure style specifications.}
+by redefining \code{epigraph-source}.
 
-\style:redefine[name=epigraph:style, as=saved:epigraph:style]{\font[style=italic]}
-\style:redefine[name=epigraph:source:style, as=saved:epigraph:source:style]{\font[style=normal]}
+\style:redefine[name=epigraph, as=saved:epigraph]{\font[style=italic]}
+\style:redefine[name=epigraph-source, as=saved:epigraph-source]{\font[style=normal]}
 \begin{epigraph}
   \randomtext
 \source{\randomsource}
 \end{epigraph}
-\style:redefine[name=epigraph:style, from=saved:epigraph:style]
-\style:redefine[name=epigraph:source:style, from=saved:epigraph:source:style]
+\style:redefine[name=epigraph, from=saved:epigraph]
+\style:redefine[name=epigraph-source, from=saved:epigraph-source]
 
 As final notes, the epigraph source is intended to be short by nature, therefore
 no specific effort has been made to correctly handle sources longer than

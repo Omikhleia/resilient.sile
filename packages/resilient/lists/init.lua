@@ -161,7 +161,7 @@ function package:doNestedList (listType, options, content)
   local depth = SILE.settings:get("lists.current."..listType..".depth") + 1
 
   -- styling
-  local styleName = checkEnumStyleName("lists:"..listAltStyleType..":"..depth, "lists:"..listType..":"..depth)
+  local styleName = checkEnumStyleName("lists-"..listAltStyleType..depth, "lists-"..listType..depth)
   local enumStyle = self:resolveEnumStyleDef(styleName)
   -- options may override the enumeration style
   if enumStyle.display then
@@ -328,93 +328,91 @@ function package:registerStyles ()
   local styles = self.class.packages["resilient.styles"]
 
   -- Enumerate style
-  styles:defineStyle("lists:enumerate:1", {}, {
+  styles:defineStyle("lists-enumerate1", {}, {
     enumerate = { display = "arabic", before = "", after = "." }
   })
-  styles:defineStyle("lists:enumerate:2", {}, {
+  styles:defineStyle("lists-enumerate2", {}, {
     enumerate = { display = "roman", before = "", after = "." }
   })
-  styles:defineStyle("lists:enumerate:3", {}, {
+  styles:defineStyle("lists-enumerate3", {}, {
     enumerate = { display = "alpha", before = "", after = ")" }
   })
-  styles:defineStyle("lists:enumerate:4", {}, {
+  styles:defineStyle("lists-enumerate4", {}, {
     enumerate = { display = "arabic", before = "", after = ")" }
   })
-  styles:defineStyle("lists:enumerate:5", {}, {
+  styles:defineStyle("lists-enumerate5", {}, {
     enumerate = { display = "arabic", before = "§", after = "." }
   })
 
   -- Alternate enumerate style
-  styles:defineStyle("lists:enumerate-alternate:1", {}, {
+  styles:defineStyle("lists-enumerate-alternate1", {}, {
     enumerate = { display = "Alpha", before = "", after = "." }
   })
-  styles:defineStyle("lists:enumerate-alternate:2", {}, {
+  styles:defineStyle("lists-enumerate-alternate2", {}, {
     enumerate = { display = "Roman", before = "", after = "." }
   })
-  styles:defineStyle("lists:enumerate-alternate:3", {}, {
+  styles:defineStyle("lists-enumerate-alternate3", {}, {
     enumerate = { display = "roman", before = "", after = "." }
   })
-  styles:defineStyle("lists:enumerate-alternate:4", {}, {
+  styles:defineStyle("lists-enumerate-alternate4", {}, {
     font = { style = "italic" },
     enumerate = { display = "alpha", before = "", after = "." }
   })
-  styles:defineStyle("lists:enumerate-alternate:5", {}, {
+  styles:defineStyle("lists-enumerate-alternate5", {}, {
     enumerate = { display = "U+2474" }
   })
 
   -- Itemize style
-  styles:defineStyle("lists:itemize:1", {}, {
+  styles:defineStyle("lists-itemize1", {}, {
     -- color = { color = "red" },
     itemize = { bullet = "•" } -- black bullet
   })
-  styles:defineStyle("lists:itemize:2", {}, {
+  styles:defineStyle("lists-itemize2", {}, {
     itemize = { bullet = "◦" } -- circle bullet
   })
-  styles:defineStyle("lists:itemize:3", {}, {
+  styles:defineStyle("lists-itemize3", {}, {
     -- color = { color = "blue" },
     itemize = { bullet = "–" } -- en-dash
   })
-  styles:defineStyle("lists:itemize:4", {}, {
+  styles:defineStyle("lists-itemize4", {}, {
     itemize = { bullet = "•" } -- black bullet
   })
-  styles:defineStyle("lists:itemize:5", {}, {
+  styles:defineStyle("lists-itemize5", {}, {
     itemize = { bullet = "◦" } -- circle bullet
   })
-  styles:defineStyle("lists:itemize:6", {}, {
+  styles:defineStyle("lists-itemize6", {}, {
     -- color = { color = "blue" },
     itemize = { bullet = "–" } -- en-dash
   })
 
   -- Alternate itemize style
-  styles:defineStyle("lists:itemize-alternate:1", {}, {
+  styles:defineStyle("lists-itemize-alternate1", {}, {
     itemize = { bullet = "—" } -- em-dash
   })
-  styles:defineStyle("lists:itemize-alternate:2", {}, {
+  styles:defineStyle("lists-itemize-alternate2", {}, {
     itemize = { bullet = "•" } -- black bullet
   })
-  styles:defineStyle("lists:itemize-alternate:3", {}, {
+  styles:defineStyle("lists-itemize-alternate3", {}, {
     itemize = { bullet = "◦" } -- circle bullet
   })
-  styles:defineStyle("lists:itemize-alternate:4", {}, {
+  styles:defineStyle("lists-itemize-alternate4", {}, {
     itemize = { bullet = "–" } -- en-dash
   })
-  styles:defineStyle("lists:itemize-alternate:5", {}, {
+  styles:defineStyle("lists-itemize-alternate5", {}, {
     itemize = { bullet = "•" } -- black bullet
   })
-  styles:defineStyle("lists:itemize-alternate:6", {}, {
+  styles:defineStyle("lists-itemize-alternate6", {}, {
     itemize = { bullet = "◦" } -- circle bullet
   })
 end
 
 package.documentation = [[\begin{document}
 \use[module=packages.resilient.lists]
-The \autodoc:package{resilient.lists} package is a feature-richer and style-enabled replacement for
+The \autodoc:package{resilient.lists} package is a feature-riche, style-enabled replacement for
 the SILE standard \autodoc:package{lists} package.
 
 It provides enumerations and bullet lists (a.k.a. \em{itemization}\kern[width=0.1em]), which can
-be styled\footnote{So you can for instance pick up a color and a font for the bullet
-symbol. Refer to our \autodoc:package{styles} package for details on how to set and configure
-style specifications.} and, of course, nested together.
+be styled and, of course, nested together.
 
 \smallskip
 \em{Bullet lists.}
@@ -438,9 +436,9 @@ Any other element causes an error to be reported, and any text content is ignore
         \end{itemize}
     \end{itemize}
 \end{itemize}
-
+⟨\em{part|chapter}⟩
 The current implementation supports up to 6 indentation levels, which
-are set according to the \code{lists:itemize:\em{level}} styles.
+are set according to the \code{lists-itemize⟨\em{level}⟩} styles.
 
 On each level, the indentation is defined by the \autodoc:setting{lists.itemize.leftmargin}
 setting (defaults to 1.5em) and the bullet is centered in that margin.
@@ -469,7 +467,7 @@ setting, to switch to an alternate set of styles, such as the following.
     \end{itemize}
 \end{itemize}}%
 
-The alternate styles are expected to be named \code{lists:itemize-\em{variant}:\em{level}}
+The alternate styles are expected to be named \code{lists-itemize-⟨\em{variant}⟩⟨\em{level}⟩}
 and the package comes along with a pre-defined “alternate” variant using the em-dash.\footnote{This author is
 obviously French…} A good typographer is not expected to switch variants in the middle of a list, so the effect
 has not been checked. Be a good typographer.
@@ -508,7 +506,7 @@ option (a numeric value, regardless of the display format).
 \end{enumerate}
 
 The current implementation supports up to 5 indentation levels, which
-are set according to the \code{lists:enumerate:\em{level}} styles.
+are set according to the \code{lists-enumerate⟨\em{level}⟩} styles.
 
 On each level, the indentation is defined by the \autodoc:setting{lists.enumerate.leftmargin} setting (defaults to 2em).
 Note, again, that if your document has a paragraph indent enabled at this point, it is also added to the first list level.
@@ -540,7 +538,7 @@ you certainly guessed it already, the \autodoc:setting{lists.enumerate.variant} 
     \end{enumerate}
 \end{enumerate}}%
 
-The alternate styles are expected to be \code{lists:enumerate-\em{variant}:\em{level}},
+The alternate styles are expected to be \code{lists-enumerate-⟨\em{variant}⟩⟨\em{level}⟩},
 how imaginative, and the package comes along with a pre-defined “alternate” variant, just because.
 
 Besides using styles (or defaulting to them), you can also explicitly select the display type

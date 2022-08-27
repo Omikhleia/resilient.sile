@@ -4,9 +4,9 @@
 % Suitable font with thin, italic, lightweight bold italic, bold...
 \font[family=Lato, size=12pt]
 % Nice green tint:
-%\style:redefine[name=cv:color, as=_cv:color, inherit=true]{\color[color=#59b24c]}%
+%\style:redefine[name=resume-color, as=_resume-color, inherit=true]{\color[color=#59b24c]}%
 % Nice red tint:
-%\style:redefine[name=cv:color, as=_cv:color, inherit=true]{\color[color=#b94051]}%
+%\style:redefine[name=resume-color, as=_resume-color, inherit=true]{\color[color=#b94051]}%
 
 \begin{resume}
   \firstname{Sherlock}

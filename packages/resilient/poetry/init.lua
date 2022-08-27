@@ -285,9 +285,9 @@ package.documentation = [[\begin{document}
 \use[module=packages.resilient.poetry]
 
 If this package is called \autodoc:package{resilient.poetry}, it is not only because
-it belongs to Omikhleia’s packages. There are so many ways to compose
-poetry that one cannot, probably, cover them all. The art of
-typography is hard, but perhaps the art of poetry typography is
+it belongs to the “resilient” collection of packages and classes.
+There are so many ways to compose poetry that one cannot, probably, cover them all.
+The art of typography is hard, but perhaps the art of poetry typography is
 even harder.
 
 This package defines a \autodoc:environment{poetry} environment, which can

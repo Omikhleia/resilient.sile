@@ -2,6 +2,7 @@
 %\use[module=hacks/hack-1361]% HACKS/WORKAROUNDS FOR SILE 0.12.x BUGS
 %\use[module=hacks/hack-1362]% HACKS/WORKAROUNDS FOR SILE 0.12.x BUGS
 \use[module=packages.autodoc]
+\set[parameter=autodoc.highlighting, value=true]
 \use[module=packages.url]
 \use[module=packages.image]
 \use[module=packages.color]
@@ -10,6 +11,7 @@
 \use[module=packages.resilient.lists]
 \use[module=packages.ptable]
 \use[module=packages.framebox]
+\use[module=packages.fancytoc]
 \language[main=en]
 \font[family=Libertinus Serif]
 \define[command=codeblock]{\font[family=Libertinus Sans]{\process}}
@@ -89,7 +91,6 @@ If this booklet has a page size of 6 inches × 9 inches, it is not to make you w
 paper (assuming you could possibly want to print it in A4 or US letter), but
 just because it is the format I use the most for printed books and I wanted to
 ensure my classes and packages looked functional with it.
-
 But let’s rewind, here… On August 29, 2021, I decided to give a try to the SILE
 typesetting system.
 This booklet could have been called “My First Journey with SILE” as it is
@@ -257,61 +258,68 @@ FIXME LATER
 
 \chapter{Packages}
 
-\section{End-user packages}
+\section{End-user packages provided in the resilient collection}
 
 These are standalone packages users can use in their own documents.
-
-\subsection{resilient.epigraph: a lightweight epigraph environment}
-
-\package-documentation{resilient.epigraph}
-
-\subsection{textsubsuper: native superscripts & subscripts}
-
-(Moved as a separate package)
-
-%\package-documentation{textsubsuper}
 
 \subsection{resilient.abbr: a few shorthands & abbreviations}
 
 \package-documentation{resilient.abbr}
 
-\subsection{couyards: printer’s ornaments}
+\subsection{resilient.epigraph: a lightweight epigraph environment}
 
-(Moved as a separate package)
+\package-documentation{resilient.epigraph}
 
-%\package-documentation{couyards}
+\subsection{resilient.lists: enhanced enumerations and bullet lists}
 
-\subsection{colophon: shaped & decorated paragraphs}
-
-(No yet migrated)
-
-%\package-documentation[src=packages/colophon]
+\package-documentation{resilient.lists}
 
 \subsection{resilient.poetry: a poetry environment}
 
 \package-documentation{resilient.poetry}
 
+\section{End-user packages provided independently}
+
+\subsection{couyards: printer’s ornaments}
+
+\package-documentation{couyards}
+
+\subsection{colophon: shaped & decorated paragraphs}
+
+(No yet migrated)
+
+%\package-documentation{colophon}
+
+\subsection{fancytoc: alternative table of contents}
+
+\package-documentation{fancytoc}
+
+Here it is at work for the current document with default parameters.
+Since our book class supports parts at level 0, we get the parts
+and chapters.
+
+\fancytableofcontents
+
+\bigskip
+And here it is stating at level 1, i.e. chapters and sections.
+
+\fancytableofcontents[start=1]
+
+\subsection{labelrefs: cross-references}
+
+\package-documentation{labelrefs}
+
 \subsection{struts: rules with no width but a certain height}
 
-(Moved as a separate package)
-
-%\package-documentation{struts}
+\package-documentation{struts}
 
 \subsection{parbox: paragraphs in an horizontal box}
 
-(Moved as a separate package)
-
-%\package-documentation[src=packages/parbox]
+\package-documentation{parbox}
 
 \subsection{ptable: flexible tables}
 
-(Moved as a separate package)
-
-%\package-documentation[src=packages/ptable]
-
-\subsection{resilient.lists: enhanced enumerations and bullet lists}
-
-\package-documentation{resilient.lists}
+\package-documentation{ptable}
 
 \subsection{redefine: (basic) command redefinition}
 
@@ -321,15 +329,15 @@ These are standalone packages users can use in their own documents.
 
 \subsection{framebox: fancy box framing}
 
-(Moved as a separate package)
-
-%\package-documentation[src=packages/framebox]
+\package-documentation{framebox}
 
 \subsection{ean13: EAN-13 barcodes for ISBN etc.}
 
-(Moved as a separate package)
+\package-documentation{barcodes.ean13}
 
-%\package-documentation[src=packages/barcodes/ean13]
+\subsection{textsubsuper: native superscripts & subscripts}
+
+\package-documentation{textsubsuper}
 
 \section{Technical packages}
 
@@ -355,24 +363,14 @@ class writers.
 
 \subsection{resilient.tableofcontents: tables of contents redone}
 
-\package-documentation{resilient.tableofcontents}
-
-\subsection{labelrefs: cross-references}
-
-(Moved as a separate package)
-
-%\package-documentation[src=packages/labelrefs]
+(Obviously working, documentation not included pending fixes)
+%\package-documentation{resilient.tableofcontents}
 
 \subsection{resilient.headers: page headers revisited}
 
 \package-documentation{resilient.headers}
 
 \section{Experimental packages}
-
-\subsection{fancytoc: alternative table of contents}
-
-(Not yet migrated)
-%\package-documentation[src=packages/experimental/fancytoc]
 
 \subsection{printoptions: tools for professional printers}
 
@@ -431,19 +429,19 @@ to detract from document clarity.”
     \cell[valign=top]{Description}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{sectioning:base}}
+    \cell[valign=top]{\code{sectioning-base}}
     \cell[valign=top]{(Paragraph style inherited by all sectioning commands.)}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{section:\em{section type}}}
+    \cell[valign=top]{\code{sectioning-⟨\em{section type}⟩}}
     \cell[valign=top]{(Sectioning) style applied to that sectioning command.}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{section:\em{part|chapter}:number}}
+    \cell[valign=top]{\code{sectioning-⟨\em{part|chapter}⟩-number}}
     \cell[valign=top]{Style pre-defined for parts and chapters for styling their number.}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{section:other:number}}
+    \cell[valign=top]{\code{sectioning-other-number}}
     \cell[valign=top]{Style pre-defined for other sectioning commands for styling the
       section number.}
   \end{row}
@@ -508,11 +506,11 @@ The figure environment is (normally) intended to be used around an illustration.
     \cell[valign=top]{Style applied to the figure content (not including the caption).}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{figure:caption}}
+    \cell[valign=top]{\code{figure-caption}}
     \cell[valign=top]{Style applied to the figure caption.}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{figure:caption:number}}
+    \cell[valign=top]{\code{figure-caption-number}}
     \cell[valign=top]{Style applied to the caption number.}
   \end{row}
 \end{ptable}
@@ -533,11 +531,11 @@ have guessed it.
     \cell[valign=top]{Style applied to the table content (not including the caption).}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{table:caption}}
+    \cell[valign=top]{\code{table-caption}}
     \cell[valign=top]{Style applied to the table caption.}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{table:caption:number}}
+    \cell[valign=top]{\code{table-caption-number}}
     \cell[valign=top]{Style applied to the caption number.}
   \end{row}
 \end{ptable}
@@ -596,27 +594,27 @@ it can simplify the task for other later customizations.
     \cell[valign=top]{Description}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{folio:base}}
+    \cell[valign=top]{\code{folio-base}}
     \cell[valign=top]{(Style inherited by the other folio styles.)}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{header:base}}
+    \cell[valign=top]{\code{header-base}}
     \cell[valign=top]{(Style inherited by the other header styles.)}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{folio:even}}
+    \cell[valign=top]{\code{folio-even}}
     \cell[valign=top]{(Paragraph) style applied to the folio on even pages.}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{folio:odd}}
+    \cell[valign=top]{\code{folio-odd}}
     \cell[valign=top]{(Paragraph) style applied to the folio on odd pages.}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{header:even}}
+    \cell[valign=top]{\code{header-even}}
     \cell[valign=top]{(Paragraph) style applied to the header on even pages.}
   \end{row}
   \begin{row}
-    \cell[valign=top]{\code{header:odd}}
+    \cell[valign=top]{\code{header-odd}}
     \cell[valign=top]{(Paragraph) style applied to the header on odd pages.}
   \end{row}
 \end{ptable}
@@ -686,18 +684,18 @@ This class provides a minimalist (read, naive) way to make a modern \em{résumé
   \item{You should select, early in your document, the main font to be used. This class ideally
         works best with a font family that has: a thin style, an italic style, a light-weight (300)
         bold italic, a bold (600) regular. Lato, for instance, is such a font.}
-  \item{Dingbat symbols rely on the Symbola font. You can change it by redefining the \code{cv:dingbats}
-        style.\footnote{E.g. \codeblock{\\style:redefine[name=cv:dingbats,
+  \item{Dingbat symbols rely on the Symbola font. You can change it by redefining the \code{resume-dingbats}
+        style.\footnote{E.g. \codeblock{\\style:redefine[name=resume-dingbats,
             as=_dbats, inherit=true]\{\\font[family=\em{family}]\}}.}}
   \end{itemize}
   \item{Colors should not be abused in a CV, so this class proposes only three different colors.}
   \begin{itemize}
     \item{Two tints of gray for your first and last name, job title and headline.}
     \item{A nice tint of blue (#4080bf) for various sectioning and display elements. You can change it
-        by redefining the \code{cv:color} style.\footnote{E.g.
-            \codeblock{\\style:redefine[name=cv:color, as=_cv:color, inherit=true]\{\\color[color=#59b24c]\}}
+        by redefining the \code{resume-color} style.\footnote{E.g.
+            \codeblock{\\style:redefine[name=resume-color, as=_resume-color, inherit=true]\{\\color[color=#59b24c]\}}
             for a nice tint of green–likewise for your first and last name, which correspond to the
-            \code{cv:firstname} and \code{cv:lastname} styles respectively.}}
+            \code{resume-firstname} and \code{resume-lastname} styles respectively.}}
   \end{itemize}
   \item{Page layout}
   \begin{itemize}
@@ -760,7 +758,7 @@ repository}\footnote{\url{https://omikhleia.github.io/sindict/}}.
 
 \define[command=Q]{\sectioning[style=omi:question, toc=false]{\process}}
 
-\chapter{Customizing your resilient.book}
+\chapter{Customizing your resilient book}
 
 The class draws heavily upon the concept of “styles”. While you could refer to the
 documentation of that package and look at the class source code for the styles it
@@ -774,14 +772,14 @@ addressed here.
 If you are, say, French, and want all sections to be followed by indented paragraphs,
 you can therefore enter, early in your document:
 
-%\style:redefine[name=sectioning:base, as=_secbase, inherit=true]{\paragraph[indentafter=true]}
+%\style:redefine[name=sectioning-base, as=_secbase, inherit=true]{\paragraph[indentafter=true]}
 
 \smallskip
-\codeblock{\\style:redefine[name=sectioning:base, as=_secbase, inherit=true]\{\par
+\codeblock{\\style:redefine[name=sectioning-base, as=_secbase, inherit=true]\{\par
 \qquad\\paragraph[indentafter=true]\}}
 \smallskip
 
-This \codeblock{sectioning:base} style is inherited by all other sectioning
+This \codeblock{sectioning-base} style is inherited by all other sectioning
 commands.
 
 \Q{Paper is costly, I do not want chapters to open on an odd page.}
@@ -789,24 +787,24 @@ commands.
 I have seen this used mostly in huge novels, where modern editors relax the ancient rule, or
 mere convention, that says that chapters always have to open on an odd page.
 
-%\style:redefine[name=sectioning:chapter, as=_chapter, inherit=true]{\sectioning[open=any]}
+%\style:redefine[name=sectioning-chapter, as=_chapter, inherit=true]{\sectioning[open=any]}
 
 \smallskip
-\codeblock{\\style:redefine[name=sectioning:chapter, as=_chapter, inherit=true]\{\par
+\codeblock{\\style:redefine[name=sectioning-chapter, as=_chapter, inherit=true]\{\par
 \qquad\\sectioning[open=any]\}}
 \smallskip
 
-Likewise, the same solution could be applied to \codeblock{sectioning:part}, would you
+Likewise, the same solution could be applied to \codeblock{sectioning-part}, would you
 need that too.
 
 \Q{Can I have my chapter numbers in roman?}
 
 I bet you are writing a novel.
 
-%\style:redefine[name=sectioning:chapter, as=_chapter, inherit=true]{\sectioning[display=ROMAN]}
+%\style:redefine[name=sectioning-chapter, as=_chapter, inherit=true]{\sectioning[display=ROMAN]}
 
 \smallskip
-\codeblock{\\style:redefine[name=sectioning:chapter, as=_chapter, inherit=true]\{\par
+\codeblock{\\style:redefine[name=sectioning-chapter, as=_chapter, inherit=true]\{\par
 \qquad\\sectioning[display=ROMAN]\}}
 \smallskip
 
@@ -814,16 +812,16 @@ I bet you are writing a novel.
 
 For sections and lower levels:
 
-%\style:redefine[name=sectioning:other:number, as=_sclabel, inherit=true]{\numbering[after=false]}
+%\style:redefine[name=sectioning-other-number, as=_sclabel, inherit=true]{\numbering[after=false]}
 
 \smallskip
-\codeblock{\\style:redefine[name=sectioning:other:number, as=_sclabel, inherit=true]\{\par
+\codeblock{\\style:redefine[name=sectioning-other-number, as=_sclabel, inherit=true]\{\par
 \qquad\\numbering[after=false]\}}
 \smallskip
 
 \Q{Chapters and parts have English labels?}
 
-%\style:redefine[name=sectioning:chapter:number, as=_chlabel, inherit=true]{\numbering[before="Chapitre "]}
+%\style:redefine[name=sectioning-chapter-number, as=_chlabel, inherit=true]{\numbering[before="Chapitre "]}
 
 By default, yes. This author does not believe in localized strings at all. And I have
 no idea what a “part” would be in your book, anyway. “Part I”, are you sure? What if you typeset, say,
@@ -831,11 +829,11 @@ no idea what a “part” would be in your book, anyway. “Part I”, are you s
 want “Chapitre” instead of “Chapter”.
 
 \smallskip
-\codeblock{\\style:redefine[name=sectioning:chapter:number, as=_chlabel, inherit=true]\{\par
+\codeblock{\\style:redefine[name=sectioning-chapter-number, as=_chlabel, inherit=true]\{\par
 \qquad\\numbering[before="Chapitre "]\}}
 \smallskip
 
-And likewise for \codeblock{sectioning:part:number}. As for sections in the previous
+And likewise for \codeblock{sectioning-part-number}. As for sections in the previous
 question, the label also has a \codeblock{post} specifier. So I guess you have all
 the keys for chapter numbering in Japanese or Chinese.
 
@@ -846,41 +844,41 @@ the keys for chapter numbering in Japanese or Chinese.
 The class always distinguishes between odd and even pages, so here you will need
 two redefinitions, to override the default alignments.
 
-%\style:redefine[name=folio:odd, as=_folodd, inherit=true]{\paragraph[align=center]}
-%\style:redefine[name=folio:even, as=_foleven, inherit=true]{\paragraph[align=center]}
+%\style:redefine[name=folio-odd, as=_folodd, inherit=true]{\paragraph[align=center]}
+%\style:redefine[name=folio-even, as=_foleven, inherit=true]{\paragraph[align=center]}
 
 \smallskip
-\codeblock{\\style:redefine[name=folio:odd, as=_folodd, inherit=true]\{\par
+\codeblock{\\style:redefine[name=folio-odd, as=_folodd, inherit=true]\{\par
 \qquad\\paragraph[align=center]\}}
 
-\codeblock{\\style:redefine[name=folio:even, as=_foleven, inherit=true]\{\par
+\codeblock{\\style:redefine[name=folio-even, as=_foleven, inherit=true]\{\par
 \qquad\\paragraph[align=center]\}}
 
 \Q{Can I have running headers centered too?}
 
 As for the previous question, but with the header styles.
 
-%\style:redefine[name=header:odd, as=_headodd, inherit=true]{\paragraph[align=center]}
-%\style:redefine[name=header:even, as=_headeven, inherit=true]{\paragraph[align=center]}
+%\style:redefine[name=header-odd, as=_headodd, inherit=true]{\paragraph[align=center]}
+%\style:redefine[name=header-even, as=_headeven, inherit=true]{\paragraph[align=center]}
 
 \smallskip
-\codeblock{\\style:redefine[name=header:odd, as=_headodd, inherit=true]\{\par
+\codeblock{\\style:redefine[name=header-odd, as=_headodd, inherit=true]\{\par
 \qquad\\paragraph[align=center]\}}
 
-\codeblock{\\style:redefine[name=header:even, as=_headeven, inherit=true]\{\par
+\codeblock{\\style:redefine[name=header-even, as=_headeven, inherit=true]\{\par
 \qquad\\paragraph[align=center]\}}
 
 \Q{Can I change the appearance (font, color) of the folios or headers?}
 
 In addition to the abovementioned paragraph styles, you can also redefine the
-\codeblock{folio:base} and \codeblock{header:base} parent styles, which specify
+\codeblock{folio-base} and \codeblock{header-base} parent styles, which specify
 their character styles. For instance, I recently read a novel where folios
 used the “old-style” numbers.
 
-%\style:redefine[name=folio:base, as=_folbase, inherit=true]{\font[features=+onum]}
+%\style:redefine[name=folio-base, as=_folbase, inherit=true]{\font[features=+onum]}
 
 \smallskip
-\codeblock{\\style:redefine[name=folio:base, as=_folbase, inherit=true]\{\par
+\codeblock{\\style:redefine[name=folio-base, as=_folbase, inherit=true]\{\par
 \qquad\\font[features=+onum]\}}
 
 \section{Other questions}
@@ -915,7 +913,7 @@ that way.
 
 \smallskip
 \begin{codeblock}
-\\style:redefine[name=sectioning:part:number, as=_partlabel, inherit=true]\{\par
+\\style:redefine[name=sectioning-part-number, as=_partlabel, inherit=true]\{\par
 \qquad\\numbering[before="Adventure "]\}
 \end{codeblock}
 \smallskip
@@ -925,7 +923,7 @@ as well as less vertical spacing before these sections.
 
 \smallskip
 \begin{codeblock}
-\\style:redefine[name=sectioning:part, as=_part, inherit=true]\{\par
+\\style:redefine[name=sectioning-part, as=_part, inherit=true]\{\par
 \qquad\\font[size=+4]\par
 \qquad\\paragraph[skipbefore=1cm]\}
 \end{codeblock}
@@ -941,7 +939,7 @@ here (our parts do, though, and that is probably well).
 
 \smallskip
 \begin{codeblock}
-\\style:redefine[name=sectioning:chapter, as=_chapter, inherit=true]\{\par
+\\style:redefine[name=sectioning-chapter, as=_chapter, inherit=true]\{\par
 \qquad\\font[size=+2]\par
 \qquad\\paragraph[align=center, skipbefore=bigskip, indentafter=true]\par
 \qquad\\sectioning[display=ROMAN, open=unset]\}
@@ -955,7 +953,7 @@ number style.
 
 \smallskip
 \begin{codeblock}
-\\style:define[name=sectioning:chapter:number]\{\}
+\\style:define[name=sectioning-chapter-number]\{\}
 \end{codeblock}
 
 \section{Running headers…}
@@ -965,10 +963,10 @@ and always in italic.
 
 \smallskip
 \begin{codeblock}
-\\style:redefine[name=header:odd, as=_hdodd, inherit=true]\{\par
+\\style:redefine[name=header-odd, as=_hdodd, inherit=true]\{\par
 \qquad\\paragraph[align=center]\par
 \qquad\\font[style=italic]\}\par
-\\style:redefine[name=header:even, as=_hdeven, inherit=true]\{\par
+\\style:redefine[name=header-even, as=_hdeven, inherit=true]\{\par
 \qquad\\paragraph[align=center]\par
 \qquad\\font[style=italic]\}
 \end{codeblock}

@@ -157,45 +157,45 @@ end
 function class:defineStyles ()
   local styles = self.packages["resilient.styles"]
 
-  styles:defineStyle("cv:firstname", {}, { font = { style = "light" }, color = { color = "#a6a6a6" } })
-  styles:defineStyle("cv:lastname", {}, { color = { color = "#737373" } })
+  styles:defineStyle("resume-firstname", {}, { font = { style = "light" }, color = { color = "#a6a6a6" } })
+  styles:defineStyle("resume-lastname", {}, { color = { color = "#737373" } })
 
-  styles:defineStyle("cv:fullname", {}, { font = { size = "30pt" }, paragraph = { align = "right" } })
+  styles:defineStyle("resume-fullname", {}, { font = { size = "30pt" }, paragraph = { align = "right" } })
 
-  styles:defineStyle("cv:color", {}, { color = { color = "#4080bf" } }) -- a nice tint of blue
+  styles:defineStyle("resume-color", {}, { color = { color = "#4080bf" } }) -- a nice tint of blue
 
-  styles:defineStyle("cv:dingbats", { inherit = "cv:color" }, { font = { family = "Symbola", size = "-1" } })
+  styles:defineStyle("resume-dingbats", { inherit = "resume-color" }, { font = { family = "Symbola", size = "-1" } })
 
-  styles:defineStyle("cv:jobrole", {}, { font = { weight = 600 } })
+  styles:defineStyle("resume-jobrole", {}, { font = { weight = 600 } })
 
-  styles:defineStyle("cv:headline", {}, { font = { weight = "300", style = "italic", size = "-1" },
+  styles:defineStyle("resume-headline", {}, { font = { weight = "300", style = "italic", size = "-1" },
     color = { color = "#373737" },
     paragraph = { align = "center" } })
 
-  styles:defineStyle("cv:section", { inherit = "cv:color" }, { font = { size = "+2" } })
+  styles:defineStyle("resume-section", { inherit = "resume-color" }, { font = { size = "+2" } })
 
-  styles:defineStyle("cv:topic", {}, { font = { style="light", size = "-1" },
+  styles:defineStyle("resume-topic", {}, { font = { style="light", size = "-1" },
     paragraph = { align = "right" } })
-  styles:defineStyle("cv:description", {}, {})
+  styles:defineStyle("resume-description", {}, {})
 
-  styles:defineStyle("cv:contact", {}, { font = { style = "thin", size = "-0.5" },
+  styles:defineStyle("resume-contact", {}, { font = { style = "thin", size = "-0.5" },
     paragraph = { align = "center" } })
 
-  styles:defineStyle("cv:jobtitle", {}, { font = { size = "20pt" },
+  styles:defineStyle("resume-jobtitle", {}, { font = { size = "20pt" },
     color = { color = "#373737" }, paragraph = { align = "center", skipbefore = "0.5cm" } })
 
-  styles:defineStyle("cv:header", {}, { font = { size = "20pt" },
+  styles:defineStyle("resume-header", {}, { font = { size = "20pt" },
     paragraph = { align = "right" } })
 
-  -- Redefine the 6 default itemize styles to apply our cv:color
+  -- Redefine the 6 default itemize styles to apply our resume-color
   for i = 1, 6 do
-    local itemizeSty = styles:resolveStyle("lists:itemize:"..i)
-    styles:defineStyle("lists:itemize:"..i, { inherit = "cv:color" }, itemizeSty)
+    local itemizeSty = styles:resolveStyle("lists-itemize"..i)
+    styles:defineStyle("lists-itemize"..i, { inherit = "resume-color" }, itemizeSty)
   end
   -- Same for the alternate variant
   for i = 1, 6 do
-    local itemizeSty = styles:resolveStyle("lists:itemize-alternate:"..i)
-    styles:defineStyle("lists:itemize-alternate:"..i, { inherit = "cv:color" }, itemizeSty)
+    local itemizeSty = styles:resolveStyle("lists-itemize-alternate"..i)
+    styles:defineStyle("lists-itemize-alternate"..i, { inherit = "resume-color" }, itemizeSty)
   end
 end
 
@@ -224,10 +224,10 @@ local function doEntry (rows, _, content)
   local description = extractFromTree(content, "description")
   local titleRow = C("row", { }, {
     C("cell", { valign = "top", padding = "4pt 4pt 0 4pt" }, { function ()
-        SILE.call("style:apply:paragraph", { name = "cv:topic" }, function ()
+        SILE.call("style:apply:paragraph", { name = "resume-topic" }, function ()
           -- We are typesetting in a different style but want proper alignment
           -- With the other style, so strut tweaking:
-          SILE.call("style:apply", { name = "cv:description" }, function ()
+          SILE.call("style:apply", { name = "resume-description" }, function ()
             SILE.call("strut")
           end)
           -- Then go ahead.
@@ -236,7 +236,7 @@ local function doEntry (rows, _, content)
       end
     }),
     C("cell", { valign = "top", span = 2, padding = "4pt 4pt 0.33cm 0" }, { function ()
-        SILE.call("style:apply", { name = "cv:description" }, description)
+        SILE.call("style:apply", { name = "resume-description" }, description)
       end
     })
   })
@@ -252,13 +252,13 @@ local doSection = function (rows, _, content)
   local title = extractFromTree(content, "title")
   local titleRow = C("row", { }, {
     C("cell", { valign = "bottom", padding = "4pt 4pt 0 4pt" }, { function ()
-        SILE.call("style:apply", { name = "cv:section" }, function ()
+        SILE.call("style:apply", { name = "resume-section" }, function ()
           SILE.call("hrule", { width = "100%fw", height= "1ex" })
         end)
       end
     }),
     C("cell", { span = 2, padding = "4pt 4pt 0.33cm 0" }, { function ()
-        SILE.call("style:apply", { name = "cv:section" }, title)
+        SILE.call("style:apply", { name = "resume-section" }, title)
       end
     })
   })
@@ -295,10 +295,10 @@ function class:registerCommands ()
       SILE.process({ contact })
     end)
     SILE.call("cv-header", {}, function ()
-      SILE.call("style:apply:paragraph", { name = "cv:header" }, function ()
-          SILE.call("style:apply", { name = "cv:firstname" }, firstname)
+      SILE.call("style:apply:paragraph", { name = "resume-header" }, function ()
+          SILE.call("style:apply", { name = "resume-firstname" }, firstname)
           SILE.typesetter:typeset(" ")
-          SILE.call("style:apply", { name = "cv:lastname" }, lastname)
+          SILE.call("style:apply", { name = "resume-lastname" }, lastname)
         end)
     end)
 
@@ -313,10 +313,10 @@ function class:registerCommands ()
         end
       }),
       C("cell", { span = 2, border = "0 1pt 0 0", padding = "4pt 2pt 4pt 0",  valign = "bottom" }, { function ()
-        SILE.call("style:apply:paragraph", { name = "cv:fullname" }, function ()
-            SILE.call("style:apply", { name = "cv:firstname" }, firstname)
+        SILE.call("style:apply:paragraph", { name = "resume-fullname" }, function ()
+            SILE.call("style:apply", { name = "resume-firstname" }, firstname)
             SILE.typesetter:typeset(" ")
-            SILE.call("style:apply", { name = "cv:lastname" }, lastname)
+            SILE.call("style:apply", { name = "resume-lastname" }, lastname)
           end)
         end
       })
@@ -325,7 +325,7 @@ function class:registerCommands ()
 
     local jobtitleRow = C("row", { }, {
       C("cell", { span = 3 }, { function ()
-          SILE.call("style:apply:paragraph", { name = "cv:jobtitle" }, jobtitle)
+          SILE.call("style:apply:paragraph", { name = "resume-jobtitle" }, jobtitle)
         end
       })
     })
@@ -337,7 +337,7 @@ function class:registerCommands ()
       C("cell", { span = 3 }, { function ()
           SILE.call("center", {}, function ()
             SILE.call("parbox", { width = "80%fw" }, function()
-              SILE.call("style:apply:paragraph", { name = "cv:headline" }, headline)
+              SILE.call("style:apply:paragraph", { name = "resume-headline" }, headline)
             end)
           end)
         end
@@ -378,7 +378,7 @@ function class:registerCommands ()
   self:registerCommand("ranking", function (options, _)
     local value = SU.cast("integer", options.value or 0)
     local scale = SU.cast("integer", options.scale or 5)
-    SILE.call("style:apply", { name = "cv:dingbats" }, function ()
+    SILE.call("style:apply", { name = "resume-dingbats" }, function ()
       for _ = 1, value do
         SILE.typesetter:typeset(charFromUnicode("U+25CF"))
         SILE.call("kern", { width = "0.1em" })
@@ -392,13 +392,13 @@ function class:registerCommands ()
 
   self:registerCommand("cv-bullet", function (_, _)
     SILE.call("kern", { width = "0.75em" })
-    SILE.call("style:apply", { name = "cv:dingbats" }, { charFromUnicode("U+2022") })
+    SILE.call("style:apply", { name = "resume-dingbats" }, { charFromUnicode("U+2022") })
     SILE.call("kern", { width = "0.75em" })
   end)
 
   self:registerCommand("cv-dingbat", function (options, _)
     local symb = SU.required(options, "symbol", "cv-dingbat")
-    SILE.call("style:apply", { name = "cv:dingbats" }, { charFromUnicode(symb) })
+    SILE.call("style:apply", { name = "resume-dingbats" }, { charFromUnicode(symb) })
   end)
 
   self:registerCommand("contact", function (_, content)
@@ -407,7 +407,7 @@ function class:registerCommands ()
     local phone = SILE.inputter:findInTree(content, "phone") or SU.error("phone is mandatory")
     local email = SILE.inputter:findInTree(content, "email") or SU.error("email is mandatory")
 
-    SILE.call("style:apply:paragraph", { name = "cv:contact" }, function ()
+    SILE.call("style:apply:paragraph", { name = "resume-contact" }, function ()
       SILE.call("cv-icon-text", { symbol="U+1F4CD" }, street)
       SILE.call("cv-bullet")
       SILE.process(city)
@@ -434,7 +434,7 @@ function class:registerCommands ()
   end)
 
   self:registerCommand("jobrole", function (_, content)
-    SILE.call("style:apply", { name = "cv:jobrole" }, content)
+    SILE.call("style:apply", { name = "resume-jobrole" }, content)
   end)
 end
 

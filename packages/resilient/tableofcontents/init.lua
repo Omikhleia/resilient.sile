@@ -224,7 +224,7 @@ function package:registerCommands ()
 
     local hasFiller = true
     local hasPageno = true
-    local tocSty = styles:resolveStyle("toc:level"..level)
+    local tocSty = styles:resolveStyle("toc-level"..level)
     if tocSty.toc then
       hasPageno = SU.boolean(tocSty.toc.pageno, true)
       hasFiller = hasPageno and SU.boolean(tocSty.toc.dotfill, true)
@@ -232,7 +232,7 @@ function package:registerCommands ()
 
     SILE.settings:temporarily(function ()
       SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
-      SILE.call("style:apply:paragraph", { name = "toc:level"..level },
+      SILE.call("style:apply:paragraph", { name = "toc-level"..level },
         linkWrapper(options.link, function ()
           if options.number then
             SILE.call("tableofcontents:levelnumber", { level = level }, function ()
@@ -244,7 +244,7 @@ function package:registerCommands ()
 
           SILE.call(hasFiller and "dotfill" or "hfill")
           if hasPageno then
-            SILE.typesetter:typeset(options.pageno)
+            SILE.call("style:apply", { name = "toc-pageno"}, { options.pageno })
           end
         end)
       )
@@ -255,7 +255,7 @@ function package:registerCommands ()
     local level = SU.cast("integer", SU.required(options, "level", "tableofcontents:levelnumber"))
     if level < 0 or level > #tocStyles - 1 then SU.error("Invalid TOC level "..level) end
 
-    local tocSty = styles:resolveStyle("toc:level"..level)
+    local tocSty = styles:resolveStyle("toc-level"..level)
 
     if tocSty.toc and SU.boolean(tocSty.toc.numbering, false) then
       local pre = tocSty.numbering and tocSty.numbering.before
@@ -278,8 +278,9 @@ function package:registerStyles ()
   -- the resilient.book class, and their default (proposed) styling specifications
   -- are based on the latter.
   for i = 1, #tocStyles do
-    styles:defineStyle("toc:level"..(i-1), {}, tocStyles[i])
+    styles:defineStyle("toc-level"..(i-1), {}, tocStyles[i])
   end
+  styles:defineStyle("toc-pageno", {}, {})
 end
 
 package.documentation = [[\begin{document}
@@ -297,7 +298,7 @@ At a low-level, when you are implementing sectioning commands such
 as \autodoc:command[check=false]{\chapter} or \autodoc:command[check=false]{\section}, your
 class should call the \autodoc:command{\tocentry[level=<integer>, number=<string>]{<section title>}}
 command to register a table of contents entry. Or you can alleviate your work by using a package
-that does it all for you, such as \autodoc:package{sectioning}.
+that does it all for you, such as \autodoc:package{resilient.sectioning}.
 
 From a document author perspective, this package just provides the above-mentioned
 \autodoc:command{\tableofcontents} command.
@@ -325,11 +326,12 @@ book. It feels wrong and cumbersome to always get a default title and have to ov
 it, while it is so simple to just add a consistently-styled section above the table…
 
 Moreover, this package does not support all the “hooks” that its ancestor had.
-Rather, the entry level formatting logic entirely relies on styles (using the
-\autodoc:package{styles} package), the styles used being
-\code{toc:level0} to \code{toc:level9}. They provides several
+Rather, the entry level formatting logic entirely relies on styles.
+
+The styles are \code{toc-level0} to \code{toc-level9}. They provides several
 specific options that the original package did not have, allowing you to customize
 nearly all aspects of your tables of contents.
+In addition, the page number is style with \code{toc-pageno}.
 
 \end{document}]]
 

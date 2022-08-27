@@ -305,7 +305,7 @@ package.documentation = [[\begin{document}
 \use[module=packages.unichar]
 \use[module=packages.resilient.lists]
 
-The \autodoc:package{styles} package aims at easily defining “styling specifications”.
+The \autodoc:package{resilient.styles} package aims at easily defining “styling specifications”.
 It is intended to be used by other packages or classes, rather than directly—though
 users might of course use the commands provided herein to customize some styling
 definitions according to their needs.

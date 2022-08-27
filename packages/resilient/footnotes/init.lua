@@ -188,8 +188,6 @@ a counter\footnote[mark=†]{As shown here, using \autodoc:command{\footnote[mar
 In that case, the footnote counter is not altered. Among other things, these custom
 marks can be useful for editorial footnotes.
 
-The package relies on the \autodoc:package{styles} package for styling the elements.
-
 The footnote content is typeset according to the \code{footnote} style
 (and this re-implementation of the original footnote package, therefore, does not have a
 \autodoc:command[check=false]{\footnote:font} hook).

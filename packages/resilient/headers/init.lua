@@ -114,7 +114,7 @@ package for page numbers. It also provides four commands to users:
   be guessed, but one normally wants the rule to be displayed at the same place on each page…}
 \end{itemize}
 
-It exports a Lua function \code{outputHeader()} which should be called by
+It exports a Lua method \code{outputHeader()} which should be called by
 the class at the end of each page, with the desired content for the current page
 header. The class is left responsible for choosing the header content material
 depending on its own logic, e.g. two-side pages, sectioning, styling, etc.

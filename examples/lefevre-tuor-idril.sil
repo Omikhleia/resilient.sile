@@ -1,7 +1,7 @@
 \begin[papersize=6in x 9in, class=resilient.book]{document}
 \use[module=packages.url]
 \use[module=packages.resilient.epigraph]
-\style:define[name=epigraph:source:style]{}
+\style:define[name=epigraph-source]{}
 \use[module=packages.couyards]
 \use[module=packages.dropcaps]
 \use[module=packages.resilient.abbr]
@@ -45,11 +45,11 @@ SILE.registerCommand("initial", function (options, content)
 end, "Wrapper around dropcap, for baselineskip adjustment")
 }%
 %
-\style:redefine[name=header:odd, as=_hdodd, inherit=true]{
+\style:redefine[name=header-odd, as=_hdodd, inherit=true]{
   \paragraph[align=center]
   \font[style=italic]
 }%
-\style:redefine[name=header:even, as=_hdeven, inherit=true]{
+\style:redefine[name=header-even, as=_hdeven, inherit=true]{
   \paragraph[align=center]
   \font[style=italic]
 }%
