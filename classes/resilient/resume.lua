@@ -65,7 +65,7 @@ class.nextFrameset = {
   header = {
     left = "left(content)",
     right = "right(content)",
-    top = "10%pw",
+    top = "top(page) + 10%pw",
     bottom = "10%pw + 3%ph"
   },
   footer = {
@@ -88,7 +88,7 @@ function class:_init (options)
   self:loadPackage("color")
   self:loadPackage("rules") -- for section rules
   self:loadPackage("image") -- for the user picture
-  -- self:loadPackage("ptable") -- for tables, all the CV is one FIXME see HACK1: SILE.typesetter cannot only be used before postinit
+  self:loadPackage("ptable") -- for tables
   self:loadPackage("resilient.lists") -- for bullet lists
 
   self:loadPackage("masters")
@@ -126,10 +126,18 @@ function class:_init (options)
 end
 
 function class:newPage ()
-  if SILE.scratch.counters.folio.value > 1 then
-    self.switchMaster("next")
-  end
-  return plain:newPage()
+  -- In 0.12.5
+  --   if SILE.scratch.counters.folio.value > 1 then
+  --     self.switchMaster("next")
+  --   end
+  --   return plain.newPage(self)
+  -- In 0.13/0.14, this became a shit of unclear weirdness
+  -- See https://github.com/sile-typesetter/sile/issues/1544
+  -- Ditching the folio numbering check as the folio is not even incremented yet (?!)
+  -- Then the mess below _seems_ to work:
+  plain:newPage() -- It calls and returns self:initialFrame(), but heh...
+  self:switchMaster("next")
+  return self:initialFrame() -- And now this (?!)
 end
 
 function class:endPage ()
@@ -354,7 +362,6 @@ function class:registerCommands ()
 
     -- NOTE: All the above was made with 4 columns in mind, I ended up using only
     -- three, with appropriate spanning. I had a more complex layout in mind. To refactor or extend...
-    SILE.require("packages.ptable") -- FIXME HACK1
     SILE.call("ptable", { cols = "17%fw 43%fw 40%fw", cellborder = 0, cellpadding = "4pt 4pt 4pt 4pt" },
       rows
     )
