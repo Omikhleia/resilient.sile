@@ -39,3 +39,9 @@ luac.out
 *.x86_64
 *.hex
 
+# SILE artifacts
+*.toc
+*.ref
+tests/*.pdf
+tests/*.debug
+

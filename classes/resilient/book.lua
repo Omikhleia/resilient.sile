@@ -7,38 +7,86 @@ local plain = require("classes.plain")
 local class = pl.class(plain)
 class._name = "resilient.book"
 
--- Additional styles are defined further below for specific commands
--- i.e. convenience commands provided by the class, but which are not (necessarily)
--- book-related, such as blockquotes, figures, tables.
+-- PAGE LAYOUT MASTERS
 
--- PAGE MASTERS
-
-class.defaultFrameset = {
-  content = {
-    left = "10%pw", -- was 8.3%pw
-    right = "87.7%pw", -- was 86%pw
-    top = "11.6%ph",
-    bottom = "top(footnotes)"
-  },
-  folio = {
-    left = "left(content)",
-    right = "right(content)",
-    top = "bottom(footnotes)+3%ph",
-    bottom = "bottom(footnotes)+5%ph"
-  },
-  header = {
-    left = "left(content)",
-    right = "right(content)",
-    top = "top(content)-5%ph", -- was -8%ph
-    bottom = "top(content)-2%ph" -- was -3%ph
-  },
-  footnotes = {
-    left = "left(content)",
-    right = "right(content)",
-    height = "0",
-    bottom = "86.3%ph" -- was 83.3%ph
-  }
+local layouts = {
+  -- Cannonical layout
+  canonical = function ()
+    local canonicalLayout = require("classes.resilient.layouts.canonical")
+    -- FIXME
+    -- https://github.com/sile-typesetter/sile/pull/1470 would define pageSize, maybe to
+    -- revisit at some point.
+    -- Also, passing the page dimensions is kind of a hack, see the function.
+    return canonicalLayout(SILE.documentState.paperSize[1], SILE.documentState.paperSize[2])
+  end,
+  -- Layout by division method
+  honnecourt = function ()
+    local divisionLayout = require("classes.resilient.layouts.division")
+    return divisionLayout(9, 2)
+  end,
+  vencentinus = function ()
+    local divisionLayout = require("classes.resilient.layouts.division")
+    return divisionLayout(6, 2)
+  end,
+  division = function ()
+    local divisionLayout = require("classes.resilient.layouts.division")
+    return divisionLayout(9)
+  end,
+  ['division:6'] = function ()
+    local divisionLayout = require("classes.resilient.layouts.division")
+    return divisionLayout(6)
+  end,
+  ['division:9'] = function ()
+    local divisionLayout = require("classes.resilient.layouts.division")
+    return divisionLayout(9)
+  end,
+  ['division:12'] = function ()
+    local divisionLayout = require("classes.resilient.layouts.division")
+    return divisionLayout(12)
+  end,
+  -- Legacy (Omikhleia)
+  legacy = function ()
+    return {
+      content = {
+        left = "10%pw", -- was 8.3%pw
+        right = "87.7%pw", -- was 86%pw
+        top = "11.6%ph",
+        bottom = "top(footnotes)"
+      },
+      folio = {
+        left = "left(content)",
+        right = "right(content)",
+        top = "bottom(footnotes)+3%ph",
+        bottom = "bottom(footnotes)+5%ph"
+      },
+      header = {
+        left = "left(content)",
+        right = "right(content)",
+        top = "top(content)-5%ph", -- was -8%ph
+        bottom = "top(content)-2%ph" -- was -3%ph
+      },
+      footnotes = {
+        left = "left(content)",
+        right = "right(content)",
+        height = "0",
+        bottom = "86.3%ph" -- was 83.3%ph
+      }
+    }
+  end,
 }
+
+for m, n in pairs({ ateliers = 1/4, demiluxe = 1/3, deluxe = 3/8 }) do
+  layouts[m] = function ()
+    local frLayout = require("classes.resilient.layouts.frenchcanon")
+    return frLayout(n, 1)
+  end
+  for r = 1, 4 do
+    layouts[m..":"..r] = function ()
+      local frLayout = require("classes.resilient.layouts.frenchcanon")
+      return frLayout(n, r)
+    end
+  end
+end
 
 -- CLASS DEFINITION
 
@@ -80,6 +128,34 @@ function class:_init (options)
   end)
 
   self:defineStyles()
+end
+
+function class:declareOptions ()
+  plain.declareOptions(self)
+
+  self:declareOption("layout", function(_, value)
+    if value then
+      self.layout = value
+    end
+    return self.layout
+  end)
+end
+
+function class:setOptions (options)
+  options = options or {}
+  options.layout = options.layout or "legacy"
+  plain:setOptions(options) -- so that papersize etc. get processed...
+
+  local layout = layouts[options.layout or "legacy"]
+  if not layout then
+    SU.warn("Unknown page layout '".. options.layout .. "', switching to legacy")
+    layout = layout.legacy
+  end
+  -- TRICKY, TO REMEMBER:
+  -- the default frameset has to be set before the completion of
+  -- the base (plain) class init, or it isn't applied on the first
+  -- page...
+  self.defaultFrameset = layout(options)
 end
 
 function class:defineStyles ()

@@ -27,6 +27,10 @@ build = {
     ["sile.classes.resilient.book"]    = "classes/resilient/book.lua",
     ["sile.classes.resilient.resume"]  = "classes/resilient/resume.lua",
 
+    ["sile.classes.resilient.layouts.frenchcanon"] = "classes/resilient/layouts/frenchcanon.lua",
+    ["sile.classes.resilient.layouts.canonical"]   = "classes/resilient/layouts/canonical.lua",
+    ["sile.classes.resilient.layouts.division"]    = "classes/resilient/layouts/division.lua",
+
     ["sile.packages.resilient.abbr"]            = "packages/resilient/abbr/init.lua",
     ["sile.packages.resilient.styles"]          = "packages/resilient/styles/init.lua",
     ["sile.packages.resilient.tableofcontents"] = "packages/resilient/tableofcontents/init.lua",
