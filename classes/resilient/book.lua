@@ -112,6 +112,7 @@ function class:_init (options)
 
   self:loadPackage("labelrefs")
   self:loadPackage("resilient.headers")
+  self:loadPackage("markdown")
 
   -- override document.parindent default
   SILE.settings:set("document.parindent", "1.25em")
