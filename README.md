@@ -18,12 +18,16 @@ The name is a pun on "SILE" (as, after all, the initial target was always on red
 requirements), but there will be a bit more to it than that, which might become more visible when the collection
 expands.
 
-_WIP - EARLY VERSION_
-
-It basically works, but:
-
-- APIs are unstable, with many breaking changes.
-- The are lots of deprecations warnings.
+This collection offers:
+- At its core, a challenging and interesting “styling” paradigm, allowing to configure many
+  styling decisions with a consistent and unified approach, abstracting the complexity.
+- A pretty strong “book” class, with:
+  - A mind-bogling choice of sound page layouts — old-fashioned or modern,
+  - Almost everything you may expect for such a class: parts, chapters, sections, subsection, subsubsection…
+  - Highly configurable table of contents, headers, footers, footnotes and sectioning environments,
+  - And other useful features, from cross-references to advanced captioned figure and table environments, and more…
+  - A great parity with Markdown, including many Pandoc-like extensions.
+- A lightweight “résumé” class, for you to produce a colorful and yet professional-looking _curriculum vitæ_.
 
 ## Installation
 
@@ -31,7 +35,7 @@ These packages require SILE v0.14 or upper.
 
 Installation relies on the **luarocks** package manager.
 
-To install the latest development version, you may use the provided “rockspec”:
+To install the latest development version and all its dependencies (see below), you may use the provided “rockspec”:
 
 ```
 luarocks --lua-version 5.4 install --server=https://luarocks.org/dev resilient.sile
@@ -42,7 +46,7 @@ detailed 3rd-party package installation information.)
 
 ## See also
 
-This collection also uses several modules now provided separately, that you may find useful on their own.
+This collection also imports several modules also provided separately, would you find them useful on their own:
 
 - [Paragraph boxes, framed boxes and tables](https://github.com/Omikhleia/ptable.sile)
 - [Cross-references](https://github.com/Omikhleia/labelrefs.sile)
@@ -50,6 +54,16 @@ This collection also uses several modules now provided separately, that you may 
 - [Barcodes](https://github.com/Omikhleia/barcodes.sile) (for ISBNs, etc.)
 - [Couyards](https://github.com/Omikhleia/couyards.sile) (typographic ornaments)
 - [Markdown support](https://github.com/Omikhleia/markdown.sile)
+
+Other packages that this author uses with this collection, but which are not mandatory
+and are not yet made a dependency (for now, at least):
+
+- [Printer options](https://github.com/Omikhleia/printoptions.sile) (image resolution tuning
+  and vector rasterization, would you want to use a professional printer or print-on-demand services)
+- [Fancy table of contents](https://github.com/Omikhleia/fancytoc.sile) (an alternative two-level table of contents with nice curly braces)
+
+When used with this collection, the Markdown packages and the fancy table of contents are
+leveraged with additional capabilities.
 
 ## License
 
