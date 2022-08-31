@@ -12,6 +12,7 @@
 \use[module=packages.ptable]
 \use[module=packages.framebox]
 \use[module=packages.fancytoc]
+\use[module=packages.printoptions]
 \language[main=en]
 \font[family=Libertinus Serif]
 \define[command=codeblock]{\font[family=Libertinus Sans]{\process}}
@@ -340,6 +341,10 @@ And here it is stating at level 1, i.e. chapters and sections.
 
 \package-documentation{textsubsuper}
 
+\subsection{printoptions: tools for professional printers}
+
+\package-documentation{printoptions}
+
 \section{Technical packages}
 
 These packages are not intended to be used alone, but provide utilities
@@ -370,13 +375,6 @@ class writers.
 \subsection{resilient.headers: page headers revisited}
 
 \package-documentation{resilient.headers}
-
-\section{Experimental packages}
-
-\subsection{printoptions: tools for professional printers}
-
-(Not yet migrated)
-%\package-documentation[src=packages/experimental/printoptions]
 
 \section{Specialized packages}
 
