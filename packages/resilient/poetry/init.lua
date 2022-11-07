@@ -153,7 +153,8 @@ function package:registerCommands ()
 
   self:registerCommand("poetry", function (options, content)
     local step = SU.cast("integer", options.step or 5)
-    local iVerse = SU.cast("integer", options.start or 1)
+    local start = SU.cast("integer", options.start or 1)
+    local iVerse = start
     local first = SU.boolean(options.first, false)
     local numbering = SU.boolean(options.numbering, true)
 
@@ -197,7 +198,7 @@ function package:registerCommands ()
       for i = 1, #content do
         if type(content[i]) == "table" then
           if content[i].command == "v" then
-            if numbering and (iVerse % step == 0 or (iVerse == 1 and first)) then
+            if numbering and (iVerse % step == 0 or (iVerse == start and first)) then
               content[i].options.n = iVerse
             end
             content[i].options.mode = options.mode
