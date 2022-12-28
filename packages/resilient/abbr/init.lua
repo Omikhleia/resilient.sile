@@ -106,7 +106,7 @@ function package:registerCommands ()
       or SU.error("Expected a string for abbr:siecle")
 
     if tonumber(century) ~= nil then
-      century = SU.formatNumber(century, "roman")
+      century = SU.formatNumber(century, { system = "roman" })
     elseif century:match("^[IVX]+$") ~= nil then
       century = string.lower(century)
     elseif century:match("^[ivx]+$") == nil then
