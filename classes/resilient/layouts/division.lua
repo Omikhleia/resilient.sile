@@ -15,10 +15,21 @@ local function division (n, v)
   -- GF = v * PW * N
   -- BT = PH * N
   -- BP = v * PH * N
+  local x = "0.5in"
+  local GF = "33%pw * (1 - " .. N .. ')  +  0.66 * ' ..  x
+  local x = "0.5in"
   return {
+    contentx = {
+      left = "left(page) + width(page) * " .. N,
+      -- right = "right(page) - width(page) * " .. v .. " * " .. N,
+      right = "right(page) - " .. GF,
+      top = "top(page) + height(page) * " .. N,
+      bottom = "bottom(page) - height(page) * "  .. v .. " * " .. N,
+    },
     content = {
       left = "left(page) + width(page) * " .. N,
-      right = "right(page) - width(page) * " .. v .. " * " .. N,
+      -- right = "right(page) - width(page) * " .. v .. " * " .. N,
+      right = "right(page) - " .. GF,
       top = "top(page) + height(page) * " .. N,
       bottom = "top(footnotes)",
     },
@@ -39,7 +50,13 @@ local function division (n, v)
       right = "right(content)",
       height = "0",
       bottom = "bottom(page) - height(page) * "  .. v .. " * " .. N,
-    }
+    },
+    margins = {
+      top = "top(content)",
+      bottom = "bottom(page) - height(page) * "  .. v .. " * " .. N,
+      left = "right(content) + 2.1%pw",
+      right = "right(page) - 0.5in",
+    },
   }
 end
 

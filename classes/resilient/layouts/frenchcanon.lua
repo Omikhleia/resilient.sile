@@ -65,6 +65,12 @@ local function frenchcannon (N, rule)
       right = "right(content)",
       height = "0",
       bottom = "bottom(page) - " .. foot,
+    },
+    sidenotes = {
+      top = "top(content)",
+      bottom = "bottom(page) - " .. foot,
+      left = "right(content) + 2.1%pw",
+      right = "right(page) - 0.5in"
     }
   }
 end

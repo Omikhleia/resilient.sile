@@ -7,6 +7,11 @@ local plain = require("classes.plain")
 local class = pl.class(plain)
 class._name = "resilient.book"
 
+function SILE.defaultTypesetter:registerHook (category, func)
+  if not self.hooks[category] then self.hooks[category] = {} end
+  print('----------------REGISTERING', func)
+  table.insert(self.hooks[category], func)
+end
 -- PAGE LAYOUT MASTERS
 
 local layouts = {
@@ -92,23 +97,88 @@ end
 
 function class:_init (options)
   plain._init(self, options)
+  local h = pl.tablex.deepcopy(self.defaultFrameset)
+  h.sidenotes = nil
+  SU.dump(h)
 
   self:loadPackage("resilient.styles")
   self:loadPackage("resilient.sectioning")
-  self:loadPackage("masters")
-  self:defineMaster({
-      id = "right",
-      firstContentFrame = self.firstContentFrame,
-      frames = self.defaultFrameset
-    })
-  self:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" })
-  self:mirrorMaster("right", "left")
+  self:loadPackage("masters") 
+
+
+local glyph2string = function (glyph)
+  return string.char(math.floor(glyph % 2^32 / 2^8)) .. string.char(glyph % 0x100)
+end
+  local debugfont = SILE.font.loadDefaults({ family = "Gentium Plus", language = "en", size = 10 })
+  local _dl = 0.5
+  function SILE.outputter:debugFrame (frame)
+    self:_ensureInit()
+    self:pushColor({ r = 0.8, g = 0, b = 0 })
+    self:drawRule(frame:left()-_dl/2, frame:top()-_dl/2, frame:width()+_dl, _dl)
+    self:drawRule(frame:left()-_dl/2, frame:top()-_dl/2, _dl, frame:height()+_dl - 5)
+    self:drawRule(frame:right()-_dl/2, frame:top()-_dl/2, _dl, frame:height()+_dl - 5)
+    self:drawRule(frame:left()-_dl/2, frame:bottom()-_dl/2 - 5, frame:width()+_dl, _dl)
+    -- self:drawRule(frame:left() + frame:width()/2 - 5, (frame:top() + frame:bottom())/2+5, 10, 10)
+    local stuff = SILE.shaper:createNnodes(frame.id, debugfont)
+    stuff = stuff[1].nodes[1].value.glyphString -- Horrible hack
+    local buf = {}
+    for i = 1, #stuff do
+      buf[i] = glyph2string(stuff[i])
+    end
+    buf = table.concat(buf, "")
+    self:_withDebugFont(function ()
+      self:setCursor(frame:left():tonumber() - _dl/2, frame:top():tonumber() + _dl/2)
+      self:_drawString(buf, 0, 0, 0)
+    end)
+    self:popColor()
+  end
+
+    self:defineMaster({
+        id = "right",
+        firstContentFrame = self.firstContentFrame,
+        frames = h
+      })
+    self:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" })
+    self:mirrorMaster("right", "left")
+    self:registerPostinit(function (class)
+
+      SILE.scratch.masters["left"].frames["sidenotes"] = SILE.newFrame({
+        id = "sidenotes",
+        left = "left(margins)",
+        right = "right(margins)",
+        height = "0",
+        --bottom = "bottom(contentx)",
+        top = "top(contentx)",
+      })
+
+      SILE.scratch.masters["right"].frames["sidenotes"] = SILE.newFrame({
+        id = "sidenotes",
+        left = "left(margins)",
+        right = "right(margins)",
+        height = "0",
+        bottom = "bottom(contentx)",
+        --top = "top(contentx)",
+      })
+      print("\nRIGHT\n")
+      SU.dump(SILE.scratch.masters["right"].frames["sidenotes"])
+      print("\nLEFT\n")
+      SU.dump(SILE.scratch.masters["left"].frames)
+
+      self:loadPackage("resilient.footnotes", {
+        insertInto = "footnotes",
+        stealFrom = { "content" }
+      })
+      
+      self:loadPackage("resilient.sidenotes", {
+        insertInto = "sidenotes",
+        stealFrom = { "margins" }
+      })
+      
+
+    end) 
   self:loadPackage("resilient.tableofcontents")
   if not SILE.scratch.headers then SILE.scratch.headers = {} end
-  self:loadPackage("resilient.footnotes", {
-    insertInto = "footnotes",
-    stealFrom = { "content" }
-  })
+
 
   self:loadPackage("labelrefs")
   self:loadPackage("resilient.headers")
@@ -157,6 +227,12 @@ function class:setOptions (options)
   -- the base (plain) class init, or it isn't applied on the first
   -- page...
   self.defaultFrameset = layout(options)
+  self.defaultFrameset["sidenotes"] = {
+    left = "left(margins)",
+    right = "right(margins)",
+    height = "0",
+    bottom = "bottom(contentx)",
+  }
 end
 
 function class:defineStyles ()
