@@ -1,8 +1,9 @@
-\begin[papersize=6in x 9in, class=resilient.book, layout=ateliers:4]{document}
+\begin[papersize=6in x 9in, class=resilient.book, layout=division:12]{document}
 %\use[module=hacks/hack-1361]% HACKS/WORKAROUNDS FOR SILE 0.12.x BUGS
 %\use[module=hacks/hack-1362]% HACKS/WORKAROUNDS FOR SILE 0.12.x BUGS
 \use[module=packages.autodoc]
 \set[parameter=autodoc.highlighting, value=true]
+\use[module=packages.lorem]
 \use[module=packages.url]
 \use[module=packages.image]
 \use[module=packages.color]
@@ -21,6 +22,14 @@
 \set[parameter=linebreak.emergencyStretch, value=15%lw]
 \pdf:metadata[key=Title, value=The resilient collection of classes & packages]
 \pdf:metadata[key=Author, value=Didier Willis]
+\define[command=admon]{%
+\smallskip%
+\set[parameter=document.parindent, value=0]{%
+\roughbox[enlarge=true, singlestroke=true, preserve=true,
+padding=2%fw, bordercolor=100, fillcolor=220, shadowcolor=#96A8C7, shadow=false]{%
+\parbox[width=96%lw]{\set[parameter=document.parindent, value=0]\font[size=9pt]\color[color=100]{\process}\par}%
+}}%
+\medskip}
 
 % We do not have a true titlepage for now, build it manually.
 \background[color=#e9d8ba,allpages=false]
@@ -57,7 +66,13 @@ Omikhleia’s classes & packages
 
 \vfill
 
-© 2021–2022 Didier Willis.
+\admon{\strong{Warning, work in progress!} This is an early version of the documentation, as the corresponding packages and
+classes are refactored and revised. It should give you a grasp of their intent, but be
+warned that everything is subject to change at this point.}
+
+\vfill
+
+© 2021–2023 Didier Willis.
 
 This material may be distributed only subject to the terms and conditions set forth in the
 Creative Commons Attribution, Share-Alike License,
@@ -84,6 +99,8 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 \listoftables
 
 \chapter[numbering=false]{Preface to the first edition}
+
+\admon{For the record, the original preface is updated to reflect the new names of several packages.}
 
 \hfill{}November 20, 2021.
 
@@ -250,49 +267,108 @@ second question… Time only will tell.
 \medskip
 \couyard[type=8,width=default]
 
-\part{Packages & Classes}
+\part{Packages}
 
 \begin{figure}
-FIXME LATER
-%\img[src=docs/images/printing_press.png, width=60%pw]
+\img[src=images/printing_press.png, width=60%pw]
 \caption{Gutenberg’s press.}
 \end{figure}
 
-\chapter{Packages}
-
-\section{End-user packages provided in the resilient collection}
-
-These are standalone packages users can use in their own documents.
-
-\subsection{resilient.abbr: a few shorthands & abbreviations}
-
-\package-documentation{resilient.abbr}
-
-\subsection{resilient.epigraph: a lightweight epigraph environment}
-
-\package-documentation{resilient.epigraph}
-
-\subsection{resilient.lists: enhanced enumerations and bullet lists}
-
-\package-documentation{resilient.lists}
-
-\subsection{resilient.poetry: a poetry environment}
-
-\package-documentation{resilient.poetry}
-
-\section{End-user packages provided independently}
-
-\subsection{couyards: printer’s ornaments}
-
-\package-documentation{couyards}
-
-\subsection{colophon: shaped & decorated paragraphs}
-
-(No yet migrated)
+%\section{End-user packages provided independently}
+%
+%\subsection{colophon: shaped & decorated paragraphs}
+%
+%(No yet migrated)
 
 %\package-documentation{colophon}
 
-\subsection{fancytoc: alternative table of contents}
+%%%
+%%% TYPOGRAPHY
+%%%
+\chapter{Typography packages}
+
+\section{Superscripts & subscripts}
+
+\admon{This package is part of the \strong{textsubsuper.sile} collection.}
+
+\package-documentation{textsubsuper}
+
+\section{Strut rules}
+
+\admon{This package is part of the \strong{ptable.sile} collection.}
+
+\package-documentation{struts}
+
+\section{Smart quotations marks}
+
+\admon{This package is part of the \strong{smartquotes.sile} collection.}
+
+\package-documentation{smartquotes}
+
+\section{Shorthands & abbreviations}
+
+\package-documentation{resilient.abbr}
+
+%%%
+%%% BOXES AND TABLES
+%%%
+\chapter{Boxes & Tables}
+
+\section{Boxed paragraphs}
+
+\admon{This package is part of the \strong{ptable.sile} collection.}
+
+\package-documentation{parbox}
+
+\section{Flexible tables}
+
+\admon{This package is part of the \strong{ptable.sile} collection.}
+
+\package-documentation{ptable}
+
+\section{Fancy box frames}
+
+\admon{This package is part of the \strong{ptable.sile} collection.}
+
+\package-documentation{framebox}
+
+%%% 
+%%% GRAPHICS
+%%%
+\chapter{Graphic-related packages}
+
+\section{Printer’s ornaments & pendants}
+
+\admon{This package is part of the \strong{couyards.sile} collection.}
+
+\package-documentation{couyards}
+
+\section{EAN-13 barcodes for ISBN etc.}
+
+\admon{This package is part of the \strong{barcodes.sile} collection.}
+
+\package-documentation{barcodes.ean13}
+
+\section{QR codes.}
+
+\admon{This package is part of the \strong{qrcode.sile} collection.}
+
+\package-documentation{qrcode}
+
+%%%
+%%% Book parts and tools
+%%%
+\chapter{Book parts & tools}
+
+\section{Cross-references}
+
+\admon{This package is part of the \strong{labelrefs.sile} collection.}
+
+\package-documentation{labelrefs}
+
+\section{Fancy alternative table of contents}
+
+\admon{This package is part of the \strong{fancytoc.sile} collection.}
 
 \package-documentation{fancytoc}
 
@@ -307,96 +383,113 @@ And here it is stating at level 1, i.e. chapters and sections.
 
 \fancytableofcontents[start=1]
 
-\subsection{labelrefs: cross-references}
+\section{Enhanced footnotes}
 
-\package-documentation{labelrefs}
+\package-documentation{resilient.footnotes}
 
-\subsection{struts: rules with no width but a certain height}
 
-\package-documentation{struts}
+%%%
+%%% PRINTING
+%%%
+\chapter{Print-related packages}
 
-\subsection{parbox: paragraphs in an horizontal box}
+\section{Printing options & tools for professional printers}
 
-\package-documentation{parbox}
-
-\subsection{ptable: flexible tables}
-
-\package-documentation{ptable}
-
-\subsection{redefine: (basic) command redefinition}
-
-(Not yet migrated)
-
-%\package-documentation[src=packages/redefine]
-
-\subsection{framebox: fancy box framing}
-
-\package-documentation{framebox}
-
-\subsection{ean13: EAN-13 barcodes for ISBN etc.}
-
-\package-documentation{barcodes.ean13}
-
-\subsection{textsubsuper: native superscripts & subscripts}
-
-\package-documentation{textsubsuper}
-
-\subsection{printoptions: tools for professional printers}
+\admon{This package is part of the \strong{printoptions.sile} collection.}
 
 \package-documentation{printoptions}
 
-\section{Technical packages}
+%%%
+%%% SPECIALIZED ENVS
+%%%
+\chapter{Specialized environments}
+
+\section{Epigraphs}
+
+\package-documentation{resilient.epigraph}
+
+\section{Enhanced bullet lists and enumerations}
+
+\package-documentation{resilient.lists}
+
+\section{Poetry, verses & scansion}
+
+\package-documentation{resilient.poetry}
+
+%%%
+%%% INPUT FORMATS
+%%%
+\chapter{Alternate input formats}
+
+\section{Markdown}
+
+\admon{This package is part of the \strong{markdown.sile} collection.}
+
+\package-documentation{markdown}
+
+\section{Pandoc AST}
+
+\admon{This package is part of the \strong{markdown.sile} collection.}
+
+\package-documentation{pandocast}
+
+%%%
+%%% TECHNICAL PACKAGES
+%%%
+\chapter{Technical packages}
 
 These packages are not intended to be used alone, but provide utilities
 for other packages. They are therefore mainly aimed at package and
 class writers.
 
-\subsection{resilient.styles: style specifications}
+\section{(resilient.styles) Style specifications}
 
-(Migrated, but documention needs refactorings)
+(Migrated, but documention needs refactorings, and heavy changes are planned.)
 
 %\package-documentation[src=packages/styles]
 
-\subsection{resilient.sectioning: an abstraction for sectioning commands}
+\section{(resilient.sectioning) Abstraction for sectioning commands}
 
 (Migrated, but documention needs refactorings)
 
 %\package-documentation[src=packages/sectioning]
 
-\subsection{resilient.footnotes: footnotes redone}
-
-\package-documentation{resilient.footnotes}
-
-\subsection{resilient.tableofcontents: tables of contents redone}
+\section{(resilient.tableofcontents) Enhanced table of contents}
 
 (Obviously working, documentation not included pending fixes)
+
 %\package-documentation{resilient.tableofcontents}
 
-\subsection{resilient.headers: page headers revisited}
+\section{(resilient.headers) page headers revisited}
 
 \package-documentation{resilient.headers}
 
-\section{Specialized packages}
-
-\subsection{teidict: XML TEI P4 print dictionaries}
-
-(Not yet migrated)
+%\section{Specialized packages}
+%
+%\subsection{(teidict) XML TEI P4 print dictionaries}
+%
+% (Now separate)
 %\package-documentation[src=packages/teidict]
-
+%
 %\subsection{teiabbr: localized abbreviations for TEI dictionaries}
-
+%
 %\package-documentation[src=packages/teiabbr]
 
-\chapter{Classes}
+\part{Classes}
 
-\section{resilient.book: a book class redone}
+\begin{figure}
+\img[src=images/printing_press.png, width=60%pw]
+\caption{Gutenberg’s press.}
+\end{figure}
 
-The design of this class was started as an attempt at gradually tuning the
+\chapter{Book class}
+
+The design of the \strong{resilient.book} class was started as an attempt at gradually tuning the
 default book class from SILE to this author’s needs and taste. It eventually
 evolved into a full redesign on different grounds. This very document uses it,
 so you can see it in real action.
 
-\subsection{Standard sectioning commands}
+\section{Standard sectioning commands}
 
 The class supports the following sectioning commands, from the highest
 division level to the lowest: \autodoc:command{\part}, \autodoc:command{\chapter},
@@ -484,7 +577,7 @@ above sectioning styles.
 \caption{Pre-defined command hooks used by sectioning commands.}
 \end{table}
 
-\subsection{Captioned figures and tables}
+\section{Captioned figures and tables}
 
 The class provides two additional environnments, \autodoc:environment{figure}
 and \autodoc:environment{table}. Both can contain arbitrary contents and a
@@ -576,7 +669,7 @@ are not “floating” objects in the sense that this concept has in LaTeX. In o
 they are always inserted where declared in the page, without attempt to possibly move
 their material to some other position or a later page.
 
-\subsection{Headers & Footers}
+\section{Headers & Footers}
 
 Page numbers (folios) and running headers are by default flushed left or right depending
 on the page they are on, rather than centered. This is defined via paragraph styles, so it
@@ -644,7 +737,7 @@ Page headers rely on the functionality provided by the \autodoc:package{resilien
 so the \autodoc:command{\noheaders}, \autodoc:command{\noheaderthispage} and \autodoc:command{\headers}
 commands are available, as well as \autodoc:command{\header:rule}.
 
-\subsection{Block-indented quotes}
+\section{Block-indented quotes}
 
 The class provides the \autodoc:environment{blockquote} environment to typeset simple block-indented
 paragraphs of the kind shown in the \autodoc:package{resilient.styles} package documentation. It is sort
@@ -655,7 +748,7 @@ The environment relies on the same-named style for its styling and on the
 \autodoc:setting{book.blockquote.margin} setting for its indentation (defaults to 2em). Indented
 quotes can be nested.
 
-\subsection{Other features}
+\section{Other features}
 
 The footnotes are based on the \autodoc:package{resilient.footnotes} package and therefore have the
 extra features proposed in this implementation, notably the \autodoc:command{\footnote:rule}
@@ -672,7 +765,7 @@ Regarding the page layout, note that it has slightly different default page mast
 than the legacy book class of SILE, as the gutter space was found to be too small,
 in this author’s opinion.
 
-\subsection{Page layouts}
+\section{Page layouts}
 
 Paper sizes varied a lot across time. Frequent ratios nowadays are 1:√2 (such as the ISO paper
 sizes, e.g. A4, 21 × 29.7 cm) or 2:3 (such as US trade , 6 × 9 in), though there are still
@@ -690,7 +783,7 @@ folios were to be placed. The corresponding blocks are shown too, as you would g
 them currently. This class may possibly consider options for that, in a future
 release.
 
-\subsubsection{French layouts or “Canon des ateliers”}
+\subsection{French layouts or “Canon des ateliers”}
 
 This canon normally applies a 4/10, 5/10, 6/10, 7/10 progression rule to distribute
 the white space around the text block (“règle du 10/12\textsuperscript{e}”).
@@ -748,7 +841,7 @@ its variants \code{deluxe:2} to \code{deluxe:4}.
 \caption{Canon des ateliers — deluxe}
 \end{figure}
 
-\subsubsection{Ratio-based layouts}
+\subsection{Ratio-based layouts}
 
 In the 13\textsuperscript{th} century, the architect Villard de Honnecourt
 came up with what he considered a “harmonious” and pleasing design (esp.
@@ -791,7 +884,7 @@ layout) and the fairly compact \code{division:12} (1/12 ratio).
 \caption{Divisions by ratio — modern layouts}
 \end{figure}
 
-\subsubsection{The golden canon of Tschichold}
+\subsection{The golden canon of Tschichold}
 
 Jan Tschichold (1902–1974) considered a “golden canon of page construction”,
 where the text block is placed onto the page in such a way as its diagonal coincides
@@ -803,16 +896,16 @@ to the page sides. This class provides it as the \code{canonical} layout.
 \caption{Canonical layout}
 \end{figure}
 
-\subsubsection{The legacy layout}
+\subsection{The legacy layout}
 
 There is not much to say about the \code{legacy} layout, kept for compatibility
 with earlier versions of this class. It is derived from SILE’s standard
 book class, but manually tweaked to this author’s taste before he had time to
 consider the above methods. The layout is therefore quite empirical.
 
-\section{resilient.resume: a minimalist curriculum vitae}
+\chapter{Curriculum vitae class}
 
-This class provides a minimalist (read, naive) way to make a modern \em{résumé} (CV) with SILE.
+The \strong{resilient.resume} class provides a minimalist (read, naive) way to make a modern \em{résumé} (CV) with SILE.
 
 \smallskip
 \begin{itemize}
@@ -857,21 +950,21 @@ to the sample CV included in our example repository.
 \caption{A sample CV for a famous detective.}
 \end{figure}
 
-\section{teibook: XML TEI P4 print dictionaries}
-
-This is a book-like class for (XML) TEI dictionaries.
-
-It just defines the appropriate page masters, sectioning hooks
-and loads all needed packages. The hard work processing the
-XML content is done in the \autodoc:package{teidict} package.
-
-This author does not intend to discuss it in full here.
-To see it in action, you can refer to our small example in
-\href[src=https://github.com/Omikhleia/omikhleia-sile-packages/tree/main/examples]{our
-repository}\footnote{\url{https://github.com/Omikhleia/omikhleia-sile-packages/tree/main/examples}}.
-For a more complex project using the same tools, you may also check
-the \href[src=https://omikhleia.github.io/sindict/]{sindict
-repository}\footnote{\url{https://omikhleia.github.io/sindict/}}.
+%\chapter{XML TEI P4 print dictionaries}
+%
+% This class is a book-like class for (XML) TEI dictionaries.
+%
+% It just defines the appropriate page masters, sectioning hooks
+%and loads all needed packages. The hard work processing the
+%XML content is done in the \autodoc:package{teidict} package.
+%
+%This author does not intend to discuss it in full here.
+%To see it in action, you can refer to our small example in
+%\href[src=https://github.com/Omikhleia/omikhleia-sile-packages/tree/main/examples]{our
+%repository}\footnote{\url{https://github.com/Omikhleia/omikhleia-sile-packages/tree/main/examples}}.
+%For a more complex project using the same tools, you may also check
+%the \href[src=https://omikhleia.github.io/sindict/]{sindict
+%repository}\footnote{\url{https://omikhleia.github.io/sindict/}}.
 
 \part{Tips & Tricks}
 

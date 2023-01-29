@@ -65,6 +65,11 @@ and are not yet made a dependency (for now, at least):
 When used with this collection, the Markdown packages and the fancy table of contents are
 leveraged with additional capabilities.
 
+## Usage
+
+A complete PDF version of the documentation (but not necessarily always the latest) should be
+available [HERE](https://drive.google.com/file/d/1f54qDEGWaN-MFN932x-t0jm3V-5VSHee/view?usp=sharing)
+
 ## License
 
 All code is under the MIT License.

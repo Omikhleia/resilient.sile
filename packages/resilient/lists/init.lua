@@ -408,7 +408,7 @@ end
 
 package.documentation = [[\begin{document}
 \use[module=packages.resilient.lists]
-The \autodoc:package{resilient.lists} package is a feature-riche, style-enabled replacement for
+The \autodoc:package{resilient.lists} package is a feature-rich, style-enabled replacement for
 the SILE standard \autodoc:package{lists} package.
 
 It provides enumerations and bullet lists (a.k.a. \em{itemization}\kern[width=0.1em]), which can
