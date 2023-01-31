@@ -111,6 +111,7 @@ function class:_init (options)
   })
 
   self:loadPackage("labelrefs")
+  self:loadPackage("struts")
   self:loadPackage("resilient.headers")
   self:loadPackage("markdown")
 
@@ -121,11 +122,17 @@ function class:_init (options)
   -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
   self:registerCommand("foliostyle", function (_, content)
     SILE.call("noindent")
-    if SILE.documentState.documentClass:oddPage() then
-      SILE.call("style:apply:paragraph", { name = "folio-odd"}, content)
-    else
-      SILE.call("style:apply:paragraph", { name = "folio-even"}, content)
-    end
+    local styleName = SILE.documentState.documentClass:oddPage() and "folio-odd" or "folio-even"
+    SILE.call("style:apply:paragraph", { name = styleName }, function ()
+      -- Ensure proper baseline alignment with a strut rule.
+      -- The baseline placement depends on the line output algorithm, and we cannot
+      -- trust it if it just uses the line ascenders.
+      -- Typically, if folios use "old-style" numbers, 16 and 17 facing pages shall have
+      -- aligned folios, but the 1 is smaller than the 6 and 7, the former ascends above,
+      -- and the latter descends below the baseline).
+      SILE.call("strut", { method = "rule"})
+      SILE.process(content)
+    end)
   end)
 
   self:defineStyles()
