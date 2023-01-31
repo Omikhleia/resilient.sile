@@ -126,8 +126,8 @@ end
 package.documentation = [[\begin{document}
 \use[module=packages.resilient.abbr]
 
-This package defines a few shorthands and abbreviations that its author often
-uses in articles or book chapters.
+The \autodoc:package{resilient.abbr} package defines a few shorthands and abbreviations
+that its author often uses in articles or book chapters.
 
 The \autodoc:command{\abbr:nbsp} command inserts a non-breakable space.
 It is stretchable and shrinkable as a normal inter-word space by default,
