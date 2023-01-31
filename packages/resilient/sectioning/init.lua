@@ -97,7 +97,7 @@ function package:registerCommands ()
           display = secStyle.display
         })
         number = self.class.packages.counters:formatMultilevelCounter(
-          self.class:getMultilevelCounter(secStyle.counter), { noleadingzero = true }
+          self.class:getMultilevelCounter(secStyle.counter), { noleadingzeros = true }
         )
       end
 
