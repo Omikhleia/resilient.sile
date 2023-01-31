@@ -175,10 +175,9 @@ default \autodoc:package{footnotes} package from SILE.
 In addition to the \autodoc:command{\footnote} command, it provides
 a \autodoc:command{\footnote:rule} command as a convenient helper to set
 a footnote rule. It may be called, early on in your documents, without options,
-or one or several of the following:
-
-\autodoc:command{\footnote:rule[length=<length>, beforeskipamount=<glue>,
-  afterskipamount=<glue>, thickness=<length>]}
+or one or several of the following: \autodoc:parameter{length=<length>},
+\autodoc:parameter{beforeskipamount=<glue>}, \autodoc:parameter{afterskipamount=<glue>}
+and \autodoc:parameter{thickness=<length>}.
 
 The default values for these options are, in order, 25\%fw, 2ex, 1ex and 0.5pt.
 
