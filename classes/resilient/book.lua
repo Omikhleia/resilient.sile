@@ -357,7 +357,7 @@ function class:registerCommands ()
         SILE.call("show-multilevel-counter", {
           id = options.counter,
           level = options.level,
-          noleadingzero = true
+          noleadingzeros = true
         })
         SILE.typesetter:typeset(" ")
       end
