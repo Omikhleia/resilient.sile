@@ -1,8 +1,10 @@
 --
 -- Re-implementation of the footnotes package
--- 2021, 2022, Didier Willis
+-- 2021-2023, Didier Willis
 --
 local base = require("packages.base")
+
+local hboxer = require("resilient-compat.hboxing") -- Compatibility hack/shim
 
 local package = pl.class(base)
 package._name = "resilient.footnotes"
@@ -10,13 +12,24 @@ package._name = "resilient.footnotes"
 function package:_init (options)
   base._init(self, options)
 
-  self.class:loadPackage("resilient.abbr") -- for abbr:nbsp - MAYBE WE'LL CHANGE THIS
-  self.class:loadPackage("textsubsuper") -- for textsuperscript
+  -- Numaric space (a.k.a. figure space) unit
+  local numsp = SU.utf8charfromcodepoint("U+2007")
+  SILE.registerUnit("nspc", {
+    relative = true,
+    definition = function (value)
+      return value * SILE.shaper:measureChar(numsp).width
+    end
+  })
+
+  self.class:loadPackage("resilient.abbr") -- for abbr:nbsp
+  self.class:loadPackage("textsubsuper") -- for textsuperscript (indirect)
   self.class:loadPackage("rebox") -- used by footnote:rule
   self.class:loadPackage("rules") -- used by footnote:rule
   self.class:loadPackage("counters") -- used for counter formatting
-  self.class:loadPackage("raiselower") -- NOT NEEDED NOW, NO?
   self.class:loadPackage("insertions")
+  -- FIXME Can't we remove this and expect counters to work?
+  -- We'd have to check with SILE upstream how to avoid any use of
+  -- the internal scratch variable at package boundaries...
   if not SILE.scratch.counters.footnotes then
     SILE.scratch.counters.footnote = { value = 1, display = "arabic" }
   end
@@ -41,10 +54,10 @@ function package:registerCommands ()
     local material = SILE.call("vbox", {}, content)
     SILE.scratch.insertions.classes.footnote.topBox = material
     SILE.settings:popState()
-  end, "Base function to create a footnote separator.")
+  end, "(Internal) Base function to create a footnote separator.")
 
   self:registerCommand("footnote:rule", function (options, _)
-    local width = SU.cast("measurement", options.width or "25%fw")
+    local width = SU.cast("measurement", options.width or "20%fw") -- "Usually 1/5 of the text block"
     local beforeskipamount = SU.cast("vglue", options.beforeskipamount or "2ex")
     local afterskipamount = SU.cast("vglue", options.afterskipamount or "1ex")
     local thickness = SU.cast("measurement", options.thickness or "0.5pt")
@@ -61,21 +74,29 @@ function package:registerCommands ()
 
   -- Footnote reference call (within the text flow)
 
-  self:registerCommand("footnote:mark", function (options, _)
+  self:registerCommand("footnote:reference", function (options, _)
     local fnStyName = options.mark and "footnote-reference-mark" or "footnote-reference-counter"
     local fnSty = styles:resolveStyle(fnStyName)
     local pre = fnSty.numbering and fnSty.numbering.before or ""
     local post = fnSty.numbering and fnSty.numbering.after or ""
-    local kern = fnSty.numbering and fnSty.numbering.kern
-    if kern then SU.warn("footnote marker style should not have a kern (numbering) - ignored") end
+    local kern = fnSty.numbering and fnSty.numbering.kern and SU.cast("length", fnSty.numbering.kern)
     local text = pre .. (options.mark or self.class.packages.counters:formatCounter(SILE.scratch.counters.footnote)) .. post
 
+    -- Lacroux: "Quelle que soit sa forme, l’appel de note se place avant la ponctuation.
+    -- Il est précédé par une espace fine insécable."
+    -- (i.e. the footnote call mark must be placed before a punctuation, an preceded by a thin space)
+    -- However, we can't make this general, as English usage often places footnotes mark after
+    -- a punctuation (e.g. esp. a period) and does'nt seem to use a thin space.
+    -- Anyhow, if the style defines a kern, use it **before** the mark.
+    if kern then
+      SILE.call("kern", { width = kern })
+    end
     SILE.call("style:apply", { name = fnStyName }, { text })
-  end, "Command internally called to typeset the footnote call reference in the text flow.")
+  end, "(Internal) Command called to typeset the footnote call reference in the text flow.")
 
-  -- Footnote reference counter (within the footnote)
+  -- Footnote reference mark (within the footnote)
 
-  self:registerCommand("footnote:counter", function (options, _)
+  self:registerCommand("footnote:marker", function (options, _)
     local fnStyName = options.mark and "footnote-marker-mark" or "footnote-marker-counter"
     local fnSty = styles:resolveStyle(fnStyName)
     local pre = fnSty.numbering and fnSty.numbering.before or ""
@@ -83,14 +104,41 @@ function package:registerCommands ()
     local kern = fnSty.numbering and fnSty.numbering.kern and SU.cast("length", fnSty.numbering.kern)
     local text = pre .. (options.mark or self.class.packages.counters:formatCounter(SILE.scratch.counters.footnote)) .. post
 
-    SILE.call("noindent")
-    SILE.call("style:apply", { name = fnStyName }, { text })
-    if not kern then
-      SILE.call("abbr:nbsp", { fixed = true })
+    -- If the kerning space is positive, it should correspond to the space inserted
+    -- after the footnote marker.
+    -- If negative, the note text should be indented by that amount, with the
+    -- footnote mark left-aligned in the available space.
+    if kern and kern:tonumber() < 0 then
+      -- IMPLEMENTATION NOTE / HACK / FRAGILE
+      -- SILE's behavior with a hbox occuring as very first element of a line
+      -- is plain weird. The width of the box is "adjusted" with respect to
+      -- the parindent, it seems.
+      local hbox = hboxer.makeHbox(function ()
+        SILE.call("style:apply", { name = fnStyName }, { text })
+      end)
+      local remainingSpace = -hbox.width
+
+      -- We want at least the space of a figure digit between the footnote
+      -- mark and the text.
+      if remainingSpace:tonumber() - SILE.length("1nspc"):absolute() <= 0 then
+        SILE.call("style:apply", { name = fnStyName }, { text })
+        SILE.call("abbr:nbsp", { fixed = true })
+      else
+          -- Otherwise, the footnote mark goes beyond the available space,
+          -- so add a fixed interword space after it.
+          SILE.call("style:apply", { name = fnStyName }, { text })
+          SILE.call("kern", { width = remainingSpace })
+      end
     else
-      SILE.call("kern", { width = kern })
+      SILE.call("noindent")
+      SILE.call("style:apply", { name = fnStyName }, { text })
+      if not kern then
+        SILE.call("abbr:nbsp", { fixed = true })
+      else
+        SILE.call("kern", { width = kern })
+      end
     end
-  end, "Command internally called to typeset the footnote counter in the footnote itself.")
+  end, "(Internal) Command called to typeset the footnote counter in the footnote itself.")
 
   -- Footnote insertion block max height and inter-skip tuning
 
@@ -104,7 +152,7 @@ function package:registerCommands ()
   end, "Command that can be used for tuning the maxHeight and interInsertionSkip for footnotes.")
 
   self:registerCommand("footnote", function (options, content)
-    SILE.call("footnote:mark", options)
+    SILE.call("footnote:reference", options)
     local opts = SILE.scratch.insertions.classes.footnote or {}
     local frame = opts.insertInto and SILE.getFrame(opts.insertInto.frame)
     local oldGetTargetLength = SILE.typesetter.getTargetLength
@@ -134,11 +182,22 @@ function package:registerCommands ()
       labelRefs:pushLabelRef(fn)
     end
 
+    local fnStyName = options.mark and "footnote-marker-mark" or "footnote-marker-counter"
+    local fnSty = styles:resolveStyle(fnStyName)
+    local kern = fnSty.numbering and fnSty.numbering.kern and SU.cast("length", fnSty.numbering.kern)
+
     -- Apply the font before boxing, so relative baselineskip applies #1027
     local material
     SILE.call("style:apply", { name = "footnote" }, function ()
-        material = SILE.call("vbox", {}, function ()
-        SILE.call("footnote:counter", options)
+      if kern and kern:tonumber() < 0 then
+        -- HACK / FRAGILE: immediate absolutization, cause weird things occur
+        -- otherwise (not sure when this gets absolutized with respect to the
+        -- vbox construction, but something deeper is amiss...)
+        SILE.settings:set("document.parindent", kern:absolute())
+        SILE.settings:set("document.lskip", -kern:absolute())
+      end
+      material = SILE.call("vbox", {}, function ()
+        SILE.call("footnote:marker", options)
         SILE.process(content)
       end)
     end)
@@ -159,13 +218,39 @@ end
 
 function package:registerStyles ()
   local styles = self.class.packages["resilient.styles"]
-  styles:defineStyle("footnote", {}, { font = { size = "-1" } })
-  styles:defineStyle("footnote-reference", {}, { properties = { position = "super" } })
+  styles:defineStyle("footnote", {}, {
+    font = { size = "0.9em" }
+    -- Lacroux: Les notes sont composées dans un corps inférieur à celui du texte courant.
+    -- (Rapport : environ 2/3.) [followed by a list of sizes]"
+    -- So our em-ratio is is NOT really correct... But call that ageing, I don't like
+    -- reading small notes.
+  })
+  styles:defineStyle("footnote-reference", {}, {
+    -- Bringhurst: "In the main text, superscript numbers are used to indicate
+    -- notes because superscript numbers minimize interruption."
+    properties = { position = "super" }
+    -- numbering = { kern = "1pt" } = No, see comment in footnote:reference command
+  })
   styles:defineStyle("footnote-reference-mark", { inherit = "footnote-reference" }, {})
   styles:defineStyle("footnote-reference-counter", { inherit = "footnote-reference" }, {})
-  styles:defineStyle("footnote-marker", {}, { properties = { position = "super" } })
+
+  styles:defineStyle("footnote-marker", {}, {
+    -- Bringhurst: "(...) the number in the note should be full size"
+    -- (so no superscript here).
+    -- Bringurst is less opinionated on how the footnote text should be
+    -- presented. Tschichold 1951 lists plenty of rules according to his taste,
+    -- but seldom seen in actual books.
+    numbering = { kern = "-3.75nspc"}
+  })
   styles:defineStyle("footnote-marker-mark", { inherit = "footnote-marker" }, {})
-  styles:defineStyle("footnote-marker-counter", { inherit = "footnote-marker" }, {})
+  styles:defineStyle("footnote-marker-counter", { inherit = "footnote-marker" }, {
+    numbering = { after = "." }
+    -- Bringhurst: "Punctuation, apart from empty space, is not normally needed
+    -- between the number and text of the note" - But then he has an example with
+    -- a period...
+    -- Jan Tschichold 1951 "(...) normal numeral followed by period" (but also
+    -- very opinionated on indents, see above)
+  })
 end
 
 package.documentation = [[\begin{document}
@@ -179,7 +264,7 @@ or one or several of the following: \autodoc:parameter{length=<length>},
 \autodoc:parameter{beforeskipamount=<glue>}, \autodoc:parameter{afterskipamount=<glue>}
 and \autodoc:parameter{thickness=<length>}.
 
-The default values for these options are, in order, 25\%fw, 2ex, 1ex and 0.5pt.
+The default values for these options are, in order, 20\%fw, 2ex, 1ex and 0.5pt.
 
 It also adds a new \autodoc:parameter{mark} option to the footnote command, which
 allows typesetting a footnote with a specific marker instead of
@@ -192,16 +277,14 @@ The footnote content is typeset according to the \code{footnote} style
 \autodoc:command[check=false]{\footnote:font} hook).
 
 It also redefines the way the marker in the footnote itself
-(that is, the internal \autodoc:command{\footnote:counter} command) and
-the footnote reference call in the main text flow (that is, the internal
-\autodoc:command{\footnote:mark} command) are formatted.
+and the footnote reference call in the main text flow are formatted.
 The relevant styles are \code{footnote-reference} for the reference call,
 and \code{footnote-marker} for the footnote marker. By default,
-both the footnote marker and the footnote reference call are configured to use actual
-superscript characters if supported by the current font (see the \autodoc:package{textsubsuper}
-package)\footnote{You can see a typical footnote here.}. These two styles also
-both have \code{-mark} and \code{-counter} derived styles, would you need to specialize
-them differently for custom marks and automated numberic counters, respectively.
+the footnote reference call are configured to use superscript characters
+(see the \autodoc:package{textsubsuper} package)\footnote{You can see a typical footnote here.}.
+These two styles also both have \code{-mark} and \code{-counter} derived styles,
+would you need to specialize them differently for custom marks and automated numberic
+counters, respectively.
 This may be interesting, for instance, with a \autodoc:command[check=false]{\numbering} style
 specification to define prepended and appended elements or kerning.
 
