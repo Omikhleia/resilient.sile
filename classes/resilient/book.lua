@@ -261,7 +261,7 @@ function class:defineStyles ()
                   align = "center", breakafter = false },
   })
   styles:defineStyle("figure-caption", { inherit = "sectioning-base" }, {
-    font = { style = "italic", size = "-0.5" },
+    font = { size = "-0.5" },
     paragraph = { indentbefore = false, skipbefore = "medskip", breakbefore = false,
                   align = "center",
                   skipafter = "medskip" },
@@ -271,6 +271,7 @@ function class:defineStyles ()
   })
   styles:defineStyle("figure-caption-number", {}, {
     numbering = { before = "Figure ", after = "." },
+    font = { features = "+smcp" },
   })
   styles:defineStyle("table", {}, {
     paragraph = { align = "center", breakafter = false },
