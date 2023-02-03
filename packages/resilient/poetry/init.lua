@@ -1,9 +1,9 @@
 --
 -- A poetry package for SILE
--- 2021, Didier Willis
+-- 2021, 2023 Didier Willis
 -- License: MIT
 --
-local base = require("packages.base")
+local base = require("packages.resilient.base")
 
 local package = pl.class(base)
 package._name = "resilient.poetry"
@@ -124,7 +124,7 @@ function package:registerCommands ()
     local prosodyBox
     local vadjust
 
-    SILE.call("resilient.poetry:prosodyfont", {}, function ()
+    SILE.call("style:apply", { name = "poetry-prosody" }, function ()
       vadjust = options.lower or SILE.measurement()
       prosodyBox = SILE.call("hbox", {}, function()
         SILE.typesetter:typeset(options.name)
@@ -145,11 +145,6 @@ function package:registerCommands ()
     inVerseBox.width = origWidth
     end
   end, "Insert a prosody annotation above the text (theoretically an internal command)")
-
-  self:registerCommand("resilient.poetry:prosodyfont", function (_, content)
-    -- Minimally we don't want italics to be applied from the verse line
-    SILE.call("font", { style = "normal" }, content)
-  end, "Override this command to change prosody style.")
 
   self:registerCommand("poetry", function (options, content)
     local step = SU.cast("integer", options.step or 5)
@@ -239,8 +234,7 @@ function package:registerCommands ()
   local typesetVerseNumber = function (mark)
     local setback = SILE.length("1.75em"):absolute()
     SILE.settings:temporarily(function ()
-        SILE.settings:set("font.size", SILE.settings:get("font.size")*0.9) -- scale
-        SILE.settings:set("font.features", "+onum")
+      SILE.call("style:apply", { name = "poetry-verseno"}, function ()
         local w = SILE.length("6em"):absolute()
 
         local h = SILE.call("hbox", {}, { mark })
@@ -251,6 +245,7 @@ function package:registerCommands ()
           SILE.typesetter:pushGlue({ width = w - setback - h.width })
           SILE.typesetter:pushHbox(h)
         end)
+      end)
     end)
   end
 
@@ -281,6 +276,20 @@ function package.declareSettings (_)
     help = "Length (height) of the prodosy annotation line."
   })
 end
+
+function package:registerStyles ()
+
+  self:registerStyle("poetry-prosody", {}, {
+    -- Minimally we don't want italics to be applied from the verse line
+    font = { style = "normal" }
+  })
+
+  self:registerStyle("poetry-verseno", {}, {
+    font = { features = "+onum", size = "0.9em" }
+  })
+
+end
+
 
 package.documentation = [[\begin{document}
 \use[module=packages.resilient.poetry]
@@ -492,6 +501,9 @@ the (lowered) breve.
 This package supports cross-references as defined for instance by the \autodoc:package{labelrefs} package, if it is
 loaded by the document class. In the \em{Beowulf} extract on page \conditional:ref[marker=hrothgar, type=page],
 Hrothgar was mentioned in verse \conditional:ref[marker=hrothgar].
+
+When shown, verse numbers are typeset according to the \code{poetry-verseno} style.
+Scansion indications follow the \code{poetry-prosody} style.
 
 \end{document}]]
 
