@@ -31,6 +31,8 @@ build = {
     ["sile.classes.resilient.layouts.canonical"]   = "classes/resilient/layouts/canonical.lua",
     ["sile.classes.resilient.layouts.division"]    = "classes/resilient/layouts/division.lua",
 
+    ["sile.packages.resilient.base"]            = "packages/resilient/base.lua",
+
     ["sile.packages.resilient.abbr"]            = "packages/resilient/abbr/init.lua",
     ["sile.packages.resilient.styles"]          = "packages/resilient/styles/init.lua",
     ["sile.packages.resilient.tableofcontents"] = "packages/resilient/tableofcontents/init.lua",

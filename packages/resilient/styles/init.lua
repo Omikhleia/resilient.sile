@@ -37,8 +37,9 @@ SILE.scratch.styles = {
 }
 
 -- programmatically define a style
-function package.defineStyle (_, name, opts, styledef)
-  SILE.scratch.styles.specs[name] = { inherit = opts.inherit, style = styledef }
+-- optional origin allows tracking e.g which package declared that style.
+function package.defineStyle (_, name, opts, styledef, origin)
+  SILE.scratch.styles.specs[name] = { inherit = opts.inherit, style = styledef, origin = origin }
 end
 
 function package:resolveStyle (name, discardable)

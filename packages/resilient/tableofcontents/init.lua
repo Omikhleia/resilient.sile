@@ -1,10 +1,10 @@
 --
 -- Re-implementation of the tableofcontents package.
 -- Hooks are removed and replaced by styles, allowing for a fully customizable TOC
--- 2021-2022, Didier Willis
+-- 2021-2023, Didier Willis
 -- License: MIT
 --
-local base = require("packages.base")
+local base = require("packages.resilient.base")
 
 local package = pl.class(base)
 package._name = "resilient.tableofcontents"
@@ -97,8 +97,6 @@ function package.readToc (_)
 end
 
 function package:registerCommands ()
-  self:registerStyles()
-  local styles = self.class.packages["resilient.styles"]
 
   -- Warning for users of the legacy tableofcontents
   self:registerCommand("tableofcontents:title", function (_, _)
@@ -224,7 +222,7 @@ function package:registerCommands ()
 
     local hasFiller = true
     local hasPageno = true
-    local tocSty = styles:resolveStyle("toc-level"..level)
+    local tocSty = self:resolveStyle("toc-level"..level)
     if tocSty.toc then
       hasPageno = SU.boolean(tocSty.toc.pageno, true)
       hasFiller = hasPageno and SU.boolean(tocSty.toc.dotfill, true)
@@ -255,7 +253,7 @@ function package:registerCommands ()
     local level = SU.cast("integer", SU.required(options, "level", "tableofcontents:levelnumber"))
     if level < 0 or level > #tocStyles - 1 then SU.error("Invalid TOC level "..level) end
 
-    local tocSty = styles:resolveStyle("toc-level"..level)
+    local tocSty = self:resolveStyle("toc-level"..level)
 
     if tocSty.toc and SU.boolean(tocSty.toc.numbering, false) then
       local pre = tocSty.numbering and tocSty.numbering.before
@@ -272,15 +270,14 @@ function package:registerCommands ()
 end
 
 function package:registerStyles ()
-  local styles = self.class.packages["resilient.styles"]
   -- The interpretation after the ~ below are just indicative, one could
   -- customize everything differently. It corresponds to their use in
   -- the resilient.book class, and their default (proposed) styling specifications
   -- are based on the latter.
   for i = 1, #tocStyles do
-    styles:defineStyle("toc-level"..(i-1), {}, tocStyles[i])
+    self:registerStyle("toc-level"..(i-1), {}, tocStyles[i])
   end
-  styles:defineStyle("toc-pageno", {}, {})
+  self:registerStyle("toc-pageno", {}, {})
 end
 
 package.documentation = [[\begin{document}

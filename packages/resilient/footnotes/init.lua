@@ -2,7 +2,7 @@
 -- Re-implementation of the footnotes package
 -- 2021-2023, Didier Willis
 --
-local base = require("packages.base")
+local base = require("packages.resilient.base")
 
 local hboxer = require("resilient-compat.hboxing") -- Compatibility hack/shim
 
@@ -44,9 +44,6 @@ function package:_init (options)
 end
 
 function package:registerCommands ()
-  self:registerStyles()
-  local styles = self.class.packages["resilient.styles"]
-
   -- Footnote separator and rule
 
   self:registerCommand("footnote:separator", function (_, content)
@@ -76,7 +73,7 @@ function package:registerCommands ()
 
   self:registerCommand("footnote:reference", function (options, _)
     local fnStyName = options.mark and "footnote-reference-mark" or "footnote-reference-counter"
-    local fnSty = styles:resolveStyle(fnStyName)
+    local fnSty = self:resolveStyle(fnStyName)
     local pre = fnSty.numbering and fnSty.numbering.before or ""
     local post = fnSty.numbering and fnSty.numbering.after or ""
     local kern = fnSty.numbering and fnSty.numbering.kern and SU.cast("length", fnSty.numbering.kern)
@@ -98,7 +95,7 @@ function package:registerCommands ()
 
   self:registerCommand("footnote:marker", function (options, _)
     local fnStyName = options.mark and "footnote-marker-mark" or "footnote-marker-counter"
-    local fnSty = styles:resolveStyle(fnStyName)
+    local fnSty = self:resolveStyle(fnStyName)
     local pre = fnSty.numbering and fnSty.numbering.before or ""
     local post = fnSty.numbering and fnSty.numbering.after or ""
     local kern = fnSty.numbering and fnSty.numbering.kern and SU.cast("length", fnSty.numbering.kern)
@@ -183,7 +180,7 @@ function package:registerCommands ()
     end
 
     local fnStyName = options.mark and "footnote-marker-mark" or "footnote-marker-counter"
-    local fnSty = styles:resolveStyle(fnStyName)
+    local fnSty = self:resolveStyle(fnStyName)
     local kern = fnSty.numbering and fnSty.numbering.kern and SU.cast("length", fnSty.numbering.kern)
 
     -- Apply the font before boxing, so relative baselineskip applies #1027
@@ -217,24 +214,23 @@ function package:registerCommands ()
 end
 
 function package:registerStyles ()
-  local styles = self.class.packages["resilient.styles"]
-  styles:defineStyle("footnote", {}, {
+  self:registerStyle("footnote", {}, {
     font = { size = "0.9em" }
     -- Lacroux: Les notes sont composées dans un corps inférieur à celui du texte courant.
     -- (Rapport : environ 2/3.) [followed by a list of sizes]"
     -- So our em-ratio is is NOT really correct... But call that ageing, I don't like
     -- reading small notes.
   })
-  styles:defineStyle("footnote-reference", {}, {
+  self:registerStyle("footnote-reference", {}, {
     -- Bringhurst: "In the main text, superscript numbers are used to indicate
     -- notes because superscript numbers minimize interruption."
     properties = { position = "super" }
     -- numbering = { kern = "1pt" } = No, see comment in footnote:reference command
   })
-  styles:defineStyle("footnote-reference-mark", { inherit = "footnote-reference" }, {})
-  styles:defineStyle("footnote-reference-counter", { inherit = "footnote-reference" }, {})
+  self:registerStyle("footnote-reference-mark", { inherit = "footnote-reference" }, {})
+  self:registerStyle("footnote-reference-counter", { inherit = "footnote-reference" }, {})
 
-  styles:defineStyle("footnote-marker", {}, {
+  self:registerStyle("footnote-marker", {}, {
     -- Bringhurst: "(...) the number in the note should be full size"
     -- (so no superscript here).
     -- Bringurst is less opinionated on how the footnote text should be
@@ -242,8 +238,8 @@ function package:registerStyles ()
     -- but seldom seen in actual books.
     numbering = { kern = "-3.75nspc"}
   })
-  styles:defineStyle("footnote-marker-mark", { inherit = "footnote-marker" }, {})
-  styles:defineStyle("footnote-marker-counter", { inherit = "footnote-marker" }, {
+  self:registerStyle("footnote-marker-mark", { inherit = "footnote-marker" }, {})
+  self:registerStyle("footnote-marker-counter", { inherit = "footnote-marker" }, {
     numbering = { after = "." }
     -- Bringhurst: "Punctuation, apart from empty space, is not normally needed
     -- between the number and text of the note" - But then he has an example with
