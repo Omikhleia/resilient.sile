@@ -24,6 +24,8 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
+    ["sile.classes.resilient.base"]    = "classes/resilient/base.lua",
+
     ["sile.classes.resilient.book"]    = "classes/resilient/book.lua",
     ["sile.classes.resilient.resume"]  = "classes/resilient/resume.lua",
 

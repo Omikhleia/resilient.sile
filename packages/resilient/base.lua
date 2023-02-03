@@ -1,6 +1,7 @@
 --
 -- Resilient base package
 -- 2023, Didier Willis
+-- License: MIT
 --
 local base = require("packages.base")
 
