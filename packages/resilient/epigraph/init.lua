@@ -179,7 +179,6 @@ end
 
 package.documentation = [[\begin{document}
 \use[module=packages.lorem]
-\use[module=packages.resilient.epigraph]
 \define[command=randomtext]{\lorem[words=18].}
 \define[command=randomsource]{The Lorem Ipsum Book.}
 

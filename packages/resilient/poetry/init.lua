@@ -292,8 +292,6 @@ end
 
 
 package.documentation = [[\begin{document}
-\use[module=packages.resilient.poetry]
-
 If this package is called \autodoc:package{resilient.poetry}, it is not only because
 it belongs to the “resilient” collection of packages and classes.
 There are so many ways to compose poetry that one cannot, probably, cover them all.
