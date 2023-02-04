@@ -3,7 +3,7 @@
 -- 2021, 2022, Didier Willis
 -- License: MIT
 --
-local plain = require("classes.plain")
+local plain = require("classes.resilient.base")
 local class = pl.class(plain)
 class._name = "resilient.book"
 
@@ -93,7 +93,6 @@ end
 function class:_init (options)
   plain._init(self, options)
 
-  self:loadPackage("resilient.styles")
   self:loadPackage("resilient.sectioning")
   self:loadPackage("masters")
   self:defineMaster({
@@ -134,8 +133,6 @@ function class:_init (options)
       SILE.process(content)
     end)
   end)
-
-  self:defineStyles()
 end
 
 function class:declareOptions ()
@@ -166,14 +163,12 @@ function class:setOptions (options)
   self.defaultFrameset = layout(options)
 end
 
-function class:defineStyles ()
-  local styles = self.packages["resilient.styles"]
-
+function class:registerStyles ()
   -- Sectioning styles
-  styles:defineStyle("sectioning-base", {}, {
+  self:registerStyle("sectioning-base", {}, {
     paragraph = { indentbefore = false, indentafter = false }
   })
-  styles:defineStyle("sectioning-part", { inherit = "sectioning-base" }, {
+  self:registerStyle("sectioning-part", { inherit = "sectioning-base" }, {
     font = { weight = 800, size = "+6" },
     paragraph = { skipbefore = "15%fh", align = "center", skipafter = "bigskip" },
     sectioning = { counter = "parts", level = 1, display = "ROMAN",
@@ -181,7 +176,7 @@ function class:defineStyles ()
                   open = "odd", numberstyle="sectioning-part-number",
                   hook = "sectioning:part:hook" },
   })
-  styles:defineStyle("sectioning-chapter", { inherit = "sectioning-base" }, {
+  self:registerStyle("sectioning-chapter", { inherit = "sectioning-base" }, {
     font = { weight = 800, size = "+4" },
     paragraph = { skipafter = "bigskip", align = "left" },
     sectioning = { counter = "sections", level = 1, display = "arabic",
@@ -189,7 +184,7 @@ function class:defineStyles ()
                   open = "odd", numberstyle="sectioning-chapter-number",
                   hook = "sectioning:chapter:hook" },
   })
-  styles:defineStyle("sectioning-section", { inherit = "sectioning-base" }, {
+  self:registerStyle("sectioning-section", { inherit = "sectioning-base" }, {
     font = { weight = 800, size = "+2" },
     paragraph = { skipbefore = "bigskip", skipafter = "medskip", breakafter = false },
     sectioning = { counter = "sections", level = 2, display = "arabic",
@@ -197,14 +192,14 @@ function class:defineStyles ()
                   numberstyle="sectioning-other-number",
                   hook = "sectioning:section:hook" },
   })
-  styles:defineStyle("sectioning-subsection", { inherit = "sectioning-base"}, {
+  self:registerStyle("sectioning-subsection", { inherit = "sectioning-base"}, {
     font = { weight = 800, size = "+1" },
     paragraph = { skipbefore = "medskip", skipafter = "smallskip", breakafter = false },
     sectioning = { counter = "sections", level = 3, display = "arabic",
                   toclevel = 3,
                   numberstyle="sectioning-other-number" },
   })
-  styles:defineStyle("sectioning-subsubsection", { inherit = "sectioning-base" }, {
+  self:registerStyle("sectioning-subsubsection", { inherit = "sectioning-base" }, {
     font = { weight = 800 },
     paragraph = { skipbefore = "smallskip", breakafter = false },
     sectioning = { counter = "sections", level = 4, display = "arabic",
@@ -212,36 +207,36 @@ function class:defineStyles ()
                   numberstyle="sectioning-other-number" },
   })
 
-  styles:defineStyle("sectioning-part-number", {}, {
+  self:registerStyle("sectioning-part-number", {}, {
     font = { features = "+smcp" },
     numbering = { before = "Part ", standalone = true },
   })
-  styles:defineStyle("sectioning-chapter-number", {}, {
+  self:registerStyle("sectioning-chapter-number", {}, {
     font = { size = "-1" },
     numbering = { before = "Chapter ", after = ".", standalone = true },
   })
-  styles:defineStyle("sectioning-other-number", {}, {
+  self:registerStyle("sectioning-other-number", {}, {
     numbering = { after = "." }
   })
 
   -- folio styles
-  styles:defineStyle("folio-base", {}, {
+  self:registerStyle("folio-base", {}, {
     font = { size = "-0.5" }
   })
-  styles:defineStyle("folio-even", { inherit = "folio-base" }, {
+  self:registerStyle("folio-even", { inherit = "folio-base" }, {
   })
-  styles:defineStyle("folio-odd", { inherit = "folio-base" }, {
+  self:registerStyle("folio-odd", { inherit = "folio-base" }, {
     paragraph = { align = "right" }
   })
 
   -- header styles
-  styles:defineStyle("header-base", {}, {
+  self:registerStyle("header-base", {}, {
     font = { size = "-1" },
     paragraph = { indentbefore = false, indentafter = false }
   })
-  styles:defineStyle("header-even", { inherit = "header-base" }, {
+  self:registerStyle("header-even", { inherit = "header-base" }, {
   })
-  styles:defineStyle("header-odd", { inherit = "header-base" }, {
+  self:registerStyle("header-odd", { inherit = "header-base" }, {
     font = { style = "italic" },
     paragraph = { align = "right" }
   })
@@ -249,19 +244,19 @@ function class:defineStyles ()
   -- quotes
   SILE.scratch.styles.alignments["block"] = "blockindent"
 
-  styles:defineStyle("blockquote", {}, {
+  self:registerStyle("blockquote", {}, {
     font = { size = "-0.5" },
     paragraph = { skipbefore = "smallskip", skipafter = "smallskip",
                   align = "block" }
   })
 
   -- captioned elements
-  styles:defineStyle("figure", {}, {
+  self:registerStyle("figure", {}, {
     paragraph = { skipbefore = "smallskip",
                   align = "center", breakafter = false },
   })
-  styles:defineStyle("figure-caption", { inherit = "sectioning-base" }, {
-    font = { style = "italic", size = "-0.5" },
+  self:registerStyle("figure-caption", { inherit = "sectioning-base" }, {
+    font = { size = "-0.5" },
     paragraph = { indentbefore = false, skipbefore = "medskip", breakbefore = false,
                   align = "center",
                   skipafter = "medskip" },
@@ -269,13 +264,14 @@ function class:defineStyles ()
                    toclevel = 5, bookmark = false,
                    goodbreak = false, numberstyle="figure-caption-number" },
   })
-  styles:defineStyle("figure-caption-number", {}, {
+  self:registerStyle("figure-caption-number", {}, {
     numbering = { before = "Figure ", after = "." },
+    font = { features = "+smcp" },
   })
-  styles:defineStyle("table", {}, {
+  self:registerStyle("table", {}, {
     paragraph = { align = "center", breakafter = false },
   })
-  styles:defineStyle("table-caption", {}, {
+  self:registerStyle("table-caption", {}, {
     font = { size = "-0.5" },
     paragraph = { indentbefore = false, breakbefore = false,
                   align = "center",
@@ -284,7 +280,7 @@ function class:defineStyles ()
                    toclevel = 6, bookmark = false,
                    goodbreak = false, numberstyle="table-caption-number" },
   })
-  styles:defineStyle("table-caption-number", {}, {
+  self:registerStyle("table-caption-number", {}, {
     numbering = { before = "Table ", after = "." },
     font = { features = "+smcp" },
   })
@@ -465,8 +461,7 @@ function class:registerCommands ()
   end, "Alias to captioned-figure.")
 
   self:registerCommand("listoffigures", function (_, _)
-    local styles = self.packages["resilient.styles"]
-    local figSty = styles:resolveStyle("figure-caption")
+    local figSty = self.styles:resolveStyle("figure-caption")
     local start = figSty.sectioning and figSty.sectioning.toclevel
       or SU.error("Figure style does not specify a TOC level sectioning")
 
@@ -474,8 +469,7 @@ function class:registerCommands ()
   end, "Output the list of figures.")
 
   self:registerCommand("listoftables", function (_, _)
-    local styles = self.packages["resilient.styles"]
-    local figSty = styles:resolveStyle("table-caption")
+    local figSty = self.styles:resolveStyle("table-caption")
     local start = figSty.sectioning and figSty.sectioning.toclevel
       or SU.error("Figure style does not specify a TOC level sectioning")
 

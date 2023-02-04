@@ -1,10 +1,10 @@
 --
 -- Generic sectioning command and styles for SILE
 -- An extension of the "styles" package and the sectioning paradigm
--- 2021, 2022, Didier Willis
+-- 2021-2023, Didier Willis
 -- License: MIT
 --
-local base = require("packages.base")
+local base = require("packages.resilient.base")
 
 local package = pl.class(base)
 package._name = "resilient.sectioning"
@@ -12,7 +12,6 @@ package._name = "resilient.sectioning"
 function package:_init (options)
   base._init(self, options)
   self.class:loadPackage("counters")
-  self.class:loadPackage("resilient.styles")
 end
 
 local interWordSpace = function ()
@@ -22,10 +21,9 @@ local interWordSpace = function ()
 end
 
 function package:registerCommands ()
-  local styles = self.class.packages["resilient.styles"]
 
   local resolveSectionStyleDef = function (name)
-    local stylespec = styles:resolveStyle(name)
+    local stylespec = self:resolveStyle(name)
     if stylespec.sectioning then
       return {
         counter = stylespec.sectioning.counter or
@@ -60,7 +58,7 @@ function package:registerCommands ()
       else -- Case: any
         SILE.call("open-on-any-page")
       end
-      local sty = styles:resolveStyle(name) -- Heavy-handed, but I was tired.
+      local sty = self:resolveStyle(name) -- Heavy-handed, but I was tired.
       if sty.paragraph and sty.paragraph.skipbefore then
         -- Ensure the vertical skip will be applied even if at the top of
         -- the page. Introduces a line, though. I haven't found how to avoid
@@ -111,7 +109,7 @@ function package:registerCommands ()
       -- 3C. Show entry number
       if numbering then
         if secStyle.numberstyle then
-          local numSty = styles:resolveStyle(secStyle.numberstyle)
+          local numSty = self:resolveStyle(secStyle.numberstyle)
           local pre = numSty.numbering and numSty.numbering.before
           local post = numSty.numbering and numSty.numbering.after
           local kern = numSty.numbering and numSty.numbering.kern or interWordSpace()

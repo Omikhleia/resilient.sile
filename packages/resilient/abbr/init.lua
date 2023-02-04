@@ -124,8 +124,6 @@ function package:registerCommands ()
 end
 
 package.documentation = [[\begin{document}
-\use[module=packages.resilient.abbr]
-
 The \autodoc:package{resilient.abbr} package defines a few shorthands and abbreviations
 that its author often uses in articles or book chapters.
 

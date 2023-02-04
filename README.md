@@ -44,6 +44,11 @@ luarocks --lua-version 5.4 install --server=https://luarocks.org/dev resilient.s
 (Adapt to your version of Lua, if need be, and refer to the SILE manual for more
 detailed 3rd-party package installation information.)
 
+## Usage
+
+A complete PDF version of the documentation (but not necessarily always the latest) should be
+available [HERE](https://drive.google.com/file/d/1f54qDEGWaN-MFN932x-t0jm3V-5VSHee/view?usp=sharing).
+
 ## See also
 
 This collection also imports several modules also provided separately, would you find them useful on their own:
@@ -52,23 +57,15 @@ This collection also imports several modules also provided separately, would you
 - [Cross-references](https://github.com/Omikhleia/labelrefs.sile)
 - [Superscripts and subscripts](https://github.com/Omikhleia/textsubsuper.sile)
 - [Barcodes](https://github.com/Omikhleia/barcodes.sile) (for ISBNs, etc.)
+- [QR codes](https://github.com/Omikhleia/qrcode.sile)
 - [Couyards](https://github.com/Omikhleia/couyards.sile) (typographic ornaments)
-- [Markdown support](https://github.com/Omikhleia/markdown.sile)
-
-Other packages that this author uses with this collection, but which are not mandatory
-and are not yet made a dependency (for now, at least):
-
 - [Printer options](https://github.com/Omikhleia/printoptions.sile) (image resolution tuning
   and vector rasterization, would you want to use a professional printer or print-on-demand services)
 - [Fancy table of contents](https://github.com/Omikhleia/fancytoc.sile) (an alternative two-level table of contents with nice curly braces)
+- [Markdown support](https://github.com/Omikhleia/markdown.sile)
 
 When used with this collection, the Markdown packages and the fancy table of contents are
 leveraged with additional capabilities.
-
-## Usage
-
-A complete PDF version of the documentation (but not necessarily always the latest) should be
-available [HERE](https://drive.google.com/file/d/1f54qDEGWaN-MFN932x-t0jm3V-5VSHee/view?usp=sharing)
 
 ## License
 

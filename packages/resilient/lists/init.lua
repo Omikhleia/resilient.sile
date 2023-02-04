@@ -3,7 +3,7 @@
 -- This a replacement to the "lists" package introduced in SILE,
 -- with (expectedly) the same user API but with additional
 -- features and styling methods.
--- 2021-2022, Didier Willis
+-- 2021-2023, Didier Willis
 -- License: MIT
 --
 -- NOTE: Though not described explicitly in the documentation, the package supports
@@ -35,7 +35,7 @@
 -- Lists from Mardown, obviously, due to their structure, would need the
 -- second technique.
 --
-local base = require("packages.base")
+local base = require("packages.resilient.base")
 
 local package = pl.class(base)
 package._name = "resilient.lists"
@@ -71,7 +71,7 @@ local unichar = function (str)
 end
 
 function package:resolveEnumStyleDef (name)
-  local stylespec = self.class.packages["resilient.styles"]:resolveStyle(name)
+  local stylespec = self:resolveStyle(name)
 
   if stylespec.enumerate then
     return {
@@ -239,7 +239,6 @@ end
 function package:_init (options)
   base._init(self, options)
   self.class:loadPackage("counters")
-  self.class:loadPackage("resilient.styles")
 end
 
 function package.declareSettings (_)
@@ -305,7 +304,6 @@ function package.declareSettings (_)
 end
 
 function package:registerCommands ()
-  self:registerStyles()
 
   self:registerCommand("enumerate", function (options, content)
     self:doNestedList("enumerate", options, content)
@@ -325,83 +323,82 @@ function package:registerCommands ()
 end
 
 function package:registerStyles ()
-  local styles = self.class.packages["resilient.styles"]
 
   -- Enumerate style
-  styles:defineStyle("lists-enumerate1", {}, {
+  self:registerStyle("lists-enumerate1", {}, {
     enumerate = { display = "arabic", before = "", after = "." }
   })
-  styles:defineStyle("lists-enumerate2", {}, {
+  self:registerStyle("lists-enumerate2", {}, {
     enumerate = { display = "roman", before = "", after = "." }
   })
-  styles:defineStyle("lists-enumerate3", {}, {
+  self:registerStyle("lists-enumerate3", {}, {
     enumerate = { display = "alpha", before = "", after = ")" }
   })
-  styles:defineStyle("lists-enumerate4", {}, {
+  self:registerStyle("lists-enumerate4", {}, {
     enumerate = { display = "arabic", before = "", after = ")" }
   })
-  styles:defineStyle("lists-enumerate5", {}, {
+  self:registerStyle("lists-enumerate5", {}, {
     enumerate = { display = "arabic", before = "§", after = "." }
   })
 
   -- Alternate enumerate style
-  styles:defineStyle("lists-enumerate-alternate1", {}, {
+  self:registerStyle("lists-enumerate-alternate1", {}, {
     enumerate = { display = "Alpha", before = "", after = "." }
   })
-  styles:defineStyle("lists-enumerate-alternate2", {}, {
+  self:registerStyle("lists-enumerate-alternate2", {}, {
     enumerate = { display = "Roman", before = "", after = "." }
   })
-  styles:defineStyle("lists-enumerate-alternate3", {}, {
+  self:registerStyle("lists-enumerate-alternate3", {}, {
     enumerate = { display = "roman", before = "", after = "." }
   })
-  styles:defineStyle("lists-enumerate-alternate4", {}, {
+  self:registerStyle("lists-enumerate-alternate4", {}, {
     font = { style = "italic" },
     enumerate = { display = "alpha", before = "", after = "." }
   })
-  styles:defineStyle("lists-enumerate-alternate5", {}, {
+  self:registerStyle("lists-enumerate-alternate5", {}, {
     enumerate = { display = "U+2474" }
   })
 
   -- Itemize style
-  styles:defineStyle("lists-itemize1", {}, {
+  self:registerStyle("lists-itemize1", {}, {
     -- color = { color = "red" },
     itemize = { bullet = "•" } -- black bullet
   })
-  styles:defineStyle("lists-itemize2", {}, {
+  self:registerStyle("lists-itemize2", {}, {
     itemize = { bullet = "◦" } -- circle bullet
   })
-  styles:defineStyle("lists-itemize3", {}, {
+  self:registerStyle("lists-itemize3", {}, {
     -- color = { color = "blue" },
     itemize = { bullet = "–" } -- en-dash
   })
-  styles:defineStyle("lists-itemize4", {}, {
+  self:registerStyle("lists-itemize4", {}, {
     itemize = { bullet = "•" } -- black bullet
   })
-  styles:defineStyle("lists-itemize5", {}, {
+  self:registerStyle("lists-itemize5", {}, {
     itemize = { bullet = "◦" } -- circle bullet
   })
-  styles:defineStyle("lists-itemize6", {}, {
+  self:registerStyle("lists-itemize6", {}, {
     -- color = { color = "blue" },
     itemize = { bullet = "–" } -- en-dash
   })
 
   -- Alternate itemize style
-  styles:defineStyle("lists-itemize-alternate1", {}, {
+  self:registerStyle("lists-itemize-alternate1", {}, {
     itemize = { bullet = "—" } -- em-dash
   })
-  styles:defineStyle("lists-itemize-alternate2", {}, {
+  self:registerStyle("lists-itemize-alternate2", {}, {
     itemize = { bullet = "•" } -- black bullet
   })
-  styles:defineStyle("lists-itemize-alternate3", {}, {
+  self:registerStyle("lists-itemize-alternate3", {}, {
     itemize = { bullet = "◦" } -- circle bullet
   })
-  styles:defineStyle("lists-itemize-alternate4", {}, {
+  self:registerStyle("lists-itemize-alternate4", {}, {
     itemize = { bullet = "–" } -- en-dash
   })
-  styles:defineStyle("lists-itemize-alternate5", {}, {
+  self:registerStyle("lists-itemize-alternate5", {}, {
     itemize = { bullet = "•" } -- black bullet
   })
-  styles:defineStyle("lists-itemize-alternate6", {}, {
+  self:registerStyle("lists-itemize-alternate6", {}, {
     itemize = { bullet = "◦" } -- circle bullet
   })
 end
@@ -436,7 +433,7 @@ Any other element causes an error to be reported, and any text content is ignore
         \end{itemize}
     \end{itemize}
 \end{itemize}
-⟨\em{part|chapter}⟩
+
 The current implementation supports up to 6 indentation levels, which
 are set according to the \code{lists-itemize⟨\em{level}⟩} styles.
 

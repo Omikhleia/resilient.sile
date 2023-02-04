@@ -37,8 +37,9 @@ SILE.scratch.styles = {
 }
 
 -- programmatically define a style
-function package.defineStyle (_, name, opts, styledef)
-  SILE.scratch.styles.specs[name] = { inherit = opts.inherit, style = styledef }
+-- optional origin allows tracking e.g which package declared that style.
+function package.defineStyle (_, name, opts, styledef, origin)
+  SILE.scratch.styles.specs[name] = { inherit = opts.inherit, style = styledef, origin = origin }
 end
 
 function package:resolveStyle (name, discardable)
@@ -504,19 +505,28 @@ The other character formatting commands should of course apply to the full label
 
 \P{Character styles for footnote markers.}
 
-As for other styles above, the character style for foonoter markers (i.e. the footnote
+As for other styles above, the character style for footnote markers (i.e. the footnote
 symbol or counter in the note itself) should support the "numbering" specification.
 
 \begin{codes}
 \quad{}\\numbering[before=\doc:args{string}, after=\doc:args{string}, kern=\doc:args{length}]
 \end{codes}
 
+If the kerning space is positive, it should correspond to the space inserted after the footnote
+marker. If negative, the note text should be indented by that amount, with the footnote mark
+left-aligned in the available space.
+
 For consistency, footnote references (i.e. the footnote call in the main text body) should support
 at least the first properties, that is:
 
 \begin{codes}
-\quad{}\\numbering[before=\doc:args{string}, after=\doc:args{string}]
+\quad{}\\numbering[before=\doc:args{string}, after=\doc:args{string}, kern=\doc:args{length}]
 \end{codes}
+
+When set, the kerning space is used \em{before} the marker.\footnote{French usage, for instance,
+recommends using a thin space or 1pt before the footnote call, which should always follow
+a lexical element (i.e. not a punctuation, unlike English where footnote calls are often
+seen \em{after} punctuations).}
 
 \P{Paragraph styles.}
 

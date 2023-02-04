@@ -1,9 +1,9 @@
 --
 -- An epigraph package for SILE
--- 2021, 2022, Didier Willis
+-- 2021-2023, Didier Willis
 -- License: MIT
 --
-local base = require("packages.base")
+local base = require("packages.resilient.base")
 
 local package = pl.class(base)
 package._name = "resilient.epigraph"
@@ -11,8 +11,8 @@ package._name = "resilient.epigraph"
 function package:_init (options)
   base._init(self, options)
 
+  self.class:loadPackage("raiselower")
   self.class:loadPackage("rules")
-  self.class:loadPackage("resilient.styles")
 end
 
 local extractFromTree = function (tree, command)
@@ -89,8 +89,6 @@ function package.declareSettings (_)
 end
 
 function package:registerCommands ()
-  self:registerStyles()
-
   self:registerCommand("epigraph:font", function (_, _)
     SILE.call("font", { size = SILE.settings:get("font.size") - 1 })
   end, "Font used for an epigraph")
@@ -175,14 +173,12 @@ function package:registerCommands ()
 end
 
 function package:registerStyles ()
-  local styles = self.class.packages["resilient.styles"]
-  styles:defineStyle("epigraph", {}, { font = { size = -1 } })
-  styles:defineStyle("epigraph-source", {}, { font = { style="italic" } })
+  self:registerStyle("epigraph", {}, { font = { size = -1 } })
+  self:registerStyle("epigraph-source", {}, { font = { style="italic" } })
 end
 
 package.documentation = [[\begin{document}
 \use[module=packages.lorem]
-\use[module=packages.resilient.epigraph]
 \define[command=randomtext]{\lorem[words=18].}
 \define[command=randomsource]{The Lorem Ipsum Book.}
 
