@@ -16,8 +16,11 @@ dependencies = {
    "lua >= 5.1",
    "barcodes.sile",
    "couyards.sile",
+   "fancytoc.sile",
    "labelrefs.sile",
+   "printoptions.sile",
    "ptable.sile",
+   "qrcode.sile",
    "textsubsuper.sile",
    "markdown.sile",
 }
