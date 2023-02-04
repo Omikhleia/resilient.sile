@@ -1,7 +1,5 @@
 \begin[papersize=6in x 9in, class=resilient.book, layout=division:12]{document}
-%\use[module=hacks/hack-1361]% HACKS/WORKAROUNDS FOR SILE 0.12.x BUGS
-%\use[module=hacks/hack-1362]% HACKS/WORKAROUNDS FOR SILE 0.12.x BUGS
-\use[module=packages.autodoc]
+\use[module=packages.autodoc-resilient]% ATTENTION: REQUIRED FOR RESILIENT
 \set[parameter=autodoc.highlighting, value=true]
 \use[module=packages.lorem]
 \use[module=packages.url]
@@ -26,10 +24,12 @@
 \smallskip%
 \set[parameter=document.parindent, value=0]{%
 \roughbox[enlarge=true, singlestroke=true, preserve=true,
-padding=2%fw, bordercolor=100, fillcolor=220, shadowcolor=#96A8C7, shadow=false]{%
+padding=2%fw, bordercolor=100, fillcolor=230, shadowcolor=#96A8C7, shadow=false]{%
 \parbox[width=96%lw]{\set[parameter=document.parindent, value=0]\font[size=9pt]\color[color=100]{\process}\par}%
 }}%
 \medskip}
+\style:redefine[name=folio-base, as=_folold, inherit=true]{\font[features=+onum]}
+\set[parameter=textsubsuper.fake, value=true]% Broken see Houston below.
 
 % We do not have a true titlepage for now, build it manually.
 \background[color=#e9d8ba,allpages=false]
@@ -115,7 +115,7 @@ typesetting system.
 This booklet could have been called “My First Journey with SILE” as it is
 the result of these experiments.
 
-To proceed orderly, I considered a book I had aready typeset with another
+To proceed orderly, I considered a book I had already typeset with another
 software–for what it matters, LibreOffice–and looked how I could
 do it again with SILE. I had no intent to redo the whole book, of course,
 but the overall structure and a sample chapter would do. If you already
@@ -182,10 +182,10 @@ After several false starts, what had begun as a mere adaptation of the
 existing book class gradually became another beast, abstracting styling decisions in the
 \autodoc:package{resilient.styles} and \autodoc:package{resilient.sectioning} packages–and those also
 made their way into several of the previous packages.
-The \code{resilient.book} class logically concluded that journey… Well, my
+The \strong{resilient.book} class logically concluded that journey… Well, my
 dabbling into SILE also produced a few other by-products. To check that my
 implementation for tables could be generalized to other needs, I played around
-the idea of using it for a \em{résumé}. It lead to the \code{resilient.resume} class.
+the idea of using it for a \em{résumé}. It lead to the \strong{resilient.resume} class.
 In parallel, I couldn’t resist checking if SILE could also help me in another
 project; it resulted in a class and packages for (a specific kind of) XML TEI
 dictionaries.
@@ -196,6 +196,10 @@ is flexible and versatile, with a very decent learning curve.
 I cannot thank Simon Cozens and the SILE community enough for all their
 achievements. The software has a great code base and it is really enjoyable
 to work with.
+
+\lua{
+  print(SILE.settings:get("textsubsuper.fake"))
+}
 
 \medskip
 \couyard[type=8,width=default]
@@ -252,7 +256,7 @@ one of the most painful learnings…}.
 
 Yet, the 362-page book was eventually
 \href[src=https://sites.google.com/site/dragonbrumeux/contes-et-l%C3%A9gendes-dalmaq]{completed}\footnote{%
-\url{https://sites.google.com/site/dragonbrumeux/contes-et-l\%C3\%A9gendes-dalmaq}}.
+\em{Contes & légendes d’Almaq,} Le Dragon de Brume, 2022. \url{https://sites.google.com/site/dragonbrumeux/contes-et-l\%C3\%A9gendes-dalmaq}}.
 I had decided early in the process that its full SILE sources would be provided in
 the “examples” folder of my GitHub repository for these packages and classes,
 so than anyone possibly interested could check how I addressed my needs.
@@ -358,7 +362,7 @@ second question… Time only will tell.
 %%%
 %%% Book parts and tools
 %%%
-\chapter{Book parts & tools}
+\chapter{Book parts and utilities}
 
 \section{Cross-references}
 
@@ -419,7 +423,7 @@ And here it is stating at level 1, i.e. chapters and sections.
 %%%
 %%% INPUT FORMATS
 %%%
-\chapter{Alternate input formats}
+\chapter{Other input formats}
 
 \section{Markdown}
 
@@ -478,8 +482,9 @@ class writers.
 \part{Classes}
 
 \begin{figure}
-\img[src=images/printing_press.png, width=60%pw]
-\caption{Gutenberg’s press.}
+\img[src=images/composer_1883.png, width=70%pw]
+\caption{Composition work in the 19\textsuperscript{th} century.\footnote[mark=†]{Bogoslav Šulek, Mijo Kišpatić \em{et al.},
+  \em{Novovjeki izumi u znanosti, obrtu i umjetnosti,} \abbr:vol{2}, \em{Matica Hrvatska}, Zagreb, 1883, \abbr:page{157}.}}
 \end{figure}
 
 \chapter{Book class}
@@ -969,9 +974,9 @@ to the sample CV included in our example repository.
 \part{Tips & Tricks}
 
 \begin{figure}
-%\img[src=docs/images/printer_1568.png, width=50%pw]
+\img[src=images/printer_1568.png, width=50%pw]
 \caption{Printers in 1568.\footnote[mark=†]{Meggs, Philip B.,
-  \em{A History of Graphic Design,} John Wiley & Sons, Inc. 1998, p. 64.}}
+  \em{A History of Graphic Design,} John Wiley & Sons, Inc. 1998, \abbr:page{64}.}}
 \end{figure}
 
 % Let's have fun and define a new sectioning command for questions.
