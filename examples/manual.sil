@@ -353,11 +353,25 @@ second question… Time only will tell.
 
 \package-documentation{barcodes.ean13}
 
-\section{QR codes.}
+\section{QR codes}
 
 \admon{This package is part of the \strong{qrcode.sile} collection.}
 
 \package-documentation{qrcode}
+
+\section{Textual image formatters}
+
+\admon{This package is part of the \strong{embedders.sile} collection.}
+
+\package-documentation{embedders}
+
+\subsection{Graphs with the Graphviz DOT language}
+
+\embedder-documentation{dot}
+
+\subsection{Musical scores with LilyPond}
+
+\embedder-documentation{lilypond}
 
 %%%
 %%% Book parts and tools

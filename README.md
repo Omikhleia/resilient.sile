@@ -62,6 +62,7 @@ This collection also imports several modules also provided separately, would you
 - [Printer options](https://github.com/Omikhleia/printoptions.sile) (image resolution tuning
   and vector rasterization, would you want to use a professional printer or print-on-demand services)
 - [Fancy table of contents](https://github.com/Omikhleia/fancytoc.sile) (an alternative two-level table of contents with nice curly braces)
+- [Textual graphics embedders](https://github.com/Omikhleia/embedders.sile) (suppot for Graphviz, Lilypond, &c)
 - [Markdown support](https://github.com/Omikhleia/markdown.sile)
 
 When used with this collection, the Markdown packages and the fancy table of contents are
