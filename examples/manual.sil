@@ -248,7 +248,7 @@ shifted by a few months. Real-life constraints and proofreading sessions also
 played a part… Let’s say, after all, that an extended 5- to 6-month charter was
 actually required for the project to be achieved, with several hacks to circumvent
 bug issues\footnote{%
-I got real annoyed to discover, that late in the process, that SILE couldn't do
+I got real annoyed to discover, that late in the process, that SILE couldn’t do
 hyphenation properly and justify text correctly when fonts have ligatures…}
 and with a less bold layout than envisioned\footnote{%
 Not being able to use the so-said InDesign-like frames in any decent way was
@@ -450,6 +450,12 @@ And here it is stating at level 1, i.e. chapters and sections.
 \admon{This package is part of the \strong{markdown.sile} collection.}
 
 \package-documentation{pandocast}
+
+\section{Djot}
+
+\admon{This package is part of the \strong{markdown.sile} collection.}
+
+\package-documentation{djot}
 
 %%%
 %%% TECHNICAL PACKAGES
@@ -787,7 +793,7 @@ in this author’s opinion.
 \section{Page layouts}
 
 Paper sizes varied a lot across time. Frequent ratios nowadays are 1:√2 (such as the ISO paper
-sizes, e.g. A4, 21 × 29.7 cm) or 2:3 (such as US trade , 6 × 9 in), though there are still
+sizes, e.g. A4, 21 × 29.7 cm) or 2:3 (such as US trade, 6 × 9 in), though there are still
 plenty of other page formats in use (e.g. French paperbacks books often often come in 10 × 17 cm
 or 10 × 18 cm format.)
 
@@ -887,7 +893,7 @@ referred to as the “secret canon” used in many medieval manuscripts and incu
 
 These methods are based on regular divisions of the page, mere arithmetical operations
 which may be generalized for any page dimention \em{W} × \em{H}, with a ratio \em{N}
-and a constant \em{v}. In the Honnecourt and Vencentinus' canons, \em{v}=2,
+and a constant \em{v}. In the Honnecourt and Vencentinus’ canons, \em{v}=2,
 but other values are possible.
 
 In a method he described on the French \em{Typographie}

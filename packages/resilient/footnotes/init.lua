@@ -12,7 +12,7 @@ package._name = "resilient.footnotes"
 function package:_init (options)
   base._init(self, options)
 
-  -- Numaric space (a.k.a. figure space) unit
+  -- Numeric space (a.k.a. figure space) unit
   local numsp = SU.utf8charfromcodepoint("U+2007")
   SILE.registerUnit("nspc", {
     relative = true,
@@ -217,7 +217,7 @@ function package:registerStyles ()
   self:registerStyle("footnote", {}, {
     font = { size = "0.9em" }
     -- Lacroux: Les notes sont composées dans un corps inférieur à celui du texte courant.
-    -- (Rapport : environ 2/3.) [followed by a list of sizes]"
+    -- (Rapport : environ 2/3.) [followed by a list of usual sizes]"
     -- So our em-ratio is is NOT really correct... But call that ageing, I don't like
     -- reading small notes.
   })
@@ -282,7 +282,7 @@ These two styles also both have \code{-mark} and \code{-counter} derived styles,
 would you need to specialize them differently for custom marks and automated numberic
 counters, respectively.
 This may be interesting, for instance, with a \autodoc:command[check=false]{\numbering} style
-specification to define prepended and appended elements or kerning.
+specification to define prepended and appended elements, or kerning.
 
 \end{document}]]
 
