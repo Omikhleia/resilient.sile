@@ -118,13 +118,15 @@ function package:registerCommands ()
       -- We want at least the space of a figure digit between the footnote
       -- mark and the text.
       if remainingSpace:tonumber() - SILE.length("1nspc"):absolute() <= 0 then
+        -- It's not the case, the footnote mark goes beyond the available space.
+        -- So add a fixed interword space after it.
         SILE.call("style:apply", { name = fnStyName }, { text })
         SILE.call("abbr:nbsp", { fixed = true })
       else
-          -- Otherwise, the footnote mark goes beyond the available space,
-          -- so add a fixed interword space after it.
-          SILE.call("style:apply", { name = fnStyName }, { text })
-          SILE.call("kern", { width = remainingSpace })
+        -- It's the case, add the remaining space after the footnote mark, so
+        -- everything is aligned.
+        SILE.call("style:apply", { name = fnStyName }, { text })
+        SILE.call("kern", { width = remainingSpace })
       end
     else
       SILE.call("noindent")
