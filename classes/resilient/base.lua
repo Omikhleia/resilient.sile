@@ -3,8 +3,8 @@
 -- 2023, Didier Willis
 -- License: MIT
 --
-local plain = require("classes.plain")
-local class = pl.class(plain)
+local parent = require("classes.plain")
+local class = pl.class(parent)
 class._name = "resilient.base"
 class.styles = nil
 
@@ -72,7 +72,7 @@ end
 -- END HACKS FOR MULTIPLE INSTANTION SIDE EFFECTS
 
 function class:_init (options)
-  plain._init(self, options)
+  parent._init(self, options)
 
   self:loadPackage("resilient.styles")
   self.styles = self.packages["resilient.styles"]
@@ -106,14 +106,25 @@ function class:loadPackage (packname, options)
 end
 -- END HACKS FOR MULTIPLE INSTANTION SIDE EFFECTS
 
+function class:declareOptions ()
+  parent.declareOptions(self)
+
+  self:declareOption("resolution", function(_, value)
+    if value then
+      self.resolution = SU.cast("integer", value)
+    end
+    return self.resolution
+  end)
+end
+
 function class.registerRawHandlers (_)
-  plain:registerRawHandlers()
+  parent:registerRawHandlers()
 
 end
 
 
 function class.registerCommands (_)
-  plain:registerCommands()
+  parent:registerCommands()
 
 end
 
