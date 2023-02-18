@@ -1,12 +1,108 @@
 --
 -- A style package for SILE
 -- License: MIT
--- 2021, 2022, Didier Willis
+-- 2021-2023, Didier Willis
 --
 local base = require("packages.base")
 
 local package = pl.class(base)
 package._name = "resilient.styles"
+
+local hboxer = require("resilient-compat.hboxing") -- Compatibility hack/shim
+
+local function interwordSpace ()
+  return SILE.shaper:measureSpace(SILE.font.loadDefaults({}))
+end
+
+local function castKern (kern)
+  if type(kern) == "string" then
+    local value, rest = kern:match("^(%d*)iwsp[ ]*(.*)$")
+    if value then
+      if rest ~= "" then SU.error("Could not parse kern '"..kern.."'") end
+      return (tonumber(value) or 1) * interwordSpace()
+    end
+  end
+  return SU.cast("length", kern)
+end
+
+function package:_init (options)
+  base._init(self, options)
+  self.class:registerHook("finish", self.writeStyles)
+
+  -- Numeric space (a.k.a. figure space) unit
+  local numsp = SU.utf8charfromcodepoint("U+2007")
+  SILE.registerUnit("nspc", {
+    relative = true,
+    definition = function (value)
+      return value * SILE.shaper:measureChar(numsp).width
+    end
+  })
+
+  -- Thin space unit, as 1/2 fixed inter-word space
+  SILE.registerUnit("thsp", {
+    relative = true,
+    definition = function (value)
+      return value * 0.5 * interwordSpace()
+    end
+  })
+end
+
+-- local function table_print_value (value, indent, done)
+--   indent = indent or 0
+--   done = done or {}
+--   if type(value) == "table" and not done [value] then
+--     done [value] = true
+
+--     local list = {}
+--     for key in pairs (value) do
+--       list[#list + 1] = key
+--     end
+--     table.sort(list, function(a, b) return tostring(a) < tostring(b) end)
+--     local last = list[#list]
+
+--     local rep = "\n"
+--     local comma
+--     for _, key in ipairs (list) do
+--       -- if key == last then
+--       --   comma = ''
+--       -- else
+--       --   comma = ','
+--       -- end
+--       local keyRep
+--       if type(key) == "number" then
+--         keyRep = key
+--       else
+--         keyRep = tostring(key) -- string.format("%q", tostring(key))
+--       end
+--       rep = rep .. string.format(
+--         "%s%s: %s\n",
+--         string.rep(" ", indent + 2),
+--         keyRep,
+--         table_print_value(value[key], indent + 2, done)
+--        -- comma
+--       )
+--     end
+
+--     --rep = rep .. string.rep(" ", indent) -- indent it
+--     rep = rep .. ""
+
+--     done[value] = false
+--     return rep
+--   elseif type(value) == "string" then
+--     return string.format("%q", value)
+--   else
+--     return tostring(value)
+--   end
+-- end
+
+function package.writeStyles (_)
+  local stydata = pl.pretty.write(SILE.scratch.styles)
+  -- table_print_value(SILE.scratch.styles.specs)
+  local styfile, err = io.open(SILE.masterFilename .. '.sty', "w")
+  if not styfile then return SU.error(err) end
+  styfile:write(stydata)
+  styfile:close()
+end
 
 SILE.scratch.styles = {
   -- Actual style specifications will go there (see defineStyle etc.)
@@ -42,6 +138,22 @@ function package.defineStyle (_, name, opts, styledef, origin)
   SILE.scratch.styles.specs[name] = { inherit = opts.inherit, style = styledef, origin = origin }
 end
 
+-- merge two tables.
+-- It turns out that pl.tablex.union does not recurse into the table,
+-- so let's do it the proper way.
+-- N.B. modifies t1 (and t2 wins on leaves existing in both)
+local function recursiveTableMerge(t1, t2)
+  for k, v in pairs(t2) do
+    if (type(v) == "table") and (type(t1[k]) == "table") then
+      recursiveTableMerge(t1[k], t2[k])
+    else
+      t1[k] = v
+    end
+  end
+end
+
+-- resolve a style (incl. inherited fields)
+
 function package:resolveStyle (name, discardable)
   local stylespec = SILE.scratch.styles.specs[name]
   if not stylespec then
@@ -52,20 +164,13 @@ function package:resolveStyle (name, discardable)
   if stylespec.inherit then
     local inherited = self:resolveStyle(stylespec.inherit, discardable)
     -- Deep merging the specification options
-    local sty = pl.tablex.deepcopy(stylespec.style)
-    for k, v in pairs(inherited) do
-      if sty[k] then
-        sty[k] = pl.tablex.union(v, sty[k])
-      else
-        sty[k] = v
-      end
-    end
-    return sty
+    local res = pl.tablex.deepcopy(inherited)
+    recursiveTableMerge(res, stylespec.style)
+    return res
   end
   return stylespec.style
 end
 
--- resolve a style (incl. inherited fields)
 -- human-readable specification for debug (text)
 local function dumpOptions(options)
   local opts = {}
@@ -246,6 +351,74 @@ function package:registerCommands ()
       end
     end
   end, "Applies the paragraph style entirely.")
+
+  -- NUMBER STYLE
+
+  self:registerCommand("style:apply:number", function (options, _)
+    local name = SU.required(options, "name", "style:apply:number")
+    local text = SU.required(options, "text", "style:apply:number")
+    local styledef = self:resolveStyle(name, options.discardable)
+
+    local numSty = styledef.numbering
+    if not numSty then
+      SILE.call("style:apply", { name = name }, { text })
+      return -- Done (not a numbering style)
+    end
+
+    local beforetext = ""
+    local aftertext = ""
+    local beforekern, afterkern
+    if numSty.before then
+      beforetext = numSty.before.text or ""
+      beforekern = numSty.before.kern and castKern(numSty.before.kern)
+    end
+    if numSty.after then
+      aftertext = numSty.after.text or ""
+      afterkern = numSty.after.kern and castKern(numSty.after.kern)
+    end
+    text = beforetext .. text .. aftertext
+
+    -- If the kerning space is positive, it should correspond to the space inserted
+    -- after the number.
+    -- If negative, the text should be indented by that amount, with the
+    -- number left-aligned in the available space.
+    if beforekern and beforekern:tonumber() < 0 then
+      -- IMPLEMENTATION NOTE / HACK / FRAGILE
+      -- SILE's behavior with a hbox occuring as very first element of a line
+      -- is plain weird. The width of the box is "adjusted" with respect to
+      -- the parindent, it seems.
+      -- FIXME So we need to fix it here for the two cases (i.e.) in a text flow,
+      -- and not only at the start of a paragraph!!!!
+      local hbox = hboxer.makeHbox(function ()
+        SILE.call("style:apply", { name = name }, { text })
+      end)
+      local remainingSpace = hbox.width < 0 and -hbox.width or -beforekern:absolute() - hbox.width
+
+      -- We want at least the space of a figure digit between the number
+      -- and the text.
+      if remainingSpace:tonumber() - SILE.length("1nspc"):absolute() <= 0 then
+        -- It's not the case, the numbergoes beyond the available space.
+        -- So add a fixed interword space after it.
+        SILE.call("style:apply", { name = name }, { text })
+        if afterkern then
+          SILE.call("kern", { width = afterkern })
+        end
+      else
+        -- It's the case, add the remaining space after the number, so
+        -- everything is aligned.
+        SILE.call("style:apply", { name = name }, { text })
+        SILE.call("kern", { width = remainingSpace })
+      end
+    else
+      if beforekern then
+        SILE.call("kern", { width = beforekern })
+      end
+      SILE.call("style:apply", { name = name }, { text })
+      if beforekern then
+        SILE.call("kern", { width = afterkern })
+      end
+    end
+  end, "Applies the number style.")
 
   -- STYLE REDEFINITION
 
