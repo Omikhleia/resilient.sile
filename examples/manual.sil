@@ -7,6 +7,7 @@
 \use[module=packages.color]
 \use[module=packages.background]
 \use[module=packages.couyards]
+\use[module=packages.djot]
 \use[module=packages.resilient.lists]
 \use[module=packages.ptable]
 \use[module=packages.framebox]
@@ -17,7 +18,7 @@
 \define[command=codeblock]{\font[family=Libertinus Sans]{\process}}
 \footnote:rule
 \header:rule
-\set[parameter=linebreak.emergencyStretch, value=15%lw]
+\set[parameter=linebreak.emergencyStretch, value=25%lw]
 \pdf:metadata[key=Title, value=The resilient collection of classes & packages]
 \pdf:metadata[key=Author, value=Didier Willis]
 \define[command=admon]{%
@@ -270,6 +271,23 @@ second question… Time only will tell.
 
 \medskip
 \couyard[type=8,width=default]
+
+\part{The styling paradigm}
+
+\begin{figure}
+\img[src=images/condottiere.png, width=55%pw]
+\caption{A man with a \em{certain} style.\footnote[mark=†]{From Leonardo da Vinci’s “Condottiero”, \em{circa} 1475.}}
+\end{figure}
+
+\include[src=styling/basics.md]
+\include[src=styling/character.md]
+\include[src=styling/paragraph.md]
+
+% \include[src=styling/lists.md]
+% \include[src=styling/toc.md]
+\include[src=styling/footnotes.md]
+%\include[src=styling/captioned.md]
+\include[src=styling/folio.md]
 
 \part{Packages}
 
