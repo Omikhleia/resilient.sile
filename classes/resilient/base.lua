@@ -19,7 +19,7 @@ class.styles = nil
 
 SILE.settings.declare = function (self, spec)
   if self.declarations[spec.parameter] then
-    return SU.debug("resilient", "Settings redeclaration ignore ", spec.parameter)
+    return SU.debug("resilient", "Settings redeclaration ignore ", spec.parameter) -- HACK
   end
   self.declarations[spec.parameter] = spec
   self:set(spec.parameter, spec.default, true)
@@ -59,11 +59,12 @@ SILE.use = function (module, options)
     SILE.pagebuilder = pack(options)
   elseif pack.type == "package" then
     SILE.packages[name] = pack
+    -- HACK
     if class then
       if class.packages[name] then
-        return SU.debug("resilient", "\\use with resilient already loaded", name) ----- HACK
+        return SU.debug("resilient", "\\use with resilient already loaded", name)
       end
-      pack(options)
+      class.packages[name] = pack(options)
     else
       table.insert(SILE.input.preambles, { pack = pack, options = options })
     end
