@@ -1,0 +1,222 @@
+\begin{document}
+%\section{End-user packages provided independently}
+%
+%\subsection{colophon: shaped & decorated paragraphs}
+%
+%(No yet migrated)
+
+%\package-documentation{colophon}
+
+%%%
+%%% TYPOGRAPHY
+%%%
+\chapter{Typography packages}
+
+\section{Superscripts & subscripts}
+
+\admon{This package is part of the \strong{textsubsuper.sile} collection.}
+
+\package-documentation{textsubsuper}
+
+\section{Strut rules}
+
+\admon{This package is part of the \strong{ptable.sile} collection.}
+
+\package-documentation{struts}
+
+\section{Smart quotations marks}
+
+\admon{This package is part of the \strong{smartquotes.sile} collection.}
+
+\package-documentation{smartquotes}
+
+\section{Shorthands & abbreviations}
+
+\package-documentation{resilient.abbr}
+
+%%%
+%%% BOXES AND TABLES
+%%%
+\chapter{Boxes & Tables}
+
+\section{Boxed paragraphs}
+
+\admon{This package is part of the \strong{ptable.sile} collection.}
+
+\package-documentation{parbox}
+
+\section{Flexible tables}
+
+\admon{This package is part of the \strong{ptable.sile} collection.}
+
+\package-documentation{ptable}
+
+\section{Fancy box frames}
+
+\admon{This package is part of the \strong{ptable.sile} collection.}
+
+\package-documentation{framebox}
+
+%%% 
+%%% GRAPHICS
+%%%
+\chapter{Graphic-related packages}
+
+\section{Printer’s ornaments & pendants}
+
+\admon{This package is part of the \strong{couyards.sile} collection.}
+
+\package-documentation{couyards}
+
+\section{EAN-13 barcodes for ISBN etc.}
+
+\admon{This package is part of the \strong{barcodes.sile} collection.}
+
+\package-documentation{barcodes.ean13}
+
+\section{QR codes}
+
+\admon{This package is part of the \strong{qrcode.sile} collection.}
+
+\package-documentation{qrcode}
+
+\section{Textual image formatters}
+
+\admon{This package is part of the \strong{embedders.sile} collection.}
+
+\package-documentation{embedders}
+
+\subsection{Graphs with the Graphviz DOT language}
+
+\embedder-documentation{dot}
+
+\subsection{Musical scores with LilyPond}
+
+\embedder-documentation{lilypond}
+
+%%%
+%%% Book parts and tools
+%%%
+\chapter{Book parts and utilities}
+
+\section{Cross-references}
+
+\admon{This package is part of the \strong{labelrefs.sile} collection.}
+
+\package-documentation{labelrefs}
+
+\section{Fancy alternative table of contents}
+
+\admon{This package is part of the \strong{fancytoc.sile} collection.}
+
+\package-documentation{fancytoc}
+
+Here it is at work for the current document with default parameters.
+Since our book class supports parts at level 0, we get the parts
+and chapters.
+
+\fancytableofcontents
+
+\bigskip
+And here it is stating at level 1, i.e. chapters and sections.
+
+\fancytableofcontents[start=1]
+
+\section{Enhanced footnotes}
+
+\package-documentation{resilient.footnotes}
+
+%%%
+%%% PRINTING
+%%%
+\chapter{Print-related packages}
+
+\section{Printing options & tools for professional printers}
+
+\admon{This package is part of the \strong{printoptions.sile} collection.}
+
+\package-documentation{printoptions}
+
+%%%
+%%% SPECIALIZED ENVS
+%%%
+\chapter{Specialized environments}
+
+\section{Epigraphs}
+
+\package-documentation{resilient.epigraph}
+
+\section{Enhanced bullet lists and enumerations}
+
+\package-documentation{resilient.lists}
+
+\section{Poetry, verses & scansion}
+
+\package-documentation{resilient.poetry}
+
+%%%
+%%% INPUT FORMATS
+%%%
+\chapter{Other input formats}
+
+\section{Markdown}
+
+\admon{This package is part of the \strong{markdown.sile} collection.}
+
+\package-documentation{markdown}
+
+\section{Pandoc AST}
+
+\admon{This package is part of the \strong{markdown.sile} collection.}
+
+\package-documentation{pandocast}
+
+\section{Djot}
+
+\admon{This package is part of the \strong{markdown.sile} collection.}
+
+\package-documentation{djot}
+
+%%%
+%%% TECHNICAL PACKAGES
+%%%
+\chapter{Technical packages}
+
+These packages are not intended to be used alone, but provide utilities
+for other packages. They are therefore mainly aimed at package and
+class writers.
+
+\section{(resilient.styles) Style specifications}
+
+(Migrated, but documention needs refactorings, and heavy changes are planned.)
+
+%\package-documentation[src=packages/styles]
+
+\section{(resilient.sectioning) Abstraction for sectioning commands}
+
+(Migrated, but documention needs refactorings)
+
+%\package-documentation[src=packages/sectioning]
+
+\section{(resilient.tableofcontents) Enhanced table of contents}
+
+(Obviously working, documentation not included pending fixes)
+
+%\package-documentation{resilient.tableofcontents}
+
+\section{(resilient.headers) page headers revisited}
+
+\package-documentation{resilient.headers}
+
+%\section{Specialized packages}
+%
+%\subsection{(teidict) XML TEI P4 print dictionaries}
+%
+% (Now separate)
+%\package-documentation[src=packages/teidict]
+%
+%\subsection{teiabbr: localized abbreviations for TEI dictionaries}
+%
+%\package-documentation[src=packages/teiabbr]
+%
+\end{document}

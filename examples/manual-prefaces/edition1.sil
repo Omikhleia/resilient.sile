@@ -1,0 +1,103 @@
+\begin{document}
+\chapter[numbering=false]{Preface to the first edition}
+
+\admon{For the record, the original preface is updated to reflect the new names of several packages.}
+
+\hfill{}November 20, 2021.
+
+\smallskip
+
+If this booklet has a page size of 6 inches × 9 inches, it is not to make you waste
+paper (assuming you could possibly want to print it in A4 or US letter), but
+just because it is the format I use the most for printed books and I wanted to
+ensure my classes and packages looked functional with it.
+But let’s rewind, here… On August 29, 2021, I decided to give a try to the SILE
+typesetting system.
+This booklet could have been called “My First Journey with SILE” as it is
+the result of these experiments.
+
+To proceed orderly, I considered a book I had already typeset with another
+software–for what it matters, LibreOffice–and looked how I could
+do it again with SILE. I had no intent to redo the whole book, of course,
+but the overall structure and a sample chapter would do. If you already
+have some typeset content available at hand, I recommend this method,
+would you want to switch to SILE (or to any other solution).
+It is a good way to ascertain your needs and
+to rethink the kind of things you are used to do or you had solved there, though
+differently.
+If I had to typeset that book, however, the version of SILE at the time (that was
+0.10.15) somehow lacked many supporting packages for the sort of things I usually
+write.
+
+First, just at a glance, there were a few general issues. My book was in French and
+the typographic rules for punctuations in that language were not yet fully implemented.
+I proposed a fix that eventually got accepted. The book had also long footnotes which
+contained fairly long and hard-to-break URLs, so I ended up contributing a few fixes
+and improvements here too. All articles used “dropped capitals” and these did not
+work well at the time. I also proposed a new implementation which was eventually
+reviewed and integrated with even nicer features than my initial attempt. The SILE
+community might still be small, but it is live and great.
+
+The book had a non-obvious table of contents where entries, depending on their level,
+did not always show a page number or the usual dots (leaders). I needed more customization
+than offered by the default table of contents package. It lead to the creation
+of the \autodoc:package{resilient.tableofcontents} package.
+Likewise, I felt I needed more control on (running) page headers and it lead
+to the \autodoc:package{resilient.headers} package.
+I mentioned footnotes earlier; I eventually had to consider
+more changes to them in order to match the target book: \autodoc:package{resilient.footnotes}
+saw the light.
+I did not mention yet that the book was a collection of essays with a good bunch of
+cross-references between them–and even, from a footnote in an essay to a footnote in another.
+Trying to do the things right, the \autodoc:package{labelrefs} package was born.
+
+Looking at the sample chapter I had selected, it started and ended with quotations,
+or rather “epigraphs”. It ended with some nice floral motif. So I wrote
+the \autodoc:package{resilient.epigraph} and \autodoc:package{couyards}
+packages. I then had almost all the building blocks to typeset this essay, at last.
+
+Yet, even if I did not plan to typeset the whole book again, as stated, I looked
+through the other chapters to check their needs. One had complex tables and the simple
+table package from SILE was clearly insufficient. So logically, it lead me to find
+a solution, in the form of the \autodoc:package{ptable} package and the
+low-level \autodoc:package{parbox} at its core. It also turned to be useful for this very documentation,
+which I had decided to compose using the same tools.
+In the same vein, enumerations and bullet lists were used. I did not really need to
+support many nested levels, but why not anyway. The \autodoc:package{resilient.lists} package
+was born.
+More marginally, one of the essays included a poem and a discussion of its prosody.
+I wrapped up the \autodoc:package{resilient.poetry} package as a first attempt to address it.
+The book had a fancy “colophon” at its end, where the editor–that is, I–thanked the
+authors, contributors and proofreaders. I wanted to play around that idea:
+the \autodoc:package{colophon} package is a somehow experimental approach to it.
+On this journey, small recurring details appeared and were extracted as
+the \autodoc:package{textsubsuper} and \autodoc:package{resilient.abbr} packages. When testing,
+I also wanted an easy way to tweak commands without always having to change
+their Lua code, so \autodoc:package{redefine} was written. I have to confess it was
+one of my first packages but, as I progressed, I did not use it that often.
+
+Last but not least, a book class was obviously needed but the default one
+had to be extended to rely on some of the abovementioned packages. I was
+also concerned that “hooks” did not seem the right way to handle customizations.
+After several false starts, what had begun as a mere adaptation of the
+existing book class gradually became another beast, abstracting styling decisions in the
+\autodoc:package{resilient.styles} and \autodoc:package{resilient.sectioning} packages–and those also
+made their way into several of the previous packages.
+The \strong{resilient.book} class logically concluded that journey… Well, my
+dabbling into SILE also produced a few other by-products. To check that my
+implementation for tables could be generalized to other needs, I played around
+the idea of using it for a \em{résumé}. It lead to the \strong{resilient.resume} class.
+In parallel, I couldn’t resist checking if SILE could also help me in another
+project; it resulted in a class and packages for (a specific kind of) XML TEI
+dictionaries.
+
+Let’s conclude, temporarily, the so-said journey. It may seem that I had to write
+many packages to reach my aim. On the other hand, it also proves that SILE
+is flexible and versatile, with a very decent learning curve.
+I cannot thank Simon Cozens and the SILE community enough for all their
+achievements. The software has a great code base and it is really enjoyable
+to work with.
+
+\medskip
+\couyard[type=8,width=default]
+\end{document}

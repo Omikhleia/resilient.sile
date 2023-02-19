@@ -2,7 +2,7 @@
 
 ## Using a style file
 
-![The resilient styling workflow.](styling/workflow.dot){width=9cm}
+![The resilient styling workflow.](manual-styling/workflow.dot){width=9cm}
 
 When processing your master document, you can provide a style file for it,
 going by the same name, and the extension `.sty`.
