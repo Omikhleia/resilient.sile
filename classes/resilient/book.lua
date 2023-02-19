@@ -255,7 +255,7 @@ function class:registerStyles ()
     paragraph = { skipbefore = "smallskip",
                   align = "center", breakafter = false },
   })
-  self:registerStyle("figure-caption", { inherit = "sectioning-base" }, {
+  self:registerStyle("figure-caption", {}, {
     font = { size = "-0.5" },
     paragraph = { indentbefore = false, skipbefore = "medskip", breakbefore = false,
                   align = "center",
