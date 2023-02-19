@@ -198,6 +198,27 @@ function package.dumpStyle (_, name)
   return textspec
 end
 
+local function readOnly (t)
+  local proxy = {}
+  local mt = {
+    __index = t,
+    __newindex = function (_, k, v) -- mt, k, v
+      if rawget(t, k) then
+        SU.warn("Attempt to redefine an existing style '"..k..[['
+  This feature will be deprecated when the new styling paradigm is completed.
+]])
+      end
+      rawset(t, k, v)
+    end
+  }
+  setmetatable(proxy, mt)
+  return proxy
+end
+
+function package.freezeStyles (_)
+  SILE.scratch.styles.specs = readOnly(SILE.scratch.styles.specs)
+end
+
 function package:registerCommands ()
   self:registerCommand("style:font", function (options, content)
     local size = tonumber(options.size)
