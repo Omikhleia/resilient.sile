@@ -14,8 +14,8 @@
 \use[module=packages.fancytoc]
 \use[module=packages.printoptions]
 \language[main=en]
+\font[family=Libertinus Serif, size=10pt]
 % FIXME MAKE FONT SIZE, EMERG. AND SHAPER THE DEFAULT FOR RESILIENT
-\font[family=Libertinus Serif, size=11pt]
 \set[parameter=linebreak.emergencyStretch, value=25%lw]
 \set[parameter=shaper.spaceenlargementfactor, value=1]
 \define[command=codeblock]{\font[family=Libertinus Sans]{\process}}

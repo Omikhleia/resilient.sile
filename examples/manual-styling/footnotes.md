@@ -11,7 +11,7 @@ There are two different cases: numbered footnotes, and footnotes marked
 with a symbol (such as a dagger †).
 Just in case it _could_ be useful to distinguish them, we have distinct
 main style definitions here.
-The default specifications, though, just inherit from the same common
+The default definitions, though, just inherit from the same common
 parent style.
 
 ```yaml
@@ -39,7 +39,7 @@ footnote-reference:
 _However_, regarding French typography, Jean-Pierre Lacroux reminds us:
 "Whatever its form, the footnote reference must be placed before the punctuation,
 and preceded by a thin unbreakable space." (Lacroux does not say what this
-thin space is, compared e.g. )
+thin space actually is, compared to other "thin" spaces used in French.)
 The first point is up to the composer, but the second point would call for a
 slightly different style definition, such as the following one.
 
@@ -53,22 +53,21 @@ footnote-reference:
         kern: "1thsp"
 ```
 
-The numbering "kern" is here interpreted as being inserted _before_ the footnote
-reference mark.
-
 ### Foonote content
 
 Jean-Pierre Lacroux: "Notes are typeset in a smaller size than the current text
 (ratio: about 2/3)." This is followed by a list of "usual" fixed sizes depending
 on the main font size. Call that ageing, but this author doesn't like reading so
-small notes, so opted to something less drastic by default.
+small notes, so opted to something less drastic by default. In the digital age,
+moreover, we can get rid of fixed-size mappings, which where due to the metal
+fonts of the past being only available in a limited number of sizes.
 
 ```yaml
 footnote:
   # called by packages.resilient.footnote
   style:
     font:
-      size: "0.9em"
+      size: "0.8em"
     numbering:
       display: "arabic"
 ```
@@ -107,7 +106,7 @@ footnote-marker:
 
 Note that the implementation is clever enough: if the footnote mark cannot
 be contained in that space (minus an extra figure width, so as to be safer
-and account for a punctuation etc.), then a the "after kern" value is
+and account for a punctuation etc.), then the "after kern" value is
 inserted, so that the text of the footnote flows naturally.
 
 Robert Bringhurst then declares: "Punctuation, apart from empty space, is not
@@ -115,7 +114,7 @@ normally needed between the number and text of the note."
 But then, he shows an example with a period...
 Jan Tschichold does mention using a "normal numeral followed by a period",
 but he is also very opinionated on other topics such as text indents.
-Anyhow, this author recognizes too that a period is regularly used in many
+Anyhow, this author recognizes too that a period is regularly seen in many
 books. Let's go for it in our default style.
 
 ```yaml

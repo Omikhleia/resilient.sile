@@ -224,6 +224,9 @@ function package:registerCommands ()
     local size = tonumber(options.size)
     local opts = pl.tablex.copy(options) -- shallow copy
     if size then
+      SU.warn("Attempt using a font style with old relative font size '"..options.size..[['
+  This feature will be deprecated when the new styling paradigm is completed.
+]])
       opts.size = SILE.settings:get("font.size") + size
     end
 
@@ -879,38 +882,6 @@ So now on, \code{\\\doc:args{name}} is restored to whatever was saved and \code{
 is no longer defined.
 
 These style redefinion mechanisms are, obviously, at the core of customization.
-
-\P{Additional goodies.}
-
-The package also defines a \autodoc:command{\style:font} command, which is basically the same as the
-standard \autodoc:command{\font} command, but additionaly supports relative sizes with respect to
-the current \code{font.size}. It is actually the command used when applying a font style
-specification. For the sake of illustration, let’s assume the following definitions:
-
-\begin{codes}
-\\style:define[name=smaller]\{\\font[size=-1]\}
-
-\\style:define[name=bigger]\{\\font[size=+1]\}
-
-\\define[command=smaller]\{\\style:apply[name=smaller]\{\\process\}\}
-
-\\define[command=bigger]\{\\style:apply[name=bigger]\{\\process\}\}
-\end{codes}
-
-\style:define[name=smaller]{\font[size=-1]}
-\style:define[name=bigger]{\font[size=+1]}
-\define[command=smaller]{\style:apply[name=smaller]{\process}}
-\define[command=bigger]{\style:apply[name=bigger]{\process}}
-
-Then:
-
-\begin{codes}
-Normal \\smaller\{Small \\smaller\{Tiny\}\},
-
-Normal \\bigger\{Big \\bigger\{Great\}\}.
-\end{codes}
-
-Yields: Normal \smaller{Small \smaller{Tiny}}, Normal \bigger{Big \bigger{Great}}.
 
 \end{document}]]
 

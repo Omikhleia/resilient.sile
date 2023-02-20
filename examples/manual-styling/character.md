@@ -67,9 +67,6 @@ The fields are all optional and define:
 
 The default display format, when not specified, is `arabic`.
 
-The prepended and appended text string can be set to false,
-if you need to disable an inherited value.
-
 The "kern" value is usually a positive non-breakable glue.
 Some packages, however, accept negative "before kern" values for specific
 use cases.
@@ -90,7 +87,6 @@ with the following additions:
  - The `iwsp` inter-word space pseudo-unit.
    The inter-word space is stretchable and shrinkable, so dimensions expressed
    in this pseudo-unit cannot contain extra strech and shrink values.
-
 
 [^character-thsp]: The term "thin space" has varying interpretations
 depending on typographers. Some make it dependent on the font size (as a

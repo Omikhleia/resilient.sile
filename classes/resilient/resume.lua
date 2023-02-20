@@ -175,21 +175,21 @@ function class:registerStyles ()
 
   self:registerStyle("resume-color", {}, { color = { color = "#4080bf" } }) -- a nice tint of blue
 
-  self:registerStyle("resume-dingbats", { inherit = "resume-color" }, { font = { family = "Symbola", size = "-1" } })
+  self:registerStyle("resume-dingbats", { inherit = "resume-color" }, { font = { family = "Symbola", size = "0.9em" } })
 
   self:registerStyle("resume-jobrole", {}, { font = { weight = 600 } })
 
-  self:registerStyle("resume-headline", {}, { font = { weight = "300", style = "italic", size = "-1" },
+  self:registerStyle("resume-headline", {}, { font = { weight = "300", style = "italic", size = "0.9em" },
     color = { color = "#373737" },
     paragraph = { align = "center" } })
 
-  self:registerStyle("resume-section", { inherit = "resume-color" }, { font = { size = "+2" } })
+  self:registerStyle("resume-section", { inherit = "resume-color" }, { font = { size = "1.2em" } })
 
-  self:registerStyle("resume-topic", {}, { font = { style="light", size = "-1" },
+  self:registerStyle("resume-topic", {}, { font = { style="light", size = "0.9em" },
     paragraph = { align = "right" } })
   self:registerStyle("resume-description", {}, {})
 
-  self:registerStyle("resume-contact", {}, { font = { style = "thin", size = "-0.5" },
+  self:registerStyle("resume-contact", {}, { font = { style = "thin", size = "0.95em" },
     paragraph = { align = "center" } })
 
   self:registerStyle("resume-jobtitle", {}, { font = { size = "20pt" },

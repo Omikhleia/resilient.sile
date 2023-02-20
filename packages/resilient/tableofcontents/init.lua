@@ -11,16 +11,16 @@ package._name = "resilient.tableofcontents"
 
 local tocStyles = {
   -- level0 ~ part
-  { font = { weight = 800, size = "+1.5" },
+  { font = { weight = 800, size = "1.15em" },
     toc = { numbering = false, pageno = false },
     paragraph = { skipbefore = "medskip", indentbefore = false,
                   skipafter = "medskip", breakafter = false } },
   -- level1 ~ chapter
-  { font = { weight = 800, size = "+1" },
+  { font = { weight = 800, size = "1.1em" },
     toc = { numbering = false, pageno = true, dotfill = false},
     paragraph = { indentbefore = false, skipafter = "smallskip" } },
   -- level2 ~ section
-  { font = { size = "+1" },
+  { font = { size = "1.1em" },
     toc = { numbering = false, pageno = true, dotfill = true },
     paragraph = { indentbefore = false, skipafter = "smallskip" } },
   -- level3 ~ subsection

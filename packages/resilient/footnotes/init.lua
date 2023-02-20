@@ -173,7 +173,7 @@ end
 function package:registerStyles ()
   self:registerStyle("footnote", { main = true }, {
     numbering = { display = "arabic" },
-    font = { size = "0.9em" }
+    font = { size = "0.8em" }
     -- Lacroux: Les notes sont composées dans un corps inférieur à celui du texte courant.
     -- (Rapport : environ 2/3.) [followed by a list of usual sizes]"
     -- So our em-ratio is is NOT really correct... But call that ageing, I don't like

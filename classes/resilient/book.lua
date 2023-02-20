@@ -1,6 +1,6 @@
 --
--- A new book class for SILE
--- 2021, 2022, Didier Willis
+-- A new advanced book class for SILE
+-- 2021-2023, Didier Willis
 -- License: MIT
 --
 local plain = require("classes.resilient.base")
@@ -169,7 +169,7 @@ function class:registerStyles ()
     paragraph = { indentbefore = false, indentafter = false }
   })
   self:registerStyle("sectioning-part", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "+6" },
+    font = { weight = 800, size = "1.6em" },
     paragraph = { skipbefore = "15%fh", align = "center", skipafter = "bigskip" },
     sectioning = { counter = "parts", level = 1, display = "ROMAN",
                   toclevel = 0,
@@ -177,7 +177,7 @@ function class:registerStyles ()
                   hook = "sectioning:part:hook" },
   })
   self:registerStyle("sectioning-chapter", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "+4" },
+    font = { weight = 800, size = "1.4em" },
     paragraph = { skipafter = "bigskip", align = "left" },
     sectioning = { counter = "sections", level = 1, display = "arabic",
                   toclevel = 1,
@@ -185,7 +185,7 @@ function class:registerStyles ()
                   hook = "sectioning:chapter:hook" },
   })
   self:registerStyle("sectioning-section", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "+2" },
+    font = { weight = 800, size = "1.2em" },
     paragraph = { skipbefore = "bigskip", skipafter = "medskip", breakafter = false },
     sectioning = { counter = "sections", level = 2, display = "arabic",
                   toclevel = 2,
@@ -193,7 +193,7 @@ function class:registerStyles ()
                   hook = "sectioning:section:hook" },
   })
   self:registerStyle("sectioning-subsection", { inherit = "sectioning-base"}, {
-    font = { weight = 800, size = "+1" },
+    font = { weight = 800, size = "1.1em" },
     paragraph = { skipbefore = "medskip", skipafter = "smallskip", breakafter = false },
     sectioning = { counter = "sections", level = 3, display = "arabic",
                   toclevel = 3,
@@ -212,7 +212,7 @@ function class:registerStyles ()
     numbering = { before = "Part ", standalone = true },
   })
   self:registerStyle("sectioning-chapter-number", {}, {
-    font = { size = "-1" },
+    font = { size = "0.9em" },
     numbering = { before = "Chapter ", after = ".", standalone = true },
   })
   self:registerStyle("sectioning-other-number", {}, {
@@ -221,7 +221,7 @@ function class:registerStyles ()
 
   -- folio styles
   self:registerStyle("folio-base", {}, {
-    font = { size = "-0.5" }
+    font = { size = "0.95em", features = "+onum" }
   })
   self:registerStyle("folio-even", { inherit = "folio-base" }, {
   })
@@ -231,7 +231,7 @@ function class:registerStyles ()
 
   -- header styles
   self:registerStyle("header-base", {}, {
-    font = { size = "-1" },
+    font = { size = "0.9em" },
     paragraph = { indentbefore = false, indentafter = false }
   })
   self:registerStyle("header-even", { inherit = "header-base" }, {
@@ -245,7 +245,7 @@ function class:registerStyles ()
   SILE.scratch.styles.alignments["block"] = "blockindent"
 
   self:registerStyle("blockquote", {}, {
-    font = { size = "-0.5" },
+    font = { size = "0.95em" },
     paragraph = { skipbefore = "smallskip", skipafter = "smallskip",
                   align = "block" }
   })
@@ -256,7 +256,7 @@ function class:registerStyles ()
                   align = "center", breakafter = false },
   })
   self:registerStyle("figure-caption", {}, {
-    font = { size = "-0.5" },
+    font = { size = "0.95em" },
     paragraph = { indentbefore = false, skipbefore = "medskip", breakbefore = false,
                   align = "center",
                   skipafter = "medskip" },
@@ -272,7 +272,7 @@ function class:registerStyles ()
     paragraph = { align = "center", breakafter = false },
   })
   self:registerStyle("table-caption", {}, {
-    font = { size = "-0.5" },
+    font = { size = "0.95em" },
     paragraph = { indentbefore = false, breakbefore = false,
                   align = "center",
                   skipafter = "medskip" },

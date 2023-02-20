@@ -89,14 +89,6 @@ function package.declareSettings (_)
 end
 
 function package:registerCommands ()
-  self:registerCommand("epigraph:font", function (_, _)
-    SILE.call("font", { size = SILE.settings:get("font.size") - 1 })
-  end, "Font used for an epigraph")
-
-  self:registerCommand("epigraph:source:font", function (_, _)
-    SILE.call("font", { style = "italic" })
-  end, "Font used for the epigraph source, if present.")
-
   self:registerCommand("epigraph", function (options, content)
     SILE.settings:temporarily(function ()
       local beforeskipamount =
@@ -173,7 +165,7 @@ function package:registerCommands ()
 end
 
 function package:registerStyles ()
-  self:registerStyle("epigraph", {}, { font = { size = -1 } })
+  self:registerStyle("epigraph", {}, { font = { size = "0.9em" } })
   self:registerStyle("epigraph-source", {}, { font = { style="italic" } })
 end
 

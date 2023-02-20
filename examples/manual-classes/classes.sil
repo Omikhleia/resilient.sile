@@ -28,7 +28,7 @@ instead consider restructuring their document in a manner that does not require
 this level of nested sectioning. Increased section granularity can actually begin
 to detract from document clarity.”
 
-\define[command=ptable:cell:hook]{\raggedright{\noindent\style:font[size=-1]{\process}}}%
+\define[command=ptable:cell:hook]{\raggedright{\noindent\style:font[size=0.9em]{\process}}}%
 % FIXME Maybe the class should load ptable and override the hook to actually supported
 % styles, that would be both convenient and consistent.
 \begin{table}
