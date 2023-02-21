@@ -357,6 +357,8 @@ Rather, the entry level formatting logic entirely relies on styles.
 The styles are \code{toc-level0} to \code{toc-level9}. They provides several
 specific options that the original package did not have, allowing you to customize
 nearly all aspects of your tables of contents.
+Number styles are \code{toc-number-level0} to \code{toc-number-level9} control
+how section numbers, when shown, are formatted.
 In addition, the page number is style with \code{toc-pageno}.
 
 \end{document}]]

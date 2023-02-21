@@ -224,7 +224,7 @@ and \autodoc:parameter{thickness=<length>}.
 The default values for these options are, in order, 20\%fw, 2ex, 1ex and 0.5pt.
 
 It also adds a new \autodoc:parameter{mark=<symbol>} option to the footnote command, which
-allows typesetting a footnote with a specific symbol instead of
+allows typesetting a footnote with a specific custom symbol instead of
 a counter\footnote[mark=†]{As shown here, using \autodoc:command{\footnote[mark=†]{…}}.}.
 In that case, the footnote counter is not altered. Among other things, these custom
 marks can be useful for editorial footnotes.
@@ -235,15 +235,10 @@ The footnote content is typeset according to the \code{footnote} style
 
 It also redefines the way the marker in the footnote itself
 and the footnote reference call in the main text flow are formatted.
-The relevant styles are \code{footnote-reference} for the reference call,
-and \code{footnote-marker} for the footnote marker. By default,
-the footnote reference call are configured to use superscript characters
-(see the \autodoc:package{textsubsuper} package)\footnote{You can see a typical footnote here.}.
-These two styles also both have \code{-symbol} and \code{-counter} derived styles,
-would you need to specialize them differently for custom marks and automated numberic
-counters, respectively.
-This may be interesting, for instance, with a \autodoc:command[check=false]{\numbering} style
-specification to define prepended and appended elements, or kerning.
+The relevant styles are \code{footnote-reference-counter} or
+\code{footnote-reference-symbol} for the reference call;
+and \code{footnote-marker-counter} or \code{footnote-marker-symbol} for the
+footnote marker.\footnote{You can see a typical footnote here.}.
 
 \end{document}]]
 

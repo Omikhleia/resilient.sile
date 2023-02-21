@@ -105,6 +105,10 @@
 
 \package-documentation{labelrefs}
 
+\section{Enhanced table of contents}
+
+\package-documentation{resilient.tableofcontents}
+
 \section{Fancy alternative table of contents}
 
 \admon{This package is part of the \strong{fancytoc.sile} collection.}
@@ -125,6 +129,10 @@ And here it is stating at level 1, i.e. chapters and sections.
 \section{Enhanced footnotes}
 
 \package-documentation{resilient.footnotes}
+
+\section{Page headers revisited}
+
+\package-documentation{resilient.headers}
 
 %%%
 %%% PRINTING
@@ -197,16 +205,6 @@ class writers.
 (Migrated, but documention needs refactorings)
 
 %\package-documentation[src=packages/sectioning]
-
-\section{(resilient.tableofcontents) Enhanced table of contents}
-
-(Obviously working, documentation not included pending fixes)
-
-%\package-documentation{resilient.tableofcontents}
-
-\section{(resilient.headers) page headers revisited}
-
-\package-documentation{resilient.headers}
 
 %\section{Specialized packages}
 %
