@@ -12,31 +12,29 @@ package._name = "resilient.tableofcontents"
 local tocStyles = {
   -- level0 ~ part
   { font = { weight = 800, size = "1.15em" },
-    toc = { numbering = false, pageno = false },
+    toc = { numbered = true, pageno = false },
     paragraph = { skipbefore = "medskip", indentbefore = false,
                   skipafter = "medskip", breakafter = false } },
   -- level1 ~ chapter
   { font = { weight = 800, size = "1.1em" },
-    toc = { numbering = false, pageno = true, dotfill = false},
+    toc = { dotfill = false},
     paragraph = { indentbefore = false, skipafter = "smallskip" } },
   -- level2 ~ section
-  { font = { size = "1.1em" },
-    toc = { numbering = false, pageno = true, dotfill = true },
+  { font = { size = "1em" },
+    toc = {},
     paragraph = { indentbefore = false, skipafter = "smallskip" } },
   -- level3 ~ subsection
-  { toc = { numbering = true, pageno = true, dotfill = false },
+  { toc = { dotfill = false },
     paragraph = { indentbefore = true, skipafter = "smallskip" } },
   -- level4 ~ subsubsection
   { toc = { pageno = false },
     paragraph = { indentbefore = true, skipafter = "smallskip" } },
   -- level5 ~ figure
-  { toc = { numbering = true, pageno = true, dotfill = true },
-    numbering = { before = "Fig. ", after = ".", kern = "2spc" },
-    paragraph = { indentbefore = false } },
+  { toc = { numbered = true },
+    paragraph = { indentbefore = false, skipafter = "smallskip" } },
   -- level6 ~ table
-  { toc = { numbering = true, pageno = true, dotfill = true },
-    numbering = { before = "Table ", after = ".", kern = "2spc" },
-    paragraph = { indentbefore = false } },
+  { toc = { numbered = true },
+    paragraph = { indentbefore = false, skipafter = "smallskip" } },
   -- extra loosely defined levels, so we have them at hand if need be
   { toc = { pageno = false },
     paragraph = { indentbefore = true } },
@@ -46,6 +44,28 @@ local tocStyles = {
     paragraph = { indentbefore = true } },
 }
 
+local tocNumberStyles = {
+  -- level0 ~ part
+  {},
+  -- level1 ~ chapter
+  {},
+  -- level2 ~ section
+  {},
+  -- level3 ~ subsection
+  {},
+  -- level4 ~ subsubsection
+  {},
+  -- level5 ~ figure
+  { font = { features= "+smcp" },
+    numbering = { before = { text = "Fig. " }, after = { text = ".", kern = "2spc" }} },
+  -- level6 ~ table
+  { font = { features= "+smcp" },
+    numbering = { before = { text = "Table " }, after = { text = ".", kern = "2spc" }} },
+  -- extra loosely defined levels, so we have them at hand if need be
+  {},
+  {},
+  {},
+}
 function package:_init (options)
   base._init(self, options)
   SILE.scratch.tableofcontents = SILE.scratch.tableofcontents or {}
@@ -125,18 +145,19 @@ function package:registerCommands ()
     local oldLbl = SILE.Commands["label"]
     SILE.Commands["label"] = function () end
 
-
-    for i = 1, #toc do
-      local item = toc[i]
-      if item.level >= start and item.level <= start + depth then
-        SILE.call("tableofcontents:item", {
-          level = item.level,
-          pageno = item.pageno,
-          number = item.number,
-          link = linking and item.link
-        }, item.label)
+    SILE.call("style:apply:paragraph", { name = "toc" }, function ()
+      for i = 1, #toc do
+        local item = toc[i]
+        if item.level >= start and item.level <= start + depth then
+          SILE.call("tableofcontents:item", {
+            level = item.level,
+            pageno = item.pageno,
+            number = item.number,
+            link = linking and item.link
+          }, item.label)
+        end
       end
-    end
+    end)
 
     SILE.Commands["footnote"] = oldFt
     SILE.Commands["label"] = oldLbl
@@ -238,13 +259,9 @@ function package:registerCommands ()
       SILE.call("style:apply:paragraph", { name = "toc-level"..level },
         linkWrapper(options.link, function ()
           if options.number then
-            SILE.call("tableofcontents:levelnumber", { level = level }, function ()
-              SILE.typesetter:typeset(options.number)
-            end)
+            SILE.call("tableofcontents:levelnumber", { level = level, text = options.number })
           end
-
           SILE.process(content)
-
           SILE.call(hasFiller and "dotfill" or "hfill")
           if hasPageno then
             SILE.call("style:apply", { name = "toc-pageno"}, { options.pageno })
@@ -254,22 +271,14 @@ function package:registerCommands ()
     end)
   end, "Typeset a TOC entry - internal.")
 
-  self:registerCommand("tableofcontents:levelnumber", function (options, content)
+  self:registerCommand("tableofcontents:levelnumber", function (options, _)
+    local text = SU.required(options, "text", "tableofcontents:levelnumber")
     local level = SU.cast("integer", SU.required(options, "level", "tableofcontents:levelnumber"))
     if level < 0 or level > #tocStyles - 1 then SU.error("Invalid TOC level "..level) end
 
     local tocSty = self:resolveStyle("toc-level"..level)
-
-    if tocSty.toc and SU.boolean(tocSty.toc.numbering, false) then
-      local pre = tocSty.numbering and tocSty.numbering.before
-      local post = tocSty.numbering and tocSty.numbering.after
-      local kern = tocSty.numbering and tocSty.numbering.kern or "1spc"
-      if pre and pre ~= "false" then SILE.typesetter:typeset(pre) end
-      SILE.process(content)
-      if post and post ~= "false" then
-        SILE.typesetter:typeset(post)
-      end
-      SILE.call("kern", { width = kern })
+    if tocSty.toc and SU.boolean(tocSty.toc.numbered, false) then
+      SILE.call("style:apply:number", { name = "toc-number-level"..level, text = text })
     end
   end, "Typeset the (section) number in a TOC entry - internal.")
 end
@@ -279,9 +288,24 @@ function package:registerStyles ()
   -- customize everything differently. It corresponds to their use in
   -- the resilient.book class, and their default (proposed) styling specifications
   -- are based on the latter.
+  self:registerStyle("toc", {}, {})
+  self:registerStyle("toc-level-base", {}, {})
+  self:registerStyle("toc-number-base", {}, {
+    numbering = {
+      after = {
+        text = ".",
+        kern = "2thsp"
+      }
+    }
+  })
+
   for i = 1, #tocStyles do
-    self:registerStyle("toc-level"..(i-1), {}, tocStyles[i])
+    self:registerStyle("toc-level"..(i-1), { inherit = "toc-level-base" }, tocStyles[i])
   end
+  for i = 1, #tocNumberStyles do
+    self:registerStyle("toc-number-level"..(i-1), { inherit = "toc-number-base" }, tocNumberStyles[i])
+  end
+
   self:registerStyle("toc-pageno", {}, {})
 end
 

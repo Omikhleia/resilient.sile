@@ -198,25 +198,27 @@ function package.dumpStyle (_, name)
   return textspec
 end
 
-local function readOnly (t)
-  local proxy = {}
-  local mt = {
-    __index = t,
-    __newindex = function (_, k, v) -- mt, k, v
-      if rawget(t, k) then
-        SU.warn("Attempt to redefine an existing style '"..k..[['
-  This feature will be deprecated when the new styling paradigm is completed.
-]])
-      end
-      rawset(t, k, v)
-    end
-  }
-  setmetatable(proxy, mt)
-  return proxy
-end
+-- local function readOnly (t)
+--   local proxy = {}
+--   local mt = {
+--     __index = t,
+--     __newindex = function (_, k, v) -- mt, k, v
+--       if rawget(t, k) then
+--         SU.warn("Attempt to redefine an existing style '"..k..[['
+--   This feature will be deprecated when the new styling paradigm is completed.
+-- ]])
+--       end
+--       rawset(t, k, v)
+--     end
+--   }
+--   setmetatable(proxy, mt)
+--   return proxy
+-- end
 
 function package.freezeStyles (_)
-  SILE.scratch.styles.specs = readOnly(SILE.scratch.styles.specs)
+  --SILE.scratch.styles.specs = readOnly(SILE.scratch.styles.specs)
+  -- Oops read only tables are not iterable...
+  -- FIXME LATER
 end
 
 function package:registerCommands ()
@@ -438,7 +440,7 @@ function package:registerCommands ()
         SILE.call("kern", { width = beforekern })
       end
       SILE.call("style:apply", { name = name }, { text })
-      if beforekern then
+      if afterkern then
         SILE.call("kern", { width = afterkern })
       end
     end
