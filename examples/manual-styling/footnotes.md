@@ -16,11 +16,9 @@ parent style.
 
 ```yaml
 footnote-reference-counter:
-  # called by packages.resilient.footnote
   inherit: "footnote-reference"
 
 footnote-reference-symbol:
-  # called by packages.resilient.footnote
   inherit: "footnote-reference"
 ```
 
@@ -64,7 +62,6 @@ fonts of the past being only available in a limited number of sizes.
 
 ```yaml
 footnote:
-  # called by packages.resilient.footnote
   style:
     font:
       size: "0.8em"
@@ -119,7 +116,6 @@ books. Let's go for it in our default style.
 
 ```yaml
 footnote-marker-counter:
-  # called by packages.resilient.footnote
   inherit: "footnote-marker"
   style:
     numbering:
@@ -131,7 +127,6 @@ between the mark and the text of the note.
 
 ```yaml
 footnote-marker-symbol:
-  # called by packages.resilient.footnote
   inherit: "footnote-marker"
 ```
 
@@ -146,7 +141,6 @@ footnote-marker:
       after:
         kern: "1nspc"
 footnote-marker-counter:
-  # called by packages.resilient.footnote
   inherit: "footnote-marker"
   style:
     properties:

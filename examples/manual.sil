@@ -126,12 +126,16 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 \include[src=manual-styling/basics.md]
 \include[src=manual-styling/character.md]
 \include[src=manual-styling/paragraph.md]
+\include[src=manual-styling/toc.md]
+
+\chapter{Resilient styles 101}
+
+\include[src=manual-styling/folio.md]
+\include[src=manual-styling/footnotes.md]
+\include[src=manual-styling/toc-details.md]
 
 % \include[src=manual-styling/lists.md]
-% \include[src=manual-styling/toc.md]
-\include[src=manual-styling/footnotes.md]
 %\include[src=manual-styling/captioned.md]
-\include[src=manual-styling/folio.md]
 
 % ---------------------- PACKAGES
 \part{Packages}

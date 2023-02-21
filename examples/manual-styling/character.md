@@ -78,7 +78,6 @@ As a rule of thumb, the "kern" widths can include stretch and shrink
 values (e.g. `10pt plus 2pt minus 1pt`). Be aware, however, that
 some packages call for a fixed width in the context of what they
 are doing, and may therefore cancel these variations.
-
 The "kern" values are expressed as usual SILE length specifications,
 with the following additions:
 

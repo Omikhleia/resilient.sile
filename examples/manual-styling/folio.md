@@ -7,14 +7,12 @@ styling decisions to a common parent style.
 
 ```yaml
 folio-even:
-  # called by classes.resilient.book
   inherit: "folio-base"
   style:
     paragraph:
       align: "left"
 
 folio-odd:
-  # called by classes.resilient.book
   inherit: "folio-base"
   style:
     paragraph:
