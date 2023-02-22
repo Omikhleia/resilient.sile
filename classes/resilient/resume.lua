@@ -84,19 +84,16 @@ function class:_init (options)
   self:loadPackage("image") -- for the user picture
   self:loadPackage("ptable") -- for tables
   self:loadPackage("resilient.lists") -- for bullet lists
-  -- Redefine the 6 default itemize styles to apply our resume-color
-  -- Tricky to remember: not possible in registerStyles() as the latter is
-  -- invoked before the packages are loaded (so it is only usage for styles
-  -- provided by the class)
-  for i = 1, 6 do
-    local itemizeSty = self.styles:resolveStyle("lists-itemize"..i)
-    self:registerStyle("lists-itemize"..i, { inherit = "resume-color" }, itemizeSty)
-  end
-  -- Same for the alternate variant
-  for i = 1, 6 do
-    local itemizeSty = self.styles:resolveStyle("lists-itemize-alternate"..i)
-    self:registerStyle("lists-itemize-alternate"..i, { inherit = "resume-color" }, itemizeSty)
-  end
+  -- Hack the default itemize styles to apply our resume-color
+  -- IMPLEMENTATION NOTES
+  --  - Tricky to remember: not possible in registerStyles() as the latter is
+  --    invoked before the packages are loaded (so its only usage is for styles
+  --    provided by the class itself)
+  --  - We directly tap into the internal style specification, to add the
+  --    inheritance without losing user-defined styling. That's better
+  --    than redefining the style, so as to ensure the inheritance is
+  --    added whatever the saved styled file says.
+  SILE.scratch.styles.specs["lists-itemize-base"].inherit = "resume-color"
 
   self:loadPackage("masters")
   self:defineMaster({
@@ -168,35 +165,62 @@ end
 
 -- STYLES
 function class:registerStyles ()
-  self:registerStyle("resume-firstname", {}, { font = { style = "light" }, color = { color = "#a6a6a6" } })
-  self:registerStyle("resume-lastname", {}, { color = { color = "#737373" } })
+  self:registerStyle("resume-firstname", {}, {
+    font = { style = "light" }, color = { color = "#a6a6a6" }
+  })
+  self:registerStyle("resume-lastname", {}, {
+    color = { color = "#737373" }
+  })
 
-  self:registerStyle("resume-fullname", {}, { font = { size = "30pt" }, paragraph = { align = "right" } })
+  self:registerStyle("resume-fullname", {}, {
+    font = { size = "30pt" },
+    paragraph = { align = "right" }
+  })
 
-  self:registerStyle("resume-color", {}, { color = { color = "#4080bf" } }) -- a nice tint of blue
+  self:registerStyle("resume-color", {}, {
+    color = { color = "#4080bf" }
+  }) -- a nice tint of blue
 
-  self:registerStyle("resume-dingbats", { inherit = "resume-color" }, { font = { family = "Symbola", size = "0.9em" } })
+  self:registerStyle("resume-dingbats", { inherit = "resume-color" }, {
+    font = { family = "Symbola", size = "0.9em" }
+  })
 
-  self:registerStyle("resume-jobrole", {}, { font = { weight = 600 } })
+  self:registerStyle("resume-jobrole", {}, {
+    font = { weight = 600 }
+  })
 
-  self:registerStyle("resume-headline", {}, { font = { weight = "300", style = "italic", size = "0.9em" },
+  self:registerStyle("resume-headline", {}, {
+    font = { weight = 300, style = "italic", size = "0.9em" },
     color = { color = "#373737" },
-    paragraph = { align = "center" } })
+    paragraph = { align = "center" }
+  })
 
-  self:registerStyle("resume-section", { inherit = "resume-color" }, { font = { size = "1.2em" } })
+  self:registerStyle("resume-section", { inherit = "resume-color" }, {
+    font = { size = "1.2em" }
+  })
 
-  self:registerStyle("resume-topic", {}, { font = { style="light", size = "0.9em" },
-    paragraph = { align = "right" } })
+  self:registerStyle("resume-topic", {}, {
+    font = { style="light", size = "0.9em" },
+    paragraph = { align = "right" }
+  })
+
   self:registerStyle("resume-description", {}, {})
 
-  self:registerStyle("resume-contact", {}, { font = { style = "thin", size = "0.95em" },
-    paragraph = { align = "center" } })
+  self:registerStyle("resume-contact", {}, {
+    font = { style = "thin", size = "0.95em" },
+    paragraph = { align = "center" }
+  })
 
-  self:registerStyle("resume-jobtitle", {}, { font = { size = "20pt" },
-    color = { color = "#373737" }, paragraph = { align = "center", skipbefore = "0.5cm" } })
+  self:registerStyle("resume-jobtitle", {}, {
+    font = { size = "20pt" },
+    color = { color = "#373737" },
+    paragraph = { align = "center", skipbefore = "0.5cm" }
+  })
 
-  self:registerStyle("resume-header", {}, { font = { size = "20pt" },
-    paragraph = { align = "right" } })
+  self:registerStyle("resume-header", {}, {
+    font = { size = "20pt" },
+    paragraph = { align = "right" }
+  })
 end
 
 -- RESUME PROCESSING
