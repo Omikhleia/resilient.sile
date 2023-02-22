@@ -123,18 +123,19 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 \caption{A man with a \em{certain} style.\footnote[mark=†]{From Leonardo da Vinci’s “Condottiero”, \em{circa} 1475.}}
 \end{figure}
 
-\include[src=manual-styling/basics.md]
-\include[src=manual-styling/character.md]
-\include[src=manual-styling/paragraph.md]
-\include[src=manual-styling/toc.md]
+\include[src=manual-styling/basics/concepts.md]
+\include[src=manual-styling/basics/character.md]
+\include[src=manual-styling/basics/lists.md]
+\include[src=manual-styling/basics/paragraph.md]
+\include[src=manual-styling/basics/toc.md]
 
 \chapter{Resilient styles 101}
 
-\include[src=manual-styling/folio.md]
-\include[src=manual-styling/footnotes.md]
-\include[src=manual-styling/toc-details.md]
+\include[src=manual-styling/advanced/folio.md]
+\include[src=manual-styling/advanced/footnotes.md]
+\include[src=manual-styling/advanced/toclevels.md]
+\include[src=manual-styling/advanced/liststyles.md]
 
-% \include[src=manual-styling/lists.md]
 %\include[src=manual-styling/captioned.md]
 
 % ---------------------- PACKAGES

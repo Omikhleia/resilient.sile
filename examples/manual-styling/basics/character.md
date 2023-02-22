@@ -50,7 +50,7 @@ an additional element may also be used.
       before:
         text: "⟨format⟩"
         kern: "⟨dimen⟩"
-      after:  "⟨text⟩"
+      after:
         text: "⟨text⟩"
         kern: "⟨dimen⟩"
 ```

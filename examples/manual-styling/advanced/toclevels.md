@@ -26,9 +26,9 @@ toc:
 
 ### Level items
 
-Each level N in the table of contents has its own paragraph style `toc-levelN`.
-They are fairly repetitive, so let's illustrate one (level 0, normally corresponding
-to book "parts").
+Each level _N_ in the table of contents has its own paragraph style `toc-level⟨N⟩`.
+They are fairly repetitive, so let's illustrate only one (level 0, normally
+corresponding to book "parts").
 
 ```yaml
 toc-level0: 
@@ -74,7 +74,7 @@ uses a slightly different spacing after the number.
 
 ```yaml
 toc-number-level5: 
-  origin: "resilient.tableofcontents"
+  inherit: "toc-number-base"
   style: 
     font: 
       features: "+smcp"
