@@ -96,7 +96,7 @@ footnote-marker:
   style:
     numbering:
       after:
-        kern: "iwsp"    
+        kern: "iwsp"
       before:
         kern: "-3.75nspc"
 ```

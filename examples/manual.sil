@@ -124,13 +124,14 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 \end{figure}
 
 \include[src=manual-styling/basics/concepts.md]
+\include[src=manual-styling/basics/definitions.md]
 \include[src=manual-styling/basics/character.md]
 \include[src=manual-styling/basics/lists.md]
 \include[src=manual-styling/basics/paragraph.md]
 \include[src=manual-styling/basics/toc.md]
+\include[src=manual-styling/basics/sectioning.md]
 
-\chapter{Resilient styles 101}
-
+\include[src=manual-styling/advanced/intro.md]
 \include[src=manual-styling/advanced/folio.md]
 \include[src=manual-styling/advanced/footnotes.md]
 \include[src=manual-styling/advanced/toclevels.md]

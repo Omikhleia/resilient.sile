@@ -8,7 +8,7 @@ A regular character style obeys to the following specification
 ```yaml
 ⟨style name⟩:
   style:
-    font:  ⟨font specification⟩
+    font: ⟨font specification⟩
     properties:
       color: "⟨color specification⟩"
       position: "normal|super|sub"
@@ -31,7 +31,7 @@ my-custom-style-name:
   style:
     font:
       family: "Libertinus Serif"
-      style:  "italic"
+      style: "italic"
     properties:
       position: "super"
       color: "blue"

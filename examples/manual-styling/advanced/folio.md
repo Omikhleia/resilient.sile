@@ -20,23 +20,20 @@ folio-odd:
 ```
 
 That common parent style is where we would ideally define the font, for instance
-to use old-style numbering in a smaller font size than the main text block.
-It is also where we can define the numbering format.
+to use old-style numbering. It is also where we can define the numbering format.
+Robert Bringhurst says: "It is usual to set folios in the text size"---so we won't
+change the font size.
 
 ```yaml
 folio-base:
   style:
     font:
       features: "+onum"
-      size: "0.9em"
     numbering:
       display: "arabic"
 ```
 
-FIXME: (Nov. 2022)
+::: {custom-style="admon"}
 Frontmatter / mainmatter / backmatter sections are not implement yet.
 So for now, the above only documents the "mainmatter" general styling.
-
-FIXME: (Jan. 2023)
-Be sure to also address the other non-book classes,
-when those are pushed to the repository.
+:::

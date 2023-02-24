@@ -11,7 +11,7 @@ A table of contents style (or "ToC style" in brief) obeys the following specific
     toc:
       pageno: true|false
       dotfill: true|false
-      number: true|false
+      numbered: true|false
 ```
 
 Such a style applies to a given sectioning level in the table of contents.

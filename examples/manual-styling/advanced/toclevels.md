@@ -1,4 +1,4 @@
-## Styling table of contents
+## Styling the table of contents
 
 For styling the table of contents,[^toc-fancy] you may want to
 consider:
@@ -9,7 +9,8 @@ consider:
  - How page references are formatted.
 
 [^toc-fancy]: This section applies to the "standard" table of contents,
-as produced with the `\tableofcontents` command.
+as produced with the `\tableofcontents` command from the **resilient.tableofcontents**
+package.
 Specific implementations such as **fancytoc** may use their own
 styling rules.
 
@@ -19,7 +20,7 @@ There is a general paragraph style for the whole table of contents.
 Its default implementation is empty, but you may possibly tune it.
 
 ```yaml
-toc: 
+toc:
   style:
     paragraph:
 ```
@@ -31,18 +32,18 @@ They are fairly repetitive, so let's illustrate only one (level 0, normally
 corresponding to book "parts").
 
 ```yaml
-toc-level0: 
+toc-level0:
   inherit: "toc-level-base"
-  style: 
-    font: 
+  style:
+    font:
       size: "1.15em"
       weight: 800
-    paragraph: 
+    paragraph:
       breakafter: false
       indentbefore: false
       skipafter: "medskip"
       skipbefore: "medskip"
-    toc: 
+    toc:
       numbered: true
       pageno: false
 ```
@@ -57,10 +58,10 @@ styling decision may be applied. The default implementation appends a
 period to the number, and some space.
 
 ```yaml
-toc-number-base: 
-  style: 
-    numbering: 
-      after: 
+toc-number-base:
+  style:
+    numbering:
+      after:
         kern: "2thsp"
         text: "."
 ```
@@ -73,16 +74,16 @@ a bit of text before the number, switches to small capitals, and
 uses a slightly different spacing after the number.
 
 ```yaml
-toc-number-level5: 
+toc-number-level5:
   inherit: "toc-number-base"
-  style: 
-    font: 
+  style:
+    font:
       features: "+smcp"
-    numbering: 
-      after: 
+    numbering:
+      after:
         kern: "2spc"
         text: "."
-      before: 
+      before:
         text: "Fig. "
 ```
 
@@ -94,8 +95,8 @@ Its defult definition is empty. Would you want old-style page numbers,
 you could define it as follows:
 
 ```yaml
-toc-pageno: 
-  style: 
+toc-pageno:
+  style:
     font:
       features: "+onum"
 ```

@@ -1,4 +1,4 @@
-### Styling lists
+## Styling lists
 
 The **resilient.lists** package, as noted in its documentation, uses
 different sets of styles for the `itemize` and the `enumerate`
@@ -18,9 +18,13 @@ When styling your lists, you have more the one option.
  - You may add a whole new sets, would you need more than one variant
    in your document.
 
-But there's event more than meet the eyes, here. The `itemize` and `enumerate`
+But there's even more than meets the eyes, here. The `itemize` and `enumerate`
 environments are just named this way as a mere semantic convenience,
 but since you have full control on each item style definition, nothing prevents
 you from actually mixing ordered and unordered item styles in a given set.
 This will result in a kind of "mixed list", where some levels are numbered
-and others marked with bullets.
+and others marked with bullets.[^styles-lists-mixed]
+
+[^styles-lists-mixed]: Whether it is a sound thing to do this way
+is another matter.
+
