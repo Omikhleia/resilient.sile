@@ -110,19 +110,10 @@ function package:registerCommands ()
       if numbering then
         if secStyle.numberstyle then
           local numSty = self:resolveStyle(secStyle.numberstyle)
-          local pre = numSty.numbering and numSty.numbering.before
-          local post = numSty.numbering and numSty.numbering.after
-          local kern = numSty.numbering and numSty.numbering.kern or interWordSpace()
 
-          SILE.call("style:apply", { name = secStyle.numberstyle }, function ()
-            if pre and pre ~= "false" then SILE.typesetter:typeset(pre) end
-            SILE.typesetter:typeset(number)
-            if post and post ~= "false" then SILE.typesetter:typeset(post) end
-          end)
+          SILE.call("style:apply:number", { name = secStyle.numberstyle, text = number })
           if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
             SILE.call("break") -- HACK. Pretty weak unless the parent paragraph style is ragged.
-          else
-            SILE.call("kern", { width = kern })
           end
         else
           SILE.typesetter:typeset(number)

@@ -436,7 +436,7 @@ function package:registerCommands ()
       -- We want at least the space of a figure digit between the number
       -- and the text.
       if remainingSpace:tonumber() - SILE.length("1nspc"):absolute() <= 0 then
-        -- It's not the case, the numbergoes beyond the available space.
+        -- It's not the case, the number goes beyond the available space.
         -- So add a fixed interword space after it.
         SILE.call("style:apply", { name = name }, { text })
         if afterkern then

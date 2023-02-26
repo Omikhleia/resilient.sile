@@ -216,14 +216,17 @@ function class:registerStyles ()
 
   self:registerStyle("sectioning-part-number", {}, {
     font = { features = "+smcp" },
-    numbering = { before = "Part ", standalone = true },
+    numbering = { before = { text ="Part " },
+                  standalone = true },
   })
   self:registerStyle("sectioning-chapter-number", {}, {
     font = { size = "0.9em" },
-    numbering = { before = "Chapter ", after = ".", standalone = true },
+    numbering = { before = { text = "Chapter "} ,
+                  after = { text = "." },
+                  standalone = true },
   })
   self:registerStyle("sectioning-other-number", {}, {
-    numbering = { after = "." }
+    numbering = { after = { text = ".", kern = "iwsp" } }
   })
 
   -- folio styles
@@ -275,7 +278,8 @@ function class:registerStyles ()
                    goodbreak = false, numberstyle="figure-caption-number" },
   })
   self:registerStyle("figure-caption-number", {}, {
-    numbering = { before = "Figure ", after = "." },
+    numbering = { before = { text = "Figure " },
+                  after = { text = ".", kern = "iwsp" } },
     font = { features = "+smcp" },
   })
   self:registerStyle("table", {}, {
@@ -292,7 +296,8 @@ function class:registerStyles ()
                    goodbreak = false, numberstyle="table-caption-number" },
   })
   self:registerStyle("table-caption-number", {}, {
-    numbering = { before = "Table ", after = "." },
+    numbering = { before = { text = "Table " },
+                  after = { text = ".", kern = "iwsp" } },
     font = { features = "+smcp" },
   })
 end
