@@ -1,5 +1,5 @@
 \begin{document}
-\chapter{Book class}
+\chapter{The resilient book class}
 
 The design of the \strong{resilient.book} class was started as an attempt at gradually tuning the
 default book class from SILE to this author’s needs and taste. It eventually
@@ -265,7 +265,7 @@ Cross-references are supported via the \autodoc:package{labelrefs} package, henc
 the \autodoc:command{\label}, \autodoc:command{\ref} and \autodoc:command{\pageref} commands are
 available.
 
-\chapter{Curriculum vitae class}
+\chapter{A \em{curriculum vitae} class}
 
 The \strong{resilient.resume} class provides a minimalist (read, naive) way to make a modern \em{résumé} (CV) with SILE.
 

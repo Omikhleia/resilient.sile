@@ -1,4 +1,4 @@
-\begin[papersize=6in x 9in, class=resilient.book]{document}
+\begin[papersize=6in x 9in, class=resilient.book, layout=demiluxe]{document}
 \use[module=packages.url]
 \use[module=packages.resilient.epigraph]
 \style:define[name=epigraph-source]{}
@@ -8,15 +8,13 @@
 %
 \language[main=fr]
 \font[family=Libertinus Serif]
-\set[parameter=linebreak.emergencyStretch, value=15%lw]%
 %
-% HACKS/WORKAROUNDS FOR SILE 0.12.x BUGS
-% FIXME \script[src=hacks/hacks]
-% HACKS FOR SILE 0.14.2 BUGS???
-\script{SILE.outputter:_ensureInit()}
+% No longer required (bug in SILE 0.14.2
+%\script{SILE.outputter:_ensureInit()}
 %
 % UGLY: We don't want URLs to be typeset using a typewriter font :)
 % Just cancel the \code command so the default text font is used.
+% Waiting for urlstyle in SILE code...
 \define[command=code]{\process}%
 %
 \define[command=smallcaps]{\font[features=+smcp]{\process}}
@@ -62,7 +60,7 @@ end, "Wrapper around dropcap, for baselineskip adjustment")
 \pdf:metadata[key=Title, value=Le conte perdu de Mercure]%
 \pdf:metadata[key=Author, value=Alain Lefèvre]%
 
-\begin{raggedright}
+\begin{raggedright}%
 Alain \smallcaps{Lefèvre}\footnote[mark=†]{Cet article est extrait de \em{Tolkien, le façonnement d’un monde}, \abbr:vol{1},
 Le Dragon de Brume, 2011, \abbr:page{211–216} — avec la permission de l’auteur.}
 \end{raggedright}

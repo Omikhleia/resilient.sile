@@ -15,10 +15,6 @@
 \use[module=packages.printoptions]
 \language[main=en]
 \font[family=Libertinus Serif, size=10pt]
-% FIXME MAKE FONT SIZE, EMERG. AND SHAPER THE DEFAULT FOR RESILIENT
-\set[parameter=linebreak.emergencyStretch, value=25%lw]
-\set[parameter=shaper.spaceenlargementfactor, value=1]
-\define[command=codeblock]{\font[family=Libertinus Sans]{\process}}
 \footnote:rule
 \header:rule
 \pdf:metadata[key=Title, value=The resilient collection of classes & packages]
@@ -31,7 +27,7 @@ padding=2%fw, bordercolor=100, fillcolor=230, shadowcolor=#96A8C7, shadow=false]
 \parbox[width=96%lw]{\set[parameter=document.parindent, value=0]\font[size=9pt]\color[color=100]{\process}\par}%
 }}%
 \medskip}
-\set[parameter=textsubsuper.fake, value=true]% Broken see Houston below.
+\set[parameter=textsubsuper.fake, value=true]
 
 % We do not have a true titlepage for now, build it manually.
 \background[color=#e9d8ba,allpages=false]
@@ -40,25 +36,23 @@ padding=2%fw, bordercolor=100, fillcolor=230, shadowcolor=#96A8C7, shadow=false]
 \hbox{}\vfill
 
 \begin{center}
-\font[size=20pt]{The resilient collection
+\font[size=20pt]{The
 
-of classes & packages
+\medskip
+\font[size=35pt, style=italic]{\kern[width=-0.1em]re·sil·ient}
 
+collection
+
+of
+
+classes & packages
+
+\smallskip
 for SILE
 
 }
 \end{center}
 
-\smallskip
-\begin{center}
-\font[size=16pt]{A redesigned version
-
-of
-
-Omikhleia’s classes & packages
-
-}
-\end{center}
 \vfill
 
 \break

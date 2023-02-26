@@ -42,12 +42,11 @@ I expected my book project to be completed around March 2022, but the time-frame
 shifted by a few months. Real-life constraints and proofreading sessions also
 played a part… Let’s say, after all, that an extended 5- to 6-month charter was
 actually required for the project to be achieved, with several hacks to circumvent
-bug issues\footnote{%
+bug issues and with a less bold layout than envisioned.\footnote{%
 I got real annoyed to discover, that late in the process, that SILE couldn’t do
-hyphenation properly and justify text correctly when fonts have ligatures…}
-and with a less bold layout than envisioned\footnote{%
-Not being able to use the so-said InDesign-like frames in any decent way was
-one of the most painful learnings…}.
+hyphenation properly and justify text correctly when fonts have ligatures…
+Besides, not being able to use the so-said InDesign-like frames in any decent way
+was one of the most painful learnings…}
 
 Yet, the 362-page book was eventually
 \href[src=https://sites.google.com/site/dragonbrumeux/contes-et-l%C3%A9gendes-dalmaq]{completed}\footnote{%

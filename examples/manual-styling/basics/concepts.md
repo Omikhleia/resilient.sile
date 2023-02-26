@@ -91,7 +91,7 @@ easier for class and package designers to abstract styling decisions,
 by reusing the same mechanism in their own code, rather than reinventing
 the wheel.
 
-[^styles-vs-hooks]: Most "legacy" class classes and packages in SILE rely on hooks,
+[^styles-vs-hooks]: Most "legacy" classes and packages in SILE rely on hooks,
 such as `pullquote:font` and `book:right-running-head-font`, to quote just a few.
 None of these seem to have the same type of name. Their scope too is not always
 clear. What if one also wants, for instance, to specify a color? Of course,
