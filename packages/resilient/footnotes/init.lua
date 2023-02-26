@@ -89,7 +89,6 @@ function package:registerCommands ()
   self:registerCommand("footnote:marker", function (options, _)
     local fnStyName = options.mark and "footnote-marker-symbol" or "footnote-marker-counter"
     local text = options.mark or self.class.packages.counters:formatCounter(SILE.scratch.counters.footnote)
-    SILE.call("noindent")
     SILE.call("style:apply:number", { name = fnStyName, text = text })
   end, "(Internal) Command called to typeset the footnote counter in the footnote itself.")
 
@@ -143,14 +142,17 @@ function package:registerCommands ()
     -- Apply the font before boxing, so relative baselineskip applies #1027
     local material
     SILE.call("style:apply", { name = "footnote" }, function ()
+      SILE.settings:set("document.parindent", SILE.length(0))
       if kern and kern:tonumber() < 0 then
         -- HACK / FRAGILE: immediate absolutization, cause weird things occur
         -- otherwise (not sure when this gets absolutized with respect to the
         -- vbox construction, but something deeper is amiss...)
-        SILE.settings:set("document.parindent", kern:absolute())
         SILE.settings:set("document.lskip", -kern:absolute())
       end
       material = SILE.call("vbox", {}, function ()
+        if kern and kern:tonumber() < 0 then
+          SILE.call("kern", { width = kern })
+        end
         SILE.call("footnote:marker", options)
         SILE.process(content)
       end)

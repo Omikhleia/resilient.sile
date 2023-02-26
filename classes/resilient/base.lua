@@ -89,7 +89,7 @@ SILE.use = function (module, options)
     -- HACK
     if class then
       if class.packages[name] then
-        return SU.debug("resilient", "\\use with resilient already loaded", name)
+        return SU.debug("resilient", "\\use with resilient: package already loaded", name)
       end
       class.packages[name] = pack(options)
     else
@@ -98,6 +98,17 @@ SILE.use = function (module, options)
   end
 end
 -- END HACKS FOR MULTIPLE INSTANTION SIDE EFFECTS
+
+-- BEGIN HACK FOR PARINDENT HBOX ISSUE
+-- The paragraph indent was re-applied inside an hbox at the start of a
+-- paragraph.
+-- See https://github.com/sile-typesetter/sile/issues/1718
+local oldInitLine = SILE.typesetters.base.initline
+SILE.typesetters.base.initline = function (self)
+  if self.state.hmodeOnly then return end
+  oldInitLine(self)
+end
+-- END HACK FOR PARINDENT HBOX ISSUE
 
 function class:_init (options)
   parent._init(self, options)
