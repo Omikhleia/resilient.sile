@@ -514,341 +514,54 @@ function package:registerCommands ()
 end
 
 package.documentation = [[\begin{document}
-\use[module=packages.color]
-\use[module=packages.unichar]
-\use[module=packages.resilient.lists]
-
-The \autodoc:package{resilient.styles} package aims at easily defining “styling specifications”.
+The \autodoc:package{resilient.styles} package aims at easily defining
+and invoking “styling specifications”.
 It is intended to be used by other packages or classes, rather than directly—though
-users might of course use the commands provided herein to customize some styling
+users might of course use the commands provided herein to apply some styling
 definitions according to their needs.
 
-How can one customize the various SILE environments they use in their writings?
-For instance, in order to apply a different font or even a color to section
-titles, a specific rendering for some entry levels in a table of contents and different
-vertical skips here or there? They have several ways, already:
-
-\begin{itemize}
-\item{The implementation might provide settings that they can tune.}
-\item{The implementation might be kind enough to provide a few “hooks” that they can change.}
-\item{Otherwise, they have no other solution but digging into the class or package source code
-  and rewrite the impacted commands, with the risk that they will not get updates, fixes and
-  changes if the original implementation is modified in a later release.}
-\end{itemize}
-
-The last solution is clearly not satisfying. The first too, is unlikely, as class
-and package authors cannot decidely expose everything in settings (which are not really
-provided, one could even argue, for that purpose). Most “legacy” packages and classes
-therefore rely on hooks. This degraded solution, however, may raise several concerns.
-Something may seem wrong (though of course it is a matter of taste and could be debated).
-
-\begin{enumerate}
-\item{Many commands have “font hooks” indeed, with varying implementations,
-    such as \autodoc:environment[check=false]{pullquote:font} and
-    \autodoc:environment[check=false]{book:right-running-head-font} to quote
-    just a few. None of these seem to have the same type of name. Their scope too is not
-    always clear. But what if one also wants, for instance, to specify a color?
-    Of course, in many cases, the hook could be redefined to apply that wanted color
-    to the content… But, er, isn’t it called \code{…font}? Something looks amiss.}
-\item{Those hooks often have fixed definitions, e.g. footnote text at 9pt, chapter heading
-  at 22pt, etc. This doesn’t depend on the document main font size. LaTeX, years before,
-  was only a bit better here, defining different relative sizes (but assuming a book is
-  always typeset in 10pt, 11pt or 12pt).}
-\item{Many commands, say book sectioning, rely on hard-coded vertical skips. But what if
-  one wants a different vertical spacing? Two solutions come to mind, either redefining
-  the relevant commands (say \autodoc:command[check=false]{\chapter}), but we noted the flaws of that
-  method, or temporarily redefining the skips (say, \autodoc:command{\bigskip})… In a way,
-  it all sounds very clumsy, cumbersome, somehow \em{ad hoc}, and… here, LaTeX-like.
-  Which is not necessarily wrong (there is no offense intended here), but why not try
-  a different approach?}
-\end{enumerate}
-
-Indeed, \em{why not try a different approach}. Actually, this is what most modern
-word-processing software have been doing for a while, be it Microsoft Word or Libre/OpenOffice
-and cognates… They all introduce the concept of “styles”, in actually three forms at
-least: character styles, paragraph styles and page styles; But also frame styles,
-list styles and table styles, to list a few others. This package is an attempt at
-implementing such ideas, or a subset of them, in SILE. We do not intend to cover
-all the inventory of features provided in these software via styles.
-First, because some of them already have matching mechanisms, or even of a superior
-design, in SILE. Page masters, for instances, are a neat concept, and we do not
-really need to address them differently. This implementation therefore focuses
-on some practical use cases. The styling paradigm proposed here has two aims:
-
-\begin{itemize}
-\item{Avoid programmable hooks as much as possible,}
-\item{Replace them with a formal abstraction that can be shared between implementations.}
-\end{itemize}
-
-% We will even use our own fancy paragraph style for internal sectioning below.
-\style:define[name=internal-sectioning]{
-    \font[style=italic]
-    \paragraph[skipbefore=smallskip, skipafter=smallskip, breakafter=false]
-}
-\define[command=P]{\style:apply:paragraph[name=internal-sectioning]{\process}}
-
-\P{Regular styles.}
-
-To define a (character) style, one uses the following syntax (with any of the internal
-elements being optional):
-
-\begin{codes}
-\\style:define[name=\doc:args{name}]\{
-\par\quad\\font[\doc:args{font specification}]
-\par\quad\\color[color=\doc:args{color}]
-\par\quad\\properties[position=\doc:args{normal|super|sub}]
-\par\}
-\end{codes}
-
-\style:define[name=style@example]{
-    \font[family=Libertinus Serif, features=+smcp, style=italic]
-    \color[color=blue]
-}
-
-Can you guess how this \style:apply[name=style@example]{Style} was defined?
-
-Note that despite their command-like syntax, the elements in style
-specifications are not (necessarily) corresponding to actual commands.
-It just uses that familiar syntax as a convenience.\footnote{Technically-minded readers may
-also note it is also very simple to implement that way, just relying
-on SILE’s standard parser and its underlying AST.}
-
-Additional user-defined positioning properties can be registered by name and
-command in \code{SILE.scratch.styles.positions}.
-
-A style can also inherit from a previously-defined style:
-
-\begin{codes}
-\\style:define[name=\doc:args{name}, inherit=\doc:args{other-name}]\{
-\par\quad…
-\par\}
-\end{codes}
-
-This simple style inheritance mechanism is actually quite powerful, allowing
-you to re-use or redefine (see further below) existing styles and just
-override the elements you want.
-
-\P{Styles for the table of contents.}
-
-The style specification, besides the formatting commands, includes:
-
-\begin{itemize}
-\item{Displaying the page number or not,}
-\item{Filling the line with dots or not (which, obviously, is only meaningful if the previous option is
-      set to true),}
-\item{Displaying the section number or not.}
-\end{itemize}
-
-\begin{codes}
-\\style:define[name=\doc:args{name}]\{
-\par\quad{}…
-\par\quad\\toc[pageno=\doc:args{boolean}, dotfill=\doc:args{boolean}, numbering=\doc:args{boolean}]
-\par\}
-\end{codes}
-
-Note that by nature, TOC styles are also paragraph styles (see further below). Moreover,
-they also accept an extra specification, which is applied when \code{number} is true, defining:
-
-\begin{itemize}
-\item{The text to prepend to the number,}
-\item{The text to append to the number,}
-\item{The kerning space added after it (defaults to 1spc).}
-\end{itemize}
-
-\begin{codes}
-\quad{}\\numbering[before=\doc:args{string}, after=\doc:args{string}, kern=\doc:args{length}]
-\end{codes}
-
-The pre- and post-strings can be set to false, if you need to disable
-an inherited value.
-
-\P{Character styles for bullet lists.}
-
-The style specification includes the character to use as bullet. The other character
-formatting commands should of course apply to the bullet too.
-
-\begin{codes}
-\\style:define[name=\doc:args{name}]\{
-\par\quad{}…
-\par\quad\\itemize[bullet=\doc:args{character}]
-\par\}
-\end{codes}
-
-The bullet can be either entered directly as a character, or provided as a Unicode codepoint in
-hexadecimal (U+xxxx).
-
-\P{Character styles for enumerations.}
-
-The style specification includes:
-
-\begin{itemize}
-\item{The display type (format) of the item, as “arabic”, “roman”, etc.}
-\item{The text to prepend to the value,}
-\item{The text to append to the value.}
-\end{itemize}
-
-\begin{codes}
-\\style:define[name=\doc:args{name}]\{
-\par\quad{}…
-\par\quad\\enumerate[display=\doc:args{string}, before=\doc:args{string}, after=\doc:args{string}]
-\par\}
-\end{codes}
-
-The specification also accepts another extended syntax:
-
-\begin{codes}
-\\style:define[name=\doc:args{name}]\{
-\par\quad{}…
-\par\quad\\enumerate[display=\doc:args{U+xxxx}]
-\par\}
-\end{codes}
-
 \smallskip
-
-Where the display format is provided as a Unicode codepoint in hexadecimal, supposed to
-represent the glyph for “1”. It allows using a subsequent range of Unicode characters
-as number labels, even though the font may not include any OpenType feature to enable
-these automatically. For instance, one could specify U+2474 \unichar{U+2474} (“parenthesized digit one”)…
-or, why not, U+2460 \unichar{U+2460}, U+2776 \unichar{U+2776} or even U+24B6 \unichar{U+24B6}, and so on.
-It obviously requires the font to have these characters, and due to the way how Unicode is
-done, the enumeration to stay within a range corresponding to expected characters.
-
-The other character formatting commands should of course apply to the full label.
-
-\P{Character styles for footnote markers.}
-
-As for other styles above, the character style for footnote markers (i.e. the footnote
-symbol or counter in the note itself) should support the "numbering" specification.
-
-\begin{codes}
-\quad{}\\numbering[before=\doc:args{string}, after=\doc:args{string}, kern=\doc:args{length}]
-\end{codes}
-
-If the kerning space is positive, it should correspond to the space inserted after the footnote
-marker. If negative, the note text should be indented by that amount, with the footnote mark
-left-aligned in the available space.
-
-For consistency, footnote references (i.e. the footnote call in the main text body) should support
-at least the first properties, that is:
-
-\begin{codes}
-\quad{}\\numbering[before=\doc:args{string}, after=\doc:args{string}, kern=\doc:args{length}]
-\end{codes}
-
-When set, the kerning space is used \em{before} the marker.\footnote{French usage, for instance,
-recommends using a thin space or 1pt before the footnote call, which should always follow
-a lexical element (i.e. not a punctuation, unlike English where footnote calls are often
-seen \em{after} punctuations).}
-
-\P{Paragraph styles.}
-
-To define a paragraph style, one uses the following syntax (with any of the internal
-elements being optional):
-
-\begin{codes}
-\\style:define[name=\doc:args{name}]\{
-\par\quad{}…
-\par\quad\\paragraph[skipbefore=\doc:args{glue|skip}, indentbefore=\doc:args{boolean}
-\par\qquad{}skipafter=\doc:args{glue|skip}, indentafter=\doc:args{boolean},
-\par\qquad{}breakbefore=\doc:args{boolean}, breakafter=\doc:args{boolean},
-\par\qquad{}align=\doc:args{center|right|left|justify}]
-\par\}
-\end{codes}
-
-The specification includes:
-
-\begin{itemize}
-\item{The amount of vertical space before the paragraph, as a variable length or a well-known named skip
-    (bigskip, medskip, smallskip).}
-\item{Whether indentation is applied to this paragraph (defaults to true). Book sectioning commands,
-    typically, usually set it to false, for the section title not to be indented.}
-\item{The amount of vertical space after the paragraph, as a variable length or a well-known named skip
-    (bigskip, medskip, smallskip).}
-\item{Whether indentation is applied to the next paragraph (defaults to true). Book sectioning commands,
-    typically, may set it to false or true.\footnote{The usual convention for English
-    books is to disable the first paragraph indentation after a section title. The French convention, however,
-    is to always indent regular paragraphs, even after a section title.}}
-\item{Whether a page break may occur before or after this paragraph (defaults to true). Book sectioning commands,
-    typically, would set the after-break to false.}
-\item{The paragraph alignment (center, left, right or justify—the latter is the default but may be
-    useful to overwrite an inherited alignment).}
-\end{itemize}
-
-\P{Advanced paragraph styles.}
-
-As specified above, the styles specifications do not provide any way to configure
-the margins (i.e. left and right skips) and other low-level paragraph formatting
-options.
-
-\script{
--- We use long names with @ in them just to avoid messing with document
--- styles a user might have defined, but obviously this could just be
--- called "block" or whathever.
-self:registerCommand("style@blockindent", function (options, content)
-  SILE.settings:temporarily(function ()
-    local indent = SILE.length("2em")
-    SILE.settings:set("document.rskip", SILE.nodefactory.glue(indent))
-    SILE.settings:set("document.lskip", SILE.nodefactory.glue(indent))
-    SILE.process(content)
-    SILE.call("par")
-  end)
-end, "Typesets its contents in a blockquote.")
-SILE.scratch.styles.alignments["block@example"] = "style@blockindent"
-}
-\style:define[name=style@block]{
-    \font[size=-1]
-    \paragraph[skipbefore=smallskip, skipafter=smallskip, align=block@example]
-}
-
-\begin[name=style@block]{style:apply:paragraph}
-But it does not mean this is not possible at all.
-You can actually define your own command in Lua that sets these things at
-your convenience, and register it with some name in
-the \code{SILE.scratch.styles.alignments} array,
-so it gets known and is now a valid alignment option.
-
-It allows you to easily extend the styles while still getting the benefits
-from their other features.
-\end{style:apply:paragraph}
-
-Guess what, it is actually what we did here in code, to typeset the above
-“block-indented” paragraph. Similarly, you can also register your own skips
-by name in \code{SILE.scratch.styles.skips} so that to use them
-in the various paragraph skip options.
-
-As it can be seen in the example above, moreover, what we call a paragraph
-here in our styling specification is actually a “paragraph block”—nothing
-forbids you to typeset more than one actual paragraph in that environment.
-The vertical skip and break options apply before and after that whole block,
-not within it; this is by design, notably so as to achieve that kind of
-block-indented quotes.
-
-\P{Applying a character style.}
+\em{Applying a character style.}
+\novbreak
 
 To apply a character style to some content, one just has to do:
 
-\begin{codes}
-\\style:apply[name=\doc:args{name}]\{\doc:args{content}\}
-\end{codes}
+\smallskip
+\quad\autodoc:command{\style:apply[name=<name>]{<content>}}
 
+\smallskip
 The command raises an error if the named style (or an inherited style) does
 not exist. You can specify \autodoc:parameter{discardable=true} if you wish
 it to be ignored, without error.
 
-\P{Applying a paragraph style.}
+\smallskip
+\em{Applying a number style.}
+\novbreak
+
+The command takes a string as parameter, and applies the corresponding
+number style.
+
+\smallskip
+\quad\autodoc:command{\style:apply:number[name=<name>, text=<string>]}
+
+\smallskip
+\em{Applying a paragraph style.}
+\novbreak
 
 Likewise, the following command applies the whole paragraph style to its content, that is:
 the skips and options applying before the content, the character style and the alignment
 on the content itself, and finally the skips and options applying after it.
 
-\begin{codes}
-\\style:apply:paragraph[name=\doc:args{name}]\{\doc:args{content}\}
-\end{codes}
+\smallskip
+\quad\autodoc:command{\style:apply:paragraph[name=<name>]{<content>}}
 
+\smallskip
 Why a specific command, you may ask? Sometimes, one may want to just apply only the
 (character) formatting specifications of a style.
 
-\P{Applying the other styles.}
+\smallskip
+\em{Applying the other styles.}
+\novbreak
 
 A style is a versatile concept and a powerful paradigm, but for some advanced usages it
 cannot be fully generalized in a single package. The sectioning, table of contents or
@@ -856,48 +569,6 @@ enumeration styles all require support from other packages. This package just pr
 them a general framework to play with. Actually we refrained for checking many things
 in the style specifications, so one could possibly extend them with new concepts and
 benefit from the proposed core features and simple style inheritance model.
-
-\P{Redefining styles.}
-
-Regarding re-definitions now, the first syntax below allows one to change the definition
-of style \doc:args{name} to new \doc:args{content}, but saving the previous definition to \doc:args{saved-name}:
-
-\begin{codes}
-\\style:redefine[name=\doc:args{name}, as=\doc:args{saved-name}]\{\doc:args{content}\}
-\end{codes}
-
-From now on, style {\\\doc:args{name}} corresponds to the new definition,
-while \code{\\\doc:args{saved-name}} corresponds to previous definition, whatever it was.
-
-Another option is to add the \code{inherit} option to true, as shown below:
-\begin{codes}
-\\style:redefine[name=\doc:args{name}, as=\doc:args{saved-name}, inherit=true]\{\doc:args{content}\}
-\end{codes}
-
-From now on, style {\\\doc:args{name}} corresponds to the new definition as above, but
-also inherits from \code{\\\doc:args{saved-name}} — in other terms, both are applied. This allows
-one to only leverage the new definition, basing it on the older one.
-
-Note that if invoked without \doc:args{content}, the redefinition will just define an alias to the current
-style (and in that case, obviously, the \code{inherit} flag is not supported).
-It is not clear whether there is an interesting use case for it (yet), but here you go:
-
-\begin{codes}
-\\style:redefine[name=\doc:args{name}, as=\doc:args{saved-name}]
-\end{codes}
-
-Finally, the following syntax allows one to restore style \doc:args{name} to whatever was saved
-in \doc:args{saved-name}, and to clear the latter:
-
-\begin{codes}
-\\style:redefine[name=\doc:args{name}, from=\doc:args{saved-name}]
-\end{codes}
-
-So now on, \code{\\\doc:args{name}} is restored to whatever was saved and \code{\\\doc:args{saved-name}}
-is no longer defined.
-
-These style redefinion mechanisms are, obviously, at the core of customization.
-
 \end{document}]]
 
 return package

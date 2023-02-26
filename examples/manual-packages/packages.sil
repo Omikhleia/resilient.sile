@@ -57,7 +57,7 @@
 
 \package-documentation{framebox}
 
-%%% 
+%%%
 %%% GRAPHICS
 %%%
 \chapter{Graphic-related packages}
@@ -194,17 +194,13 @@ These packages are not intended to be used alone, but provide utilities
 for other packages. They are therefore mainly aimed at package and
 class writers.
 
-\section{(resilient.styles) Style specifications}
+\section{Style specification support}
 
-(Migrated, but documention needs refactorings, and heavy changes are planned.)
+\package-documentation{resilient.styles}
 
-%\package-documentation[src=packages/styles]
+\section{Abstraction for sectioning commands}
 
-\section{(resilient.sectioning) Abstraction for sectioning commands}
-
-(Migrated, but documention needs refactorings)
-
-%\package-documentation[src=packages/sectioning]
+\package-documentation{resilient.sectioning}
 
 %\section{Specialized packages}
 %

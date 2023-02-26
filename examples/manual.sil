@@ -140,7 +140,7 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 %\include[src=manual-styling/captioned.md]
 
 % ---------------------- PACKAGES
-\part{Packages}
+\part{Resilient packages}
 
 \begin{figure}
 \img[src=images/printing_press.png, width=60%pw]
@@ -149,8 +149,8 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 
 \include[src=manual-packages/packages.sil]
 
-% ---------------------- TIPS & TRICKS (PENDING DEPRECATION)
-\part{Classes}
+% ---------------------- CLASSES
+\part{Resilient classes}
 
 \begin{figure}
 \img[src=images/composer_1883.png, width=70%pw]
@@ -160,8 +160,5 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 
 \include[src=manual-classes/classes.sil]
 
-% ---------------------- TIPS & TRICKS (PENDING DEPRECATION)
-
-\include[src=manual-deprecate/style-customization.sil]
-
 \end{document}
+

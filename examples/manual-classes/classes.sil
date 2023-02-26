@@ -45,15 +45,6 @@ to detract from document clarity.”
     \cell[valign=top]{\code{sectioning-⟨\em{section type}⟩}}
     \cell[valign=top]{(Sectioning) style applied to that sectioning command.}
   \end{row}
-  \begin{row}
-    \cell[valign=top]{\code{sectioning-⟨\em{part|chapter}⟩-number}}
-    \cell[valign=top]{Style pre-defined for parts and chapters for styling their number.}
-  \end{row}
-  \begin{row}
-    \cell[valign=top]{\code{sectioning-other-number}}
-    \cell[valign=top]{Style pre-defined for other sectioning commands for styling the
-      section number.}
-  \end{row}
 \end{ptable}
 \caption{Styles used for sectioning commands.}
 \end{table}
@@ -116,11 +107,7 @@ The figure environment is (normally) intended to be used around an illustration.
   \end{row}
   \begin{row}
     \cell[valign=top]{\code{figure-caption}}
-    \cell[valign=top]{Style applied to the figure caption.}
-  \end{row}
-  \begin{row}
-    \cell[valign=top]{\code{figure-caption-number}}
-    \cell[valign=top]{Style applied to the caption number.}
+    \cell[valign=top]{(Sectioning) style applied to the figure caption.}
   \end{row}
 \end{ptable}
 \caption{Styles used for figures.}
@@ -145,7 +132,7 @@ have guessed it.
   \end{row}
   \begin{row}
     \cell[valign=top]{\code{table-caption-number}}
-    \cell[valign=top]{Style applied to the caption number.}
+    \cell[valign=top]{(Sectioning) style applied to the caption number.}
   \end{row}
 \end{ptable}
 \caption{Styles used for tables.}
@@ -277,10 +264,6 @@ therefore change many styling and appearance aspects to create a custom table of
 Cross-references are supported via the \autodoc:package{labelrefs} package, henceforth
 the \autodoc:command{\label}, \autodoc:command{\ref} and \autodoc:command{\pageref} commands are
 available.
-
-Regarding the page layout, note that it has slightly different default page masters
-than the legacy book class of SILE, as the gutter space was found to be too small,
-in this author’s opinion.
 
 \chapter{Curriculum vitae class}
 

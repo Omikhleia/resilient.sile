@@ -174,57 +174,108 @@ function class:registerStyles ()
     paragraph = { before = { skip = "15%fh" },
                   align = "center",
                   after = { skip = "bigskip" } },
-    sectioning = { counter = "parts", level = 1, display = "ROMAN",
-                  toclevel = 0,
-                  open = "odd", numberstyle="sectioning-part-number",
-                  hook = "sectioning:part:hook" },
+    sectioning = {  counter = { id ="parts", level = 1 },
+                    settings = {
+                      toclevel = 0,
+                      open = "odd"
+                    },
+                    numberstyle= {
+                      main = "sectioning-part-main-number",
+                      header = "sectioning-part-head-number",
+                      reference = "sectioning-part-ref-number"
+                    },
+                    hook = "sectioning:part:hook" },
   })
   self:registerStyle("sectioning-chapter", { inherit = "sectioning-base" }, {
     font = { weight = 800, size = "1.4em" },
     paragraph = {  align = "left",
                    after = { skip = "bigskip" } },
-    sectioning = { counter = "sections", level = 1, display = "arabic",
-                  toclevel = 1,
-                  open = "odd", numberstyle="sectioning-chapter-number",
-                  hook = "sectioning:chapter:hook" },
+    sectioning = { counter = { id = "sections", level = 1 },
+                    settings = {
+                      toclevel = 1,
+                      open = "odd"
+                    },
+                    numberstyle= {
+                      main = "sectioning-chapter-main-number",
+                      header = "sectioning-chapter-head-number",
+                      reference = "sectioning-chapter-ref-number",
+                    },
+                    hook = "sectioning:chapter:hook" },
   })
   self:registerStyle("sectioning-section", { inherit = "sectioning-base" }, {
     font = { weight = 800, size = "1.2em" },
     paragraph = { before = { skip = "bigskip" },
                   after = { skip = "medskip", vbreak = false } },
-    sectioning = { counter = "sections", level = 2, display = "arabic",
-                  toclevel = 2,
-                  numberstyle="sectioning-other-number",
-                  hook = "sectioning:section:hook" },
+    sectioning = {  counter = { id = "sections", level = 2 },
+                    settings = {
+                      toclevel = 2
+                    },
+                    numberstyle= {
+                      main = "sectioning-other-number",
+                      header = "sectioning-other-number",
+                      reference = "sectioning-other-number",
+                    },
+                    hook = "sectioning:section:hook" },
   })
   self:registerStyle("sectioning-subsection", { inherit = "sectioning-base"}, {
     font = { weight = 800, size = "1.1em" },
     paragraph = { before = { skip = "medskip" },
                   after = { skip = "smallskip", vbreak = false } },
-    sectioning = { counter = "sections", level = 3, display = "arabic",
-                  toclevel = 3,
-                  numberstyle="sectioning-other-number" },
+    sectioning = {  counter = { id = "sections", level = 3 },
+                    settings = {
+                      toclevel = 3
+                    },
+                    numberstyle= {
+                      main = "sectioning-other-number",
+                      header = "sectioning-other-number",
+                      reference = "sectioning-other-number",
+                    } },
   })
   self:registerStyle("sectioning-subsubsection", { inherit = "sectioning-base" }, {
     font = { weight = 800 },
     paragraph = { before = { skip = "smallskip" },
                   after = { vbreak = false } },
-    sectioning = { counter = "sections", level = 4, display = "arabic",
-                  toclevel = 4,
-                  numberstyle="sectioning-other-number" },
+    sectioning = {  counter = { id = "sections", level = 4 },
+                    settings = {
+                      toclevel = 4
+                    },
+                    numberstyle= {
+                      main = "sectioning-other-number",
+                      header = "sectioning-other-number",
+                      reference = "sectioning-other-number",
+                    } },
   })
 
-  self:registerStyle("sectioning-part-number", {}, {
+  self:registerStyle("sectioning-part-base-number", {}, {
+    numbering = { display = "ROMAN" }
+  })
+  self:registerStyle("sectioning-part-main-number", { inherit = "sectioning-part-base-number" }, {
     font = { features = "+smcp" },
     numbering = { before = { text ="Part " },
                   standalone = true },
   })
-  self:registerStyle("sectioning-chapter-number", {}, {
+  self:registerStyle("sectioning-part-head-number", { inherit = "sectioning-part-base-number" }, {
+    numbering = { after = { text =".", kern = "iwsp" } },
+  })
+
+  self:registerStyle("sectioning-part-ref-number", { inherit = "sectioning-part-base-number" }, {
+    numbering = { before = { text ="part " } },
+  })
+  self:registerStyle("sectioning-chapter-base-number", {}, {
+  })
+  self:registerStyle("sectioning-chapter-main-number", { inherit = "sectioning-chapter-base-number" }, {
     font = { size = "0.9em" },
     numbering = { before = { text = "Chapter "} ,
                   after = { text = "." },
                   standalone = true },
   })
+  self:registerStyle("sectioning-chapter-head-number", { inherit = "sectioning-chapter-base-number" }, {
+    numbering = { after = { text =".", kern = "iwsp" } },
+  })
+  self:registerStyle("sectioning-chapter-ref-number", { inherit = "sectioning-chapter-base-number" }, {
+    numbering = { before = { text ="chap. " } },
+  })
+
   self:registerStyle("sectioning-other-number", {}, {
     numbering = { after = { text = ".", kern = "iwsp" } }
   })
@@ -273,15 +324,27 @@ function class:registerStyles ()
     paragraph = { before = { skip = "medskip", indent = false, vbreak = false },
                   align = "center",
                   after = { skip = "medskip" } },
-    sectioning = { counter = "figures", level = 1, display = "arabic",
-                   toclevel = 5, bookmark = false,
-                   goodbreak = false, numberstyle="figure-caption-number" },
+    sectioning = {  counter = { id = "figures", level = 1 },
+                    settings = {
+                      toclevel = 5,
+                      bookmark = false,
+                      goodbreak = false
+                    },
+                    numberstyle= {
+                      main ="figure-caption-main-number",
+                      reference ="figure-caption-ref-number"
+                    } },
   })
-  self:registerStyle("figure-caption-number", {}, {
+  self:registerStyle("figure-caption-base-number", {}, {})
+  self:registerStyle("figure-caption-main-number", { inherit = "figure-caption-base-number" }, {
     numbering = { before = { text = "Figure " },
                   after = { text = ".", kern = "iwsp" } },
     font = { features = "+smcp" },
   })
+  self:registerStyle("figure-caption-ref-number", { inherit = "figure-caption-base-number" }, {
+    numbering = { before = { text = "fig. " } }
+  })
+
   self:registerStyle("table", {}, {
     paragraph = { align = "center",
                   after = { vbreak = false } },
@@ -291,14 +354,25 @@ function class:registerStyles ()
     paragraph = { before = { indent = false, vbreak = false },
                   align = "center",
                   after = { skip = "medskip" } },
-    sectioning = { counter = "table", level = 1, display = "arabic",
-                   toclevel = 6, bookmark = false,
-                   goodbreak = false, numberstyle="table-caption-number" },
+    sectioning = {  counter = { id = "table", level = 1 },
+                    settings = {
+                      toclevel = 6,
+                      bookmark = false,
+                      goodbreak = false
+                    },
+                    numberstyle= {
+                      main = "table-caption-main-number",
+                      reference = "table-caption-ref-number",
+                    } }
   })
-  self:registerStyle("table-caption-number", {}, {
+  self:registerStyle("table-caption-base-number", {}, {})
+  self:registerStyle("table-caption-main-number", { inherit = "table-caption-base-number" }, {
     numbering = { before = { text = "Table " },
                   after = { text = ".", kern = "iwsp" } },
     font = { features = "+smcp" },
+  })
+  self:registerStyle("table-caption-ref-number", { inherit = "table-caption-base-number" }, {
+    numbering = { before = { text = "table " } }
   })
 end
 
@@ -373,12 +447,15 @@ function class:registerCommands ()
     -- Sections, here, go in the odd header.
     SILE.call("odd-running-header", {}, function ()
       if SU.boolean(options.numbering, true) then
-        SILE.call("show-multilevel-counter", {
-          id = options.counter,
-          level = options.level,
-          noleadingzeros = true
-        })
-        SILE.typesetter:typeset(" ")
+        local sty = self:resolveStyle("sectioning-section")
+        local numsty = sty.sectioning and sty.sectioning.numberstyle
+          and sty.sectioning.numberstyle.header
+        if numsty and sty.sectioning.counter.id then
+          local number = self.packages.counters:formatMultilevelCounter(
+            self:getMultilevelCounter(sty.sectioning.counter.id), { noleadingzeros = true }
+          )
+          SILE.call("style:apply:number", { name = numsty, text = number })
+        end
       end
       SILE.process(content)
     end)
@@ -478,16 +555,18 @@ function class:registerCommands ()
 
   self:registerCommand("listoffigures", function (_, _)
     local figSty = self.styles:resolveStyle("figure-caption")
-    local start = figSty.sectioning and figSty.sectioning.toclevel
+    local start = figSty.sectioning
+      and figSty.sectioning.settings and figSty.sectioning.settings.toclevel
       or SU.error("Figure style does not specify a TOC level sectioning")
 
     SILE.call("tableofcontents", { start = start, depth = 0 })
   end, "Output the list of figures.")
 
   self:registerCommand("listoftables", function (_, _)
-    local figSty = self.styles:resolveStyle("table-caption")
-    local start = figSty.sectioning and figSty.sectioning.toclevel
-      or SU.error("Figure style does not specify a TOC level sectioning")
+    local tabSty = self.styles:resolveStyle("table-caption")
+    local start = tabSty.sectioning
+      and tabSty.sectioning.settings and tabSty.sectioning.settings.toclevel
+      or SU.error("Table style does not specify a TOC level sectioning")
 
     SILE.call("tableofcontents", { start = start, depth = 0 })
   end, "Output the list of tables.")

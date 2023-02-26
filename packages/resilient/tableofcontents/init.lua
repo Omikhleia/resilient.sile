@@ -316,8 +316,6 @@ function package:registerStyles ()
 end
 
 package.documentation = [[\begin{document}
-\use[module=packages.resilient.lists]
-
 The \autodoc:package{resilient.tableofcontents} package is a re-implementation of the
 default \autodoc:package{tableofcontents} package from SILE. As its original ancestor,
 it provides tools for classes to create tables of contents.
