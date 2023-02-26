@@ -59,7 +59,7 @@ function package:registerCommands ()
         SILE.call("open-on-any-page")
       end
       local sty = self:resolveStyle(name) -- Heavy-handed, but I was tired.
-      if sty.paragraph and sty.paragraph.skipbefore then
+      if sty.paragraph and sty.paragraph.before.skip then
         -- Ensure the vertical skip will be applied even if at the top of
         -- the page. Introduces a line, though. I haven't found how to avoid
         -- it :(

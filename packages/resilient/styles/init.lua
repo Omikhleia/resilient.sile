@@ -171,6 +171,19 @@ function package:resolveStyle (name, discardable)
   return stylespec.style
 end
 
+function package:resolveParagraphStyle (name, discardable)
+  local styledef = self:resolveStyle(name, discardable)
+  -- Apply defaults
+  styledef.paragraph = styledef.paragraph or {}
+  styledef.paragraph.before = styledef.paragraph.before or {}
+  styledef.paragraph.before.indent = SU.boolean(styledef.paragraph.before.indent, true)
+  styledef.paragraph.before.vbreak = SU.boolean(styledef.paragraph.before.vbreak, true)
+  styledef.paragraph.after = styledef.paragraph.after or {}
+  styledef.paragraph.after.indent = SU.boolean(styledef.paragraph.after.indent, true)
+  styledef.paragraph.after.vbreak = SU.boolean(styledef.paragraph.after.vbreak, true)
+  return styledef
+end
+
 -- human-readable specification for debug (text)
 local function dumpOptions(options)
   local opts = {}
@@ -344,37 +357,34 @@ function package:registerCommands ()
 
   self:registerCommand("style:apply:paragraph", function (options, content)
     local name = SU.required(options, "name", "style:apply:paragraph")
-    local styledef = self:resolveStyle(name, options.discardable)
+    local styledef = self:resolveParagraphStyle(name, options.discardable)
     local parSty = styledef.paragraph
 
-    if parSty then
-      local bb = SU.boolean(parSty.breakbefore, true)
-      if #SILE.typesetter.state.nodes then
-        if not bb then SILE.call("novbreak") end
-        SILE.typesetter:leaveHmode()
-      end
-      styleForSkip(parSty.skipbefore, parSty.breakbefore)
-      if SU.boolean(parSty.indentbefore, true) then
-        SILE.call("indent")
-      else
-        SILE.call("noindent")
-      end
+    local bb = SU.boolean(parSty.before.vbreak, true)
+    if #SILE.typesetter.state.nodes then
+      if not bb then SILE.call("novbreak") end
+      SILE.typesetter:leaveHmode()
     end
 
-    local ba = not parSty and true or SU.boolean(parSty.breakafter, true)
+    styleForSkip(parSty.before.skip, parSty.before.vbreak)
+    if parSty.before.indent then
+      SILE.call("indent")
+    else
+      SILE.call("noindent")
+    end
+
+    local ba = parSty.after.vbreak
     styleForAlignment(styledef, content, ba)
 
-    if parSty then
-      if not ba then SILE.call("novbreak") end
-      -- NOTE: SILE.call("par") would cause a parskip to be inserted.
-      -- Not really sure whether we expect this here or not.
-      SILE.typesetter:leaveHmode()
-      styleForSkip(parSty.skipafter, parSty.breakafter)
-      if SU.boolean(parSty.indentafter, true) then
-        SILE.call("indent")
-      else
-        SILE.call("noindent")
-      end
+    if not ba then SILE.call("novbreak") end
+    -- NOTE: SILE.call("par") would cause a parskip to be inserted.
+    -- Not really sure whether we expect this here or not.
+    SILE.typesetter:leaveHmode()
+    styleForSkip(parSty.after.skip, parSty.after.vbreak)
+    if parSty.after.indent then
+      SILE.call("indent")
+    else
+      SILE.call("noindent")
     end
   end, "Applies the paragraph style entirely.")
 
@@ -418,6 +428,9 @@ function package:registerCommands ()
       local hbox = hboxer.makeHbox(function ()
         SILE.call("style:apply", { name = name }, { text })
       end)
+      if hbox.width < 0 then
+        SU.warn("Negative hbox width should not occur any more, please report an issue")
+      end
       local remainingSpace = hbox.width < 0 and -hbox.width or -beforekern:absolute() - hbox.width
 
       -- We want at least the space of a figure digit between the number

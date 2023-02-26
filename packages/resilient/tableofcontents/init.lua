@@ -13,35 +13,41 @@ local tocStyles = {
   -- level0 ~ part
   { font = { weight = 800, size = "1.15em" },
     toc = { numbered = true, pageno = false },
-    paragraph = { skipbefore = "medskip", indentbefore = false,
-                  skipafter = "medskip", breakafter = false } },
+    paragraph = { before = { skip = "medskip", indent = false, },
+                  after = { skip = "medskip", vbreak = false } } },
   -- level1 ~ chapter
   { font = { weight = 800, size = "1.1em" },
     toc = { dotfill = false},
-    paragraph = { indentbefore = false, skipafter = "smallskip" } },
+    paragraph = { before = { indent = false },
+                  after = { skip = "smallskip" } } },
   -- level2 ~ section
   { font = { size = "1em" },
     toc = {},
-    paragraph = { indentbefore = false, skipafter = "smallskip" } },
+    paragraph = { before = { indent = false },
+                  after = { skip = "smallskip" } } },
   -- level3 ~ subsection
   { toc = { dotfill = false },
-    paragraph = { indentbefore = true, skipafter = "smallskip" } },
+    paragraph = { before = { indent = true },
+                  after = { skip = "smallskip" } } },
   -- level4 ~ subsubsection
   { toc = { pageno = false },
-    paragraph = { indentbefore = true, skipafter = "smallskip" } },
+    paragraph = { before = { indent = true },
+                  after = { skip = "smallskip" } } },
   -- level5 ~ figure
   { toc = { numbered = true },
-    paragraph = { indentbefore = false, skipafter = "smallskip" } },
+    paragraph = { before = { indent = false },
+                  after = { skip = "smallskip" } } },
   -- level6 ~ table
   { toc = { numbered = true },
-    paragraph = { indentbefore = false, skipafter = "smallskip" } },
+    paragraph = { before = { indent = false },
+                  after = { skip = "smallskip" } } },
   -- extra loosely defined levels, so we have them at hand if need be
   { toc = { pageno = false },
-    paragraph = { indentbefore = true } },
+    paragraph = { before = { indent = true } } },
   { toc = { pageno = false },
-    paragraph = { indentbefore = true } },
+    paragraph = { before = { indent = true } } },
   { toc = { pageno = false },
-    paragraph = { indentbefore = true } },
+    paragraph = { before = { indent = true } } },
 }
 
 local tocNumberStyles = {

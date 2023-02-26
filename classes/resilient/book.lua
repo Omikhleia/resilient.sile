@@ -166,11 +166,14 @@ end
 function class:registerStyles ()
   -- Sectioning styles
   self:registerStyle("sectioning-base", {}, {
-    paragraph = { indentbefore = false, indentafter = false }
+    paragraph = { before = { indent = false },
+                  after = { indent = false } }
   })
   self:registerStyle("sectioning-part", { inherit = "sectioning-base" }, {
     font = { weight = 800, size = "1.6em" },
-    paragraph = { skipbefore = "15%fh", align = "center", skipafter = "bigskip" },
+    paragraph = { before = { skip = "15%fh" },
+                  align = "center",
+                  after = { skip = "bigskip" } },
     sectioning = { counter = "parts", level = 1, display = "ROMAN",
                   toclevel = 0,
                   open = "odd", numberstyle="sectioning-part-number",
@@ -178,7 +181,8 @@ function class:registerStyles ()
   })
   self:registerStyle("sectioning-chapter", { inherit = "sectioning-base" }, {
     font = { weight = 800, size = "1.4em" },
-    paragraph = { skipafter = "bigskip", align = "left" },
+    paragraph = {  align = "left",
+                   after = { skip = "bigskip" } },
     sectioning = { counter = "sections", level = 1, display = "arabic",
                   toclevel = 1,
                   open = "odd", numberstyle="sectioning-chapter-number",
@@ -186,7 +190,8 @@ function class:registerStyles ()
   })
   self:registerStyle("sectioning-section", { inherit = "sectioning-base" }, {
     font = { weight = 800, size = "1.2em" },
-    paragraph = { skipbefore = "bigskip", skipafter = "medskip", breakafter = false },
+    paragraph = { before = { skip = "bigskip" },
+                  after = { skip = "medskip", vbreak = false } },
     sectioning = { counter = "sections", level = 2, display = "arabic",
                   toclevel = 2,
                   numberstyle="sectioning-other-number",
@@ -194,14 +199,16 @@ function class:registerStyles ()
   })
   self:registerStyle("sectioning-subsection", { inherit = "sectioning-base"}, {
     font = { weight = 800, size = "1.1em" },
-    paragraph = { skipbefore = "medskip", skipafter = "smallskip", breakafter = false },
+    paragraph = { before = { skip = "medskip" },
+                  after = { skip = "smallskip", vbreak = false } },
     sectioning = { counter = "sections", level = 3, display = "arabic",
                   toclevel = 3,
                   numberstyle="sectioning-other-number" },
   })
   self:registerStyle("sectioning-subsubsection", { inherit = "sectioning-base" }, {
     font = { weight = 800 },
-    paragraph = { skipbefore = "smallskip", breakafter = false },
+    paragraph = { before = { skip = "smallskip" },
+                  after = { vbreak = false } },
     sectioning = { counter = "sections", level = 4, display = "arabic",
                   toclevel = 4,
                   numberstyle="sectioning-other-number" },
@@ -221,7 +228,7 @@ function class:registerStyles ()
 
   -- folio styles
   self:registerStyle("folio-base", {}, {
-    font = { size = "0.95em", features = "+onum" }
+    font = { features = "+onum" }
   })
   self:registerStyle("folio-even", { inherit = "folio-base" }, {
   })
@@ -232,7 +239,8 @@ function class:registerStyles ()
   -- header styles
   self:registerStyle("header-base", {}, {
     font = { size = "0.9em" },
-    paragraph = { indentbefore = false, indentafter = false }
+    paragraph = { before = { indent = false },
+                  after = { indent = false } }
   })
   self:registerStyle("header-even", { inherit = "header-base" }, {
   })
@@ -246,20 +254,22 @@ function class:registerStyles ()
 
   self:registerStyle("blockquote", {}, {
     font = { size = "0.95em" },
-    paragraph = { skipbefore = "smallskip", skipafter = "smallskip",
-                  align = "block" }
+    paragraph = { before = { skip = "smallskip" },
+                  align = "block",
+                  after = { skip = "smallskip" } }
   })
 
   -- captioned elements
   self:registerStyle("figure", {}, {
-    paragraph = { skipbefore = "smallskip",
-                  align = "center", breakafter = false },
+    paragraph = { before = { skip = "smallskip" },
+                  align = "center",
+                  after = { vbreak = false } },
   })
   self:registerStyle("figure-caption", {}, {
     font = { size = "0.95em" },
-    paragraph = { indentbefore = false, skipbefore = "medskip", breakbefore = false,
+    paragraph = { before = { skip = "medskip", indent = false, vbreak = false },
                   align = "center",
-                  skipafter = "medskip" },
+                  after = { skip = "medskip" } },
     sectioning = { counter = "figures", level = 1, display = "arabic",
                    toclevel = 5, bookmark = false,
                    goodbreak = false, numberstyle="figure-caption-number" },
@@ -269,13 +279,14 @@ function class:registerStyles ()
     font = { features = "+smcp" },
   })
   self:registerStyle("table", {}, {
-    paragraph = { align = "center", breakafter = false },
+    paragraph = { align = "center",
+                  after = { vbreak = false } },
   })
   self:registerStyle("table-caption", {}, {
     font = { size = "0.95em" },
-    paragraph = { indentbefore = false, breakbefore = false,
+    paragraph = { before = { indent = false, vbreak = false },
                   align = "center",
-                  skipafter = "medskip" },
+                  after = { skip = "medskip" } },
     sectioning = { counter = "table", level = 1, display = "arabic",
                    toclevel = 6, bookmark = false,
                    goodbreak = false, numberstyle="table-caption-number" },

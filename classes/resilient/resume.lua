@@ -214,7 +214,7 @@ function class:registerStyles ()
   self:registerStyle("resume-jobtitle", {}, {
     font = { size = "20pt" },
     color = { color = "#373737" },
-    paragraph = { align = "center", skipbefore = "0.5cm" }
+    paragraph = { align = "center", before = { skip = "0.5cm" } }
   })
 
   self:registerStyle("resume-header", {}, {
