@@ -39,10 +39,12 @@ toc-level0:
       size: "1.15em"
       weight: 800
     paragraph:
-      breakafter: false
-      indentbefore: false
-      skipafter: "medskip"
-      skipbefore: "medskip"
+      before:
+        indent: false
+        skip: "medskip"
+      after:
+        vbreak: false
+        skip: "medskip"
     toc:
       numbered: true
       pageno: false
