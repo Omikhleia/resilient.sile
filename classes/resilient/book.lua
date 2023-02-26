@@ -114,11 +114,21 @@ function class:_init (options)
   self:loadPackage("resilient.headers")
   self:loadPackage("markdown")
 
-  -- override document.parindent default
+  -- Override document.parindent default to this author's taste
   SILE.settings:set("document.parindent", "1.25em")
+  -- Override with saner defaults:
+  -- Slightly prefer underfull lines over ugly overfull content
+  -- I used a more drastic value before, but realize it can have bad effects
+  -- too, so for a default value let's be cautious. It's still better then 0
+  -- in my opinion for the general usage.
+  SILE.settings:set("linebreak.emergencyStretch", "1em")
+  -- This should never have been 1.2 by default:
+  -- https://github.com/sile-typesetter/sile/issues/1371
+  SILE.settings:set("shaper.spaceenlargementfactor", 1)
 
-  -- override the standard foliostyle hook to rely on styles
+  -- Override the standard foliostyle hook to rely on styles
   -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
+  -- as packages are not loaded yet.
   self:registerCommand("foliostyle", function (_, content)
     SILE.call("noindent")
     local styleName = SILE.documentState.documentClass:oddPage() and "folio-odd" or "folio-even"
