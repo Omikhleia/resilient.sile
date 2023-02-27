@@ -118,11 +118,6 @@ function class:_init (options)
   self:registerStyles()
 end
 
-function class:_post_init ()
-  parent._post_init(self)
-  self.styles:freezeStyles()
-end
-
 function class:registerStyle (name, opts, styledef)
   return self.styles:defineStyle(name, opts, styledef, self._name)
 end

@@ -294,15 +294,6 @@ as the surrounding document, just smaller.
 The epigraph source is typeset in italic by default. It can be modified too,
 by redefining \code{epigraph-source}.
 
-\style:redefine[name=epigraph, as=saved:epigraph]{\font[style=italic]}
-\style:redefine[name=epigraph-source, as=saved:epigraph-source]{\font[style=normal]}
-\begin{epigraph}
-  \randomtext
-\source{\randomsource}
-\end{epigraph}
-\style:redefine[name=epigraph, from=saved:epigraph]
-\style:redefine[name=epigraph-source, from=saved:epigraph-source]
-
 As final notes, the epigraph source is intended to be short by nature, therefore
 no specific effort has been made to correctly handle sources longer than
 the epigraph block or even spanning on multiple lines.

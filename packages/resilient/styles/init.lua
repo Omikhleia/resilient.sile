@@ -45,66 +45,117 @@ function package:_init (options)
       return value * 0.5 * interwordSpace()
     end
   })
+  self:readStyles()
 end
 
--- local function table_print_value (value, indent, done)
---   indent = indent or 0
---   done = done or {}
---   if type(value) == "table" and not done [value] then
---     done [value] = true
+local YAML_INDENT = 2
+local function tableToYaml (value, indent, done)
+  indent = indent or 0
+  done = done or {}
 
---     local list = {}
---     for key in pairs (value) do
---       list[#list + 1] = key
---     end
---     table.sort(list, function(a, b) return tostring(a) < tostring(b) end)
---     local last = list[#list]
+  if type(value) == "table" and not done[value] then
+    done[value] = true -- Be sure to avoid cycles
 
---     local rep = "\n"
---     local comma
---     for _, key in ipairs (list) do
---       -- if key == last then
---       --   comma = ''
---       -- else
---       --   comma = ','
---       -- end
---       local keyRep
---       if type(key) == "number" then
---         keyRep = key
---       else
---         keyRep = tostring(key) -- string.format("%q", tostring(key))
---       end
---       rep = rep .. string.format(
---         "%s%s: %s\n",
---         string.rep(" ", indent + 2),
---         keyRep,
---         table_print_value(value[key], indent + 2, done)
---        -- comma
---       )
---     end
+    -- Sort keys
+    local keys = {}
+    for key in pairs(value) do
+      keys[#keys + 1] = key
+    end
+    table.sort(keys, function(a, b) return tostring(a) < tostring(b) end)
 
---     --rep = rep .. string.rep(" ", indent) -- indent it
---     rep = rep .. ""
+    -- Recursive dump
+    local rep = "\n"
+    for _, key in ipairs (keys) do
+      local keyRep
+      if type(key) == "number" then
+        keyRep = key
+      else
+        keyRep = tostring(key)
+      end
+      rep = rep .. string.format(
+        "%s%s:%s",
+        string.rep(" ", indent),
+        keyRep,
+        tableToYaml(value[key], indent + YAML_INDENT, done)
+      )
+    end
 
---     done[value] = false
---     return rep
---   elseif type(value) == "string" then
---     return string.format("%q", value)
---   else
---     return tostring(value)
---   end
--- end
+    -- On first table level (style names), add an extra blank line for mere readabiity
+    if indent == YAML_INDENT then
+      rep = rep .. "\n"
+    end
 
-function package.writeStyles (_)
-  local stydata = pl.pretty.write(SILE.scratch.styles)
-  -- table_print_value(SILE.scratch.styles.specs)
-  local styfile, err = io.open(SILE.masterFilename .. '.sty', "w")
+    done[value] = false
+    return rep
+  elseif type(value) == "string" then
+    return string.format(" %q\n", value)
+  else
+    return " "..tostring(value).."\n"
+  end
+end
+
+function package:readStyles ()
+  local yaml = require("tinyyaml")
+  local fname = SILE.masterFilename .. '-styles.yml'
+  local styfile, _ = io.open(fname)
+  if not styfile then
+    SILE.scratch.styles.loaded = {}
+    return SU.debug("resilient.styles", "No style file yet", fname)
+  end
+
+  SU.debug("resilient.styles", "Reading style file", fname)
+  local doc = styfile:read("*all")
+  local sty = yaml.parse(doc)
+  for name, spec in pairs(sty) do
+    if not type(name) == "string" then
+      SU.warn("Style file might be corrupted (containing numeric keys)")
+      -- Skip those keys...
+    else
+      local inherit = spec.inherit
+      local styledef = spec.style
+      if not styledef then
+        SU.warn("Style file might be corrupted (missing style specification for '" .. name .."')")
+        -- Try do define some style anyway.
+        self:defineStyle(name, { inherit = inherit }, {}, spec.origin or "corrupted")
+      else
+        SU.debug("resilient.styles", "Loading style", name)
+        self:defineStyle(name, { inherit = inherit }, styledef, spec.origin)
+      end
+    end
+  end
+
+  -- Shallow copy, since we'll just need the keys
+  SILE.scratch.styles.loaded = pl.tablex.copy(SILE.scratch.styles.specs)
+
+  self:freezeStyles()
+end
+
+function package.writeStyles () -- NOTE: Not called as a package method (invoked from class hook)
+  -- NOTE: We just want the difference on the first set level (keys as style names)
+  -- Normally the styles aren't changed after "freezing" them (unless someone taps directly
+  -- into the scrach variable, which would be BAD design in the general case.)
+  local diffs = pl.tablex.difference(SILE.scratch.styles.specs, SILE.scratch.styles.loaded)
+  local count = 0
+  for _ in pairs(diffs) do
+    count = count + 1
+  end
+  if count == 0 then
+    return SU.debug("resilient.styles", "No need to write style file (no new styles)")
+  end
+
+  local stydata = tableToYaml(SILE.scratch.styles.specs)
+  local fname = SILE.masterFilename .. '-styles.yml'
+  SU.debug("resilient.styles", "Writing style file", fname, ":", count, "new style(s)")
+  local styfile, err = io.open(fname, "w")
   if not styfile then return SU.error(err) end
   styfile:write(stydata)
   styfile:close()
 end
 
 SILE.scratch.styles = {
+  state = {
+    locked = false
+  },
   -- Actual style specifications will go there (see defineStyle etc.)
   specs = {},
   -- Known aligns options, with the command implementing them.
@@ -134,7 +185,15 @@ SILE.scratch.styles = {
 
 -- programmatically define a style
 -- optional origin allows tracking e.g which package declared that style.
+-- after styles are 'frozen', we can still define new styles but not override
+-- existing styles.
 function package.defineStyle (_, name, opts, styledef, origin)
+  if SILE.scratch.styles.state.locked then
+    if SILE.scratch.styles.specs[name] then
+      return SU.debug("resilient.styles", "Styles are now frozen: ignoring redefinition for", name)
+    end
+    SU.debug("resilient.styles", "Defining new style style", name)
+  end
   SILE.scratch.styles.specs[name] = { inherit = opts.inherit, style = styledef, origin = origin }
 end
 
@@ -153,6 +212,7 @@ local function recursiveTableMerge(t1, t2)
 end
 
 -- resolve a style (incl. inherited fields)
+-- NOTE: an optimization could be to cache the results...
 
 function package:resolveStyle (name, discardable)
   local stylespec = SILE.scratch.styles.specs[name]
@@ -163,7 +223,7 @@ function package:resolveStyle (name, discardable)
 
   if stylespec.inherit then
     local inherited = self:resolveStyle(stylespec.inherit, discardable)
-    -- Deep merging the specification options
+    -- Deep merging the style specification
     local res = pl.tablex.deepcopy(inherited)
     recursiveTableMerge(res, stylespec.style)
     return res
@@ -184,54 +244,22 @@ function package:resolveParagraphStyle (name, discardable)
   return styledef
 end
 
--- human-readable specification for debug (text)
-local function dumpOptions(options)
-  local opts = {}
-  for k, v in pairs(options) do
-    opts[#opts+1] = k.."="..v
-  end
-  return table.concat(opts, ", ")
-end
-function package.dumpStyle (_, name)
-  local stylespec = SILE.scratch.styles.specs[name]
-  if not stylespec then return "(undefined)" end
-
-  local desc = {}
-  for k, v in pairs(stylespec.style) do
-    desc[#desc+1] = k .. "[" .. dumpOptions(v).."]"
-  end
-  local textspec = table.concat(desc, ", ")
-  if stylespec.inherit then
-    if #textspec > 0 then
-      textspec = stylespec.inherit.." > "..textspec
-    else
-      textspec = "< "..stylespec.inherit
+local function readOnly (t)
+  local proxy = {}
+  local mt = {
+    __index = t,
+    __newindex = function (_, _, _) -- mt, k, v
+      SU.error("Styles are frozen at this point")
     end
-  end
-  return textspec
+  }
+  setmetatable(proxy, mt)
+  return proxy
 end
-
--- local function readOnly (t)
---   local proxy = {}
---   local mt = {
---     __index = t,
---     __newindex = function (_, k, v) -- mt, k, v
---       if rawget(t, k) then
---         SU.warn("Attempt to redefine an existing style '"..k..[['
---   This feature will be deprecated when the new styling paradigm is completed.
--- ]])
---       end
---       rawset(t, k, v)
---     end
---   }
---   setmetatable(proxy, mt)
---   return proxy
--- end
 
 function package.freezeStyles (_)
-  --SILE.scratch.styles.specs = readOnly(SILE.scratch.styles.specs)
-  -- Oops read only tables are not iterable...
-  -- FIXME LATER
+  SILE.scratch.styles.state.locked = true
+  SILE.scratch.styles.state = readOnly(SILE.scratch.styles.state)
+  SU.debug("resilient.styles", "Freezing styles")
 end
 
 function package:registerCommands ()
@@ -247,22 +275,6 @@ function package:registerCommands ()
 
     SILE.call("font", opts, content)
   end, "Applies a font, with additional support for relative sizes.")
-
-  self:registerCommand("style:define", function (options, content)
-    local name = SU.required(options, "name", "style:define")
-    if options.inherit and SILE.scratch.styles.specs[options.inherit] == nil then
-      SU.error("Unknown inherited named style '" .. options.inherit .. "'.")
-    end
-    if options.inherit and options.inherit == options.name then
-      SU.error("Named style '" .. options.name .. "' cannot inherit itself.")
-    end
-    SILE.scratch.styles.specs[name] = { inherit = options.inherit, style = {} }
-    for i=1, #content do
-      if type(content[i]) == "table" and content[i].command then
-          SILE.scratch.styles.specs[name].style[content[i].command] = content[i].options
-      end
-    end
-  end, "Defines a named style.")
 
   -- Very naive cascading...
   local styleForProperties = function (style, content)
@@ -343,7 +355,6 @@ function package:registerCommands ()
     end
   end
 
-
   -- APPLY A CHARACTER STYLE
 
   self:registerCommand("style:apply", function (options, content)
@@ -351,7 +362,7 @@ function package:registerCommands ()
     local styledef = self:resolveStyle(name, options.discardable)
 
     styleForFont(styledef, content)
-  end, "Applies a named style to the content.")
+  end, "Applies a named character style to the content.")
 
   -- APPLY A PARAGRAPH STYLE
 
@@ -386,11 +397,14 @@ function package:registerCommands ()
     else
       SILE.call("noindent")
     end
-  end, "Applies the paragraph style entirely.")
+  end, "Applies a named paragraph style entirely to the content.")
 
-  -- NUMBER STYLE
+  -- APPLY A NUMBER STYLE
 
-  self:registerCommand("style:apply:number", function (options, _)
+  self:registerCommand("style:apply:number", function (options, content)
+    if SU.hasContent(content) then
+      SU.error("Unexpected content")
+    end
     local name = SU.required(options, "name", "style:apply:number")
     local text = SU.required(options, "text", "style:apply:number")
     local styledef = self:resolveStyle(name, options.discardable)
@@ -457,60 +471,24 @@ function package:registerCommands ()
         SILE.call("kern", { width = afterkern })
       end
     end
-  end, "Applies the number style.")
+  end, "Applies a named number style to the text argument (no content).")
 
-  -- STYLE REDEFINITION
+  -- HARD DEPRECATIONS
+  -- Considering 1.x was omikhleia-sile-packages and anything in between was
+  -- a work-in-progress, we do NOT intend to maintain compatibility now
+  -- that we have a much better system.
 
-  self:registerCommand("style:redefine", function (options, content)
-    SU.required(options, "name", "style:redefined")
+  self:registerCommand("style:define", function (_, _)
+    SU.error("\\style:define is not available in resilient 2.0")
+  end)
 
-    if options.as then
-      if options.as == options.name then
-        SU.error("Style '" .. options.name .. "' should not be redefined as itself.")
-      end
+  self:registerCommand("style:redefine", function (_, _)
+    SU.error("\\style:redefine is not available in resilient 2.0")
+  end)
 
-      -- Case: \style:redefine[name=style-name, as=saved-style-name]
-      if SILE.scratch.styles.specs[options.as] ~= nil then
-        SU.error("Style '" .. options.as .. "' would be overwritten.") -- Let's forbid it for now.
-      end
-      local sty = SILE.scratch.styles.specs[options.name]
-      if sty == nil then
-        SU.error("Style '" .. options.name .. "' does not exist!")
-      end
-      SILE.scratch.styles.specs[options.as] = sty
-
-      -- Sub-case: \style:redefine[name=style-name, as=saved-style-name, inherit=true/false]{content}
-      -- TODO We could accept another name in the inherit here? Use case?
-      if content and (type(content) ~= "table" or #content ~= 0) then
-        SILE.call("style:define", { name = options.name, inherit = SU.boolean(options.inherit, false) and options.as }, content)
-      end
-    elseif options.from then
-      if options.from == options.name then
-        SU.error("Style '" .. options.name .. "' should not be restored from itself, ignoring.")
-      end
-
-      -- Case \style:redefine[name=style-name, from=saved-style-name]
-      if content and (type(content) ~= "table" or #content ~= 0) then
-        SU.warn("Extraneous content in '" .. options.name .. "' is ignored.")
-      end
-      local sty = SILE.scratch.styles.specs[options.from]
-      if sty == nil then
-        SU.error("Style '" .. options.from .. "' does not exist!")
-      end
-      SILE.scratch.styles.specs[options.name] = sty
-      SILE.scratch.styles.specs[options.from] = nil
-    else
-      SU.error("Style redefinition needs a 'as' or 'from' parameter.")
-    end
-  end, "Redefines a style saving the old version with another name, or restores it.")
-
-  -- DEBUG OR DOCUMENTATION
-
-  self:registerCommand("style:show", function (options, _)
-    local name = SU.required(options, "name", "style:show")
-
-    SILE.typesetter:typeset(self:dumpStyle(name))
-  end, "Ouputs a textual (human-readable) description of a named style.")
+  self:registerCommand("style:show", function (_, _)
+    SU.error("\\style:show is not available in resilient 2.0")
+  end)
 end
 
 package.documentation = [[\begin{document}

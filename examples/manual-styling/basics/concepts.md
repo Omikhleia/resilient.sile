@@ -5,7 +5,7 @@
 ![The resilient styling workflow.](manual-styling/workflow.dot){width=9cm}
 
 When processing your master document, you can provide a style file for it,
-going by the same name, and the extension `.sty`.
+going by the same name, and the extension `-styles.yml`.
 
 If you don't have such a style file, no problem. Upon running SILE
 for the first time on your document, you obtain, besides the usual PDF,
