@@ -371,14 +371,12 @@ function package:registerStyles ()
 
   -- Itemize style
   self:registerStyle("lists-itemize1", { inherit = "lists-itemize-base" }, {
-    -- color = { color = "red" },
     itemize = { symbol = "•" } -- black bullet
   })
   self:registerStyle("lists-itemize2", { inherit = "lists-itemize-base" }, {
     itemize = { symbol = "◦" } -- circle bullet
   })
   self:registerStyle("lists-itemize3", { inherit = "lists-itemize-base" }, {
-    -- color = { color = "blue" },
     itemize = { symbol = "–" } -- en-dash
   })
   self:registerStyle("lists-itemize4", { inherit = "lists-itemize-base" }, {
@@ -388,7 +386,6 @@ function package:registerStyles ()
     itemize = { symbol = "◦" } -- circle bullet
   })
   self:registerStyle("lists-itemize6", { inherit = "lists-itemize-base" }, {
-    -- color = { color = "blue" },
     itemize = { symbol = "–" } -- en-dash
   })
 

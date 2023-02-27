@@ -166,10 +166,11 @@ end
 -- STYLES
 function class:registerStyles ()
   self:registerStyle("resume-firstname", {}, {
-    font = { style = "light" }, color = { color = "#a6a6a6" }
+    font = { style = "light" },
+    color = "#a6a6a6"
   })
   self:registerStyle("resume-lastname", {}, {
-    color = { color = "#737373" }
+    color = "#737373"
   })
 
   self:registerStyle("resume-fullname", {}, {
@@ -178,7 +179,7 @@ function class:registerStyles ()
   })
 
   self:registerStyle("resume-color", {}, {
-    color = { color = "#4080bf" }
+    color = "#4080bf"
   }) -- a nice tint of blue
 
   self:registerStyle("resume-dingbats", { inherit = "resume-color" }, {
@@ -191,7 +192,7 @@ function class:registerStyles ()
 
   self:registerStyle("resume-headline", {}, {
     font = { weight = 300, style = "italic", size = "0.9em" },
-    color = { color = "#373737" },
+    color = "#373737",
     paragraph = { align = "center" }
   })
 
@@ -213,7 +214,7 @@ function class:registerStyles ()
 
   self:registerStyle("resume-jobtitle", {}, {
     font = { size = "20pt" },
-    color = { color = "#373737" },
+    color = "#373737",
     paragraph = { align = "center", before = { skip = "0.5cm" } }
   })
 

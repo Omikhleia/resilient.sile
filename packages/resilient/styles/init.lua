@@ -107,7 +107,7 @@ function package:readStyles ()
   local doc = styfile:read("*all")
   local sty = yaml.parse(doc)
   for name, spec in pairs(sty) do
-    if not type(name) == "string" then
+    if type(name) ~= "string" then
       SU.warn("Style file might be corrupted (containing numeric keys)")
       -- Skip those keys...
     else
@@ -290,7 +290,7 @@ function package:registerCommands ()
   end
   local styleForColor = function (style, content)
     if style.color then
-      SILE.call("color", style.color, function ()
+      SILE.call("color", { color = style.color }, function ()
         styleForProperties(style, content)
       end)
     else
