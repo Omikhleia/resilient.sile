@@ -1,0 +1,319 @@
+
+lists-enumerate-alternate1:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "Alpha"
+
+lists-enumerate-alternate2:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "Roman"
+
+lists-enumerate-alternate3:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "roman"
+
+lists-enumerate-alternate4:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    font:
+      style: "italic"
+    numbering:
+      after:
+        text: "."
+      display: "alpha"
+
+lists-enumerate-alternate5:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    enumerate:
+      symbol: "U+2474"
+
+lists-enumerate-base:
+  origin: "resilient.lists"
+  style:
+
+lists-enumerate1:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "arabic"
+
+lists-enumerate2:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "roman"
+
+lists-enumerate3:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: ")"
+      display: "alpha"
+
+lists-enumerate4:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: ")"
+      display: "arabic"
+
+lists-enumerate5:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      before:
+        text: "§"
+      display: "arabic"
+
+lists-itemize-alternate1:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "—"
+
+lists-itemize-alternate2:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize-alternate3:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize-alternate4:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "–"
+
+lists-itemize-alternate5:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize-alternate6:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize-base:
+  inherit: "resume-color"
+  origin: "resilient.lists"
+  style:
+
+lists-itemize1:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize2:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize3:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "–"
+
+lists-itemize4:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize5:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize6:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "–"
+
+resume-color:
+  origin: "resilient.resume"
+  style:
+    color: "#4080bf"
+
+resume-contact:
+  origin: "resilient.resume"
+  style:
+    font:
+      size: "0.95em"
+      style: "thin"
+    paragraph:
+      after:
+        indent: true
+        vbreak: true
+      align: "center"
+      before:
+        indent: true
+        vbreak: true
+
+resume-description:
+  origin: "resilient.resume"
+  style:
+
+resume-dingbats:
+  inherit: "resume-color"
+  origin: "resilient.resume"
+  style:
+    font:
+      family: "Symbola"
+      size: "0.9em"
+
+resume-firstname:
+  origin: "resilient.resume"
+  style:
+    color: "#a6a6a6"
+    font:
+      style: "light"
+
+resume-fullname:
+  origin: "resilient.resume"
+  style:
+    font:
+      size: "30pt"
+    paragraph:
+      after:
+        indent: true
+        vbreak: true
+      align: "right"
+      before:
+        indent: true
+        vbreak: true
+
+resume-header:
+  origin: "resilient.resume"
+  style:
+    font:
+      size: "20pt"
+    paragraph:
+      after:
+        indent: true
+        vbreak: true
+      align: "right"
+      before:
+        indent: true
+        vbreak: true
+
+resume-headline:
+  origin: "resilient.resume"
+  style:
+    color: "#373737"
+    font:
+      size: "0.9em"
+      style: "italic"
+      weight: 300
+    paragraph:
+      after:
+        indent: true
+        vbreak: true
+      align: "center"
+      before:
+        indent: true
+        vbreak: true
+
+resume-jobrole:
+  origin: "resilient.resume"
+  style:
+    font:
+      weight: 600
+
+resume-jobtitle:
+  origin: "resilient.resume"
+  style:
+    color: "#373737"
+    font:
+      size: "20pt"
+    paragraph:
+      after:
+        indent: true
+        vbreak: true
+      align: "center"
+      before:
+        indent: true
+        skip: "0.5cm"
+        vbreak: true
+
+resume-lastname:
+  origin: "resilient.resume"
+  style:
+    color: "#737373"
+
+resume-section:
+  inherit: "resume-color"
+  origin: "resilient.resume"
+  style:
+    font:
+      size: "1.2em"
+
+resume-topic:
+  origin: "resilient.resume"
+  style:
+    font:
+      size: "0.9em"
+      style: "light"
+    paragraph:
+      after:
+        indent: true
+        vbreak: true
+      align: "right"
+      before:
+        indent: true
+        vbreak: true
+

@@ -1,10 +1,10 @@
 \begin[papersize=6in x 9in, class=resilient.book, layout=demiluxe]{document}
 \use[module=packages.url]
 \use[module=packages.resilient.epigraph]
-\style:define[name=epigraph-source]{}
 \use[module=packages.couyards]
 \use[module=packages.dropcaps]
 \use[module=packages.resilient.abbr]
+\set[parameter=textsubsuper.fake, value=true]
 %
 \language[main=fr]
 \font[family=Libertinus Serif]
@@ -43,14 +43,6 @@ SILE.registerCommand("initial", function (options, content)
 end, "Wrapper around dropcap, for baselineskip adjustment")
 }%
 %
-\style:redefine[name=header-odd, as=_hdodd, inherit=true]{
-  \paragraph[align=center]
-  \font[style=italic]
-}%
-\style:redefine[name=header-even, as=_hdeven, inherit=true]{
-  \paragraph[align=center]
-  \font[style=italic]
-}%
 \odd-running-header{Tolkien, le façonnement d’un monde}
 \chapter[numbering=false]{Le conte perdu de Mercure}
 % The actual title had ..."— Tuor et Idril élevés au rang d’astre"
