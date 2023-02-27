@@ -64,32 +64,27 @@ Here is, therefore, the style specification.
       hook: "⟨command name⟩"
 ```
 
-That’s a whole bunch of fields in our style specifications, and class or
-package implementors may frown upon such a long list. On the other hand, many have default
-values and the simple inheritance mechanism provided by the styles also allows one
-to reuse existing base specifications. In this author’s opinion, it is quite flexible
-and clear. The two last options, however, still require a clarification.
+That’s a lot of fields. However, many have default values and the simple
+inheritance mechanism provided by the styles also allows one to reuse existing
+base specifications. In this author’s opinion, it is quite flexible and clear.
+The two last options, however, may require a clarification.
 
 For the "main" number style, some sections may expect the number to be on its
 own standalone line rather than just before the section title.—Chapters and parts,
 for instance, may often use it. This specification, therefore, supports an extra
 `standalone` boolean properties on number styles.
 
-And yet, we haven’t addressed the various “side-effects” a section may have on other sections,
+We haven’t addressed yet the various “side-effects” a section may have on other sections,
 page headers, folios, etc. As noted, we just provide a command name to be called upon
 entering the section (after any page break, if it applies). It is passed the section title,
 the options you provided on the sectionning command, and the current value of the
 `counter` and `level`, would the hook need to show the relevant counter
-somewhere (e.g. in a page header). One could put any code here, obviously, and defeat the point of the whole style system.
-But if implementors play the game and are concerned with separation of concerns, it will
-just do the minimum things it should—and in many cases, it may be so
-simple that one could even do it in SILE macro-language rather than in Lua.
+somewhere (e.g. in a page header).
 
 One of the rationale for introducing styles was to avoid command “hooks” with different
 names, unknown scopes and effects, and also to formalize our expectations with a
-regular format that one could easily tweak. Resorting to a such a complex specification and
-eventually even a hook may look amiss. Still, there are obvious benefits in the proposed
-paradigm:
+regular format that one could easily tweak. Eventually resorting to a hook may look amiss.
+Still, there are obvious benefits in the proposed paradigm:
 
  - Style inheritance and reusability.
  - The fact that a user can tweak most aspects in a pretty standard way, e.g.

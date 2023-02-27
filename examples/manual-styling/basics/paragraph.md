@@ -42,7 +42,7 @@ there will be applied. The specification additionnaly provides:
     - Whether paragraph indentation is applied to the next paragraph after the
       block (defaults to `true`). Book sectioning commands, typically, may set
       it to `false`, as expected in English.[^styles-par-idents]
-    - Whether a page break may occur after the block (defaults to `true\).
+    - Whether a page break may occur after the block (defaults to `true`).
       Book sectioning commands, typically, would set it to `false`, for the
       section titles to stay with the contents following them.
 
