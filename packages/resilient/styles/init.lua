@@ -161,12 +161,13 @@ SILE.scratch.styles = {
   -- Known aligns options, with the command implementing them.
   -- Users can register extra options in this table.
   alignments = {
-    center = "center",
-    left = "raggedright",
-    right = "raggedleft",
+    center = "style:align:center",
+    left = "style:align:left",
+    right = "style:align:right",
+    justify = "style:align:justify",
     -- be friendly with users...
-    raggedright = "raggedright",
-    raggedleft = "raggedleft",
+    raggedright = "style:align:left",
+    raggedleft = "style:align:right",
   },
   -- Known skip options.
   -- Users can add register custom skips there.
@@ -319,7 +320,7 @@ function package:registerCommands ()
 
   local styleForAlignment = function (style, content, breakafter)
     if style.paragraph and style.paragraph.align then
-      if style.paragraph.align and style.paragraph.align ~= "justify" then
+      if style.paragraph.align then
         local alignCommand = SILE.scratch.styles.alignments[style.paragraph.align]
         if not alignCommand then
           SU.error("Invalid paragraph style alignment '"..style.paragraph.align.."'")
@@ -472,6 +473,92 @@ function package:registerCommands ()
       end
     end
   end, "Applies a named number style to the text argument (no content).")
+
+  -- ALIGNMENT COMMANDS
+
+  -- It turns out we do not want to use SILE's default "center", "raggedleft",
+  -- and "raggedright" as they do not allow nesting, i.e. they reset the left
+  -- and/or right skips and thus apply to the full line width. In a way, they
+  -- are quite lame, loosing all margins.
+  -- As an example, say you have some nice indented block (margins on both
+  -- sides), and you "center" something in it, then that centering goes past
+  -- the block margins. That might be considered to be a "feature", but frankly,
+  -- most people won't expect it.
+  -- Anyway...
+  -- For styles to nest gracefully, we need to keep the "fixed" part of the
+  -- left/right skips, that is to cancel the stretch/shrink values, but keep
+  -- the indentation (a.k.a. margin).
+
+  local function fillglue (glue)
+    -- hack to avoid questioning what infinity is...
+    -- N.B. SILE.nodefactory.hfillglue(spec) is wrong, it will used the
+    -- spec directly, cancelling the infinity stretching. (At the time of
+    -- writing, SILE 0.14.8).
+    -- It's plain stupid, as it's then a basic glue despite the name
+    -- (in other terms, passing an argument has no interest at all).
+    -- This is what should have been done IMHO: keeping the fixed length
+    -- part, but adding the infinite stretch over it.
+    local fill = SILE.nodefactory.hfillglue()
+    fill.width.length = glue.width.length -- fixed part.
+    return fill
+  end
+
+  local function fixedglue (glue)
+    return  SILE.nodefactory.glue(glue.width.length) -- fixed part.
+  end
+
+  self:registerCommand("style:align:left", function (_, content)
+    SILE.settings:temporarily(function ()
+      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
+      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
+      SILE.settings:set("document.lskip", fixedglue(lskip))
+      SILE.settings:set("document.rskip", fillglue(rskip))
+      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
+      SILE.settings:set("document.spaceskip", SILE.length("1spc", 0, 0))
+      SILE.process(content)
+      SILE.call("par")
+    end)
+  end, "Typeset its contents in a left aligned block (keeping margins).")
+
+  self:registerCommand("style:align:right", function (_, content)
+    SILE.settings:temporarily(function ()
+      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
+      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
+      SILE.settings:set("document.lskip", fillglue(lskip))
+      SILE.settings:set("document.rskip", fixedglue(rskip))
+      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
+      SILE.settings:set("document.spaceskip", SILE.length("1spc", 0, 0))
+      SILE.process(content)
+      SILE.call("par")
+    end)
+  end, "Typeset its contents in a right aligned block (keeping margins).")
+
+  self:registerCommand("style:align:center", function (_, content)
+    SILE.settings:temporarily(function ()
+      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
+      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
+      SILE.settings:set("document.lskip", fillglue(lskip))
+      SILE.settings:set("document.rskip", fillglue(rskip))
+      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
+      SILE.settings:set("document.spaceskip", SILE.length("1spc", 0, 0))
+      SILE.process(content)
+      SILE.call("par")
+    end)
+  end, "Typeset its contents in a centered block (keeping margins).")
+
+  self:registerCommand("style:align:justify", function (_, content)
+    SILE.settings:temporarily(function ()
+      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
+      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
+      SILE.settings:set("document.lskip", fixedglue(lskip))
+      SILE.settings:set("document.rskip", fixedglue(rskip))
+      -- HACK. This knows too much about parfillskip defaults...
+      -- (Which must be big, but smaller than infinity. Doh!)
+      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue("0pt plus 10000pt"))
+      SILE.process(content)
+      SILE.call("par")
+    end)
+  end, "Typeset its contents in a centered block (keeping margins).")
 
   -- HARD DEPRECATIONS
   -- Considering 1.x was omikhleia-sile-packages and anything in between was
