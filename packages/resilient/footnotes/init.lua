@@ -119,6 +119,7 @@ function package:registerCommands ()
     -- Reset settings the document may have but should not be applied to footnotes
     -- See also same resets in folio package
     for _, v in ipairs({
+      "current.parindent",
       "current.hangAfter",
       "current.hangIndent",
       "linebreak.hangAfter",
