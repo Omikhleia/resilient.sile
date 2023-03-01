@@ -6,24 +6,50 @@ blockquote:
       size: "0.95em"
     paragraph:
       after:
-        indent: true
         skip: "smallskip"
-        vbreak: true
       align: "block"
       before:
-        indent: true
         skip: "smallskip"
-        vbreak: true
 
 epigraph:
   origin: "resilient.epigraph"
   style:
     font:
       size: "0.9em"
+    paragraph:
+      after:
+        skip: "bigskip"
+      before:
+        skip: "medskip"
 
 epigraph-source:
   origin: "resilient.epigraph"
   style:
+   paragraph:
+      align: "right"
+      before:
+        indent: false
+        vbreak: false
+
+epigraph-source-norule:
+  inherit: "epigraph-source"
+  origin: "resilient.epigraph"
+  style:
+    paragraph:
+      before:
+        skip: "smallskip"
+
+epigraph-source-rule:
+  inherit: "epigraph-source"
+  origin: "resilient.epigraph"
+  style:
+
+epigraph-text:
+  inherit: "epigraph"
+  origin: "resilient.epigraph"
+  style:
+    paragraph:
+      align: "justify"
 
 figure:
   origin: "resilient.book"
