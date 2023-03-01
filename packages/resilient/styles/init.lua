@@ -222,14 +222,17 @@ function package:resolveStyle (name, discardable)
     return {}
   end
 
+  -- Deep merging the style specification.
+  -- We need to deep copy the styles, as in some context (e.g. paragraph
+  -- styles, TOC styles, enumerations styles...), we'll want to apply some
+  -- default values, but without modifying the in-memory style (so it gets
+  -- dumped at the end without those defauls).
   if stylespec.inherit then
-    local inherited = self:resolveStyle(stylespec.inherit, discardable)
-    -- Deep merging the style specification
-    local res = pl.tablex.deepcopy(inherited)
-    recursiveTableMerge(res, stylespec.style)
+    local res = self:resolveStyle(stylespec.inherit, discardable)
+    recursiveTableMerge(res, pl.tablex.deepcopy(stylespec.style))
     return res
   end
-  return stylespec.style
+  return pl.tablex.deepcopy(stylespec.style)
 end
 
 function package:resolveParagraphStyle (name, discardable)
