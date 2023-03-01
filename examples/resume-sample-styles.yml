@@ -196,13 +196,7 @@ resume-contact:
       size: "0.95em"
       style: "thin"
     paragraph:
-      after:
-        indent: true
-        vbreak: true
       align: "center"
-      before:
-        indent: true
-        vbreak: true
 
 resume-description:
   origin: "resilient.resume"
@@ -229,13 +223,7 @@ resume-fullname:
     font:
       size: "30pt"
     paragraph:
-      after:
-        indent: true
-        vbreak: true
       align: "right"
-      before:
-        indent: true
-        vbreak: true
 
 resume-header:
   origin: "resilient.resume"
@@ -243,13 +231,7 @@ resume-header:
     font:
       size: "20pt"
     paragraph:
-      after:
-        indent: true
-        vbreak: true
       align: "right"
-      before:
-        indent: true
-        vbreak: true
 
 resume-headline:
   origin: "resilient.resume"
@@ -260,13 +242,7 @@ resume-headline:
       style: "italic"
       weight: 300
     paragraph:
-      after:
-        indent: true
-        vbreak: true
       align: "center"
-      before:
-        indent: true
-        vbreak: true
 
 resume-jobrole:
   origin: "resilient.resume"
@@ -281,14 +257,9 @@ resume-jobtitle:
     font:
       size: "20pt"
     paragraph:
-      after:
-        indent: true
-        vbreak: true
       align: "center"
       before:
-        indent: true
         skip: "0.5cm"
-        vbreak: true
 
 resume-lastname:
   origin: "resilient.resume"
@@ -309,11 +280,5 @@ resume-topic:
       size: "0.9em"
       style: "light"
     paragraph:
-      after:
-        indent: true
-        vbreak: true
       align: "right"
-      before:
-        indent: true
-        vbreak: true
 
