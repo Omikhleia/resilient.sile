@@ -7,20 +7,7 @@ local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.footnotes"
 
-local function interwordSpace ()
-  return SILE.shaper:measureSpace(SILE.font.loadDefaults({}))
-end
-
-local function castKern (kern)
-  if type(kern) == "string" then
-    local value, rest = kern:match("^(%d*)iwsp[ ]*(.*)$")
-    if value then
-      if rest ~= "" then SU.error("Could not parse kern '"..kern.."'") end
-      return (tonumber(value) or 1) * interwordSpace()
-    end
-  end
-  return SU.cast("length", kern)
-end
+local utils = require("resilient.utils")
 
 function package:_init (options)
   base._init(self, options)
@@ -138,7 +125,7 @@ function package:registerCommands ()
     local fnStyName = options.mark and "footnote-marker-symbol" or "footnote-marker-counter"
     local fnSty = self:resolveStyle(fnStyName)
     local kern = fnSty.numbering and fnSty.numbering.before
-      and fnSty.numbering.before.kern and castKern(fnSty.numbering.before.kern)
+      and fnSty.numbering.before.kern and utils.castKern(fnSty.numbering.before.kern)
 
     -- Apply the font before boxing, so relative baselineskip applies #1027
     local material

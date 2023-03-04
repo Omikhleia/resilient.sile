@@ -9,6 +9,8 @@ local plain = require("classes.resilient.base")
 local class = pl.class(plain)
 class._name = "resilient.resume"
 
+local utils = require("resilient.utils")
+
 SILE.scratch.resilient = SILE.scratch.resilient or {}
 SILE.scratch.resilient.resume = SILE.scratch.resilient.resume or {}
 
@@ -226,14 +228,6 @@ end
 
 -- RESUME PROCESSING
 
-local extractFromTree = function (tree, command)
-  for i=1, #tree do
-    if type(tree[i]) == "table" and tree[i].command == command then
-      return table.remove(tree, i)
-    end
-  end
-end
-
 -- Hacky-whacky way to create a ptable tree programmatically
 -- loosely inspired by what inputfilter.createCommand() does.
 local function C(command, options, content)
@@ -245,8 +239,8 @@ local function C(command, options, content)
 end
 
 local function doEntry (rows, _, content)
-  local topic = extractFromTree(content, "topic")
-  local description = extractFromTree(content, "description")
+  local topic = utils.extractFromTree(content, "topic")
+  local description = utils.extractFromTree(content, "description")
   local titleRow = C("row", { }, {
     C("cell", { valign = "top", padding = "4pt 4pt 0 4pt" }, { function ()
         SILE.call("style:apply:paragraph", { name = "resume-topic" }, function ()
@@ -274,7 +268,7 @@ local function doEntry (rows, _, content)
 end
 
 local doSection = function (rows, _, content)
-  local title = extractFromTree(content, "title")
+  local title = utils.extractFromTree(content, "title")
   local titleRow = C("row", { }, {
     C("cell", { valign = "bottom", padding = "4pt 4pt 0 4pt" }, { function ()
         SILE.call("style:apply", { name = "resume-section" }, function ()
@@ -309,12 +303,12 @@ function class:registerCommands ()
   end, "Text to appear at the bottom of the page")
 
   self:registerCommand("resume", function (_  , content)
-    local firstname = extractFromTree(content, "firstname") or SU.error("firstname is mandatory")
-    local lastname = extractFromTree(content, "lastname") or SU.error("lastname is mandatory")
-    local picture = extractFromTree(content, "picture") or SU.error("picture is mandatory")
-    local contact = extractFromTree(content, "contact") or SU.error("contact is mandatory")
-    local jobtitle = extractFromTree(content, "jobtitle") or SU.error("jobtitle is mandatory")
-    local headline = extractFromTree(content, "headline") -- can be omitted
+    local firstname = utils.extractFromTree(content, "firstname") or SU.error("firstname is mandatory")
+    local lastname = utils.extractFromTree(content, "lastname") or SU.error("lastname is mandatory")
+    local picture = utils.extractFromTree(content, "picture") or SU.error("picture is mandatory")
+    local contact = utils.extractFromTree(content, "contact") or SU.error("contact is mandatory")
+    local jobtitle = utils.extractFromTree(content, "jobtitle") or SU.error("jobtitle is mandatory")
+    local headline = utils.extractFromTree(content, "headline") -- can be omitted
 
     SILE.call("cv-footer", {}, function()
       SILE.process({ contact })

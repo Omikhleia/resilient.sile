@@ -8,19 +8,13 @@ local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.epigraph"
 
+local utils = require("resilient.utils")
+
 function package:_init (options)
   base._init(self, options)
 
   self.class:loadPackage("raiselower")
   self.class:loadPackage("rules")
-end
-
-local extractFromTree = function (tree, command)
-  for i=1, #tree do
-    if type(tree[i]) == "table" and tree[i].command == command then
-      return table.remove(tree, i)
-    end
-  end
 end
 
 function package.declareSettings (_)
@@ -65,7 +59,7 @@ function package:registerCommands ()
       local framew = SILE.typesetter.frame:width()
       local epigraphw = width:absolute()
       local skip = framew - epigraphw - margin
-      local source = extractFromTree(content, "source")
+      local source = utils.extractFromTree(content, "source")
       SILE.typesetter:leaveHmode()
 
       local sty = self:resolveStyle("epigraph")
@@ -135,7 +129,7 @@ function package:registerStyles ()
       align = "right",
       before = {
         vbreak = false,
-        indent = false -- by default, we probablydon't expect a paragraph indent here.
+        indent = false -- by default, we probably don't expect a paragraph indent here.
       }
     }
   })

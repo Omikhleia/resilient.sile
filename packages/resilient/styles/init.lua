@@ -9,21 +9,7 @@ local package = pl.class(base)
 package._name = "resilient.styles"
 
 local hboxer = require("resilient-compat.hboxing") -- Compatibility hack/shim
-
-local function interwordSpace ()
-  return SILE.shaper:measureSpace(SILE.font.loadDefaults({}))
-end
-
-local function castKern (kern)
-  if type(kern) == "string" then
-    local value, rest = kern:match("^(%d*)iwsp[ ]*(.*)$")
-    if value then
-      if rest ~= "" then SU.error("Could not parse kern '"..kern.."'") end
-      return (tonumber(value) or 1) * interwordSpace()
-    end
-  end
-  return SU.cast("length", kern)
-end
+local utils = require("resilient.utils")
 
 function package:_init (options)
   base._init(self, options)
@@ -42,7 +28,7 @@ function package:_init (options)
   SILE.registerUnit("thsp", {
     relative = true,
     definition = function (value)
-      return value * 0.5 * interwordSpace()
+      return value * 0.5 * utils.interwordSpace()
     end
   })
   self:readStyles()
@@ -198,19 +184,6 @@ function package.defineStyle (_, name, opts, styledef, origin)
   SILE.scratch.styles.specs[name] = { inherit = opts.inherit, style = styledef, origin = origin }
 end
 
--- merge two tables.
--- It turns out that pl.tablex.union does not recurse into the table,
--- so let's do it the proper way.
--- N.B. modifies t1 (and t2 wins on leaves existing in both)
-local function recursiveTableMerge(t1, t2)
-  for k, v in pairs(t2) do
-    if (type(v) == "table") and (type(t1[k]) == "table") then
-      recursiveTableMerge(t1[k], t2[k])
-    else
-      t1[k] = v
-    end
-  end
-end
 
 -- resolve a style (incl. inherited fields)
 -- NOTE: an optimization could be to cache the results...
@@ -229,7 +202,7 @@ function package:resolveStyle (name, discardable)
   -- dumped at the end without those defauls).
   if stylespec.inherit then
     local res = self:resolveStyle(stylespec.inherit, discardable)
-    recursiveTableMerge(res, pl.tablex.deepcopy(stylespec.style))
+    utils.recursiveTableMerge(res, pl.tablex.deepcopy(stylespec.style))
     return res
   end
   return pl.tablex.deepcopy(stylespec.style)
@@ -424,11 +397,11 @@ function package:registerCommands ()
     local beforekern, afterkern
     if numSty.before then
       beforetext = numSty.before.text or ""
-      beforekern = numSty.before.kern and castKern(numSty.before.kern)
+      beforekern = numSty.before.kern and utils.castKern(numSty.before.kern)
     end
     if numSty.after then
       aftertext = numSty.after.text or ""
-      afterkern = numSty.after.kern and castKern(numSty.after.kern)
+      afterkern = numSty.after.kern and utils.castKern(numSty.after.kern)
     end
     text = beforetext .. text .. aftertext
 

@@ -7,6 +7,8 @@ local plain = require("classes.resilient.base")
 local class = pl.class(plain)
 class._name = "resilient.book"
 
+local utils = require("resilient.utils")
+
 -- PAGE LAYOUT MASTERS
 
 local layouts = {
@@ -517,17 +519,9 @@ function class:registerCommands ()
   -- Captioned elements
   -- N.B. Despite the similar naming to LaTeX, these are not "floats"
 
-  local extractFromTree = function (tree, command)
-    for i=1, #tree do
-      if type(tree[i]) == "table" and tree[i].command == command then
-        return table.remove(tree, i)
-      end
-    end
-  end
-
   self:registerCommand("captioned-figure", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in figure environment") end
-    local caption = extractFromTree(content, "caption")
+    local caption = utils.extractFromTree(content, "caption")
 
     options.style = "figure-caption"
     SILE.call("style:apply:paragraph", { name = "figure" }, content)
@@ -542,7 +536,7 @@ function class:registerCommands ()
 
   self:registerCommand("captioned-table", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in table environment") end
-    local caption = extractFromTree(content, "caption")
+    local caption = utils.extractFromTree(content, "caption")
 
     options.style = "table-caption"
     SILE.call("style:apply:paragraph", { name = "table" }, content)

@@ -9,15 +9,11 @@ local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.sectioning"
 
+local utils = require("resilient.utils")
+
 function package:_init (options)
   base._init(self, options)
   self.class:loadPackage("counters")
-end
-
-local interWordSpace = function ()
-  -- Returns a glue corresponding to the current interword space (depending on settings).
-  local fontOpts = SILE.font.loadDefaults({})
-  return SILE.shaper:makeSpaceNode(fontOpts, { width = "1spc"}) -- FIXME not sure of the 1spc here.
 end
 
 function package:registerCommands ()
@@ -128,7 +124,7 @@ function package:registerCommands ()
         else
           SU.warn("Attempt typesetting a section number without style")
           SILE.typesetter:typeset(number)
-          SILE.call("kern", { width = interWordSpace() })
+          SILE.call("kern", { width = utils.interWordSpace() })
         end
       end
       -- 3D. Section (title) content
