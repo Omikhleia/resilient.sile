@@ -53,5 +53,7 @@ build = {
 
     ["sile.resilient.hacks"] = "resilient/hacks.lua",
     ["sile.resilient.utils"] = "resilient/utils.lua",
+
+    ["sile.resilient-tinyyaml"]  = "lua-libraries/resilient-tinyyaml.lua",
   }
 }

@@ -81,7 +81,7 @@ local function tableToYaml (value, indent, done)
 end
 
 function package:readStyles ()
-  local yaml = require("tinyyaml")
+  local yaml = require("resilient-tinyyaml")
   local fname = SILE.masterFilename .. '-styles.yml'
   local styfile, _ = io.open(fname)
   if not styfile then

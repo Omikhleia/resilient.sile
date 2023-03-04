@@ -1,0 +1,20 @@
+The "vendored" version of tinyyaml used here is:
+https://github.com/api7/lua-tinyyaml (0.4.3 rockspec at the time of initial
+import)
+
+It's a fork from:
+https://github.com/peposso/lua-tinyyaml (which had a 1.0 rockspec earlier)
+
+Both are in luarocks, with different package names BUT same Lua main file name.
+Erm, both versions return version 0.1.
+For the record, the CTAN also has its own version...
+
+This all seems a bit messy to me, and poorly maintained, so I am going for
+vendoring it here to be sure proper version (i.e. tested with RESILIENT)
+is used, and to rename to be sure we don't override anyone else setup.
+
+The only reason NOT to use lyaml (https://github.com/gvvaughan/lyaml) in
+RESILIENT was to avoid a C binding dependency, since style files are
+reasonably small theoretically (so performance do not really matter) and
+only need a subset of YAML (so a pure-Lua implementation, even possibly
+incomplete, ought to be sufficient.)
