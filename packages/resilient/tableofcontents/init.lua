@@ -145,15 +145,19 @@ function package:registerCommands ()
   -- Flatten a node list into just its string representation.
   -- (Similar to SU.contentToString(), but allows passing typeset
   -- objects to functions that need plain strings).
-  local nodesToText = function (nodes)
-    local spc = SILE.measurement("0.8spc"):tonumber()
+  local function nodesToText (nodes)
+    local spc = SILE.measurement("0.8spc"):tonumber() -- approx. see below.
     local string = ""
     for i = 1, #nodes do
       local node = nodes[i]
       if node.is_nnode or node.is_unshaped then
         string = string .. node:toText()
       elseif node.is_glue or node.is_kern then
-        -- Not so sure about this one...
+        -- What we want to avoid is "small" glues or kerns to be expanded as
+        -- full spaces. Comparing to a "decent" ratio of a space is fragile and
+        -- empirical: the content could contain font changes, so the comparison
+        -- is wrong in the general case. It's still better than nothing.
+        -- (That's what the debug text outputter does to, by the way).
         if node.width:tonumber() > spc then
           string = string .. " "
         end
@@ -166,7 +170,8 @@ function package:registerCommands ()
         SU.warn("Some content could not be converted to text: "..node)
       end
     end
-    return string
+    -- Trim leading and trailing spaces, and simplify internal spaces.
+    return string:match("^%s*(.-)%s*$"):gsub("%s+", " ")
   end
 
   local dc = 1
