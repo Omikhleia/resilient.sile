@@ -8,87 +8,7 @@ local class = pl.class(plain)
 class._name = "resilient.book"
 
 local utils = require("resilient.utils")
-
--- PAGE LAYOUT MASTERS
-
-local layouts = {
-  -- Cannonical layout
-  canonical = function ()
-    local canonicalLayout = require("classes.resilient.layouts.canonical")
-    -- FIXME
-    -- https://github.com/sile-typesetter/sile/pull/1470 would define pageSize, maybe to
-    -- revisit at some point.
-    -- Also, passing the page dimensions is kind of a hack, see the function.
-    return canonicalLayout(SILE.documentState.paperSize[1], SILE.documentState.paperSize[2])
-  end,
-  -- Layout by division method
-  honnecourt = function ()
-    local divisionLayout = require("classes.resilient.layouts.division")
-    return divisionLayout(9, 2)
-  end,
-  vencentinus = function ()
-    local divisionLayout = require("classes.resilient.layouts.division")
-    return divisionLayout(6, 2)
-  end,
-  division = function ()
-    local divisionLayout = require("classes.resilient.layouts.division")
-    return divisionLayout(9)
-  end,
-  ['division:6'] = function ()
-    local divisionLayout = require("classes.resilient.layouts.division")
-    return divisionLayout(6)
-  end,
-  ['division:9'] = function ()
-    local divisionLayout = require("classes.resilient.layouts.division")
-    return divisionLayout(9)
-  end,
-  ['division:12'] = function ()
-    local divisionLayout = require("classes.resilient.layouts.division")
-    return divisionLayout(12)
-  end,
-  -- Legacy (Omikhleia)
-  legacy = function ()
-    return {
-      content = {
-        left = "10%pw", -- was 8.3%pw
-        right = "87.7%pw", -- was 86%pw
-        top = "11.6%ph",
-        bottom = "top(footnotes)"
-      },
-      folio = {
-        left = "left(content)",
-        right = "right(content)",
-        top = "bottom(footnotes)+3%ph",
-        bottom = "bottom(footnotes)+5%ph"
-      },
-      header = {
-        left = "left(content)",
-        right = "right(content)",
-        top = "top(content)-5%ph", -- was -8%ph
-        bottom = "top(content)-2%ph" -- was -3%ph
-      },
-      footnotes = {
-        left = "left(content)",
-        right = "right(content)",
-        height = "0",
-        bottom = "86.3%ph" -- was 83.3%ph
-      }
-    }
-  end,
-}
-
-for m, n in pairs({ ateliers = 1/4, demiluxe = 1/3, deluxe = 3/8 }) do
-  layouts[m] = function ()
-    local frLayout = require("classes.resilient.layouts.frenchcanon")
-    return frLayout(n, 1)
-  end
-  for r = 1, 4 do
-    layouts[m..":"..r] = function ()
-      local frLayout = require("classes.resilient.layouts.frenchcanon")
-      return frLayout(n, r)
-    end
-  end
-end
+local layoutParser = require("resilient.layoutparser")
 
 -- CLASS DEFINITION
 
@@ -98,12 +18,16 @@ function class:_init (options)
   self:loadPackage("resilient.sectioning")
   self:loadPackage("masters")
   self:defineMaster({
-      id = "right",
-      firstContentFrame = self.firstContentFrame,
-      frames = self.defaultFrameset
-    })
+    id = "right",
+    firstContentFrame = self.firstContentFrame,
+    frames = self.oddFrameset
+  })
+  self:defineMaster({
+    id = "left",
+    firstContentFrame = self.firstContentFrame,
+    frames = self.evenFrameset
+  })
   self:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" })
-  self:mirrorMaster("right", "left")
   self:loadPackage("resilient.tableofcontents")
   if not SILE.scratch.headers then SILE.scratch.headers = {} end
   self:loadPackage("resilient.footnotes", {
@@ -156,23 +80,38 @@ function class:declareOptions ()
     end
     return self.layout
   end)
+
+  self:declareOption("offset", function(_, value)
+    if value then
+      self.offset = value
+    end
+    return self.offset
+  end)
 end
 
 function class:setOptions (options)
   options = options or {}
-  options.layout = options.layout or "legacy"
+  options.layout = options.layout or "division"
   plain:setOptions(options) -- so that papersize etc. get processed...
 
-  local layout = layouts[options.layout or "legacy"]
+  local layout = layoutParser:match(options.layout)
   if not layout then
-    SU.warn("Unknown page layout '".. options.layout .. "', switching to legacy")
-    layout = layout.legacy
+    SU.warn("Unknown page layout '".. options.layout .. "', switching to division")
+    layout = layoutParser:match("division")
   end
+
+  local offset = SU.cast("measurement", options.offset or "0")
+  layout:setOffset(offset)
+
+  -- Kind of a hack dues to restrictions with frame parsers.
+  layout:setPaperHack(SILE.documentState.paperSize[1], SILE.documentState.paperSize[2])
+
   -- TRICKY, TO REMEMBER:
-  -- the default frameset has to be set before the completion of
+  -- the default frameset has to be set *before* the completion of
   -- the base (plain) class init, or it isn't applied on the first
   -- page...
-  self.defaultFrameset = layout(options)
+  self.oddFrameset, self.evenFrameset = layout:frameset()
+  self.defaultFrameset = self.oddFrameset
 end
 
 function class:registerStyles ()
@@ -417,7 +356,10 @@ function class:registerCommands ()
     local closure = SILE.settings:wrap()
     SILE.scratch.headers.even = function ()
       closure(function ()
-        SILE.call("style:apply:paragraph", { name = "header-even" }, content)
+        SILE.call("style:apply:paragraph", { name = "header-even" }, function ()
+          SILE.call("strut", { method = "rule"})
+          SILE.process(content)
+        end)
       end)
     end
   end, "Text to appear on the top of the even page(s).")
@@ -426,7 +368,10 @@ function class:registerCommands ()
     local closure = SILE.settings:wrap()
     SILE.scratch.headers.odd = function ()
       closure(function ()
-        SILE.call("style:apply:paragraph", { name = "header-odd" }, content)
+        SILE.call("style:apply:paragraph", { name = "header-odd" }, function ()
+          SILE.call("strut", { method = "rule"})
+          SILE.process(content)
+        end)
       end)
     end
   end, "Text to appear on the top of the odd page(s).")
@@ -574,6 +519,23 @@ function class:registerCommands ()
 
     SILE.call("tableofcontents", { start = start, depth = 0 })
   end, "Output the list of tables.")
+
+  -- Layouts
+
+  self:registerCommand("showlayout", function (options, _)
+    local spec = SU.required(options, "layout", "layout")
+    local papersize = SU.required(options, "papersize", "layout")
+    local parser = require("resilient.layoutparser")
+    local layout = parser:match(spec)
+    if not layout then
+      SU.error("Unrecognized layout '" .. spec .. "'")
+    end
+    local p = SILE.papersize(papersize)
+    local W = p[1]
+    local H = p[2]
+    layout:setPaperHack(W, H)
+    layout:draw(W, H, { ratio = options.ratio, rough = options.rough })
+  end, "Show a graphical representation of a page layout")
 end
 
 return class

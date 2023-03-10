@@ -189,7 +189,7 @@ header-base:
   style:
     font:
       size: "0.9em"
-      style: "italic"
+      features: "+smcp"
     paragraph:
       align: "center"
       after:

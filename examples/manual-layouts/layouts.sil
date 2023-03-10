@@ -1,25 +1,20 @@
 \begin{document}
-\chapter{Concepts}
+\chapter{Choosing a page layout}
 
-\section{Choosing a page layout}
+\section{The layout class option}
 
 Paper sizes for printed works varied a lot across time.
 Frequent ratios nowadays are 1:√2 (such as the ISO paper sizes, e.g. A4, 21 × 29.7 cm)
 or 2:3 (such as US trade, 6 × 9 in), though there are still plenty of other page formats
-in use (e.g. French paperbacks books often often come in 10 × 17 cm or 10 × 18 cm format.)
+in use (e.g. French pocket books often often come in 10 × 17 cm or 10 × 18 cm format.)
 
 The relation betwen the page size and the main text block also varied a lot,
 depending on the aesthetic tastes of authors and designers.
 
 The resilient document classes provide a \autodoc:parameter{layout=<string>} class
 option for selecting some fairly usual page layouts.
-They are shown further below for comparison, applied to an A4 format, though their
-historical use may have favored a different paper size.
-
-It has to be noted, that these common layouts rarely detailed where headers or
-folios were to be placed. The corresponding blocks are shown too, as you would get
-them currently. This class may possibly consider options for that, in a future
-release.
+They are shown further below for comparison, applied to the US trade and A5 formats,
+though their historical use may have favored a different paper size.
 
 \section{Thriving for harmony}
 
@@ -27,7 +22,45 @@ The secret law of page harmony relies on using elegant proportions.
 When designing your \em{perfect book}, just after having decided on a paper
 size, you will want to pick a great page layout.
 
-\subsection{French layouts or “Canon des ateliers”}
+SILE already offers several ways for designing your own page masters. However,
+the syntax is not particularly easy, and users might not know what it takes
+to use good values for print-quality books.
+
+The rationale for providing pre-defined layouts in the resilient collection
+is to address that point, with a curated choice of classic page layouts,
+available off-the-shelf.
+
+\section{On headers and footers}
+
+It has to be noted that these common layouts rarely detailed where headers or
+folios were to be placed. Most typography books are silent on the topic,
+or stay rather vague, stating obvious generalities—such as the headers and
+footers having to be, bear with me, “close to the text block”.
+
+This author, therefore, decided to be a typographer on his own, regarding
+that matter, and used a golden ratio to place the header and footer areas
+in their margin space.
+
+\section{On the binding offset or gutter}
+
+The “gutter” is a typographical term referring to an \em{additional} margin
+added to interior pages to compensate for the part of the page made unusable by
+the binding process. Unfortunately, it cannot really be automated, as it
+usually depends on many internal and external factors—notably, the number of pages,
+the thickness of the selected paper, and the printer’s binding process.
+
+The resilient document classes provide a \autodoc:parameter{offset=<dimen>}
+class option. When used, it shifts the text block by the given amount.
+
+Books of less than 60 pages do not normally need to include such a gutter,
+but with a higher page count, you may have to consider using it,
+appropriately tuned with an \em{ad hoc} value.
+Be aware, however, that outer margins will be reduced by the same amount.
+If you intend to use them for annotations, be very careful here.
+
+\chapter{Off-the-shelf page layouts}
+
+\section{French layouts or “Canon des ateliers”}
 
 This canon normally applies a 4/10, 5/10, 6/10, 7/10 progression rule to distribute
 the white space around the text block (“règle du 10/12\textsuperscript{e}”).
@@ -38,77 +71,86 @@ bottom margins, but using the same base space value (i.e. taken from the
 horizontal direction).
 
 A variant uses only the 4/10 and 6/10 ratios, but vertically applies to the
-text block height the same proportion rules as in the horizontal direction.
+text block height the same proportion rules as in the horizontal direction
+(“règle du 10\textsuperscript{e}”).
 
-Another variant uses the values of the inner and outer margins for the top
-and bottom margins, leading to pretty dense pages.
+There are other variants, such as one using the values of the inner and outer
+margins for the top and bottom margins, leading to pretty dense pages.
 
-This author has also seen several books just using the same proportion rule
-in both directions (i.e. as in the second case above), but distributing the
-vertical space evenly.
-
-Thus, this package supports four ways of computing and distributing the
-margins.
-
-Is it complex enough? Wait, the canon has no less than three different
+Thus, we have to support several ways of computing and distributing the
+margins. Is it complex enough? Wait, the canon has no less than three different
 proportion rules for the text block.\footnote{This author, being French,
 will only note that we apparently like to make things more complex than
 they ought to be.}
 
-For regular material (“imprimé courant”), the width of the text block takes 3/4 of the
-page width.
-So here we have the standard \code{ateliers} (= \code{ateliers:1}) and
-its variants \code{ateliers:2} to \code{ateliers:4}.
+For regular material (“imprimé courant”), the width of the text block takes 3/4
+of the page width.
+So here we have the standard \code{ateliers} (= \code{ateliers regular}) using
+the default 10/12\textsuperscript{e} rule and the 10\textsuperscript{e} rule variant
+(\code{ateliers regular 10e}).
 
 \begin{figure}
-\img[height=15%ph, src=./layout-ateliers.png]
-\caption{Canon des ateliers — standard}
+\showlayout[layout=ateliers,
+    papersize=6in x 9in] \showlayout[layout=ateliers,
+    papersize=a5]\quad\showlayout[layout=ateliers regular 10e,
+    papersize=6in x 9in] \showlayout[layout=ateliers regular 10e, papersize=a5]
+\caption{Canon des ateliers — regular}
 \end{figure}
 
 In the demi-luxe variant, the width of the text block takes 2/3 of the
-page.
-Here again, we have the standard \code{demiluxe} (= \code{demiluxe:1}) and
-its variants \code{demiluxe:2} to \code{demiluxe:4}.
+page. Here again, we show the standard \code{ateliers demiluxe}
+and the \code{ateliers demiluxe 10e} variant.
 
 \begin{figure}
-\img[height=15%ph, src=./layout-demiluxe.png]
-\caption{Canon des ateliers — demiluxe}
+\showlayout[layout=ateliers demiluxe,
+    papersize=6in x 9in] \showlayout[layout=ateliers demiluxe,
+    papersize=a5]\quad\showlayout[layout=ateliers demiluxe 10e,
+    papersize=6in x 9in] \showlayout[layout=ateliers demiluxe 10e, papersize=a5]\caption{Canon des ateliers — demiluxe}
 \end{figure}
 
 In the “de luxe” variant, the width of the text block takes 5/8 of the
 page.
-As you would have guessed, these are the standard \code{deluxe} (= \code{deluxe:1}) and
-its variants \code{deluxe:2} to \code{deluxe:4}.
+As you would have guessed, these are the standard \code{ateliers deluxe} and
+its \code{ateliers deluxe 10e} variant.
 
 \begin{figure}
-\img[height=15%ph, src=./layout-deluxe.png]
+\showlayout[layout=ateliers deluxe,
+    papersize=6in x 9in] \showlayout[layout=ateliers deluxe,
+    papersize=a5]\quad\showlayout[layout=ateliers deluxe 10e,
+    papersize=6in x 9in] \showlayout[layout=ateliers deluxe 10e, papersize=a5]
 \caption{Canon des ateliers — deluxe}
 \end{figure}
 
-\subsection{Ratio-based layouts}
+\section{Ratio-based layouts}
+
+Ratio-based methods are also known as the Van de Graaf canon, after the latter
+rediscovered and documented them in the 1940s.
+They are also sometimes referred to as the “secret canon” used in many medieval
+manuscripts and incunabula.
+
+The proposed historical layouts are \code{honnecourt} and \code{vencentinus}.
 
 In the 13\textsuperscript{th} century, the architect Villard de Honnecourt
 came up with what he considered a “harmonious” and pleasing design (esp.
 for 2:3 pages), using a 1/9 ratio and a text block area in the same proportions
 as the page, with a matching diagonal.
 
+\begin{figure}
+\showlayout[layout=honnecourt, papersize=6in x 9in] \showlayout[layout=honnecourt, papersize=a5]
+\caption{Honnecourt’s historical layout.}
+\end{figure}
+
 In the 15\textsuperscript{th} century, Marcus Vencentinus used a similar
 method, but with a 1/6 ratio, for a prayer book. It has a wide outer margin
 and footer area, leaving enough place for annotations and marginal comments.
 
-The rather quite large footer area in such layouts is based on the idea that
-books are held by the lower margin when taken in the hand.
-
-This class proposes them as \code{honnecourt} and \code{vencentinus}.
-
 \begin{figure}
-\img[height=15%ph, src=./layout-division-old.png]
-\caption{Divisions by ratio — historical layouts}
+\showlayout[layout=vencentinus, papersize=6in x 9in] \showlayout[layout=vencentinus, papersize=a5]
+\caption{Vencentinus’ historical layout.}
 \end{figure}
 
-For the record, such ratio-based methods are also known as the Van de Graaf canon,
-after he rediscovered and documented them in the 1940s. They are also sometimes
-referred to as the “secret canon” used in many medieval manuscripts and incunabula.
+The rather quite large footer area in such layouts is based on the idea that
+books are held by the lower margin.
 
 These methods are based on regular divisions of the page, mere arithmetical operations
 which may be generalized for any page dimention \em{W} × \em{H}, with a ratio \em{N}
@@ -119,32 +161,66 @@ In a method he described on the French \em{Typographie}
 mailing list in 2002, Olivier Randier suggested that the \em{H/W} ratio
 was usually giving excellent results for most standard page sizes, including the ISO
 ones.
-Following these “modern” findings, this class provides \code{division:6} (1/6 ratio),
-\code{division:9} (1/9 ratio, alias \code{division} as it is the most usual and pleasant
-layout) and the fairly compact \code{division:12} (1/12 ratio).
+Following these “modern” findings, this class provides the fairly compact \code{division 12}
+(1/12 ratio), \code{division 9} (1/9 ratio, alias \code{division} as it is the most usual and
+pleasant layout), and \code{division 6} (1/6 ratio).
 
 \begin{figure}
-\img[height=15%ph, src=./layout-division.png]
-\caption{Divisions by ratio — modern layouts}
+\showlayout[layout=division 12,
+    papersize=6in x 9in] \showlayout[layout=division 12,
+    papersize=a5]\quad\showlayout[layout=division 9,
+    papersize=6in x 9in] \showlayout[layout=division 9, papersize=a5]
+
+\smallskip
+\showlayout[layout=division 6,
+    papersize=6in x 9in] \showlayout[layout=division 6, papersize=a5]
+\caption{Divisions by 12, 9, 6 — modern layouts}
 \end{figure}
 
-\subsection{The golden canon of Tschichold}
+It’s easy to check that some of these do not leave much available room
+for marginal notes. Note that the layout syntax supports other values
+than the “standard” ones, as \code{division ⟨N⟩} (based on the \em{H/W} page
+ratio for the \em{v} constant), or \code{division ⟨N⟩ ⟨v⟩}.
+
+\section{The golden canon of Tschichold}
 
 Jan Tschichold (1902–1974) considered a “golden canon of page construction”,
 where the text block is placed onto the page in such a way as its diagonal coincides
 with the page relevant diagonal, and the circle inscribed within the text block is tangent
-to the page sides. This class provides it as the \code{canonical} layout.
+to the page sides. It is provided here as the \code{canonical} layout.
 
 \begin{figure}
-\img[height=15%ph, src=./layout-canonical.png]
-\caption{Canonical layout}
+\showlayout[layout=canonical, papersize=6in x 9in] \showlayout[layout=canonical, papersize=a5]
+\caption{Jan Tschichold’s canonical layout.}
 \end{figure}
 
-\subsection{The legacy layout}
+\section{Non-standard layouts}
 
-There is not much to say about the \code{legacy} layout, kept for compatibility
-with earlier versions of this class. It is derived from SILE’s standard
-book class, but manually tweaked to this author’s taste before he had time to
-consider the above methods. The layout is therefore quite empirical.
+\subsection{A poor man’s centered layout}
+
+In passing, the \code{none} layout uses margins of 1 inch on all sides. It just exists
+because it’s the base component for other layouts.
+
+\begin{figure}
+\showlayout[layout=none, papersize=6in x 9in] \showlayout[layout=none, papersize=a5]
+\caption{This is not really a layout.}
+\end{figure}
+
+\subsection{A layout with wide margins}
+
+Most of the common layouts presented above do not have both a dense text block and wide
+enough outer margins for annotations. The experimental proposal below, dubbed \code{marginal},
+is partly ratio-based (\code{marginal ⟨N⟩}, with 8 as default, i.e. a 1/8 ratio for
+inner margins), with some hard-coded choices and a dose of golden ratio in the mix.
+The formula is somewhat empirical, but this author finds it decently looking for a
+critical text apparatus with an important amount of maginal notes.
+
+\begin{figure}
+\showlayout[layout=marginal, papersize=6in x 9in] \showlayout[layout=marginal, papersize=a5]
+\caption{A “marginal” page layout.}
+\end{figure}
+
+As can be seen, the header frame also goes past the text block, englobing the margin
+area.
 
 \end{document}

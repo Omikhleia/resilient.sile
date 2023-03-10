@@ -1,10 +1,12 @@
-\begin[papersize=6in x 9in, class=resilient.book, layout=demiluxe]{document}
+\begin[papersize=6in x 9in, class=resilient.book, layout=ateliers demiluxe]{document}
 \use[module=packages.url]
 \use[module=packages.resilient.epigraph]
 \use[module=packages.couyards]
 \use[module=packages.dropcaps]
 \use[module=packages.resilient.abbr]
 \set[parameter=textsubsuper.fake, value=true]
+\set[parameter=document.baselineskip, value=1.2em]
+\set[parameter=document.lineskip, value=0em]
 %
 \language[main=fr]
 \font[family=Libertinus Serif]
@@ -106,8 +108,8 @@ trad. fr. Pierre Alien ; \em{The Silmarillion} \abbr:page{301} pour la version a
 
 \begin{blockquote}
     Puis les Valar bénirent Vingilot et le firent passer au-dessus de Valinor jusqu’aux limites du monde. Là, il traversa
-    la Porte de la Nuit et s’envola jusqu’aux océans célestes. Splendide était ce mer­veilleux navire, il en sortait une
-    flamme ondulante, vive et pure ; à sa proue était assis Eärendil, le Marin couvert de la poussière étin­celante des gemmes,
+    la Porte de la Nuit et s’envola jusqu’aux océans célestes. Splendide était ce merveilleux navire, il en sortait une
+    flamme ondulante, vive et pure ; à sa proue était assis Eärendil, le Marin couvert de la poussière étincelante des gemmes,
     le Silmaril attaché à son front. En ce navire il voyagea très loin, jusque dans le vide sans étoiles, mais on le voyait
     le plus souvent le soir ou le matin, paré de l’éclat du levant ou du couchant, quand il revenait à Valinor de ses voyages
     aux confins du monde.
@@ -195,7 +197,7 @@ d’une telle conception. Il nous plaît néanmoins de voir ici le conte perdu d
 rapportés par le marin anglo-saxon Ælfwine avaient pris une autre orientation que celle que nous leur connaissons…
 
 \begin{epigraph}
-    Les astres dits errants parcourent aussi le zodiaque, tour­nent autour de la terre, se lèvent et se couchent,
+    Les astres dits errants parcourent aussi le zodiaque, tournent autour de la terre, se lèvent et se couchent,
     parfois accélèrent leurs mouvements, parfois les ralentissent, souvent même s’arrêtent. Nul spectacle ne peut être plus beau,
     plus digne d’admiration.
     \source{Cicéron, \em{De la nature des dieux}, II, \smallcaps{xl}}

@@ -13,10 +13,15 @@
 \use[module=packages.framebox]
 \use[module=packages.fancytoc]
 \use[module=packages.printoptions]
+%\use[module=packages.linespacing]
+%\set[parameter=linespacing.method,value=fixed]
+%\set[parameter=linespacing.fixed.baselinedistance, value=1.2em]
+%\set[parameter=linespacing.method,value=fixed]
+\set[parameter=document.baselineskip, value=1.2em]
 \language[main=en]
 \font[family=Libertinus Serif, size=10pt]
 \footnote:rule
-\header:rule
+\header:rule[valign=bottom, offset=0]
 \pdf:metadata[key=Title, value=The resilient collection of classes & packages]
 \pdf:metadata[key=Author, value=Didier Willis]
 \define[command=admon]{%
