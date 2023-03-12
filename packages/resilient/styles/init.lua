@@ -13,6 +13,9 @@ local utils = require("resilient.utils")
 
 function package:_init (options)
   base._init(self, options)
+
+  self.class:loadPackage("textsubsuper")
+
   self.class:registerHook("finish", self.writeStyles)
 
   -- Numeric space (a.k.a. figure space) unit
@@ -513,6 +516,8 @@ function package:registerCommands ()
     SILE.settings:temporarily(function ()
       local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
       local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
+      SILE.settings:set("document.parindent", SILE.nodefactory.glue())
+      SILE.settings:set("current.parindent", SILE.nodefactory.glue())
       SILE.settings:set("document.lskip", fillglue(lskip))
       SILE.settings:set("document.rskip", fillglue(rskip))
       SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())

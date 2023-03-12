@@ -266,7 +266,7 @@ function class:registerStyles ()
 
   -- captioned elements
   self:registerStyle("figure", {}, {
-    paragraph = { before = { skip = "smallskip" },
+    paragraph = { before = { skip = "smallskip", indent = false },
                   align = "center",
                   after = { vbreak = false } },
   })
@@ -298,6 +298,7 @@ function class:registerStyles ()
 
   self:registerStyle("table", {}, {
     paragraph = { align = "center",
+                  before = { indent = false },
                   after = { vbreak = false } },
   })
   self:registerStyle("table-caption", {}, {
