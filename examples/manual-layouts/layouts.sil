@@ -177,7 +177,7 @@ pleasant layout), and \code{division 6} (1/6 ratio).
 \caption{Divisions by 12, 9, 6 — modern layouts}
 \end{figure}
 
-It’s easy to check that some of these do not leave much available room
+It’s easy to check that some of these layouts do not leave much available room
 for marginal notes. Note that the layout syntax supports other values
 than the “standard” ones, as \code{division ⟨N⟩} (based on the \em{H/W} page
 ratio for the \em{v} constant), or \code{division ⟨N⟩ ⟨v⟩}.

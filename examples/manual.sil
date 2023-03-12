@@ -2,12 +2,14 @@
 \use[module=packages.autodoc-resilient]% ATTENTION: REQUIRED FOR RESILIENT
 \set[parameter=autodoc.highlighting, value=true]
 \use[module=packages.lorem]
+\use[module=packages.resilient.abbr]
 \use[module=packages.url]
 \use[module=packages.image]
 \use[module=packages.color]
 \use[module=packages.background]
 \use[module=packages.couyards]
 \use[module=packages.djot]
+\use[module=packages.resilient.epigraph]
 \use[module=packages.resilient.lists]
 \use[module=packages.ptable]
 \use[module=packages.framebox]
@@ -99,13 +101,20 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 
 \listoftables
 
-% ---------------------- PREFACES
+% ---------------------- INTRODUCTION
+\part{Introduction to re·sil·ient}%
+%
+\begin{figure}%
+\img[src=images/printer_1568.png, width=50%pw]
+\caption{Printers in 1568.\footnote[mark=†]{Meggs, Philip B.,
+  \em{A History of Graphic Design,} John Wiley & Sons, Inc. 1998, \abbr:page{64}.}}
+\end{figure}
 
-\include[src=manual-prefaces/edition1.sil]
-\include[src=manual-prefaces/edition2.sil]
+\include[src=manual-intro/howto.dj]
+
 
 % ---------------------- PAGE LAYOUTS
-\part{The page layout}
+\part[marker=page-layout]{The page layout}
 
 \begin{figure}
 \img[src=images/duerer_messung_1525.png, width=45%pw]
@@ -115,7 +124,7 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 \include[src=manual-layouts/layouts.sil]
 
 % ---------------------- THE STYLING PARADIGM
-\part{The styling paradigm}
+\part[marker=styling-paradigm]{The styling paradigm}
 
 \begin{figure}
 \img[src=images/condottiere.png, width=55%pw]
@@ -139,7 +148,7 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 %\include[src=manual-styling/captioned.md]
 
 % ---------------------- PACKAGES
-\part{Resilient packages}
+\part[marker=resilient-packages]{Resilient packages}
 
 \begin{figure}
 \img[src=images/printing_press.png, width=60%pw]
@@ -149,7 +158,7 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 \include[src=manual-packages/packages.sil]
 
 % ---------------------- CLASSES
-\part{Resilient classes}
+\part[marker=resilient-classes]{Resilient classes}
 
 \begin{figure}
 \img[src=images/composer_1883.png, width=70%pw]
@@ -158,6 +167,11 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 \end{figure}
 
 \include[src=manual-classes/classes.sil]
+
+%\part[numbering=false]{Appendices}
+%
+%\include[src=manual-prefaces/edition1.sil]
+%\include[src=manual-prefaces/edition2.sil]
 
 \end{document}
 
