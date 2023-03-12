@@ -1,0 +1,154 @@
+## Styling footnotes
+
+When styling footnotes, two things are at stakes:
+
+ - How footnote references in the main text flow are formatted.
+ - How footnote content is formatted.
+
+### Footnote references
+
+There are two different cases: numbered footnotes, and footnotes marked
+with a symbol (such as a dagger †).
+Just in case it _could_ be useful to distinguish them, we have distinct
+main style definitions here.
+The default definitions, though, just inherit from the same common
+parent style.
+
+```yaml
+footnote-reference-counter:
+  inherit: "footnote-reference"
+
+footnote-reference-symbol:
+  inherit: "footnote-reference"
+```
+
+Let us agree with Robert Bringhurst: "In the main text, superscript numbers are
+used to indicate notes because superscript numbers minimize interruption."
+He doesn't mention symbol marks, but we can assume the rationale also applies
+to them.
+
+```yaml
+footnote-reference:
+  style:
+    properties:
+      position: "super"
+```
+
+_However_, regarding French typography, Jean-Pierre Lacroux reminds us:
+"Whatever its form, the footnote reference must be placed before the punctuation,
+and preceded by a thin unbreakable space." (Lacroux does not say what this
+thin space actually is, compared to other "thin" spaces used in French.)
+The first point is up to the composer, but the second point would call for a
+slightly different style definition, such as the following one.
+
+```yaml
+footnote-reference:
+  style:
+    properties:
+      position: "super"
+    numbering:
+      before:
+        kern: "1thsp"
+```
+
+### Foonote content
+
+Jean-Pierre Lacroux: "Notes are typeset in a smaller size than the current text
+(ratio: about 2/3)." This is followed by a list of "usual" fixed sizes depending
+on the main font size. Call that ageing, but this author doesn't like reading so
+small notes, so opted to something less drastic by default. In the digital age,
+moreover, we can get rid of fixed-size mappings, which where due to the metal
+fonts of the past being only available in a limited number of sizes.
+
+```yaml
+footnote:
+  style:
+    font:
+      size: "0.8em"
+    numbering:
+      display: "arabic"
+```
+
+By the way, note that this style is also where the number format is
+specified.[^footnote-styles-numbering]
+
+[^footnote-styles-numbering]: The other "numbering" styling elements have
+no effect here; conversely a "display" element in other footnote styles
+is simply ignored. The reason, obviously, is that having a different
+number format on footnote references and markers would have no sense.
+
+Regarding the footnote marker in the body of the footnote content,
+as stated above, we can distinguish numbered footnotes, and footnotes
+with a symbol. But let's focus on their common parent style first.
+
+Robert Bringhurst: "The number in the note should be full size."
+So normally, one does not use a superscript here.
+Bringhurst is less opinionated, it seems, on how the footnote text should
+be presented. Jan Tschichold lists several rules according to his own
+taste, but this author has seldom seen them used in actual books.
+
+A good compromise is to indent all the text by some amount, and place
+the footnote mark left-aligned in the available space. To achieve this,
+we use the special negative "before kern" specification.
+
+```yaml
+footnote-marker:
+  style:
+    numbering:
+      after:
+        kern: "iwsp"
+      before:
+        kern: "-3.75nspc"
+```
+
+Note that the implementation is clever enough: if the footnote mark cannot
+be contained in that space (minus an extra figure width, so as to be safer
+and account for a punctuation etc.), then the "after kern" value is
+inserted, so that the text of the footnote flows naturally.
+
+Robert Bringhurst then declares: "Punctuation, apart from empty space, is not
+normally needed between the number and text of the note."
+But then, he shows an example with a period...
+Jan Tschichold does mention using a "normal numeral followed by a period",
+but he is also very opinionated on other topics such as text indents.
+Anyhow, this author recognizes too that a period is regularly seen in many
+books. Let's go for it in our default style.
+
+```yaml
+footnote-marker-counter:
+  inherit: "footnote-marker"
+  style:
+    numbering:
+      after: "."
+```
+
+For symbol markers, one can admit that a punctuation is not needed, indeed,
+between the mark and the text of the note.
+
+```yaml
+footnote-marker-symbol:
+  inherit: "footnote-marker"
+```
+
+Would you _really_ want it, here is a possible style with superscript markers,
+and the number followed by a non-breaking figure space. In that case,
+we do not want a period after the number.
+
+```yaml
+footnote-marker:
+  style:
+    numbering:
+      after:
+        kern: "1nspc"
+footnote-marker-counter:
+  inherit: "footnote-marker"
+  style:
+    properties:
+      position: "super"
+```
+
+The spacing here is inserted _after_ the footnote marker, without the
+footnote text being otherwise indented.
+This author has no definitive idea whether symbol markers also ought to be
+typeset as superscripts too, so this example doesn't do it. Would you
+want it, it should be quite straightforward how to achieve it.

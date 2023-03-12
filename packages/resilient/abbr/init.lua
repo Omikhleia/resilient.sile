@@ -1,5 +1,6 @@
 --
 -- Some common shorthands and abbreviations
+-- 2021-2023, Didier Willis
 -- License: MIT
 --
 local base = require("packages.base")
@@ -14,16 +15,11 @@ end
 
 function package:registerCommands ()
   self:registerCommand("abbr:nbsp", function (options, _)
-    -- FIXME Note general enoughh: SILE has other space settings that could affect this...
     local fixed = SU.boolean(options.fixed, false)
-    local enlargement = SILE.settings:get("shaper.spaceenlargementfactor")
+    local widthsp = SILE.shaper:measureSpace(SILE.font.loadDefaults({}))
     if fixed then
-      local widthsp = enlargement.."spc"
-      SILE.call("kern", { width = widthsp })
+      SILE.call("kern", { width = widthsp.length })
     else
-      local stretch = SILE.settings:get("shaper.spacestretchfactor") or 0
-      local shrink = SILE.settings:get("shaper.spaceshrinkfactor") or 0
-      local widthsp = enlargement.."spc plus "..stretch.."spc minus "..shrink.."spc"
       SILE.call("kern", { width = widthsp })
     end
   end, "Inserts a non-breakable inter-word space (by default shrinkable and stretchable, unless fixed=true)")

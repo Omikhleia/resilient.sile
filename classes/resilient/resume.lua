@@ -9,6 +9,8 @@ local plain = require("classes.resilient.base")
 local class = pl.class(plain)
 class._name = "resilient.resume"
 
+local utils = require("resilient.utils")
+
 SILE.scratch.resilient = SILE.scratch.resilient or {}
 SILE.scratch.resilient.resume = SILE.scratch.resilient.resume or {}
 
@@ -84,19 +86,16 @@ function class:_init (options)
   self:loadPackage("image") -- for the user picture
   self:loadPackage("ptable") -- for tables
   self:loadPackage("resilient.lists") -- for bullet lists
-  -- Redefine the 6 default itemize styles to apply our resume-color
-  -- Tricky to remember: not possible in registerStyles() as the latter is
-  -- invoked before the packages are loaded (so it is only usage for styles
-  -- provided by the class)
-  for i = 1, 6 do
-    local itemizeSty = self.styles:resolveStyle("lists-itemize"..i)
-    self:registerStyle("lists-itemize"..i, { inherit = "resume-color" }, itemizeSty)
-  end
-  -- Same for the alternate variant
-  for i = 1, 6 do
-    local itemizeSty = self.styles:resolveStyle("lists-itemize-alternate"..i)
-    self:registerStyle("lists-itemize-alternate"..i, { inherit = "resume-color" }, itemizeSty)
-  end
+  -- Hack the default itemize styles to apply our resume-color
+  -- IMPLEMENTATION NOTES
+  --  - Tricky to remember: not possible in registerStyles() as the latter is
+  --    invoked before the packages are loaded (so its only usage is for styles
+  --    provided by the class itself)
+  --  - We directly tap into the internal style specification, to add the
+  --    inheritance without losing user-defined styling. That's better
+  --    than redefining the style, so as to ensure the inheritance is
+  --    added whatever the saved styled file says.
+  SILE.scratch.styles.specs["lists-itemize-base"].inherit = "resume-color"
 
   self:loadPackage("masters")
   self:defineMaster({
@@ -168,46 +167,66 @@ end
 
 -- STYLES
 function class:registerStyles ()
-  self:registerStyle("resume-firstname", {}, { font = { style = "light" }, color = { color = "#a6a6a6" } })
-  self:registerStyle("resume-lastname", {}, { color = { color = "#737373" } })
+  self:registerStyle("resume-firstname", {}, {
+    font = { style = "light" },
+    color = "#a6a6a6"
+  })
+  self:registerStyle("resume-lastname", {}, {
+    color = "#737373"
+  })
 
-  self:registerStyle("resume-fullname", {}, { font = { size = "30pt" }, paragraph = { align = "right" } })
+  self:registerStyle("resume-fullname", {}, {
+    font = { size = "30pt" },
+    paragraph = { align = "right" }
+  })
 
-  self:registerStyle("resume-color", {}, { color = { color = "#4080bf" } }) -- a nice tint of blue
+  self:registerStyle("resume-color", {}, {
+    color = "#4080bf"
+  }) -- a nice tint of blue
 
-  self:registerStyle("resume-dingbats", { inherit = "resume-color" }, { font = { family = "Symbola", size = "-1" } })
+  self:registerStyle("resume-dingbats", { inherit = "resume-color" }, {
+    font = { family = "Symbola", size = "0.9em" }
+  })
 
-  self:registerStyle("resume-jobrole", {}, { font = { weight = 600 } })
+  self:registerStyle("resume-jobrole", {}, {
+    font = { weight = 600 }
+  })
 
-  self:registerStyle("resume-headline", {}, { font = { weight = "300", style = "italic", size = "-1" },
-    color = { color = "#373737" },
-    paragraph = { align = "center" } })
+  self:registerStyle("resume-headline", {}, {
+    font = { weight = 300, style = "italic", size = "0.9em" },
+    color = "#373737",
+    paragraph = { align = "center" }
+  })
 
-  self:registerStyle("resume-section", { inherit = "resume-color" }, { font = { size = "+2" } })
+  self:registerStyle("resume-section", { inherit = "resume-color" }, {
+    font = { size = "1.2em" }
+  })
 
-  self:registerStyle("resume-topic", {}, { font = { style="light", size = "-1" },
-    paragraph = { align = "right" } })
+  self:registerStyle("resume-topic", {}, {
+    font = { style="light", size = "0.9em" },
+    paragraph = { align = "right" }
+  })
+
   self:registerStyle("resume-description", {}, {})
 
-  self:registerStyle("resume-contact", {}, { font = { style = "thin", size = "-0.5" },
-    paragraph = { align = "center" } })
+  self:registerStyle("resume-contact", {}, {
+    font = { style = "thin", size = "0.95em" },
+    paragraph = { align = "center" }
+  })
 
-  self:registerStyle("resume-jobtitle", {}, { font = { size = "20pt" },
-    color = { color = "#373737" }, paragraph = { align = "center", skipbefore = "0.5cm" } })
+  self:registerStyle("resume-jobtitle", {}, {
+    font = { size = "20pt" },
+    color = "#373737",
+    paragraph = { align = "center", before = { skip = "0.5cm" } }
+  })
 
-  self:registerStyle("resume-header", {}, { font = { size = "20pt" },
-    paragraph = { align = "right" } })
+  self:registerStyle("resume-header", {}, {
+    font = { size = "20pt" },
+    paragraph = { align = "right" }
+  })
 end
 
 -- RESUME PROCESSING
-
-local extractFromTree = function (tree, command)
-  for i=1, #tree do
-    if type(tree[i]) == "table" and tree[i].command == command then
-      return table.remove(tree, i)
-    end
-  end
-end
 
 -- Hacky-whacky way to create a ptable tree programmatically
 -- loosely inspired by what inputfilter.createCommand() does.
@@ -220,8 +239,8 @@ local function C(command, options, content)
 end
 
 local function doEntry (rows, _, content)
-  local topic = extractFromTree(content, "topic")
-  local description = extractFromTree(content, "description")
+  local topic = utils.extractFromTree(content, "topic")
+  local description = utils.extractFromTree(content, "description")
   local titleRow = C("row", { }, {
     C("cell", { valign = "top", padding = "4pt 4pt 0 4pt" }, { function ()
         SILE.call("style:apply:paragraph", { name = "resume-topic" }, function ()
@@ -249,7 +268,7 @@ local function doEntry (rows, _, content)
 end
 
 local doSection = function (rows, _, content)
-  local title = extractFromTree(content, "title")
+  local title = utils.extractFromTree(content, "title")
   local titleRow = C("row", { }, {
     C("cell", { valign = "bottom", padding = "4pt 4pt 0 4pt" }, { function ()
         SILE.call("style:apply", { name = "resume-section" }, function ()
@@ -284,12 +303,12 @@ function class:registerCommands ()
   end, "Text to appear at the bottom of the page")
 
   self:registerCommand("resume", function (_  , content)
-    local firstname = extractFromTree(content, "firstname") or SU.error("firstname is mandatory")
-    local lastname = extractFromTree(content, "lastname") or SU.error("lastname is mandatory")
-    local picture = extractFromTree(content, "picture") or SU.error("picture is mandatory")
-    local contact = extractFromTree(content, "contact") or SU.error("contact is mandatory")
-    local jobtitle = extractFromTree(content, "jobtitle") or SU.error("jobtitle is mandatory")
-    local headline = extractFromTree(content, "headline") -- can be omitted
+    local firstname = utils.extractFromTree(content, "firstname") or SU.error("firstname is mandatory")
+    local lastname = utils.extractFromTree(content, "lastname") or SU.error("lastname is mandatory")
+    local picture = utils.extractFromTree(content, "picture") or SU.error("picture is mandatory")
+    local contact = utils.extractFromTree(content, "contact") or SU.error("contact is mandatory")
+    local jobtitle = utils.extractFromTree(content, "jobtitle") or SU.error("jobtitle is mandatory")
+    local headline = utils.extractFromTree(content, "headline") -- can be omitted
 
     SILE.call("cv-footer", {}, function()
       SILE.process({ contact })

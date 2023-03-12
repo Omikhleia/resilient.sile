@@ -50,5 +50,10 @@ build = {
     ["sile.packages.resilient.epigraph"]        = "packages/resilient/epigraph/init.lua",
 
     ["sile.packages.autodoc-resilient"] = "packages/autodoc-resilient/init.lua",
+
+    ["sile.resilient.hacks"] = "resilient/hacks.lua",
+    ["sile.resilient.utils"] = "resilient/utils.lua",
+
+    ["sile.resilient-tinyyaml"]  = "lua-libraries/resilient-tinyyaml.lua",
   }
 }

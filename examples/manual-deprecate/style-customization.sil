@@ -1,0 +1,358 @@
+\begin{document}
+\part{Tips & Tricks}
+
+\begin{figure}
+\img[src=images/printer_1568.png, width=50%pw]
+\caption{Printers in 1568.\footnote[mark=†]{Meggs, Philip B.,
+  \em{A History of Graphic Design,} John Wiley & Sons, Inc. 1998, \abbr:page{64}.}}
+\end{figure}
+
+% Let's have fun and define a new sectioning command for questions.
+\style:define[name=omi:question]{
+   \font[style=italic]
+   \paragraph[skipbefore=smallskip, indentbefore=false, skipafter=smallskip, breakafter=false]
+   \sectioning[counter=questions, level=1, display=arabic, goodbreak=false, numberstyle=omi:question:number]
+}
+\style:define[name=omi:question:number]{
+   \numbering[before=Q, after=.]
+}
+
+\define[command=Q]{\sectioning[style=omi:question, toc=false]{\process}}
+
+\chapter{Customizing your resilient book}
+
+\admon{\strong{Warning!} These chapters will be removed when the new styling
+paradigm is complete. Most of the commands will be deprecated.}
+
+The class draws heavily upon the concept of “styles”. While you could refer to the
+documentation of that package and look at the class source code for the styles it
+defines for almost everything, we thought a few standard questions would be best
+addressed here.
+
+\section{Chapters & sections}
+
+\Q{Can I have indented paragraphs after section titles?}
+
+If you are, say, French, and want all sections to be followed by indented paragraphs,
+you can therefore enter, early in your document:
+
+%\style:redefine[name=sectioning-base, as=_secbase, inherit=true]{\paragraph[indentafter=true]}
+
+\smallskip
+\codeblock{\\style:redefine[name=sectioning-base, as=_secbase, inherit=true]\{\par
+\qquad\\paragraph[indentafter=true]\}}
+\smallskip
+
+This \codeblock{sectioning-base} style is inherited by all other sectioning
+commands.
+
+\Q{Paper is costly, I do not want chapters to open on an odd page.}
+
+I have seen this used mostly in huge novels, where modern editors relax the ancient rule, or
+mere convention, that says that chapters always have to open on an odd page.
+
+%\style:redefine[name=sectioning-chapter, as=_chapter, inherit=true]{\sectioning[open=any]}
+
+\smallskip
+\codeblock{\\style:redefine[name=sectioning-chapter, as=_chapter, inherit=true]\{\par
+\qquad\\sectioning[open=any]\}}
+\smallskip
+
+Likewise, the same solution could be applied to \codeblock{sectioning-part}, would you
+need that too.
+
+\Q{Can I have my chapter numbers in roman?}
+
+I bet you are writing a novel.
+
+%\style:redefine[name=sectioning-chapter, as=_chapter, inherit=true]{\sectioning[display=ROMAN]}
+
+\smallskip
+\codeblock{\\style:redefine[name=sectioning-chapter, as=_chapter, inherit=true]\{\par
+\qquad\\sectioning[display=ROMAN]\}}
+\smallskip
+
+\Q{Can I remove that dot after the section numbers?}
+
+For sections and lower levels:
+
+%\style:redefine[name=sectioning-other-number, as=_sclabel, inherit=true]{\numbering[after=false]}
+
+\smallskip
+\codeblock{\\style:redefine[name=sectioning-other-number, as=_sclabel, inherit=true]\{\par
+\qquad\\numbering[after=false]\}}
+\smallskip
+
+\Q{Chapters and parts have English labels?}
+
+%\style:redefine[name=sectioning-chapter-number, as=_chlabel, inherit=true]{\numbering[before="Chapitre "]}
+
+By default, yes. This author does not believe in localized strings at all. And I have
+no idea what a “part” would be in your book, anyway. “Part I”, are you sure? What if you typeset, say,
+\em{The Lord of the Rings,} wouldn’t that rather be “Book I”? But say you are French and
+want “Chapitre” instead of “Chapter”.
+
+\smallskip
+\codeblock{\\style:redefine[name=sectioning-chapter-number, as=_chlabel, inherit=true]\{\par
+\qquad\\numbering[before="Chapitre "]\}}
+\smallskip
+
+And likewise for \codeblock{sectioning-part-number}. As for sections in the previous
+question, the label also has a \codeblock{post} specifier. So I guess you have all
+the keys for chapter numbering in Japanese or Chinese.
+
+\section{Footers & headers}
+
+\Q{Can I have folios (page numbers) centered? I prefer that.}
+
+The class always distinguishes between odd and even pages, so here you will need
+two redefinitions, to override the default alignments.
+
+%\style:redefine[name=folio-odd, as=_folodd, inherit=true]{\paragraph[align=center]}
+%\style:redefine[name=folio-even, as=_foleven, inherit=true]{\paragraph[align=center]}
+
+\smallskip
+\codeblock{\\style:redefine[name=folio-odd, as=_folodd, inherit=true]\{\par
+\qquad\\paragraph[align=center]\}}
+
+\codeblock{\\style:redefine[name=folio-even, as=_foleven, inherit=true]\{\par
+\qquad\\paragraph[align=center]\}}
+
+\Q{Can I have running headers centered too?}
+
+As for the previous question, but with the header styles.
+
+%\style:redefine[name=header-odd, as=_headodd, inherit=true]{\paragraph[align=center]}
+%\style:redefine[name=header-even, as=_headeven, inherit=true]{\paragraph[align=center]}
+
+\smallskip
+\codeblock{\\style:redefine[name=header-odd, as=_headodd, inherit=true]\{\par
+\qquad\\paragraph[align=center]\}}
+
+\codeblock{\\style:redefine[name=header-even, as=_headeven, inherit=true]\{\par
+\qquad\\paragraph[align=center]\}}
+
+\Q{Can I change the appearance (font, color) of the folios or headers?}
+
+In addition to the abovementioned paragraph styles, you can also redefine the
+\codeblock{folio-base} and \codeblock{header-base} parent styles, which specify
+their character styles. For instance, I recently read a novel where folios
+used the “old-style” numbers.
+
+%\style:redefine[name=folio-base, as=_folbase, inherit=true]{\font[features=+onum]}
+
+\smallskip
+\codeblock{\\style:redefine[name=folio-base, as=_folbase, inherit=true]\{\par
+\qquad\\font[features=+onum]\}}
+
+\section{Other questions}
+
+Well, do you have any other question that you felt unaddressed? If so, do not
+hesitate opening an issue in our repository.
+
+\chapter{A custom book from scratch}
+
+Let us say we now want to typeset Conan Doyle’s “A Scandal in Bohemia” from
+\em{The Adventures of Sherlock Holmes,} 1892. It is one of the showcase examples
+on SILE’s web site, how good can we render it customizing our class?
+
+\section{An easy start}
+
+Leaving aside the title page–which is another whole topic–, let us concentrate
+on our styling. First, of course, we would select a language and a font, as
+usual.
+
+\smallskip
+\begin{codeblock}
+\\language[main=en]\par
+\\font[family=Libertinus Serif, size=11pt]
+\end{codeblock}
+
+\section{Sectioning…}
+
+What is the sectioning structure of that book? It contains “Adventures”, which
+seem to be the top-level sections. Here we leap into the unknown, but let’s
+decide they will be our “parts”. But of course, we do not want them do be shown
+that way.
+
+\smallskip
+\begin{codeblock}
+\\style:redefine[name=sectioning-part-number, as=_partlabel, inherit=true]\{\par
+\qquad\\numbering[before="Adventure "]\}
+\end{codeblock}
+\smallskip
+
+The numbering is now good. But we may want a smaller font size than the default,
+as well as less vertical spacing before these sections.
+
+\smallskip
+\begin{codeblock}
+\\style:redefine[name=sectioning-part, as=_part, inherit=true]\{\par
+\qquad\\font[size=+4]\par
+\qquad\\paragraph[skipbefore=1cm]\}
+\end{codeblock}
+\smallskip
+
+The next sectioning items are just roman numbers in the original. Let’s
+consider them as our “chapters”. The fact that they have no title is
+not that annoying, we will just invoke \codeblock{\\chapter\{\}} without
+content and that should work. But besides being in uppercase roman,
+these sections do not cause a page break and are centered. So let’s override
+a few things again. Whoever said chapters always open on odd pages was wrong
+here (our parts do, though, and that is probably well).
+
+\smallskip
+\begin{codeblock}
+\\style:redefine[name=sectioning-chapter, as=_chapter, inherit=true]\{\par
+\qquad\\font[size=+2]\par
+\qquad\\paragraph[align=center, skipbefore=bigskip, indentafter=true]\par
+\qquad\\sectioning[display=ROMAN, open=unset]\}
+\end{codeblock}
+\smallskip
+
+Er, wait, we do not want “Chapter N” to be displayed, right? Nor any
+line-break between the number and the (absent) title. Let’s go wild, and
+instead of a redefinition, just wholly clear the default chapter
+number style.
+
+\smallskip
+\begin{codeblock}
+\\style:define[name=sectioning-chapter-number]\{\}
+\end{codeblock}
+
+\section{Running headers…}
+
+Time to consider the page headers now. First, we want them centered
+and always in italic.
+
+\smallskip
+\begin{codeblock}
+\\style:redefine[name=header-odd, as=_hdodd, inherit=true]\{\par
+\qquad\\paragraph[align=center]\par
+\qquad\\font[style=italic]\}\par
+\\style:redefine[name=header-even, as=_hdeven, inherit=true]\{\par
+\qquad\\paragraph[align=center]\par
+\qquad\\font[style=italic]\}
+\end{codeblock}
+\smallskip
+
+Now we get into another sort of problem. By default, the chapter titles
+go in the even page header. But in our case they are empty, and we will
+later want our book title in that header. Moreover, the chapters
+were initially made to open on an odd page, without header, so they
+cancel it on their own page. You know what? Maybe we did not decide
+to customize the \em{right} section types. Anyway, we are here, so we
+go wild again an kill the chapter hook that does all these things.
+Sticking with our choice, we do not need any of them, after all.
+
+\smallskip
+\begin{codeblock}
+\\define[command=sectioning:chapter:hook]\{\}
+\end{codeblock}
+\smallskip
+
+On the other hand, we want our part title to go in the odd
+page header. We need to rewrite its hook in order to do this,
+but still keeping the other things it does (cancelling the header on this
+very page, and resetting some counters).
+
+\smallskip
+\begin{codeblock}
+\\define[command=sectioning:part:hook]\{\par
+\qquad\\noheaderthispage\par
+\qquad\\odd-running-header\{\\process\}\par
+\qquad\\set-counter[id=foonote, value=1]\par
+\qquad\\set-multilevel-counter[id=sections, level=1, value=0]\}
+\end{codeblock}
+\smallskip
+
+Finally, let’s globally set our book title in the even page header,
+and we are all done, or nearly.
+
+\smallskip
+\begin{codeblock}
+\\even-running-header\{The Adventures of Sherlock Holmes\}
+\end{codeblock}
+
+\section{A fancy table of contents}
+
+What’s left, now? Ah, that table of contents. Of course, we only have one
+significant level, our parts, which correspond to the TOC level 0. So we
+will use \codeblock{\\tableofcontents[depth=0]} at the right time. But in
+the 1892 book, the numbering was shown and had some extra punctuations and
+spacing after it. Let’s replace wholly the default style by our own, trying to
+reproduce the same effect as in the original book.
+
+\smallskip
+\begin{codeblock}
+\\style:define[name=toc:level0]\{\par
+\qquad\\toc[numbering=true, pageno=true, dotfill=true]\par
+\qquad\\numbering[after=.—, kern=3spc]\par
+\qquad\\paragraph[indentbefore=false, skipbefore=smallskip]\}
+\end{codeblock}
+
+\section{More goodies?}
+
+Surely, we are done now. Wait, I am super-lazy, really. Later in that story,
+there is a letter from Irene Adler. In the original print, it used some
+small capitals. They didn’t do it, but it might also be styled appropriately
+in some sort of quote. These are surely things I will need
+again and again, so why not try using styles for them?
+
+This one is so dumb, I should feel ashamed.
+
+\smallskip
+\begin{codeblock}
+\\style:define[name=caps]\{\\font[features=+smcp]\}\par
+\\define[command=caps]\{\\style:apply[name=caps]\{\\process\}\}
+\end{codeblock}
+\smallskip
+
+This one is (a bit) more clever: it defines a command that typesets its content
+with indented left and right skips, registers it as a valid alignment option
+for paragraph styles, declares the so-said style, and finally defines a
+convenience command to wrap it all.\footnote{This book class ended up having a better
+\code{blockquote} environment, eventually. For the sake of illustration,
+however, we keep this documentation unchanged.}
+
+\smallskip
+\begin{codeblock}
+\\begin\{script\}\par
+SILE.registerCommand("bkquote", function (options, content)\par
+\quad{}SILE.settings.temporarily(function ()\par
+\qquad{}local indent = SILE.length("2em")\par
+\qquad{}SILE.settings.set("document.rskip", SILE.nodefactory.glue(indent))\par
+\qquad{}SILE.settings.set("document.lskip", SILE.nodefactory.glue(indent))\par
+\qquad{}SILE.process(content)\par
+\qquad{}SILE.call("par")\par
+\quad{}end)\par
+end, "Typesets its contents in a blockquote.")\par
+SILE.scratch.styles.alignments["bkquote"] = "bkquote"\par
+\\end\{script\}\par
+\\style:define[name=bkquote]\{\par
+\quad\\font[size=-0.5]\par
+\quad\\paragraph[skipbefore=smallskip, skipafter=smallskip, align=bkquote]\}\par
+\\define[command=letter]\{\\style:apply:paragraph[name=bkquote]\{\\process\}\}
+\end{codeblock}
+
+\section{Where we erred…}
+
+Eventually, it works. Yay. We did a few things wrong, though, or rather, we perhaps
+made our task more complex than it ought to be.
+
+\begin{enumerate}
+\item{We started with the \code{resilient.book} class, trying to cancel some of
+  its behaviours. It could have been simpler to make our own class and design
+  our styles from scratch. I cannot be sure, as we also reused, via the
+  inheritance mechanism, some existing things. But it is one of the question
+  you might have to face. \em{Here later we
+  might abstract a base class with all packages set up but no sectioning defined?}}
+\item{Remember the doubts we faced above, “Maybe we did not decide
+  to customize the \em{right} section types”. Later, I came across the complete
+  stories of Sherlock Holmes in another edition, where \em{The Adventures} is but
+  a section. So our parts could have been chapters, and so on. Properly
+  sectioning a work is decidely a hard task, one never knows how it will end.
+  But we have all the tools to do it.}
+\end{enumerate}
+
+\end{document}

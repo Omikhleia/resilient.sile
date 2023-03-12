@@ -1,0 +1,684 @@
+
+blockquote:
+  origin: "resilient.book"
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "smallskip"
+      align: "block"
+      before:
+        skip: "smallskip"
+
+epigraph:
+  origin: "resilient.epigraph"
+  style:
+    font:
+      size: "0.9em"
+    paragraph:
+      after:
+        skip: "bigskip"
+      before:
+        skip: "medskip"
+
+epigraph-source:
+  origin: "resilient.epigraph"
+  style:
+   paragraph:
+      align: "right"
+      before:
+        indent: false
+        vbreak: false
+
+epigraph-source-norule:
+  inherit: "epigraph-source"
+  origin: "resilient.epigraph"
+  style:
+    paragraph:
+      before:
+        skip: "smallskip"
+
+epigraph-source-rule:
+  inherit: "epigraph-source"
+  origin: "resilient.epigraph"
+  style:
+
+epigraph-text:
+  inherit: "epigraph"
+  origin: "resilient.epigraph"
+  style:
+    paragraph:
+      align: "justify"
+
+figure:
+  origin: "resilient.book"
+  style:
+    paragraph:
+      after:
+        vbreak: false
+      align: "center"
+      before:
+        skip: "smallskip"
+
+figure-caption:
+  origin: "resilient.book"
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        skip: "medskip"
+        vbreak: false
+    sectioning:
+      counter:
+        id: "figures"
+        level: 1
+      numberstyle:
+        main: "figure-caption-main-number"
+        reference: "figure-caption-ref-number"
+      settings:
+        bookmark: false
+        goodbreak: false
+        toclevel: 5
+
+figure-caption-base-number:
+  origin: "resilient.book"
+  style:
+
+figure-caption-main-number:
+  inherit: "figure-caption-base-number"
+  origin: "resilient.book"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+      before:
+        text: "Figure "
+
+figure-caption-ref-number:
+  inherit: "figure-caption-base-number"
+  origin: "resilient.book"
+  style:
+    numbering:
+      before:
+        text: "fig. "
+
+folio-base:
+  origin: "resilient.book"
+  style:
+    font:
+      features: "+onum"
+
+folio-even:
+  inherit: "folio-base"
+  origin: "resilient.book"
+  style:
+
+folio-odd:
+  inherit: "folio-base"
+  origin: "resilient.book"
+  style:
+    paragraph:
+      after:
+        indent: true
+        vbreak: true
+      align: "right"
+      before:
+        indent: true
+        vbreak: true
+
+footnote:
+  origin: "resilient.footnotes"
+  style:
+    font:
+      size: "0.8em"
+    numbering:
+      display: "arabic"
+
+footnote-marker:
+  origin: "resilient.footnotes"
+  style:
+    numbering:
+      after:
+        kern: "iwsp"
+      before:
+        kern: "-3.75nspc"
+
+footnote-marker-counter:
+  inherit: "footnote-marker"
+  origin: "resilient.footnotes"
+  style:
+    numbering:
+      after:
+        text: "."
+
+footnote-marker-symbol:
+  inherit: "footnote-marker"
+  origin: "resilient.footnotes"
+  style:
+
+footnote-reference:
+  origin: "resilient.footnotes"
+  style:
+    numbering:
+      before:
+        kern: "1thsp"  
+    properties:
+      position: "super"
+
+footnote-reference-counter:
+  inherit: "footnote-reference"
+  origin: "resilient.footnotes"
+  style:
+
+footnote-reference-symbol:
+  inherit: "footnote-reference"
+  origin: "resilient.footnotes"
+  style:
+
+header-base:
+  origin: "resilient.book"
+  style:
+    font:
+      size: "0.9em"
+      style: "italic"
+    paragraph:
+      align: "center"
+      after:
+        indent: false
+      before:
+        indent: false
+
+header-even:
+  inherit: "header-base"
+  origin: "resilient.book"
+  style:
+
+header-odd:
+  inherit: "header-base"
+  origin: "resilient.book"
+  style:
+
+sectioning-base:
+  origin: "resilient.book"
+  style:
+    paragraph:
+      after:
+        indent: false
+      before:
+        indent: false
+
+sectioning-chapter:
+  inherit: "sectioning-base"
+  origin: "resilient.book"
+  style:
+    font:
+      size: "1.4em"
+      weight: 800
+    paragraph:
+      after:
+        skip: "bigskip"
+      align: "left"
+    sectioning:
+      counter:
+        id: "sections"
+        level: 1
+      hook: "sectioning:chapter:hook"
+      numberstyle:
+        header: "sectioning-chapter-head-number"
+        main: "sectioning-chapter-main-number"
+        reference: "sectioning-chapter-ref-number"
+      settings:
+        bookmark: true
+        goodbreak: true
+        open: "odd"
+        toclevel: 1
+
+sectioning-chapter-base-number:
+  origin: "resilient.book"
+  style:
+
+sectioning-chapter-head-number:
+  inherit: "sectioning-chapter-base-number"
+  origin: "resilient.book"
+  style:
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+
+sectioning-chapter-main-number:
+  inherit: "sectioning-chapter-base-number"
+  origin: "resilient.book"
+  style:
+    font:
+      size: "0.9em"
+    numbering:
+      after:
+        text: "."
+      before:
+        text: "Chapter "
+      standalone: true
+
+sectioning-chapter-ref-number:
+  inherit: "sectioning-chapter-base-number"
+  origin: "resilient.book"
+  style:
+    numbering:
+      before:
+        text: "chap. "
+
+sectioning-other-number:
+  origin: "resilient.book"
+  style:
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+
+sectioning-part:
+  inherit: "sectioning-base"
+  origin: "resilient.book"
+  style:
+    font:
+      size: "1.6em"
+      weight: 800
+    paragraph:
+      after:
+        skip: "bigskip"
+      align: "center"
+      before:
+        skip: "15%fh"
+    sectioning:
+      counter:
+        id: "parts"
+        level: 1
+      hook: "sectioning:part:hook"
+      numberstyle:
+        header: "sectioning-part-head-number"
+        main: "sectioning-part-main-number"
+        reference: "sectioning-part-ref-number"
+      settings:
+        open: "odd"
+        toclevel: 0
+
+sectioning-part-base-number:
+  origin: "resilient.book"
+  style:
+    numbering:
+      display: "ROMAN"
+
+sectioning-part-head-number:
+  inherit: "sectioning-part-base-number"
+  origin: "resilient.book"
+  style:
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+
+sectioning-part-main-number:
+  inherit: "sectioning-part-base-number"
+  origin: "resilient.book"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      before:
+        text: "Part "
+      standalone: true
+
+sectioning-part-ref-number:
+  inherit: "sectioning-part-base-number"
+  origin: "resilient.book"
+  style:
+    numbering:
+      before:
+        text: "part "
+
+sectioning-section:
+  inherit: "sectioning-base"
+  origin: "resilient.book"
+  style:
+    font:
+      size: "1.2em"
+      weight: 800
+    paragraph:
+      after:
+        skip: "medskip"
+        vbreak: false
+      before:
+        skip: "bigskip"
+    sectioning:
+      counter:
+        id: "sections"
+        level: 2
+      hook: "sectioning:section:hook"
+      numberstyle:
+        header: "sectioning-other-number"
+        main: "sectioning-other-number"
+        reference: "sectioning-other-number"
+      settings:
+        toclevel: 2
+
+sectioning-subsection:
+  inherit: "sectioning-base"
+  origin: "resilient.book"
+  style:
+    font:
+      size: "1.1em"
+      weight: 800
+    paragraph:
+      after:
+        skip: "smallskip"
+        vbreak: false
+      before:
+        skip: "medskip"
+    sectioning:
+      counter:
+        id: "sections"
+        level: 3
+      numberstyle:
+        header: "sectioning-other-number"
+        main: "sectioning-other-number"
+        reference: "sectioning-other-number"
+      settings:
+        toclevel: 3
+
+sectioning-subsubsection:
+  inherit: "sectioning-base"
+  origin: "resilient.book"
+  style:
+    font:
+      weight: 800
+    paragraph:
+      after:
+        vbreak: false
+      before:
+        skip: "smallskip"
+    sectioning:
+      counter:
+        id: "sections"
+        level: 4
+      numberstyle:
+        header: "sectioning-other-number"
+        main: "sectioning-other-number"
+        reference: "sectioning-other-number"
+      settings:
+        toclevel: 4
+
+table:
+  origin: "resilient.book"
+  style:
+    paragraph:
+      after:
+        vbreak: false
+      align: "center"
+
+table-caption:
+  origin: "resilient.book"
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        vbreak: false
+    sectioning:
+      counter:
+        id: "table"
+        level: 1
+      numberstyle:
+        main: "table-caption-main-number"
+        reference: "table-caption-ref-number"
+      settings:
+        bookmark: false
+        goodbreak: false
+        toclevel: 6
+
+table-caption-base-number:
+  origin: "resilient.book"
+  style:
+
+table-caption-main-number:
+  inherit: "table-caption-base-number"
+  origin: "resilient.book"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+      before:
+        text: "Table "
+
+table-caption-ref-number:
+  inherit: "table-caption-base-number"
+  origin: "resilient.book"
+  style:
+    numbering:
+      before:
+        text: "table "
+
+toc:
+  origin: "resilient.tableofcontents"
+  style:
+
+toc-level-base:
+  origin: "resilient.tableofcontents"
+  style:
+
+toc-level0:
+  inherit: "toc-level-base"
+  origin: "resilient.tableofcontents"
+  style:
+    font:
+      size: "1.15em"
+      weight: 800
+    paragraph:
+      after:
+        skip: "medskip"
+        vbreak: false
+      before:
+        indent: false
+        skip: "medskip"
+    toc:
+      numbered: true
+      pageno: false
+
+toc-level1:
+  inherit: "toc-level-base"
+  origin: "resilient.tableofcontents"
+  style:
+    font:
+      size: "1.1em"
+      weight: 800
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: false
+    toc:
+      dotfill: false
+
+toc-level2:
+  inherit: "toc-level-base"
+  origin: "resilient.tableofcontents"
+  style:
+    font:
+      size: "1em"
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: false
+    toc:
+
+toc-level3:
+  inherit: "toc-level-base"
+  origin: "resilient.tableofcontents"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: true
+    toc:
+      dotfill: false
+
+toc-level4:
+  inherit: "toc-level-base"
+  origin: "resilient.tableofcontents"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: true
+    toc:
+      pageno: false
+
+toc-level5:
+  inherit: "toc-level-base"
+  origin: "resilient.tableofcontents"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: false
+    toc:
+      numbered: true
+
+toc-level6:
+  inherit: "toc-level-base"
+  origin: "resilient.tableofcontents"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: false
+    toc:
+      numbered: true
+
+toc-level7:
+  inherit: "toc-level-base"
+  origin: "resilient.tableofcontents"
+  style:
+    paragraph:
+      before:
+        indent: true
+    toc:
+      pageno: false
+
+toc-level8:
+  inherit: "toc-level-base"
+  origin: "resilient.tableofcontents"
+  style:
+    paragraph:
+      before:
+        indent: true
+    toc:
+      pageno: false
+
+toc-level9:
+  inherit: "toc-level-base"
+  origin: "resilient.tableofcontents"
+  style:
+    paragraph:
+      before:
+        indent: true
+    toc:
+      pageno: false
+
+toc-number-base:
+  origin: "resilient.tableofcontents"
+  style:
+    numbering:
+      after:
+        kern: "2thsp"
+        text: "."
+
+toc-number-level0:
+  inherit: "toc-number-base"
+  origin: "resilient.tableofcontents"
+  style:
+
+toc-number-level1:
+  inherit: "toc-number-base"
+  origin: "resilient.tableofcontents"
+  style:
+
+toc-number-level2:
+  inherit: "toc-number-base"
+  origin: "resilient.tableofcontents"
+  style:
+
+toc-number-level3:
+  inherit: "toc-number-base"
+  origin: "resilient.tableofcontents"
+  style:
+
+toc-number-level4:
+  inherit: "toc-number-base"
+  origin: "resilient.tableofcontents"
+  style:
+
+toc-number-level5:
+  inherit: "toc-number-base"
+  origin: "resilient.tableofcontents"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "2spc"
+        text: "."
+      before:
+        text: "Fig. "
+
+toc-number-level6:
+  inherit: "toc-number-base"
+  origin: "resilient.tableofcontents"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "2spc"
+        text: "."
+      before:
+        text: "Table "
+
+toc-number-level7:
+  inherit: "toc-number-base"
+  origin: "resilient.tableofcontents"
+  style:
+
+toc-number-level8:
+  inherit: "toc-number-base"
+  origin: "resilient.tableofcontents"
+  style:
+
+toc-number-level9:
+  inherit: "toc-number-base"
+  origin: "resilient.tableofcontents"
+  style:
+
+toc-pageno:
+  origin: "resilient.tableofcontents"
+  style:
+

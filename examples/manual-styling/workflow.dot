@@ -1,0 +1,28 @@
+digraph G {
+  rankdir="LR"
+  edge[arrowhead="vee"];
+
+  subgraph cluster_in {
+    doc [shape=note, label="document"];
+    rsty [shape=note, style=dashed, label="style file"];
+    style=filled;
+	color="#e0e0d0";
+	label="input";
+  }
+
+  subgraph cluster_out {
+   pdf [shape=note, label="PDF"];
+   osty [shape=note, label="style file"];
+   style=filled;
+   color="#e0f0e0";
+   label="output";
+  }
+
+  resilient [shape=doublecircle, color="#e8ccd7 ", style=filled, label="resilient\nclass"];
+
+  doc -> resilient
+  rsty -> resilient
+  resilient -> pdf
+  resilient -> osty
+  osty -> rsty
+}

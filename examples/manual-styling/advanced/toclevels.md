@@ -1,0 +1,104 @@
+## Styling the table of contents
+
+For styling the table of contents,[^toc-fancy] you may want to
+consider:
+
+ - How the table of contents is globally formatted.
+ - How each item is formatted depending on its level.
+ - How section numbers are formatted.
+ - How page references are formatted.
+
+[^toc-fancy]: This section applies to the "standard" table of contents,
+as produced with the `\tableofcontents` command from the **resilient.tableofcontents**
+package.
+Specific implementations such as **fancytoc** may use their own
+styling rules.
+
+### Global setup
+
+There is a general paragraph style for the whole table of contents.
+Its default implementation is empty, but you may possibly tune it.
+
+```yaml
+toc:
+  style:
+    paragraph:
+```
+
+### Level items
+
+Each level _N_ in the table of contents has its own paragraph style `toc-level⟨N⟩`.
+They are fairly repetitive, so let's illustrate only one (level 0, normally
+corresponding to book "parts").
+
+```yaml
+toc-level0:
+  inherit: "toc-level-base"
+  style:
+    font:
+      size: "1.15em"
+      weight: 800
+    paragraph:
+      before:
+        indent: false
+        skip: "medskip"
+      after:
+        vbreak: false
+        skip: "medskip"
+    toc:
+      numbered: true
+      pageno: false
+```
+
+### Section numbers
+
+Number styles also exist for all levels, though of course they are only used
+when the corresponding ToC style enabled the `numbered` option.
+
+These number styles inherit from a common parent, where some global
+styling decision may be applied. The default implementation appends a
+period to the number, and some space.
+
+```yaml
+toc-number-base:
+  style:
+    numbering:
+      after:
+        kern: "2thsp"
+        text: "."
+```
+
+Then, each number style defines its appropriate styling.
+This is again quite repetitive---most default definitions are empty.
+Let's illustrate one case where the default definition is more
+interesting (level 5, normally corresponding to "figures"). It adds
+a bit of text before the number, switches to small capitals, and
+uses a slightly different spacing after the number.
+
+```yaml
+toc-number-level5:
+  inherit: "toc-number-base"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "2spc"
+        text: "."
+      before:
+        text: "Fig. "
+```
+
+### Page references
+
+Finally, the `toc-pageno` character style is applied to page number
+references, when the corresponding ToC style enabled the `pageno` option.
+Its defult definition is empty. Would you want old-style page numbers,
+you could define it as follows:
+
+```yaml
+toc-pageno:
+  style:
+    font:
+      features: "+onum"
+```

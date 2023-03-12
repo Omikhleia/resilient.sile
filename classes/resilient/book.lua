@@ -1,11 +1,13 @@
 --
--- A new book class for SILE
--- 2021, 2022, Didier Willis
+-- A new advanced book class for SILE
+-- 2021-2023, Didier Willis
 -- License: MIT
 --
 local plain = require("classes.resilient.base")
 local class = pl.class(plain)
 class._name = "resilient.book"
+
+local utils = require("resilient.utils")
 
 -- PAGE LAYOUT MASTERS
 
@@ -114,11 +116,21 @@ function class:_init (options)
   self:loadPackage("resilient.headers")
   self:loadPackage("markdown")
 
-  -- override document.parindent default
+  -- Override document.parindent default to this author's taste
   SILE.settings:set("document.parindent", "1.25em")
+  -- Override with saner defaults:
+  -- Slightly prefer underfull lines over ugly overfull content
+  -- I used a more drastic value before, but realize it can have bad effects
+  -- too, so for a default value let's be cautious. It's still better then 0
+  -- in my opinion for the general usage.
+  SILE.settings:set("linebreak.emergencyStretch", "1em")
+  -- This should never have been 1.2 by default:
+  -- https://github.com/sile-typesetter/sile/issues/1371
+  SILE.settings:set("shaper.spaceenlargementfactor", 1)
 
-  -- override the standard foliostyle hook to rely on styles
+  -- Override the standard foliostyle hook to rely on styles
   -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
+  -- as packages are not loaded yet.
   self:registerCommand("foliostyle", function (_, content)
     SILE.call("noindent")
     local styleName = SILE.documentState.documentClass:oddPage() and "folio-odd" or "folio-even"
@@ -166,62 +178,123 @@ end
 function class:registerStyles ()
   -- Sectioning styles
   self:registerStyle("sectioning-base", {}, {
-    paragraph = { indentbefore = false, indentafter = false }
+    paragraph = { before = { indent = false },
+                  after = { indent = false } }
   })
   self:registerStyle("sectioning-part", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "+6" },
-    paragraph = { skipbefore = "15%fh", align = "center", skipafter = "bigskip" },
-    sectioning = { counter = "parts", level = 1, display = "ROMAN",
-                  toclevel = 0,
-                  open = "odd", numberstyle="sectioning-part-number",
-                  hook = "sectioning:part:hook" },
+    font = { weight = 800, size = "1.6em" },
+    paragraph = { before = { skip = "15%fh" },
+                  align = "center",
+                  after = { skip = "bigskip" } },
+    sectioning = {  counter = { id ="parts", level = 1 },
+                    settings = {
+                      toclevel = 0,
+                      open = "odd"
+                    },
+                    numberstyle= {
+                      main = "sectioning-part-main-number",
+                      header = "sectioning-part-head-number",
+                      reference = "sectioning-part-ref-number"
+                    },
+                    hook = "sectioning:part:hook" },
   })
   self:registerStyle("sectioning-chapter", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "+4" },
-    paragraph = { skipafter = "bigskip", align = "left" },
-    sectioning = { counter = "sections", level = 1, display = "arabic",
-                  toclevel = 1,
-                  open = "odd", numberstyle="sectioning-chapter-number",
-                  hook = "sectioning:chapter:hook" },
+    font = { weight = 800, size = "1.4em" },
+    paragraph = {  align = "left",
+                   after = { skip = "bigskip" } },
+    sectioning = { counter = { id = "sections", level = 1 },
+                    settings = {
+                      toclevel = 1,
+                      open = "odd"
+                    },
+                    numberstyle= {
+                      main = "sectioning-chapter-main-number",
+                      header = "sectioning-chapter-head-number",
+                      reference = "sectioning-chapter-ref-number",
+                    },
+                    hook = "sectioning:chapter:hook" },
   })
   self:registerStyle("sectioning-section", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "+2" },
-    paragraph = { skipbefore = "bigskip", skipafter = "medskip", breakafter = false },
-    sectioning = { counter = "sections", level = 2, display = "arabic",
-                  toclevel = 2,
-                  numberstyle="sectioning-other-number",
-                  hook = "sectioning:section:hook" },
+    font = { weight = 800, size = "1.2em" },
+    paragraph = { before = { skip = "bigskip" },
+                  after = { skip = "medskip", vbreak = false } },
+    sectioning = {  counter = { id = "sections", level = 2 },
+                    settings = {
+                      toclevel = 2
+                    },
+                    numberstyle= {
+                      main = "sectioning-other-number",
+                      header = "sectioning-other-number",
+                      reference = "sectioning-other-number",
+                    },
+                    hook = "sectioning:section:hook" },
   })
   self:registerStyle("sectioning-subsection", { inherit = "sectioning-base"}, {
-    font = { weight = 800, size = "+1" },
-    paragraph = { skipbefore = "medskip", skipafter = "smallskip", breakafter = false },
-    sectioning = { counter = "sections", level = 3, display = "arabic",
-                  toclevel = 3,
-                  numberstyle="sectioning-other-number" },
+    font = { weight = 800, size = "1.1em" },
+    paragraph = { before = { skip = "medskip" },
+                  after = { skip = "smallskip", vbreak = false } },
+    sectioning = {  counter = { id = "sections", level = 3 },
+                    settings = {
+                      toclevel = 3
+                    },
+                    numberstyle= {
+                      main = "sectioning-other-number",
+                      header = "sectioning-other-number",
+                      reference = "sectioning-other-number",
+                    } },
   })
   self:registerStyle("sectioning-subsubsection", { inherit = "sectioning-base" }, {
     font = { weight = 800 },
-    paragraph = { skipbefore = "smallskip", breakafter = false },
-    sectioning = { counter = "sections", level = 4, display = "arabic",
-                  toclevel = 4,
-                  numberstyle="sectioning-other-number" },
+    paragraph = { before = { skip = "smallskip" },
+                  after = { vbreak = false } },
+    sectioning = {  counter = { id = "sections", level = 4 },
+                    settings = {
+                      toclevel = 4
+                    },
+                    numberstyle= {
+                      main = "sectioning-other-number",
+                      header = "sectioning-other-number",
+                      reference = "sectioning-other-number",
+                    } },
   })
 
-  self:registerStyle("sectioning-part-number", {}, {
+  self:registerStyle("sectioning-part-base-number", {}, {
+    numbering = { display = "ROMAN" }
+  })
+  self:registerStyle("sectioning-part-main-number", { inherit = "sectioning-part-base-number" }, {
     font = { features = "+smcp" },
-    numbering = { before = "Part ", standalone = true },
+    numbering = { before = { text ="Part " },
+                  standalone = true },
   })
-  self:registerStyle("sectioning-chapter-number", {}, {
-    font = { size = "-1" },
-    numbering = { before = "Chapter ", after = ".", standalone = true },
+  self:registerStyle("sectioning-part-head-number", { inherit = "sectioning-part-base-number" }, {
+    numbering = { after = { text =".", kern = "iwsp" } },
   })
+
+  self:registerStyle("sectioning-part-ref-number", { inherit = "sectioning-part-base-number" }, {
+    numbering = { before = { text ="part " } },
+  })
+  self:registerStyle("sectioning-chapter-base-number", {}, {
+  })
+  self:registerStyle("sectioning-chapter-main-number", { inherit = "sectioning-chapter-base-number" }, {
+    font = { size = "0.9em" },
+    numbering = { before = { text = "Chapter "} ,
+                  after = { text = "." },
+                  standalone = true },
+  })
+  self:registerStyle("sectioning-chapter-head-number", { inherit = "sectioning-chapter-base-number" }, {
+    numbering = { after = { text =".", kern = "iwsp" } },
+  })
+  self:registerStyle("sectioning-chapter-ref-number", { inherit = "sectioning-chapter-base-number" }, {
+    numbering = { before = { text ="chap. " } },
+  })
+
   self:registerStyle("sectioning-other-number", {}, {
-    numbering = { after = "." }
+    numbering = { after = { text = ".", kern = "iwsp" } }
   })
 
   -- folio styles
   self:registerStyle("folio-base", {}, {
-    font = { size = "-0.5" }
+    font = { features = "+onum" }
   })
   self:registerStyle("folio-even", { inherit = "folio-base" }, {
   })
@@ -231,8 +304,9 @@ function class:registerStyles ()
 
   -- header styles
   self:registerStyle("header-base", {}, {
-    font = { size = "-1" },
-    paragraph = { indentbefore = false, indentafter = false }
+    font = { size = "0.9em" },
+    paragraph = { before = { indent = false },
+                  after = { indent = false } }
   })
   self:registerStyle("header-even", { inherit = "header-base" }, {
   })
@@ -245,44 +319,72 @@ function class:registerStyles ()
   SILE.scratch.styles.alignments["block"] = "blockindent"
 
   self:registerStyle("blockquote", {}, {
-    font = { size = "-0.5" },
-    paragraph = { skipbefore = "smallskip", skipafter = "smallskip",
-                  align = "block" }
+    font = { size = "0.95em" },
+    paragraph = { before = { skip = "smallskip" },
+                  align = "block",
+                  after = { skip = "smallskip" } }
   })
 
   -- captioned elements
   self:registerStyle("figure", {}, {
-    paragraph = { skipbefore = "smallskip",
-                  align = "center", breakafter = false },
+    paragraph = { before = { skip = "smallskip" },
+                  align = "center",
+                  after = { vbreak = false } },
   })
   self:registerStyle("figure-caption", {}, {
-    font = { size = "-0.5" },
-    paragraph = { indentbefore = false, skipbefore = "medskip", breakbefore = false,
+    font = { size = "0.95em" },
+    paragraph = { before = { skip = "medskip", indent = false, vbreak = false },
                   align = "center",
-                  skipafter = "medskip" },
-    sectioning = { counter = "figures", level = 1, display = "arabic",
-                   toclevel = 5, bookmark = false,
-                   goodbreak = false, numberstyle="figure-caption-number" },
+                  after = { skip = "medskip" } },
+    sectioning = {  counter = { id = "figures", level = 1 },
+                    settings = {
+                      toclevel = 5,
+                      bookmark = false,
+                      goodbreak = false
+                    },
+                    numberstyle= {
+                      main ="figure-caption-main-number",
+                      reference ="figure-caption-ref-number"
+                    } },
   })
-  self:registerStyle("figure-caption-number", {}, {
-    numbering = { before = "Figure ", after = "." },
+  self:registerStyle("figure-caption-base-number", {}, {})
+  self:registerStyle("figure-caption-main-number", { inherit = "figure-caption-base-number" }, {
+    numbering = { before = { text = "Figure " },
+                  after = { text = ".", kern = "iwsp" } },
     font = { features = "+smcp" },
   })
+  self:registerStyle("figure-caption-ref-number", { inherit = "figure-caption-base-number" }, {
+    numbering = { before = { text = "fig. " } }
+  })
+
   self:registerStyle("table", {}, {
-    paragraph = { align = "center", breakafter = false },
+    paragraph = { align = "center",
+                  after = { vbreak = false } },
   })
   self:registerStyle("table-caption", {}, {
-    font = { size = "-0.5" },
-    paragraph = { indentbefore = false, breakbefore = false,
+    font = { size = "0.95em" },
+    paragraph = { before = { indent = false, vbreak = false },
                   align = "center",
-                  skipafter = "medskip" },
-    sectioning = { counter = "table", level = 1, display = "arabic",
-                   toclevel = 6, bookmark = false,
-                   goodbreak = false, numberstyle="table-caption-number" },
+                  after = { skip = "medskip" } },
+    sectioning = {  counter = { id = "table", level = 1 },
+                    settings = {
+                      toclevel = 6,
+                      bookmark = false,
+                      goodbreak = false
+                    },
+                    numberstyle= {
+                      main = "table-caption-main-number",
+                      reference = "table-caption-ref-number",
+                    } }
   })
-  self:registerStyle("table-caption-number", {}, {
-    numbering = { before = "Table ", after = "." },
+  self:registerStyle("table-caption-base-number", {}, {})
+  self:registerStyle("table-caption-main-number", { inherit = "table-caption-base-number" }, {
+    numbering = { before = { text = "Table " },
+                  after = { text = ".", kern = "iwsp" } },
     font = { features = "+smcp" },
+  })
+  self:registerStyle("table-caption-ref-number", { inherit = "table-caption-base-number" }, {
+    numbering = { before = { text = "table " } }
   })
 end
 
@@ -357,12 +459,15 @@ function class:registerCommands ()
     -- Sections, here, go in the odd header.
     SILE.call("odd-running-header", {}, function ()
       if SU.boolean(options.numbering, true) then
-        SILE.call("show-multilevel-counter", {
-          id = options.counter,
-          level = options.level,
-          noleadingzeros = true
-        })
-        SILE.typesetter:typeset(" ")
+        local sty = self:resolveStyle("sectioning-section")
+        local numsty = sty.sectioning and sty.sectioning.numberstyle
+          and sty.sectioning.numberstyle.header
+        if numsty and sty.sectioning.counter.id then
+          local number = self.packages.counters:formatMultilevelCounter(
+            self:getMultilevelCounter(sty.sectioning.counter.id), { noleadingzeros = true }
+          )
+          SILE.call("style:apply:number", { name = numsty, text = number })
+        end
       end
       SILE.process(content)
     end)
@@ -414,17 +519,9 @@ function class:registerCommands ()
   -- Captioned elements
   -- N.B. Despite the similar naming to LaTeX, these are not "floats"
 
-  local extractFromTree = function (tree, command)
-    for i=1, #tree do
-      if type(tree[i]) == "table" and tree[i].command == command then
-        return table.remove(tree, i)
-      end
-    end
-  end
-
   self:registerCommand("captioned-figure", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in figure environment") end
-    local caption = extractFromTree(content, "caption")
+    local caption = utils.extractFromTree(content, "caption")
 
     options.style = "figure-caption"
     SILE.call("style:apply:paragraph", { name = "figure" }, content)
@@ -439,7 +536,7 @@ function class:registerCommands ()
 
   self:registerCommand("captioned-table", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in table environment") end
-    local caption = extractFromTree(content, "caption")
+    local caption = utils.extractFromTree(content, "caption")
 
     options.style = "table-caption"
     SILE.call("style:apply:paragraph", { name = "table" }, content)
@@ -462,16 +559,18 @@ function class:registerCommands ()
 
   self:registerCommand("listoffigures", function (_, _)
     local figSty = self.styles:resolveStyle("figure-caption")
-    local start = figSty.sectioning and figSty.sectioning.toclevel
+    local start = figSty.sectioning
+      and figSty.sectioning.settings and figSty.sectioning.settings.toclevel
       or SU.error("Figure style does not specify a TOC level sectioning")
 
     SILE.call("tableofcontents", { start = start, depth = 0 })
   end, "Output the list of figures.")
 
   self:registerCommand("listoftables", function (_, _)
-    local figSty = self.styles:resolveStyle("table-caption")
-    local start = figSty.sectioning and figSty.sectioning.toclevel
-      or SU.error("Figure style does not specify a TOC level sectioning")
+    local tabSty = self.styles:resolveStyle("table-caption")
+    local start = tabSty.sectioning
+      and tabSty.sectioning.settings and tabSty.sectioning.settings.toclevel
+      or SU.error("Table style does not specify a TOC level sectioning")
 
     SILE.call("tableofcontents", { start = start, depth = 0 })
   end, "Output the list of tables.")

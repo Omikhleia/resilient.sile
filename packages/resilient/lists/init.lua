@@ -37,6 +37,8 @@
 --
 local base = require("packages.resilient.base")
 
+local hboxer = require("resilient-compat.hboxing") -- Compatibility hack/shim
+
 local package = pl.class(base)
 package._name = "resilient.lists"
 
@@ -72,20 +74,24 @@ end
 
 function package:resolveEnumStyleDef (name)
   local stylespec = self:resolveStyle(name)
-
+  if stylespec.numbering then
+    return {
+      display = stylespec.numbering.display or "arabic",
+      after = stylespec.numbering.after and stylespec.numbering.after.text or "",
+      before = stylespec.numbering.before and stylespec.numbering.before.text or "",
+    }
+  end
   if stylespec.enumerate then
     return {
-      display = stylespec.enumerate.display or "arabic",
-      after = stylespec.enumerate.after or "",
-      before = stylespec.enumerate.before or "",
+      -- afterwards called character for distinguishing it from itemize symbol
+      character = stylespec.enumerate.symbol or "U+0031",
     }
   end
   if stylespec.itemize then
     return {
-      bullet = stylespec.itemize.bullet or "•",
+      symbol = stylespec.itemize.symbol or "•",
     }
   end
-
   SU.error("Style '"..name.."' is not a list style")
 end
 
@@ -99,22 +105,24 @@ function package:doItem (options, content)
     SILE.call("par")
   end
 
-  local mark = SILE.call("hbox", {}, function ()
+  local mark = hboxer.makeHbox(function ()
     SILE.call("style:apply", { name = styleName }, function ()
-      if enumStyle.display then
-        local cp = unichar(enumStyle.display)
+      if enumStyle.character then
+        local cp = unichar(enumStyle.character)
         if cp then
           SILE.typesetter:typeset(luautf8.char(cp + counter - 1))
         else
-          SILE.typesetter:typeset(enumStyle.before)
-          SILE.typesetter:typeset(self.class.packages.counters:formatCounter({
-            value = counter,
-            display = enumStyle.display })
-          )
-          SILE.typesetter:typeset(enumStyle.after)
+          SU.error("Invalid enumeration symbol in style '" .. styleName .. "'")
         end
-      else
-        local bullet = options.bullet or enumStyle.bullet
+      elseif enumStyle.display then
+        SILE.typesetter:typeset(enumStyle.before)
+        SILE.typesetter:typeset(self.class.packages.counters:formatCounter({
+          value = counter,
+          display = enumStyle.display })
+        )
+        SILE.typesetter:typeset(enumStyle.after)
+      else -- enumStyle.symbol
+        local bullet = options.bullet or enumStyle.symbol
         local cp = unichar(bullet)
         if cp then
           SILE.typesetter:typeset(luautf8.char(cp))
@@ -124,7 +132,6 @@ function package:doItem (options, content)
       end
     end)
   end)
-  table.remove(SILE.typesetter.state.nodes) -- steal it back
 
   local stepback
   if enumStyle.display then
@@ -163,7 +170,8 @@ function package:doNestedList (listType, options, content)
   -- styling
   local styleName = checkEnumStyleName("lists-"..listAltStyleType..depth, "lists-"..listType..depth)
   local enumStyle = self:resolveEnumStyleDef(styleName)
-  -- options may override the enumeration style
+  -- options may override the enumeration style:
+  -- we can alter it as style resolving returned us a deep copy.
   if enumStyle.display then
     if options.before or options.after then
       -- for before/after, don't mix default style and options
@@ -171,8 +179,8 @@ function package:doNestedList (listType, options, content)
       enumStyle.after = options.after or ""
     end
     if options.display then enumStyle.display = options.display end
-  else
-    enumStyle.bullet = options.bullet or enumStyle.bullet
+  elseif enumStyle.symbol then
+    enumStyle.symbol = options.bullet or enumStyle.symbol
   end
 
   -- indent
@@ -323,99 +331,97 @@ function package:registerCommands ()
 end
 
 function package:registerStyles ()
+  self:registerStyle("lists-enumerate-base", {}, {})
+  self:registerStyle("lists-itemize-base", {}, {})
 
   -- Enumerate style
-  self:registerStyle("lists-enumerate1", {}, {
-    enumerate = { display = "arabic", before = "", after = "." }
+  self:registerStyle("lists-enumerate1", { inherit = "lists-enumerate-base" }, {
+    numbering = { display = "arabic", after =  { text = "." } }
   })
-  self:registerStyle("lists-enumerate2", {}, {
-    enumerate = { display = "roman", before = "", after = "." }
+  self:registerStyle("lists-enumerate2", { inherit = "lists-enumerate-base" }, {
+    numbering = { display = "roman", after = { text = "." } }
   })
-  self:registerStyle("lists-enumerate3", {}, {
-    enumerate = { display = "alpha", before = "", after = ")" }
+  self:registerStyle("lists-enumerate3", { inherit = "lists-enumerate-base" }, {
+    numbering = { display = "alpha", after = { text = ")" } }
   })
-  self:registerStyle("lists-enumerate4", {}, {
-    enumerate = { display = "arabic", before = "", after = ")" }
+  self:registerStyle("lists-enumerate4", { inherit = "lists-enumerate-base" }, {
+    numbering = { display = "arabic", after = { text = ")" } }
   })
-  self:registerStyle("lists-enumerate5", {}, {
-    enumerate = { display = "arabic", before = "§", after = "." }
+  self:registerStyle("lists-enumerate5", { inherit = "lists-enumerate-base" }, {
+    numbering = { display = "arabic", before = { text = "§" }, after = { text = "." } }
   })
 
   -- Alternate enumerate style
-  self:registerStyle("lists-enumerate-alternate1", {}, {
-    enumerate = { display = "Alpha", before = "", after = "." }
+  self:registerStyle("lists-enumerate-alternate1", { inherit = "lists-enumerate-base" }, {
+    numbering = { display = "Alpha", after = { text = "." } }
   })
-  self:registerStyle("lists-enumerate-alternate2", {}, {
-    enumerate = { display = "Roman", before = "", after = "." }
+  self:registerStyle("lists-enumerate-alternate2", { inherit = "lists-enumerate-base" }, {
+    numbering = { display = "Roman", after = { text = "." } }
   })
-  self:registerStyle("lists-enumerate-alternate3", {}, {
-    enumerate = { display = "roman", before = "", after = "." }
+  self:registerStyle("lists-enumerate-alternate3", { inherit = "lists-enumerate-base" }, {
+    numbering = { display = "roman", after = { text = "." } }
   })
-  self:registerStyle("lists-enumerate-alternate4", {}, {
+  self:registerStyle("lists-enumerate-alternate4", { inherit = "lists-enumerate-base" }, {
     font = { style = "italic" },
-    enumerate = { display = "alpha", before = "", after = "." }
+    numbering = { display = "alpha", after = { text = "." } }
   })
-  self:registerStyle("lists-enumerate-alternate5", {}, {
-    enumerate = { display = "U+2474" }
+  self:registerStyle("lists-enumerate-alternate5", { inherit = "lists-enumerate-base" }, {
+    enumerate = { symbol = "U+2474" }
   })
 
   -- Itemize style
-  self:registerStyle("lists-itemize1", {}, {
-    -- color = { color = "red" },
-    itemize = { bullet = "•" } -- black bullet
+  self:registerStyle("lists-itemize1", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "•" } -- black bullet
   })
-  self:registerStyle("lists-itemize2", {}, {
-    itemize = { bullet = "◦" } -- circle bullet
+  self:registerStyle("lists-itemize2", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "◦" } -- circle bullet
   })
-  self:registerStyle("lists-itemize3", {}, {
-    -- color = { color = "blue" },
-    itemize = { bullet = "–" } -- en-dash
+  self:registerStyle("lists-itemize3", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "–" } -- en-dash
   })
-  self:registerStyle("lists-itemize4", {}, {
-    itemize = { bullet = "•" } -- black bullet
+  self:registerStyle("lists-itemize4", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "•" } -- black bullet
   })
-  self:registerStyle("lists-itemize5", {}, {
-    itemize = { bullet = "◦" } -- circle bullet
+  self:registerStyle("lists-itemize5", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "◦" } -- circle bullet
   })
-  self:registerStyle("lists-itemize6", {}, {
-    -- color = { color = "blue" },
-    itemize = { bullet = "–" } -- en-dash
+  self:registerStyle("lists-itemize6", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "–" } -- en-dash
   })
 
   -- Alternate itemize style
-  self:registerStyle("lists-itemize-alternate1", {}, {
-    itemize = { bullet = "—" } -- em-dash
+  self:registerStyle("lists-itemize-alternate1", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "—" } -- em-dash
   })
-  self:registerStyle("lists-itemize-alternate2", {}, {
-    itemize = { bullet = "•" } -- black bullet
+  self:registerStyle("lists-itemize-alternate2", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "•" } -- black bullet
   })
-  self:registerStyle("lists-itemize-alternate3", {}, {
-    itemize = { bullet = "◦" } -- circle bullet
+  self:registerStyle("lists-itemize-alternate3", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "◦" } -- circle bullet
   })
-  self:registerStyle("lists-itemize-alternate4", {}, {
-    itemize = { bullet = "–" } -- en-dash
+  self:registerStyle("lists-itemize-alternate4", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "–" } -- en-dash
   })
-  self:registerStyle("lists-itemize-alternate5", {}, {
-    itemize = { bullet = "•" } -- black bullet
+  self:registerStyle("lists-itemize-alternate5", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "•" } -- black bullet
   })
-  self:registerStyle("lists-itemize-alternate6", {}, {
-    itemize = { bullet = "◦" } -- circle bullet
+  self:registerStyle("lists-itemize-alternate6", { inherit = "lists-itemize-base" }, {
+    itemize = { symbol = "◦" } -- circle bullet
   })
 end
 
 package.documentation = [[\begin{document}
-\use[module=packages.resilient.lists]
 The \autodoc:package{resilient.lists} package is a feature-rich, style-enabled replacement for
 the SILE standard \autodoc:package{lists} package.
 
-It provides enumerations and bullet lists (a.k.a. \em{itemization}\kern[width=0.1em]), which can
-be styled and, of course, nested together.
+It provides enumerations and bulleted lists (a.k.a. \em{itemization}\kern[width=0.1em]), which
+can be styled and, of course, nested together.
 
 \smallskip
-\em{Bullet lists.}
+\em{Bulleted lists.}
 \novbreak
 
-The \autodoc:environment{itemize} environment initiates a bullet list.
+The \autodoc:environment{itemize} environment initiates a bulleted list.
 Each item is, as could be guessed, wrapped in an \autodoc:command{\item} command.
 
 The environment, as a structure or data model, can only contain item elements and other lists.

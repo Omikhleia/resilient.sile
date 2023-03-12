@@ -1,0 +1,150 @@
+\begin{document}
+\chapter{Concepts}
+
+\section{Choosing a page layout}
+
+Paper sizes for printed works varied a lot across time.
+Frequent ratios nowadays are 1:√2 (such as the ISO paper sizes, e.g. A4, 21 × 29.7 cm)
+or 2:3 (such as US trade, 6 × 9 in), though there are still plenty of other page formats
+in use (e.g. French paperbacks books often often come in 10 × 17 cm or 10 × 18 cm format.)
+
+The relation betwen the page size and the main text block also varied a lot,
+depending on the aesthetic tastes of authors and designers.
+
+The resilient document classes provide a \autodoc:parameter{layout=<string>} class
+option for selecting some fairly usual page layouts.
+They are shown further below for comparison, applied to an A4 format, though their
+historical use may have favored a different paper size.
+
+It has to be noted, that these common layouts rarely detailed where headers or
+folios were to be placed. The corresponding blocks are shown too, as you would get
+them currently. This class may possibly consider options for that, in a future
+release.
+
+\section{Thriving for harmony}
+
+The secret law of page harmony relies on using elegant proportions.
+When designing your \em{perfect book}, just after having decided on a paper
+size, you will want to pick a great page layout.
+
+\subsection{French layouts or “Canon des ateliers”}
+
+This canon normally applies a 4/10, 5/10, 6/10, 7/10 progression rule to distribute
+the white space around the text block (“règle du 10/12\textsuperscript{e}”).
+
+In the standard definition, the 4/10 and 6/10 ratios are used for the
+inner and outer margins; and the 5/10 and 7/10 ratios for the top and
+bottom margins, but using the same base space value (i.e. taken from the
+horizontal direction).
+
+A variant uses only the 4/10 and 6/10 ratios, but vertically applies to the
+text block height the same proportion rules as in the horizontal direction.
+
+Another variant uses the values of the inner and outer margins for the top
+and bottom margins, leading to pretty dense pages.
+
+This author has also seen several books just using the same proportion rule
+in both directions (i.e. as in the second case above), but distributing the
+vertical space evenly.
+
+Thus, this package supports four ways of computing and distributing the
+margins.
+
+Is it complex enough? Wait, the canon has no less than three different
+proportion rules for the text block.\footnote{This author, being French,
+will only note that we apparently like to make things more complex than
+they ought to be.}
+
+For regular material (“imprimé courant”), the width of the text block takes 3/4 of the
+page width.
+So here we have the standard \code{ateliers} (= \code{ateliers:1}) and
+its variants \code{ateliers:2} to \code{ateliers:4}.
+
+\begin{figure}
+\img[height=15%ph, src=./layout-ateliers.png]
+\caption{Canon des ateliers — standard}
+\end{figure}
+
+In the demi-luxe variant, the width of the text block takes 2/3 of the
+page.
+Here again, we have the standard \code{demiluxe} (= \code{demiluxe:1}) and
+its variants \code{demiluxe:2} to \code{demiluxe:4}.
+
+\begin{figure}
+\img[height=15%ph, src=./layout-demiluxe.png]
+\caption{Canon des ateliers — demiluxe}
+\end{figure}
+
+In the “de luxe” variant, the width of the text block takes 5/8 of the
+page.
+As you would have guessed, these are the standard \code{deluxe} (= \code{deluxe:1}) and
+its variants \code{deluxe:2} to \code{deluxe:4}.
+
+\begin{figure}
+\img[height=15%ph, src=./layout-deluxe.png]
+\caption{Canon des ateliers — deluxe}
+\end{figure}
+
+\subsection{Ratio-based layouts}
+
+In the 13\textsuperscript{th} century, the architect Villard de Honnecourt
+came up with what he considered a “harmonious” and pleasing design (esp.
+for 2:3 pages), using a 1/9 ratio and a text block area in the same proportions
+as the page, with a matching diagonal.
+
+In the 15\textsuperscript{th} century, Marcus Vencentinus used a similar
+method, but with a 1/6 ratio, for a prayer book. It has a wide outer margin
+and footer area, leaving enough place for annotations and marginal comments.
+
+The rather quite large footer area in such layouts is based on the idea that
+books are held by the lower margin when taken in the hand.
+
+This class proposes them as \code{honnecourt} and \code{vencentinus}.
+
+\begin{figure}
+\img[height=15%ph, src=./layout-division-old.png]
+\caption{Divisions by ratio — historical layouts}
+\end{figure}
+
+For the record, such ratio-based methods are also known as the Van de Graaf canon,
+after he rediscovered and documented them in the 1940s. They are also sometimes
+referred to as the “secret canon” used in many medieval manuscripts and incunabula.
+
+These methods are based on regular divisions of the page, mere arithmetical operations
+which may be generalized for any page dimention \em{W} × \em{H}, with a ratio \em{N}
+and a constant \em{v}. In the Honnecourt and Vencentinus’ canons, \em{v}=2,
+but other values are possible.
+
+In a method he described on the French \em{Typographie}
+mailing list in 2002, Olivier Randier suggested that the \em{H/W} ratio
+was usually giving excellent results for most standard page sizes, including the ISO
+ones.
+Following these “modern” findings, this class provides \code{division:6} (1/6 ratio),
+\code{division:9} (1/9 ratio, alias \code{division} as it is the most usual and pleasant
+layout) and the fairly compact \code{division:12} (1/12 ratio).
+
+\begin{figure}
+\img[height=15%ph, src=./layout-division.png]
+\caption{Divisions by ratio — modern layouts}
+\end{figure}
+
+\subsection{The golden canon of Tschichold}
+
+Jan Tschichold (1902–1974) considered a “golden canon of page construction”,
+where the text block is placed onto the page in such a way as its diagonal coincides
+with the page relevant diagonal, and the circle inscribed within the text block is tangent
+to the page sides. This class provides it as the \code{canonical} layout.
+
+\begin{figure}
+\img[height=15%ph, src=./layout-canonical.png]
+\caption{Canonical layout}
+\end{figure}
+
+\subsection{The legacy layout}
+
+There is not much to say about the \code{legacy} layout, kept for compatibility
+with earlier versions of this class. It is derived from SILE’s standard
+book class, but manually tweaked to this author’s taste before he had time to
+consider the above methods. The layout is therefore quite empirical.
+
+\end{document}

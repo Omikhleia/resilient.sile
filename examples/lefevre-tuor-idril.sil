@@ -1,22 +1,20 @@
-\begin[papersize=6in x 9in, class=resilient.book]{document}
+\begin[papersize=6in x 9in, class=resilient.book, layout=demiluxe]{document}
 \use[module=packages.url]
 \use[module=packages.resilient.epigraph]
-\style:define[name=epigraph-source]{}
 \use[module=packages.couyards]
 \use[module=packages.dropcaps]
 \use[module=packages.resilient.abbr]
+\set[parameter=textsubsuper.fake, value=true]
 %
 \language[main=fr]
 \font[family=Libertinus Serif]
-\set[parameter=linebreak.emergencyStretch, value=15%lw]%
 %
-% HACKS/WORKAROUNDS FOR SILE 0.12.x BUGS
-% FIXME \script[src=hacks/hacks]
-% HACKS FOR SILE 0.14.2 BUGS???
-\script{SILE.outputter:_ensureInit()}
+% No longer required (bug in SILE 0.14.2
+%\script{SILE.outputter:_ensureInit()}
 %
 % UGLY: We don't want URLs to be typeset using a typewriter font :)
 % Just cancel the \code command so the default text font is used.
+% Waiting for urlstyle in SILE code...
 \define[command=code]{\process}%
 %
 \define[command=smallcaps]{\font[features=+smcp]{\process}}
@@ -45,14 +43,6 @@ SILE.registerCommand("initial", function (options, content)
 end, "Wrapper around dropcap, for baselineskip adjustment")
 }%
 %
-\style:redefine[name=header-odd, as=_hdodd, inherit=true]{
-  \paragraph[align=center]
-  \font[style=italic]
-}%
-\style:redefine[name=header-even, as=_hdeven, inherit=true]{
-  \paragraph[align=center]
-  \font[style=italic]
-}%
 \odd-running-header{Tolkien, le façonnement d’un monde}
 \chapter[numbering=false]{Le conte perdu de Mercure}
 % The actual title had ..."— Tuor et Idril élevés au rang d’astre"
@@ -62,7 +52,7 @@ end, "Wrapper around dropcap, for baselineskip adjustment")
 \pdf:metadata[key=Title, value=Le conte perdu de Mercure]%
 \pdf:metadata[key=Author, value=Alain Lefèvre]%
 
-\begin{raggedright}
+\begin{raggedright}%
 Alain \smallcaps{Lefèvre}\footnote[mark=†]{Cet article est extrait de \em{Tolkien, le façonnement d’un monde}, \abbr:vol{1},
 Le Dragon de Brume, 2011, \abbr:page{211–216} — avec la permission de l’auteur.}
 \end{raggedright}
@@ -74,7 +64,7 @@ Le Dragon de Brume, 2011, \abbr:page{211–216} — avec la permission de l’au
     Une lampe enivrée d’huile, jetant une vive lumière, se vantait d’être plus brillante que le soleil.
     Mais un souffle de vent ayant sifflé, elle s’éteignit aussitôt. Quelqu’un la ralluma et
     lui dit : « Éclaire, lampe, et tais-toi : l’éclat des astres ne s’éclipse jamais. »
-    \source{\em{Fables d’Ésope}, « La Lampe », trad. Émile Chambry\footnote{Ésope, \em{Fables}, trad. d’Émile Chambry,
+    \source{\em{Fables d’Ésope}, « La Lampe »,\break{}trad. Émile Chambry\footnote{Ésope, \em{Fables}, trad. d’Émile Chambry,
     Les Belles Lettres, 1927, 5\textsuperscript{e} partie, 232 : « \foreign:gr{Μεθύων λύχνος ἐλαίῳ καὶ φέγγων ἐκαυχᾶτο ὡς ὑπὲρ
     ἥλιον πλέον λάμπει. Ἀνέμου δὲ πνοῆς συρισάσης, εὐθὺς ἐσβέσθη. Ἐκ δευτέρου δὲ ἅπτων τις εἶπεν αὐτῷ· Φαῖνει, λύχνε,
     καὶ σίγα· τῶν ἀστέρων τὸ φέγγος οὔποτε ἐκλείπει. Ὅτι οὐ δεῖ τινα ἐν ταῖς δόξαις καὶ τοῖς λαμπροῖς τοῦ βίου
