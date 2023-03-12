@@ -12,8 +12,6 @@ local utils = require("resilient.utils")
 function package:_init (options)
   base._init(self, options)
 
-  self.class:loadPackage("resilient.abbr") -- for abbr:nbsp
-  self.class:loadPackage("textsubsuper") -- for textsuperscript (indirect)
   self.class:loadPackage("rebox") -- used by footnote:rule
   self.class:loadPackage("rules") -- used by footnote:rule
   self.class:loadPackage("counters") -- used for counter formatting

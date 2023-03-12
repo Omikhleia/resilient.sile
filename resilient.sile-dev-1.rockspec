@@ -33,10 +33,6 @@ build = {
     ["sile.classes.resilient.book"]    = "classes/resilient/book.lua",
     ["sile.classes.resilient.resume"]  = "classes/resilient/resume.lua",
 
-    ["sile.classes.resilient.layouts.frenchcanon"] = "classes/resilient/layouts/frenchcanon.lua",
-    ["sile.classes.resilient.layouts.canonical"]   = "classes/resilient/layouts/canonical.lua",
-    ["sile.classes.resilient.layouts.division"]    = "classes/resilient/layouts/division.lua",
-
     ["sile.packages.resilient.base"]            = "packages/resilient/base.lua",
 
     ["sile.packages.resilient.abbr"]            = "packages/resilient/abbr/init.lua",
@@ -53,6 +49,16 @@ build = {
 
     ["sile.resilient.hacks"] = "resilient/hacks.lua",
     ["sile.resilient.utils"] = "resilient/utils.lua",
+    ["sile.resilient.layoutparser"] = "resilient/layoutparser.lua",
+
+    ["sile.resilient.layouts.base"]        = "resilient/layouts/base.lua",
+
+    ["sile.resilient.layouts.canonical"]   = "resilient/layouts/canonical.lua",
+    ["sile.resilient.layouts.division"]    = "resilient/layouts/division.lua",
+    ["sile.resilient.layouts.frenchcanon"] = "resilient/layouts/frenchcanon.lua",
+    ["sile.resilient.layouts.marginal"]    = "resilient/layouts/marginal.lua",
+
+    ["sile.resilient.adapters.frameset"] = "resilient/adapters/frameset.lua",
 
     ["sile.resilient-tinyyaml"]  = "lua-libraries/resilient-tinyyaml.lua",
   }

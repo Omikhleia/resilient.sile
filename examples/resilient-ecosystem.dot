@@ -1,0 +1,147 @@
+digraph omikhleia {
+  rankdir=RL;
+
+  subgraph cluster_embedders {
+    label = "embdedders.sile";
+
+    embedders [shape=component,style=filled,fillcolor=aliceblue]
+  }
+
+  subgraph cluster_ptable {
+    label = "ptable.sile";
+
+    ptable [shape=component,style=filled,fillcolor=aliceblue]
+    parbox [shape=component,style=filled,fillcolor=aliceblue]
+    struts [shape=component,style=filled,fillcolor=aliceblue]
+
+    framebox [shape=component,style=filled,fillcolor=mintcream]
+
+    ptable -> parbox
+    parbox -> struts
+  }
+
+  subgraph cluster_textsubsuper {
+    label = "textsubsuper.sile";
+
+    textsubsuper [shape=component,style=filled,fillcolor=aliceblue]
+  }
+
+  subgraph cluster_labelrefs {
+    label = "labelrefs.sile";
+
+    labelrefs [shape=component,style=filled,fillcolor=aliceblue]
+  }
+
+  subgraph cluster_resilient {
+    label = "resilient.sile";
+
+    subgraph cluster_resilient_cls {
+      label = "classes";
+
+      cbase [shape=component,style=filled,fillcolor=snow,label="resilient.base"]
+      book [shape=component,style=filled,fillcolor=mintcream,label="resilient.book"]
+      resume [shape=component,style=filled,fillcolor=mintcream,label="resilient.resume"]
+
+      book -> cbase
+      resume -> cbase
+    }
+    subgraph cluster_resilient_pkg {
+      label = "packages";
+
+      pbase [shape=component,style=filled,fillcolor=snow,label="resilient.base"]
+
+      tableofcontents [shape=component,style=filled,fillcolor=aliceblue,label="resilient.tableofcontents"]
+      footnotes [shape=component,style=filled,fillcolor=aliceblue,label="resilient.footnotes"]
+      headers [shape=component,style=filled,fillcolor=aliceblue,label="resilient.headers"]
+
+      sectioning [shape=component,style=filled,fillcolor=seashell,label="resilient.sectioning"]
+      styles [shape=component,style=filled,fillcolor=seashell,label="resilient.styles"]
+
+      lists [shape=component,style=filled,fillcolor=aliceblue,label="resilient.lists"]
+
+      poetry [shape=component,style=filled,fillcolor=mintcream,label="resilient.poetry"]
+      epigraph [shape=component,style=filled,fillcolor=mintcream,label="resilient.epigraph"]
+      abbr [shape=component,style=filled,fillcolor=mintcream,label="resilient.abbr"]
+
+      cbase -> styles
+      pbase -> styles
+      styles -> textsubsuper
+
+      book -> tableofcontents
+      book -> footnotes
+      book -> headers
+      book -> sectioning
+      book -> labelrefs
+      book -> struts
+
+      resume -> lists
+      resume -> headers
+      resume -> ptable
+      resume -> labelrefs
+
+      epigraph -> pbase
+      footnotes -> pbase
+      lists -> pbase
+      poetry -> pbase
+      sectioning -> pbase
+      tableofcontents ->pbase
+    }
+
+  }
+
+  subgraph cluster_smartquotes {
+    label = "smartquotes.sile";
+
+    smartquotes [shape=component,style=filled,fillcolor=aliceblue]
+  }
+
+  subgraph cluster_markdown {
+    label = "markdown.sile";
+
+    markdown [shape=component,style=filled,fillcolor=aliceblue]
+    djot [shape=component,style=filled,fillcolor=mintcream]
+    pandocast [shape=component,style=filled,fillcolor=mintcream]
+    markcmd [shape=component,style=filled,fillcolor=aliceblue,label="markdown.commands"]
+
+    markdown -> markcmd
+    djot -> markcmd
+    pandocast -> markcmd
+
+    book -> markdown
+    markcmd -> ptable
+    markcmd -> embedders
+    markcmd -> smartquotes
+  }
+
+  subgraph cluster_printoptions {
+    label = "printoptions.sile";
+
+    printoptions [shape=component,style=filled,fillcolor=mintcream]
+  }
+
+  subgraph cluster_fancytoc {
+    label = "fancytoc.sile";
+
+    fancytoc [shape=component,style=filled,fillcolor=mintcream]
+    fancytoc -> styles
+  }
+
+  subgraph cluster_couyards {
+    label = "couyards.sile";
+
+    couyards [shape=component,style=filled,fillcolor=mintcream]
+    markcmd -> couyards [style=dashed]
+  }
+
+  subgraph cluster_barcodes {
+    label = "barcodes.sile";
+
+    barcodes [shape=component,style=filled,fillcolor=mintcream,label="barcodes.ean13"]
+  }
+
+  subgraph cluster_qrcode {
+    label = "qrcode.sile";
+
+    qrcode [shape=component,style=filled,fillcolor=mintcream]
+  }
+}

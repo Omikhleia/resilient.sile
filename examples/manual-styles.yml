@@ -25,7 +25,7 @@ epigraph:
 epigraph-source:
   origin: "resilient.epigraph"
   style:
-   paragraph:
+    paragraph:
       align: "right"
       before:
         indent: false
@@ -51,6 +51,25 @@ epigraph-text:
     paragraph:
       align: "justify"
 
+fancytoc-base:
+  style:
+
+fancytoc-level1:
+  inherit: "fancytoc-base"
+  style:
+    font:
+      features: "+smcp"
+
+fancytoc-level2:
+  inherit: "fancytoc-base"
+  style:
+
+fancytoc-pageno:
+  inherit: "fancytoc-base"
+  style:
+    font:
+      features: "+onum"
+
 figure:
   origin: "resilient.book"
   style:
@@ -59,6 +78,7 @@ figure:
         vbreak: false
       align: "center"
       before:
+        indent: false
         skip: "smallskip"
 
 figure-caption:
@@ -168,9 +188,6 @@ footnote-marker-symbol:
 footnote-reference:
   origin: "resilient.footnotes"
   style:
-    numbering:
-      before:
-        kern: "1thsp"  
     properties:
       position: "super"
 
@@ -189,9 +206,7 @@ header-base:
   style:
     font:
       size: "0.9em"
-      features: "+smcp"
     paragraph:
-      align: "center"
       after:
         indent: false
       before:
@@ -206,6 +221,207 @@ header-odd:
   inherit: "header-base"
   origin: "resilient.book"
   style:
+    font:
+      style: "italic"
+    paragraph:
+      align: "right"
+
+lists-enumerate-alternate1:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "Alpha"
+
+lists-enumerate-alternate2:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "Roman"
+
+lists-enumerate-alternate3:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "roman"
+
+lists-enumerate-alternate4:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    font:
+      style: "italic"
+    numbering:
+      after:
+        text: "."
+      display: "alpha"
+
+lists-enumerate-alternate5:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    enumerate:
+      symbol: "U+2474"
+
+lists-enumerate-base:
+  origin: "resilient.lists"
+  style:
+
+lists-enumerate1:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "arabic"
+
+lists-enumerate2:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "roman"
+
+lists-enumerate3:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: ")"
+      display: "alpha"
+
+lists-enumerate4:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: ")"
+      display: "arabic"
+
+lists-enumerate5:
+  inherit: "lists-enumerate-base"
+  origin: "resilient.lists"
+  style:
+    numbering:
+      after:
+        text: "."
+      before:
+        text: "§"
+      display: "arabic"
+
+lists-itemize-alternate1:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "—"
+
+lists-itemize-alternate2:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize-alternate3:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize-alternate4:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "–"
+
+lists-itemize-alternate5:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize-alternate6:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize-base:
+  origin: "resilient.lists"
+  style:
+
+lists-itemize1:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize2:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize3:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "–"
+
+lists-itemize4:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize5:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize6:
+  inherit: "lists-itemize-base"
+  origin: "resilient.lists"
+  style:
+    itemize:
+      symbol: "–"
+
+poetry-prosody:
+  origin: "resilient.poetry"
+  style:
+    font:
+      style: "normal"
+
+poetry-verseno:
+  origin: "resilient.poetry"
+  style:
+    font:
+      features: "+onum"
+      size: "0.9em"
 
 sectioning-base:
   origin: "resilient.book"
@@ -307,6 +523,8 @@ sectioning-part:
         main: "sectioning-part-main-number"
         reference: "sectioning-part-ref-number"
       settings:
+        bookmark: true
+        goodbreak: true
         open: "odd"
         toclevel: 0
 
@@ -367,6 +585,8 @@ sectioning-section:
         main: "sectioning-other-number"
         reference: "sectioning-other-number"
       settings:
+        bookmark: true
+        goodbreak: true
         toclevel: 2
 
 sectioning-subsection:
@@ -391,6 +611,8 @@ sectioning-subsection:
         main: "sectioning-other-number"
         reference: "sectioning-other-number"
       settings:
+        bookmark: true
+        goodbreak: true
         toclevel: 3
 
 sectioning-subsubsection:
@@ -413,6 +635,8 @@ sectioning-subsubsection:
         main: "sectioning-other-number"
         reference: "sectioning-other-number"
       settings:
+        bookmark: true
+        goodbreak: true
         toclevel: 4
 
 table:
@@ -422,6 +646,8 @@ table:
       after:
         vbreak: false
       align: "center"
+      before:
+        indent: false
 
 table-caption:
   origin: "resilient.book"
@@ -489,11 +715,13 @@ toc-level0:
       weight: 800
     paragraph:
       after:
+        indent: true
         skip: "medskip"
         vbreak: false
       before:
         indent: false
         skip: "medskip"
+        vbreak: true
     toc:
       numbered: true
       pageno: false
@@ -507,9 +735,12 @@ toc-level1:
       weight: 800
     paragraph:
       after:
+        indent: true
         skip: "smallskip"
+        vbreak: true
       before:
         indent: false
+        vbreak: true
     toc:
       dotfill: false
 
@@ -521,9 +752,12 @@ toc-level2:
       size: "1em"
     paragraph:
       after:
+        indent: true
         skip: "smallskip"
+        vbreak: true
       before:
         indent: false
+        vbreak: true
     toc:
 
 toc-level3:
@@ -532,9 +766,12 @@ toc-level3:
   style:
     paragraph:
       after:
+        indent: true
         skip: "smallskip"
+        vbreak: true
       before:
         indent: true
+        vbreak: true
     toc:
       dotfill: false
 
@@ -556,9 +793,12 @@ toc-level5:
   style:
     paragraph:
       after:
+        indent: true
         skip: "smallskip"
+        vbreak: true
       before:
         indent: false
+        vbreak: true
     toc:
       numbered: true
 
@@ -568,9 +808,12 @@ toc-level6:
   style:
     paragraph:
       after:
+        indent: true
         skip: "smallskip"
+        vbreak: true
       before:
         indent: false
+        vbreak: true
     toc:
       numbered: true
 
