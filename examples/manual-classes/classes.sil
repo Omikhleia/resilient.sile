@@ -128,11 +128,7 @@ have guessed it.
   \end{row}
   \begin{row}
     \cell[valign=top]{\code{table-caption}}
-    \cell[valign=top]{Style applied to the table caption.}
-  \end{row}
-  \begin{row}
-    \cell[valign=top]{\code{table-caption-number}}
-    \cell[valign=top]{(Sectioning) style applied to the caption number.}
+    \cell[valign=top]{(Sectioning) style applied to the table caption.}
   \end{row}
 \end{ptable}
 \caption{Styles used for tables.}

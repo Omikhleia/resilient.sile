@@ -377,7 +377,7 @@ function class:registerCommands ()
     end
   end, "Text to appear on the top of the odd page(s).")
 
-  -- Sectionning hooks and commands
+  -- Sectioning hooks and commands
 
   self:registerCommand("sectioning:part:hook", function (_, _)
     -- Parts cancel headers and folios
