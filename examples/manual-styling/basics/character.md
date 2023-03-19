@@ -9,8 +9,8 @@ A regular character style obeys to the following specification
 ⟨style name⟩:
   style:
     font: ⟨font specification⟩
+    color: "⟨color specification⟩"
     properties:
-      color: "⟨color specification⟩"
       position: "normal|super|sub"
 ```
 
@@ -32,9 +32,9 @@ my-custom-style-name:
     font:
       family: "Libertinus Serif"
       style: "italic"
+    color: "blue"
     properties:
       position: "super"
-      color: "blue"
 ```
 
 ### Number styles

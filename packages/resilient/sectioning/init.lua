@@ -9,8 +9,6 @@ local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.sectioning"
 
-local utils = require("resilient.utils")
-
 function package:_init (options)
   base._init(self, options)
   self.class:loadPackage("counters")
@@ -37,7 +35,7 @@ function package:registerCommands ()
 
         -- Apply numberstyle defaults
         styledef.sectioning.numberstyle = styledef.sectioning.numberstyle or {}
-        -- styledef.sectioning.numberstyle.main: no default, will warn
+        -- styledef.sectioning.numberstyle.main: no default, won't display if absent
         -- styledef.sectioning.numberstyle.header: no default, won't display if absent
         -- styledef.sectioning.numberstyle.reference: no default, won't display if absent
 
@@ -82,7 +80,7 @@ function package:registerCommands ()
 
     -- 2. Handle the style hook if specified.
     --    (Pass the user-defined options + the counter and level,
-    --    so it has the means to compute and show it if it wants)
+    --    so it has the means to compute it, if needed)
     if secStyle.hook then
       local hookOptions = pl.tablex.copy(options)
       hookOptions.counter = secStyle.counter.id
@@ -107,24 +105,20 @@ function package:registerCommands ()
         )
       end
 
-      -- 3B. TOC entry)
+      -- 3B. TOC entry
       local toclevel = secStyle.settings.toclevel
       local bookmark = secStyle.settings.bookmark
       if toclevel and toc then
         SILE.call("tocentry", { level = toclevel, number = number, bookmark = bookmark }, SU.subContent(content))
       end
 
-      -- 3C. Show entry number
+      -- 3C. Show section number (if numbering is true AND a main style is defined)
       if numbering then
         if secStyle.numberstyle.main then
           SILE.call("style:apply:number", { name = secStyle.numberstyle.main, text = number })
           if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
             SILE.call("break") -- HACK. Pretty weak unless the parent paragraph style is ragged.
           end
-        else
-          SU.warn("Attempt typesetting a section number without style")
-          SILE.typesetter:typeset(number)
-          SILE.call("kern", { width = utils.interWordSpace() })
         end
       end
       -- 3D. Section (title) content
@@ -190,13 +184,13 @@ in the \autodoc:package{resilient.styles} package.
 Class and package implementors are free to use the abstractions proposed here,
 if they find them sound with respect to their goals.
 
-The core idea is that all sectionning commands could be defined via
+The core idea is that all sectioning commands could be defined via
 approriate styles and that any user-friendly command for typesetting a section
 is then just a convenience wrapper. For that purpose, the package defines
 two things:
 
 \begin{itemize}
-\item{The sectionning style specification support.}
+\item{The sectioning style specification support.}
 \item{A generic \autodoc:command{\sectioning} command.}
 \end{itemize}
 

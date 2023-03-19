@@ -32,7 +32,7 @@ With these first assumptions in mind, let’s summarize the requirements:
    (more on that later).
 -  The main numbering, when used, may need some text strings prepended or appended to it,
    (e.g. "Chapter 1.")
- - When added to page headers (or in similar contexts, as per the supporting class
+ - When added to page headers (or in similar contexts), as per the supporting class
    design, one may want the section number to appear or not, and to be possibly
    formatted in a different way than in the ToC or in the main text flow.
  - When referenced (with the appropriate cross-reference solution), yet another number
@@ -40,7 +40,6 @@ With these first assumptions in mind, let’s summarize the requirements:
 
 With the exception of the two first elements, which are already covered by the character
 and paragraph styles, a lot of things have to be addressed.
-
 Here is, therefore, the style specification.
 
 ```yaml
@@ -69,6 +68,14 @@ inheritance mechanism provided by the styles also allows one to reuse existing
 base specifications. In this author’s opinion, it is quite flexible and clear.
 The two last options, however, may require a clarification.
 
+The `numberstyle` specification defines which number style should be used for
+the section number, depending on the context where it appears (main text flow,
+running headers and cross-references).^[In this version, the
+numbering in the table of contents is handled with a different mechanism,
+as a part of the ToC styles. Whether there is a need to reconcile these
+solutions might be considered in a future revision.]
+Note that if a given context is absent, the section number will not be displayed.
+
 For the "main" number style, some sections may expect the number to be on its
 own standalone line rather than just before the section title.—Chapters and parts,
 for instance, may often use it. This specification, therefore, supports an extra
@@ -77,7 +84,7 @@ for instance, may often use it. This specification, therefore, supports an extra
 We haven’t addressed yet the various “side-effects” a section may have on other sections,
 page headers, folios, etc. As noted, we just provide a command name to be called upon
 entering the section (after any page break, if it applies). It is passed the section title,
-the options you provided on the sectionning command, and the current value of the
+the options you provided on the sectioning command, and the current value of the
 `counter` and `level`, would the hook need to show the relevant counter
 somewhere (e.g. in a page header).
 

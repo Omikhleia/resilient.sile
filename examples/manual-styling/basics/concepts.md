@@ -79,14 +79,14 @@ Styles are a different approach to the same core question.
 Actually, it is what most modern word-processing software have been doing
 for a while, be it Microsoft Word or Libre/OpenOffice and cognates...
 They all introduce the concept of styles too. Web programmers also know
-than even HTML abstracts styling decisions to Cascading Style Sheets.
+that even HTML abstracts styling decisions to Cascading Style Sheets.
 
 The resilient styling paradigm aims at implementing such ideas, or a subset
 of them. We do not intend to cover all the inventory of features provided
 via styles in the above-mentioned software.
 Some of them already have matching mechanisms, or even of a superior
 design, in SILE. Yet, the style specifications make it easier, in our
-opinion, for the end-user to customize his output. It also makes it
+opinion, for end-users to customize their output. It also makes it
 easier for class and package designers to abstract styling decisions,
 by reusing the same mechanism in their own code, rather than reinventing
 the wheel.
