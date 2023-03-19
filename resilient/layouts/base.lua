@@ -139,7 +139,7 @@ end
 
 local framesetAdapter = require("resilient.adapters.frameset")
 function layout:draw (W, H, options)
-  local ratio = SU.cast("integer", options.ratio or 6.5)
+  local ratio = SU.cast("number", options.ratio or 6.5)
   local rough = SU.boolean(options.rough, false)
 
   local oddFrameset, _ = self:frameset()
