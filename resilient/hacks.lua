@@ -85,3 +85,32 @@ SILE.typesetters.base.initline = function (self)
   oldInitLine(self)
 end
 -- END HACK FOR PARINDENT HBOX ISSUE
+
+-- BEGIN HACK TOC
+-- See https://github.com/sile-typesetter/sile/issues/1732
+if not SU.stripContentPos then
+  --- Strip position, line and column recursively from a content tree.
+  -- This can be used to remove position details where we do not want them,
+  -- e.g. in table of contents entries (referring to the original content,
+  -- regardless where it was exactly, for the purpose of checking whether
+  -- the table of contents changed.)
+  --
+  SU.stripContentPos = function (content)
+    if type(content) ~= "table" then
+      return content
+    end
+    local stripped = {}
+    for k, v in pairs(content) do
+      if type(v) == "table" then
+        v = SU.stripContentPos(v)
+      end
+      stripped[k] = v
+    end
+    if content.id or content.command then
+      stripped.pos, stripped.col, stripped.lno = nil, nil, nil
+    end
+    return stripped
+  end
+end
+
+-- END HACK TOC
