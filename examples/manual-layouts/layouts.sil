@@ -4,11 +4,11 @@
 \section{The layout class option}
 
 Paper sizes for printed works varied a lot across time.
-Frequent ratios nowadays are 1:√2 (such as the ISO paper sizes, e.g. A4, 21 × 29.7 cm)
+Frequent ratios nowadays are 1:√2 (such as the ISO paper sizes, e.g. A5, 14,8 × 21 cm)
 or 2:3 (such as US trade, 6 × 9 in), though there are still plenty of other page formats
-in use (e.g. French pocket books often often come in 10 × 17 cm or 10 × 18 cm format.)
+in use (e.g. French pocket books often come in 10 × 17 cm or 10 × 18 cm format.)
 
-The relation betwen the page size and the main text block also varied a lot,
+The relation between the page size and the main text block also varied a lot,
 depending on the aesthetic tastes of authors and designers.
 
 The resilient document classes provide a \autodoc:parameter{layout=<string>} class
@@ -49,8 +49,12 @@ the binding process. Unfortunately, it cannot really be automated, as it
 usually depends on many internal and external factors—notably, the number of pages,
 the thickness of the selected paper, and the printer’s binding process.
 
-The resilient document classes provide a \autodoc:parameter{offset=<dimen>}
-class option. When used, it shifts the text block by the given amount.
+The resilient document classes provide the \autodoc:parameter{offset=<dimen>}
+class option.
+When used, it shifts the text block by the given amount.\footnote{Please note that
+it applies to page masters derived from a resilient layout.
+If you designed your own page templates with SILE’s low-level constructs,
+you are fully responsible for taking a binding offset into account there.}
 
 Books of less than 60 pages do not normally need to include such a gutter,
 but with a higher page count, you may have to consider using it,
