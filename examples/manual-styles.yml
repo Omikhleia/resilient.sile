@@ -141,19 +141,19 @@ folio-even:
   inherit: "folio-base"
   origin: "resilient.book"
   style:
+    paragraph:
+      align: "left"
+      before:
+        indent: false
 
 folio-odd:
   inherit: "folio-base"
   origin: "resilient.book"
   style:
     paragraph:
-      after:
-        indent: true
-        vbreak: true
       align: "right"
       before:
-        indent: true
-        vbreak: true
+        indent: false
 
 footnote:
   origin: "resilient.footnotes"
@@ -453,8 +453,6 @@ sectioning-chapter:
         main: "sectioning-chapter-main-number"
         reference: "sectioning-chapter-ref-number"
       settings:
-        bookmark: true
-        goodbreak: true
         open: "odd"
         toclevel: 1
 
@@ -523,8 +521,6 @@ sectioning-part:
         main: "sectioning-part-main-number"
         reference: "sectioning-part-ref-number"
       settings:
-        bookmark: true
-        goodbreak: true
         open: "odd"
         toclevel: 0
 
@@ -585,8 +581,6 @@ sectioning-section:
         main: "sectioning-other-number"
         reference: "sectioning-other-number"
       settings:
-        bookmark: true
-        goodbreak: true
         toclevel: 2
 
 sectioning-subsection:
@@ -611,8 +605,6 @@ sectioning-subsection:
         main: "sectioning-other-number"
         reference: "sectioning-other-number"
       settings:
-        bookmark: true
-        goodbreak: true
         toclevel: 3
 
 sectioning-subsubsection:
@@ -635,8 +627,6 @@ sectioning-subsubsection:
         main: "sectioning-other-number"
         reference: "sectioning-other-number"
       settings:
-        bookmark: true
-        goodbreak: true
         toclevel: 4
 
 table:
@@ -715,13 +705,11 @@ toc-level0:
       weight: 800
     paragraph:
       after:
-        indent: true
         skip: "medskip"
         vbreak: false
       before:
         indent: false
         skip: "medskip"
-        vbreak: true
     toc:
       numbered: true
       pageno: false
@@ -735,12 +723,9 @@ toc-level1:
       weight: 800
     paragraph:
       after:
-        indent: true
         skip: "smallskip"
-        vbreak: true
       before:
         indent: false
-        vbreak: true
     toc:
       dotfill: false
 
@@ -752,12 +737,9 @@ toc-level2:
       size: "1em"
     paragraph:
       after:
-        indent: true
         skip: "smallskip"
-        vbreak: true
       before:
         indent: false
-        vbreak: true
     toc:
 
 toc-level3:
@@ -766,12 +748,9 @@ toc-level3:
   style:
     paragraph:
       after:
-        indent: true
         skip: "smallskip"
-        vbreak: true
       before:
         indent: true
-        vbreak: true
     toc:
       dotfill: false
 
@@ -793,12 +772,9 @@ toc-level5:
   style:
     paragraph:
       after:
-        indent: true
         skip: "smallskip"
-        vbreak: true
       before:
         indent: false
-        vbreak: true
     toc:
       numbered: true
 
@@ -808,12 +784,9 @@ toc-level6:
   style:
     paragraph:
       after:
-        indent: true
         skip: "smallskip"
-        vbreak: true
       before:
         indent: false
-        vbreak: true
     toc:
       numbered: true
 

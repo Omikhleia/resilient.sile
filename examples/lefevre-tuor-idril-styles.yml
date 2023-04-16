@@ -25,7 +25,7 @@ epigraph:
 epigraph-source:
   origin: "resilient.epigraph"
   style:
-   paragraph:
+    paragraph:
       align: "right"
       before:
         indent: false
@@ -59,6 +59,7 @@ figure:
         vbreak: false
       align: "center"
       before:
+        indent: false
         skip: "smallskip"
 
 figure-caption:
@@ -121,19 +122,19 @@ folio-even:
   inherit: "folio-base"
   origin: "resilient.book"
   style:
+    paragraph:
+      align: "left"
+      before:
+        indent: false
 
 folio-odd:
   inherit: "folio-base"
   origin: "resilient.book"
   style:
     paragraph:
-      after:
-        indent: true
-        vbreak: true
       align: "right"
       before:
-        indent: true
-        vbreak: true
+        indent: false
 
 footnote:
   origin: "resilient.footnotes"
@@ -170,7 +171,7 @@ footnote-reference:
   style:
     numbering:
       before:
-        kern: "1thsp"  
+        kern: "1thsp"
     properties:
       position: "super"
 
@@ -188,12 +189,12 @@ header-base:
   origin: "resilient.book"
   style:
     font:
-      size: "0.9em"
       features: "+smcp"
+      size: "0.9em"
     paragraph:
-      align: "center"
       after:
         indent: false
+      align: "center"
       before:
         indent: false
 
@@ -237,8 +238,6 @@ sectioning-chapter:
         main: "sectioning-chapter-main-number"
         reference: "sectioning-chapter-ref-number"
       settings:
-        bookmark: true
-        goodbreak: true
         open: "odd"
         toclevel: 1
 
@@ -422,6 +421,8 @@ table:
       after:
         vbreak: false
       align: "center"
+      before:
+        indent: false
 
 table-caption:
   origin: "resilient.book"
