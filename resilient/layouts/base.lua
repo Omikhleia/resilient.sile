@@ -160,7 +160,7 @@ function layout:draw (W, H, options)
     outputYourself = function(node, typesetter, line)
       local saveX = typesetter.frame.state.cursorX
       local saveY = typesetter.frame.state.cursorY
-      -- Scale to line to take into account strech/shrinkability
+      -- Scale to line to take into account stretch/shrinkability
       local outputWidth = node:scaledWidth(line)
       -- Force advancing to get the new cursor position
       typesetter.frame:advanceWritingDirection(outputWidth)
