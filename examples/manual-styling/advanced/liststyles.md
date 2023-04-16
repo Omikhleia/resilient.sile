@@ -11,7 +11,7 @@ environments.
    pre-defined, all of the styles inheriting from a common parent
    style `lists-enumerate-base`.
 
-When styling your lists, you have more the one option.
+When styling your lists, you have more than one option.
 
  - You may, of course, alter these styles at your convenience, whether
    the "main" set, the `alternate` set, or both.

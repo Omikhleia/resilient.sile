@@ -93,7 +93,7 @@ toc-number-level5:
 
 Finally, the `toc-pageno` character style is applied to page number
 references, when the corresponding ToC style enabled the `pageno` option.
-Its defult definition is empty. Would you want old-style page numbers,
+Its default definition is empty. Would you want old-style page numbers,
 you could define it as follows:
 
 ```yaml

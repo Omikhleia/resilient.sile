@@ -1,6 +1,6 @@
 ## List label styles
 
-The bullet symbol in unordered lists item, and the counter in
+The bullet symbol in unordered list items, and the counter in
 ordered lists, rely on extended character styles.
 
 ### Styles for unordered items

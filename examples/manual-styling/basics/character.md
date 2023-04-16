@@ -63,7 +63,7 @@ The fields are all optional and define:
  - The text to prepend to the number.
  - The text to append to the number.
  - The kerning space added before the formatted number.
- - The kerning space add after the fomatted number.
+ - The kerning space added after the fomatted number.
 
 The default display format, when not specified, is `arabic`.
 
