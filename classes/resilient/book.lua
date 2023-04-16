@@ -56,7 +56,6 @@ function class:_init (options)
   -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
   -- as packages are not loaded yet.
   self:registerCommand("foliostyle", function (_, content)
-    SILE.call("noindent")
     local styleName = SILE.documentState.documentClass:oddPage() and "folio-odd" or "folio-even"
     SILE.call("style:apply:paragraph", { name = styleName }, function ()
       -- Ensure proper baseline alignment with a strut rule.
@@ -236,9 +235,12 @@ function class:registerStyles ()
     font = { features = "+onum" }
   })
   self:registerStyle("folio-even", { inherit = "folio-base" }, {
+    paragraph = { align = "left" ,
+                  before = { indent = false } }
   })
   self:registerStyle("folio-odd", { inherit = "folio-base" }, {
-    paragraph = { align = "right" }
+    paragraph = { align = "right" ,
+                  before = { indent = false } }
   })
 
   -- header styles

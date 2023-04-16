@@ -11,12 +11,16 @@ folio-even:
   style:
     paragraph:
       align: "left"
+      before:
+        indent: false
 
 folio-odd:
   inherit: "folio-base"
   style:
     paragraph:
       align: "right"
+      before:
+        indent: false
 ```
 
 That common parent style is where we would ideally define the font, for instance
