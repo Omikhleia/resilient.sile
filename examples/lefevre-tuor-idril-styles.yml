@@ -1,4 +1,13 @@
 
+Author:
+  style:
+    paragraph:
+      after:
+        skip: "bigskip"
+      align: "left"
+      before:
+        indent: false
+
 blockquote:
   origin: "resilient.book"
   style:
