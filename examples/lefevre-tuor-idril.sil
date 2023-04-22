@@ -11,14 +11,6 @@
 \language[main=fr]
 \font[family=Libertinus Serif]
 %
-% No longer required (bug in SILE 0.14.2
-%\script{SILE.outputter:_ensureInit()}
-%
-% UGLY: We don't want URLs to be typeset using a typewriter font :)
-% Just cancel the \code command so the default text font is used.
-% Waiting for urlstyle in SILE code...
-\define[command=code]{\process}%
-%
 \define[command=smallcaps]{\font[features=+smcp]{\process}}
 \define[command=foreign:en]{\em{\language[main=en]{\process}}}
 \define[command=foreign:gr]{\em{\language[main=und]{\process}}}
@@ -33,7 +25,8 @@
 % We therefore wrap the concerned paragraph in a temporary environment where the
 % stretchability is canceled...
 \script{
-SILE.registerCommand("initial", function (options, content)
+local class = SILE.documentState.documentClass
+class:registerCommand("initial", function (options, content)
   SILE.settings:temporarily(function()
     local blSkip = SILE.settings:get("document.baselineskip")
     SILE.settings:set("document.baselineskip", SILE.nodefactory.vglue(SILE.length(blSkip.height.length)))

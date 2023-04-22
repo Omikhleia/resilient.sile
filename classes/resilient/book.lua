@@ -3,8 +3,8 @@
 -- 2021-2023, Didier Willis
 -- License: MIT
 --
-local plain = require("classes.resilient.base")
-local class = pl.class(plain)
+local base = require("classes.resilient.base")
+local class = pl.class(base)
 class._name = "resilient.book"
 
 local utils = require("resilient.utils")
@@ -13,7 +13,7 @@ local layoutParser = require("resilient.layoutparser")
 -- CLASS DEFINITION
 
 function class:_init (options)
-  plain._init(self, options)
+  base._init(self, options)
 
   self:loadPackage("resilient.sectioning")
   self:loadPackage("masters")
@@ -52,9 +52,16 @@ function class:_init (options)
   -- https://github.com/sile-typesetter/sile/issues/1371
   SILE.settings:set("shaper.spaceenlargementfactor", 1)
 
-  -- Override the standard foliostyle hook to rely on styles
+  -- Command override from loaded packages.
   -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
   -- as packages are not loaded yet.
+  -- ASSUMPTION: The corresponding packages are already loaded.
+  -- (Also, we must be sure that reloading them will not reset the hook...
+  -- but our base class cancels the multiple instanciation from SILE 0.14,
+  -- so we should be safe here)
+
+  -- Override the standard foliostyle hook to rely on styles
+  -- Package "folio" is loaded by the plain class.
   self:registerCommand("foliostyle", function (_, content)
     local styleName = SILE.documentState.documentClass:oddPage() and "folio-odd" or "folio-even"
     SILE.call("style:apply:paragraph", { name = styleName }, function ()
@@ -68,10 +75,16 @@ function class:_init (options)
       SILE.process(content)
     end)
   end)
+
+  -- Override the standard urlstyle hook to rely on styles
+  -- Package "url" is loaded by the markdown package.
+  self:registerCommand("urlstyle", function (_, content)
+    SILE.call("style:apply", { name = "url" }, content)
+  end)
 end
 
 function class:declareOptions ()
-  plain.declareOptions(self)
+  base.declareOptions(self)
 
   self:declareOption("layout", function(_, value)
     if value then
@@ -91,7 +104,7 @@ end
 function class:setOptions (options)
   options = options or {}
   options.layout = options.layout or "division"
-  plain:setOptions(options) -- so that papersize etc. get processed...
+  base:setOptions(options) -- so that papersize etc. get processed...
 
   local layout = layoutParser:match(options.layout)
   if not layout then
@@ -114,6 +127,8 @@ function class:setOptions (options)
 end
 
 function class:registerStyles ()
+  base:registerStyles()
+
   -- Sectioning styles
   self:registerStyle("sectioning-base", {}, {
     paragraph = { before = { indent = false },
@@ -328,6 +343,13 @@ function class:registerStyles ()
   self:registerStyle("table-caption-ref-number", { inherit = "table-caption-base-number" }, {
     numbering = { before = { text = "table " } }
   })
+
+  -- url style
+  -- Default is similar to the plain \code command, and quite as bad, but at
+  -- least uses a font-relative size.
+  self:registerStyle("url", {}, {
+    font = { family = "Hack", size = "1.4ex" }
+  })
 end
 
 function class:endPage ()
@@ -336,11 +358,11 @@ function class:endPage ()
   if headerContent then
     self.packages["resilient.headers"]:outputHeader(headerContent)
   end
-  return plain:endPage()
+  return base:endPage()
 end
 
 function class.declareSettings (_)
-  plain:declareSettings()
+  base:declareSettings()
 
   SILE.settings:declare({
     parameter = "book.blockquote.margin",
@@ -351,7 +373,7 @@ function class.declareSettings (_)
 end
 
 function class:registerCommands ()
-  plain:registerCommands()
+  base:registerCommands()
 
   -- Running headers
 

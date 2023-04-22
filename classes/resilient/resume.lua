@@ -5,8 +5,8 @@
 --
 -- This is indeed very minimalist :)
 --
-local plain = require("classes.resilient.base")
-local class = pl.class(plain)
+local base = require("classes.resilient.base")
+local class = pl.class(base)
 class._name = "resilient.resume"
 
 local utils = require("resilient.utils")
@@ -79,7 +79,7 @@ class.nextFrameset = {
 }
 
 function class:_init (options)
-  plain._init(self, options)
+  base._init(self, options)
 
   self:loadPackage("color")
   self:loadPackage("rules") -- for section rules
@@ -139,7 +139,7 @@ function class:newPage ()
   -- See https://github.com/sile-typesetter/sile/issues/1544
   -- Ditching the folio numbering check as the folio is not even incremented yet (?!)
   -- Then the mess below _seems_ to work:
-  plain:newPage() -- It calls and returns self:initialFrame(), but heh...
+  base:newPage() -- It calls and returns self:initialFrame(), but heh...
   self:switchMaster("next")
   return self:initialFrame() -- And now this (?!)
 end
@@ -162,11 +162,13 @@ function class:endPage ()
     SILE.call("eject") -- for vfill to be effective
     SILE.settings:popState()
   end)
-  return plain:endPage()
+  return base:endPage()
 end
 
 -- STYLES
 function class:registerStyles ()
+  base:registerStyles()
+
   self:registerStyle("resume-firstname", {}, {
     font = { style = "light" },
     color = "#a6a6a6"
@@ -290,7 +292,7 @@ local doSection = function (rows, _, content)
 end
 
 function class:registerCommands ()
-  plain:registerCommands()
+  base:registerCommands()
 
   self:registerCommand("cv-header", function (_, content)
     local closure = SILE.settings:wrap()

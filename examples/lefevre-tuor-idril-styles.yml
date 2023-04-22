@@ -683,3 +683,7 @@ toc-pageno:
   origin: "resilient.tableofcontents"
   style:
 
+url:
+  origin: "resilient.book"
+  style:
+

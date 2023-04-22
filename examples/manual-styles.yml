@@ -898,3 +898,10 @@ toc-pageno:
   origin: "resilient.tableofcontents"
   style:
 
+url:
+  origin: "resilient.book"
+  style:
+    font:
+      family: "Hack"
+      size: "1.4ex"
+
