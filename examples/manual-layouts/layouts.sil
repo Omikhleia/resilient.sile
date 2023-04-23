@@ -202,8 +202,8 @@ to the page sides. It is provided here as the \code{canonical} layout.
 
 \subsection{A poor man’s centered layout}
 
-In passing, the \code{none} layout uses margins of 1 inch on all sides. It just exists
-because it’s the base component for other layouts.
+In passing, the \code{none} layout uses margins of 1/6\textsuperscript{th} of the page dimensions.
+It just exists because it’s the base component for other layouts.
 
 \begin{figure}
 \showlayout[layout=none, papersize=6in x 9in] \showlayout[layout=none, papersize=a5]
