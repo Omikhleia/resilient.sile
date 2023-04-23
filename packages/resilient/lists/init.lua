@@ -471,7 +471,7 @@ setting, to switch to an alternate set of styles, such as the following.
 \end{itemize}}%
 
 The alternate styles are expected to be named \code{lists-itemize-⟨\em{variant}⟩⟨\em{level}⟩}
-and the package comes along with a pre-defined “alternate” variant using the em-dash.\footnote{This author is
+and the package comes along with a predefined “alternate” variant using the em-dash.\footnote{This author is
 obviously French…} A good typographer is not expected to switch variants in the middle of a list, so the effect
 has not been checked. Be a good typographer.
 
@@ -542,7 +542,7 @@ you certainly guessed it already, the \autodoc:setting{lists.enumerate.variant} 
 \end{enumerate}}%
 
 The alternate styles are expected to be \code{lists-enumerate-⟨\em{variant}⟩⟨\em{level}⟩},
-how imaginative, and the package comes along with a pre-defined “alternate” variant, just because.
+how imaginative, and the package comes along with a predefined “alternate” variant, just because.
 
 Besides using styles (or defaulting to them), you can also explicitly select the display type
 (format) of the values (as “arabic”, “roman”, etc.), the text prepended or appended

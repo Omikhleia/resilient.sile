@@ -82,7 +82,7 @@ above sectioning styles.
       counter preprended to it.}
   \end{row}
 \end{ptable}
-\caption{Pre-defined command hooks used by sectioning commands.}
+\caption{Predefined command hooks used by sectioning commands.}
 \end{table}
 
 \section{Captioned figures and tables}
@@ -279,7 +279,7 @@ The \strong{resilient.resume} class provides a minimalist (read, naive) way to m
   \begin{itemize}
     \item{Two tints of gray for your first and last name, job title and headline.}
     \item{A nice tint of blue (#4080bf) for various sectioning and display elements. You can change it
-        by redefining the \code{resume-color} style.\footnote{Likewise for your first and last name
+        by redefining the \code{resume-color} style.\footnote{Likewise, your first and last names
         correspond to the \code{resume-firstname} and \code{resume-lastname} styles respectively.}}
   \end{itemize}
   \item{Page layout}
