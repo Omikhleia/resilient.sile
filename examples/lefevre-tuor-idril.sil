@@ -1,5 +1,4 @@
 \begin[papersize=6in x 9in, class=resilient.book, layout=ateliers demiluxe]{document}
-\use[module=packages.url]
 \use[module=packages.resilient.epigraph]
 \use[module=packages.couyards]
 \use[module=packages.dropcaps]
