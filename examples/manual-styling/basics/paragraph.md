@@ -59,8 +59,8 @@ low-level paragraph formatting options (paragraph indent, etc.)[^styles-par-marg
 
 [^styles-par-margins]: This might be considered in a future revision, but note
 that it may also be addressed by defining extra alignment options.
-The **resilien.book** class, for instance, defines its own `block` alignment option
-(used in block quotes).
+The **resilient.book** class, for instance, defines its own `block` alignment option
+(used in block quotes, see further).
 
 Please note that changing an existing character style into a paragraph style
 does not imply that the content is magically turned into paragraphs.
@@ -68,3 +68,51 @@ When classes or packages expect a character style at some point, only
 that part of the style definition is used. Classes and packages are responsible
 for applying the paragraph part too, depending on context.
 
+### Note on consecutive skips {.unnumbered}
+
+Consider a "block quote" paragraph style, where you would expect some vertical spaces
+both above and below a quotation---say, small skips---to make it more distinct
+from the surrounding text.
+The **resilient.book** class, for instance, provides the following default
+style definition.
+
+```yaml
+blockquote:
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "smallskip"
+      align: "block"
+      before:
+        skip: "smallskip"
+```
+
+So far, so good:
+
+> Let's check a quote.
+
+But what is the expectation if the quote itself ends with another quote?
+Quite surely, we do not expect seeing two small skips at the end of these blocks
+(that is, two "after" skips, one from the end of the nested quote and one from the main quote).
+What we _do_ expect is just:
+
+> Let's check another quote.
+>
+> > This is a nested quote.
+
+Now, consider section and subsection headings. They would usually be defined
+so as to include some vertical space before them, and some (possibly smaller)
+vertical space after them.
+It works well if the content around them consists in text.
+But again, what is the expectation if a subsection immediately follows a section
+heading? Surely, again, we do not expect seeing two vertical skips between these
+headings (that is, the "after" skip from the section header and the "before" skip
+from the subsection).
+Likewise, if a section ends with a block quote, we usually do not expect the spacing
+before the subsequent section to include both the small skip terminating the
+quote and the section's initial skip...
+
+_To make a long story short,_ the current styling implementation avoids these situations
+by collapsing consecutive vertical skips, retaining only the biggest one.

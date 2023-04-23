@@ -69,14 +69,12 @@ function package:registerCommands ()
         -- it :(
         SILE.typesetter:initline()
       end
-    else
-      -- Sectioning style that doesn't cause a forced page-break.
-      -- We may insert a goodbreak, though.
-      SILE.typesetter:leaveHmode()
-      if secStyle.settings.goodbreak then
-        SILE.call("goodbreak")
-      end
     end
+    -- N.B. for sectioning style that doesn't cause a forced page-break,
+    -- we previously checked here if we had to insert a goodbreak.
+    -- We now do it in the paragraph style logic, in order to properly manage
+    -- consecutive styles (e.g. a subsection directly preceded by a section
+    -- shouldn't trigger a goodbreak in-between).
 
     -- 2. Handle the style hook if specified.
     --    (Pass the user-defined options + the counter and level,

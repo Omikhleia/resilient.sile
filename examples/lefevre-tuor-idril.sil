@@ -44,16 +44,12 @@ end, "Wrapper around dropcap, for baselineskip adjustment")
 % Too long with the default styling, and 2-line chapter titles look ugly.
 % Address it later at some point?
 
-\pdf:metadata[key=Title, value=Le conte perdu de Mercure]%
-\pdf:metadata[key=Author, value=Alain Lefèvre]%
 
-\begin{raggedright}%
+\begin[name=Author]{style:apply:paragraph}%
 Alain \smallcaps{Lefèvre}\footnote[mark=†]{Cet article est extrait de \em{Tolkien, le façonnement d’un monde}, \abbr:vol{1},
 Le Dragon de Brume, 2011, \abbr:page{211–216} — avec la permission de l’auteur.}
-\end{raggedright}
+\end{style:apply:paragraph}
 
-\bigskip
-\indent
 
 \begin{epigraph}
     Une lampe enivrée d’huile, jetant une vive lumière, se vantait d’être plus brillante que le soleil.
@@ -197,5 +193,10 @@ rapportés par le marin anglo-saxon Ælfwine avaient pris une autre orientation 
 \end{epigraph}
 
 \couyard[type=6, width=default]
+
+% Move at the end, because it introduces hboxes than can affect indents and
+% paragraphs...
+\pdf:metadata[key=Title, value=Le conte perdu de Mercure]%
+\pdf:metadata[key=Author, value=Alain Lefèvre]%
 
 \end{document}

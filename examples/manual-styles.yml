@@ -441,7 +441,7 @@ sectioning-chapter:
       weight: 800
     paragraph:
       after:
-        skip: "bigskip"
+        skip: "30pt"
       align: "left"
     sectioning:
       counter:
@@ -474,13 +474,13 @@ sectioning-chapter-main-number:
   origin: "resilient.book"
   style:
     font:
-      size: "0.9em"
+      size: "3em"
+    color: "#66a0b3"
     numbering:
       after:
-        text: "."
+        kern: "3spc"
       before:
-        text: "Chapter "
-      standalone: true
+      standalone: false
 
 sectioning-chapter-ref-number:
   inherit: "sectioning-chapter-base-number"

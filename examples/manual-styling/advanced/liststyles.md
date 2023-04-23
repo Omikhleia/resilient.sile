@@ -5,10 +5,10 @@ different sets of styles for the `itemize` and the `enumerate`
 environments.
 
  - Style sets `lists-itemize⟨N⟩` and `lists-itemize-alternate⟨N⟩` are
-   pre-defined, all of the styles inheriting from a common parent
+   predefined, all of the styles inheriting from a common parent
    style `lists-itemize-base`.
  - Style sets `lists-enumerate⟨N⟩` and `lists-enumerate-alternate⟨N⟩` are
-   pre-defined, all of the styles inheriting from a common parent
+   predefined, all of the styles inheriting from a common parent
    style `lists-enumerate-base`.
 
 When styling your lists, you have more than one option.

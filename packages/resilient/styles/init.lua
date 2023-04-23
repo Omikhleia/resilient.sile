@@ -159,14 +159,14 @@ SILE.scratch.styles = {
     raggedleft = "style:align:right",
   },
   -- Known skip options.
-  -- Users can add register custom skips there.
+  -- Packages and classes can register custom skips there.
   skips = {
     smallskip = SILE.settings:get("plain.smallskipamount"),
     medskip = SILE.settings:get("plain.medskipamount"),
     bigskip = SILE.settings:get("plain.bigskipamount"),
   },
   -- Known position options, with the command implementing them
-  -- Users can register extra options in this table.
+  -- Packages and classes can register extra options in this table.
   positions = {
     super = "textsuperscript",
     sub = "textsubscript",
@@ -182,7 +182,7 @@ function package.defineStyle (_, name, opts, styledef, origin)
     if SILE.scratch.styles.specs[name] then
       return SU.debug("resilient.styles", "Styles are now frozen: ignoring redefinition for", name)
     end
-    SU.debug("resilient.styles", "Defining new style style", name)
+    SU.debug("resilient.styles", "Defining new style", name)
   end
   SILE.scratch.styles.specs[name] = { inherit = opts.inherit, style = styledef, origin = origin }
 end
@@ -287,16 +287,6 @@ function package:registerCommands ()
     end
   end
 
-  local styleForSkip = function (skip, vbreak)
-    local b = SU.boolean(vbreak, true)
-    if skip then
-      local vglue = SILE.scratch.styles.skips[skip] or SU.cast("vglue", skip)
-      if not b then SILE.call("novbreak") end
-      SILE.typesetter:pushExplicitVglue(vglue)
-    end
-    if not b then SILE.call("novbreak") end
-  end
-
   local styleForAlignment = function (style, content, breakafter)
     if style.paragraph and style.paragraph.align then
       if style.paragraph.align then
@@ -346,6 +336,116 @@ function package:registerCommands ()
 
   -- APPLY A PARAGRAPH STYLE
 
+  -- Check for a preceding styling skip in the typesetter output queue.
+  local function prevStyleSkipInQueue ()
+    for i = #SILE.typesetter.state.outputQueue, 1, -1 do
+      local n = SILE.typesetter.state.outputQueue[i]
+      if n.is_vbox then return nil end
+      if n.is_vglue and n._style_ then
+        return n, i
+      end
+    end
+    return nil
+  end
+
+  -- Return a cloned styling skip from the given glue.
+  -- The reasons for cloning are multiple
+  --  - Some glues (e.g. a medskip etc.) are always the same node but here we
+  --    want to store the information about the style so we need a distinct
+  --    node.
+  --  - Also, being the same node implies then when made 'explicit' it applies
+  --    to all subsequent use. Maybe that was on purpose, but we want to be
+  --    able to control it.
+  --  - We overload the output routine to add our own debug on these skips.
+  local function cloneStyleSkip (vglue, id)
+    local output = vglue.outputYourself
+    vglue = pl.tablex.copy(vglue)
+    vglue._style_ = id
+    vglue.outputYourself = function (s, t, l)
+      if SU.debugging("resilient.styles") then
+        local X = t.frame.state.cursorX
+        local Y = t.frame.state.cursorY
+        local H = s.height:tonumber() + s.depth:tonumber() + s.adjustment:tonumber()
+        SILE.outputter:pushColor(SILE.color("orange"))
+        -- Show a box representing the skip
+        SILE.outputter:drawRule(X, Y, 0.4, H)
+        SILE.outputter:drawRule(X, Y, 30, 0.4)
+        SILE.outputter:drawRule(X + 29.6, Y, 0.4, H)
+        SILE.outputter:drawRule(X, Y + H, 30, 0.4)
+        -- And show its stretch/shrink adjustment
+        SILE.outputter:drawRule(X + 10, Y, 10, s.adjustment:tonumber())
+        SILE.outputter:popColor()
+      end
+      output(s, t, l)
+    end
+    -- Be sure not inheriting non-discardability and explicit flag from the
+    -- original glue.
+    vglue.explicit = false
+    vglue.discardable = true
+    return SILE.nodefactory.vglue(vglue)
+  end
+
+  local function styleForBeforeSkip(name, parSty, styledef)
+    local prevSkip, index = prevStyleSkipInQueue()
+    local skip = parSty.before.skip
+    local vglue = skip and SILE.scratch.styles.skips[skip] or SU.cast("vglue", skip)
+    if prevSkip then
+      -- Collapse consecutive styling skips
+      if skip and prevSkip.height:tonumber() < vglue.height:tonumber() then
+        SU.debug("resilient.styles", "Changing", prevSkip._style_, "consecutive skip before", name)
+        vglue = cloneStyleSkip(vglue, name)
+        SILE.typesetter.state.outputQueue[index] = vglue
+      else
+        SU.debug("resilient.styles", "Ignoring", prevSkip._style_, "consecutive skip before", name)
+      end
+    else
+      local novbreak = not parSty.before.vbreak
+      if styledef.sectioning and styledef.sectioning.settings
+        and styledef.sectioning.settings and SU.boolean(styledef.sectioning.settings.goodbreak, true) then
+        SU.debug("resilient.styles", "Inserting goodbreak before", name)
+        SILE.call("goodbreak")
+        if novbreak then
+          SU.warn("Sectioning style '" .. name .. "' has inconsistent goodbreak and paragraph novbreak")
+        end
+      end
+      if skip then
+        SU.debug("resilient.styles", "Inserting skip before", name)
+        if novbreak then SILE.call("novbreak") end
+        vglue = cloneStyleSkip(vglue, name)
+        -- Not sure here whether it should be an explicit glue or not,
+        -- but it seems so to me...
+        SILE.typesetter:pushVglue(vglue)
+      end
+      if novbreak then SILE.call("novbreak") end
+    end
+  end
+
+  local function styleForAfterSkip(name, parSty)
+    local prevSkip, index = prevStyleSkipInQueue()
+    local skip = parSty.after.skip
+    local vglue = skip and SILE.scratch.styles.skips[skip] or SU.cast("vglue", skip)
+    if prevSkip then
+      -- Collapse consecutive styling skips
+      if skip and prevSkip.height:tonumber() < vglue.height:tonumber() then
+        SU.debug("resilient.styles", "Changing", prevSkip._style_, "consecutive skip after", name)
+        vglue = cloneStyleSkip(vglue, name, true, 120)
+        SILE.typesetter.state.outputQueue[index] = vglue
+      else
+        SU.debug("resilient.styles", "Ignoring", prevSkip._style_, "consecutive skip after", name)
+      end
+    else
+      local novbreak = not parSty.after.vbreak
+      if skip then
+        SU.debug("resilient.styles", "Inserting skip after", name)
+        if novbreak then SILE.call("novbreak") end
+        vglue = cloneStyleSkip(vglue, name, true, 30)
+        -- Not an explicit glue, so it can be cancelled at the bottom of a page!
+        SILE.typesetter:pushVglue(vglue)
+      end
+      if novbreak then SILE.call("novbreak") end
+    end
+  end
+
   self:registerCommand("style:apply:paragraph", function (options, content)
     local name = SU.required(options, "name", "style:apply:paragraph")
     local styledef = self:resolveParagraphStyle(name, options.discardable)
@@ -353,11 +453,15 @@ function package:registerCommands ()
 
     local bb = SU.boolean(parSty.before.vbreak, true)
     if #SILE.typesetter.state.nodes then
-      if not bb then SILE.call("novbreak") end
-      SILE.typesetter:leaveHmode()
+      if not bb then
+        SILE.call("novbreak")
+      else
+        SILE.typesetter:leaveHmode()
+      end
     end
 
-    styleForSkip(parSty.before.skip, parSty.before.vbreak)
+    styleForBeforeSkip(name, parSty, styledef)
+
     if parSty.before.indent then
       SILE.call("indent")
     else
@@ -371,7 +475,9 @@ function package:registerCommands ()
     -- NOTE: SILE.call("par") would cause a parskip to be inserted.
     -- Not really sure whether we expect this here or not.
     SILE.typesetter:leaveHmode()
-    styleForSkip(parSty.after.skip, parSty.after.vbreak)
+
+    styleForAfterSkip(name, parSty)
+
     if parSty.after.indent then
       SILE.call("indent")
     else
@@ -413,12 +519,11 @@ function package:registerCommands ()
     -- If negative, the text should be indented by that amount, with the
     -- number left-aligned in the available space.
     if beforekern and beforekern:tonumber() < 0 then
-      -- IMPLEMENTATION NOTE / HACK / FRAGILE
+      -- IMPLEMENTATION NOTE
       -- SILE's behavior with a hbox occuring as very first element of a line
-      -- is plain weird. The width of the box is "adjusted" with respect to
-      -- the parindent, it seems.
-      -- FIXME So we need to fix it here for the two cases (i.e.) in a text flow,
-      -- and not only at the start of a paragraph!!!!
+      -- was plain weird before v0.14.9. The width of the box was "adjusted" with
+      -- respect to the parindent due to improper scoping.
+      -- The fix is kept here, but should have no effect after 0.14.9.
       local hbox = hboxer.makeHbox(function ()
         SILE.call("style:apply", { name = name }, { text })
       end)
