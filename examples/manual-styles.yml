@@ -577,7 +577,6 @@ sectioning-section:
         level: 2
       hook: "sectioning:section:hook"
       numberstyle:
-        header: "sectioning-other-number"
         main: "sectioning-other-number"
         reference: "sectioning-other-number"
       settings:
@@ -601,7 +600,6 @@ sectioning-subsection:
         id: "sections"
         level: 3
       numberstyle:
-        header: "sectioning-other-number"
         main: "sectioning-other-number"
         reference: "sectioning-other-number"
       settings:
@@ -623,7 +621,6 @@ sectioning-subsubsection:
         id: "sections"
         level: 4
       numberstyle:
-        header: "sectioning-other-number"
         main: "sectioning-other-number"
         reference: "sectioning-other-number"
       settings:

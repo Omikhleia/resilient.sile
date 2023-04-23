@@ -15,6 +15,7 @@
 \use[module=packages.framebox]
 \use[module=packages.fancytoc]
 \use[module=packages.printoptions]
+\use[module=packages.qrcode]
 %\use[module=packages.linespacing]
 %\set[parameter=linespacing.method,value=fixed]
 %\set[parameter=linespacing.fixed.baselinedistance, value=1.2em]
@@ -23,24 +24,24 @@
 \language[main=en]
 \font[family=Libertinus Serif, size=10pt]
 \footnote:rule
-\header:rule[valign=bottom, offset=0]
-\pdf:metadata[key=Title, value=The resilient collection of classes & packages]
+%\header:rule[valign=bottom, offset=0]
+\pdf:metadata[key=Title, value=The resilient collection of classes & packages for SILE]
 \pdf:metadata[key=Author, value=Didier Willis]
 \define[command=admon]{%
 \smallskip%
 \set[parameter=document.parindent, value=0]{%
 \roughbox[enlarge=true, singlestroke=true, preserve=true,
-padding=2%fw, bordercolor=100, fillcolor=230, shadowcolor=#96A8C7, shadow=false]{%
+padding=2%fw, bordercolor=#59b24c, fillcolor=230, shadowcolor=#96A8C7, shadow=false]{%
 \parbox[width=96%lw]{\set[parameter=document.parindent, value=0]\font[size=9pt]\color[color=100]{\process}\par}%
 }}%
 \medskip}
 \set[parameter=textsubsuper.fake, value=true]
-
+%
 % We do not have a true titlepage for now, build it manually.
-\background[color=#e9d8ba,allpages=false]
+\background[color=#66a0b3,allpages=false]
 \noheaderthispage
 \nofoliothispage
-\hbox{}\vfill
+\hbox{}\skip[height=30%fh]
 
 \begin{center}
 \font[size=20pt]{The
@@ -65,19 +66,20 @@ for SILE
 \break
 
 % Now a legal matter page
-\hbox{}
+\begin{center}
+\font[features=+smcp]{The resilient collection of classes & packages for SILE}
+
+\raise[height=0.5ex]{\hrule[height=0.4pt, width=5em]}
+
+\medskip
+\href[src=https://github.com/Omikhleia/resilient.sile]{\qrcode[code=https://github.com/Omikhleia/resilient.sile]}
+\end{center}
 
 \vfill
 
-\admon{\strong{Warning, work in progress!} This is an early version of the documentation, as the corresponding packages and
-classes are refactored and revised. It should give you a grasp of their intent, but be
-warned that everything is subject to change at this point.}
+\noindent{}© 2021–2023 Didier Willis.
 
-\vfill
-
-© 2021–2023 Didier Willis.
-
-This material may be distributed only subject to the terms and conditions set forth in the
+\noindent{}This material may be distributed only subject to the terms and conditions set forth in the
 Creative Commons Attribution, Share-Alike License,
 version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 
