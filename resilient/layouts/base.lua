@@ -31,6 +31,7 @@ function layout:frameset ()
     footer = self:footer(true),
     header = self:header(true),
     margins = self:margins(true),
+    bindinggutter = self:gutter(true),
   }
   local even = {
     textblock = self:textblock(false),
@@ -39,6 +40,7 @@ function layout:frameset ()
     footer = self:footer(false),
     header = self:header(false),
     margins = self:margins(false),
+    bindinggutter = self:gutter(false),
   }
   odd.folio = pl.tablex.copy(odd.footer)
   even.folio = pl.tablex.copy(even.footer)
@@ -115,6 +117,15 @@ function layout.margins (_, odd)
   }
 end
 
+function layout:gutter (isOdd)
+  return {
+    left = isOdd and ("left(page) + " .. self.offset) or "left(page)",
+    right = isOdd and "left(page)" or ("left(page) + " .. self.offset),
+    top = "top(page)",
+    bottom = "bottom(page)"
+  }
+end
+
 -- layout graph drawing adapter
 
 local graphics = require("packages.framebox.graphics.renderer")
@@ -175,6 +186,10 @@ function layout:draw (W, H, options)
       -- Compute and draw the PDF graphics path
       local painter = PathRenderer(rough and RoughPainter())
       local path
+      path = buildFrameRect (painter, frames.bindinggutter, wratio, hratio, {
+        stroke = "0.1pt", fillcolor = "230", strokecolor = "225"
+      })
+      SILE.outputter:drawSVG(path, saveX, saveY, w, h, 1)
       path = buildFrameRect (painter, frames.page, wratio, hratio, {
         stroke = "0.5pt"
       })
