@@ -37,7 +37,7 @@ detailed 3rd-party package installation information.)
 ## Usage
 
 A complete PDF version of the documentation (but not necessarily always the latest) should be
-available [HERE](https://drive.google.com/file/d/1f54qDEGWaN-MFN932x-t0jm3V-5VSHee/view?usp=sharing).
+available [HERE](https://drive.google.com/file/d/1f54qDEGWaN-MFN932x-t0jm3V-5VSHee/view?usp=sharing), or in our [Calaméo bookshelf](https://www.calameo.com/accounts/7349338).
 
 ## See also
 
