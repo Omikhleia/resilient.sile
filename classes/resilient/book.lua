@@ -550,6 +550,7 @@ function class:registerCommands ()
   self:registerCommand("showlayout", function (options, _)
     local spec = SU.required(options, "layout", "layout")
     local papersize = SU.required(options, "papersize", "layout")
+    local offset = SU.cast("measurement", options.offset or "0")
     local parser = require("resilient.layoutparser")
     local layout = parser:match(spec)
     if not layout then
@@ -558,6 +559,7 @@ function class:registerCommands ()
     local p = SILE.papersize(papersize)
     local W = p[1]
     local H = p[2]
+    layout:setOffset(offset)
     layout:setPaperHack(W, H)
     layout:draw(W, H, { ratio = options.ratio, rough = options.rough })
   end, "Show a graphical representation of a page layout")
