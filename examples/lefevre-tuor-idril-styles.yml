@@ -12,11 +12,11 @@ blockquote:
   origin: "resilient.book"
   style:
     font:
-      size: "0.95em"
+      size: "0.9583em"
     paragraph:
       after:
         skip: "smallskip"
-      align: "block"
+      align: "quotation"
       before:
         skip: "smallskip"
 
@@ -149,7 +149,7 @@ footnote:
   origin: "resilient.footnotes"
   style:
     font:
-      size: "0.8em"
+      size: "0.75em"
     numbering:
       display: "arabic"
 
@@ -160,7 +160,7 @@ footnote-marker:
       after:
         kern: "iwsp"
       before:
-        kern: "-3.75nspc"
+        kern: "-3nspc"
 
 footnote-marker-counter:
   inherit: "footnote-marker"
@@ -404,6 +404,8 @@ lists-itemize6:
 sectioning-base:
   origin: "resilient.book"
   style:
+    font:
+      family: "Libertinus Serif"
     paragraph:
       after:
         indent: false
@@ -879,4 +881,6 @@ toc-pageno:
 url:
   origin: "resilient.book"
   style:
+    font:
+      language: "und"
 

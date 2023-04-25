@@ -273,6 +273,7 @@ function class:registerStyles ()
 
   -- quotes
   SILE.scratch.styles.alignments["block"] = "blockindent"
+  SILE.scratch.styles.alignments["quotation"] = "quoteindent"
 
   self:registerStyle("blockquote", {}, {
     font = { size = "0.95em" },
@@ -481,6 +482,18 @@ function class:registerCommands ()
       SILE.call("par")
     end)
   end, "Typeset its contents in a right and left indented block.")
+
+  self:registerCommand("quoteindent", function (_, content)
+    SILE.settings:temporarily(function ()
+      local indent = SILE.settings:get("book.blockquote.margin"):absolute() * 0.875
+      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
+      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
+      SILE.settings:set("document.lskip", SILE.nodefactory.glue(lskip.width + indent))
+      SILE.settings:set("document.rskip", SILE.nodefactory.glue(rskip.width + indent * 0.5))
+      SILE.process(content)
+      SILE.call("par")
+    end)
+  end, "Typeset its contents in a right and left indented block (variant).")
 
   self:registerCommand("blockquote", function (_, content)
     SILE.call("style:apply:paragraph", { name = "blockquote" }, content)
