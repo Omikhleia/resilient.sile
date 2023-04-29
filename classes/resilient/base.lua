@@ -83,14 +83,14 @@ function class:declareOptions ()
   end)
 end
 
-function class.registerRawHandlers (_)
-  parent:registerRawHandlers()
+function class:registerRawHandlers ()
+  parent.registerRawHandlers(self)
 
 end
 
 
-function class.registerCommands (_)
-  parent:registerCommands()
+function class:registerCommands ()
+  parent.registerCommands(self)
 
 end
 

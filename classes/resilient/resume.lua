@@ -139,7 +139,7 @@ function class:newPage ()
   -- See https://github.com/sile-typesetter/sile/issues/1544
   -- Ditching the folio numbering check as the folio is not even incremented yet (?!)
   -- Then the mess below _seems_ to work:
-  base:newPage() -- It calls and returns self:initialFrame(), but heh...
+  base.newPage(self) -- It calls and returns self:initialFrame(), but heh...
   self:switchMaster("next")
   return self:initialFrame() -- And now this (?!)
 end
@@ -162,12 +162,12 @@ function class:endPage ()
     SILE.call("eject") -- for vfill to be effective
     SILE.settings:popState()
   end)
-  return base:endPage()
+  return base.endPage(self)
 end
 
 -- STYLES
 function class:registerStyles ()
-  base:registerStyles()
+  base.registerStyles(self)
 
   self:registerStyle("resume-firstname", {}, {
     font = { style = "light" },
@@ -292,7 +292,7 @@ local doSection = function (rows, _, content)
 end
 
 function class:registerCommands ()
-  base:registerCommands()
+  base.registerCommands(self)
 
   self:registerCommand("cv-header", function (_, content)
     local closure = SILE.settings:wrap()

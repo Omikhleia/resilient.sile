@@ -104,7 +104,7 @@ end
 function class:setOptions (options)
   options = options or {}
   options.layout = options.layout or "division"
-  base:setOptions(options) -- so that papersize etc. get processed...
+  base.setOptions(self, options) -- so that papersize etc. get processed...
 
   local layout = layoutParser:match(options.layout)
   if not layout then
@@ -127,7 +127,7 @@ function class:setOptions (options)
 end
 
 function class:registerStyles ()
-  base:registerStyles()
+  base.registerStyles(self)
 
   -- Sectioning styles
   self:registerStyle("sectioning-base", {}, {
@@ -359,11 +359,11 @@ function class:endPage ()
   if headerContent then
     self.packages["resilient.headers"]:outputHeader(headerContent)
   end
-  return base:endPage()
+  return base.endPage(self)
 end
 
-function class.declareSettings (_)
-  base:declareSettings()
+function class:declareSettings ()
+  base.declareSettings(self)
 
   SILE.settings:declare({
     parameter = "book.blockquote.margin",
@@ -374,7 +374,7 @@ function class.declareSettings (_)
 end
 
 function class:registerCommands ()
-  base:registerCommands()
+  base.registerCommands(self)
 
   -- Running headers
 
