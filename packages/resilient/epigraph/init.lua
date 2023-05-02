@@ -77,27 +77,30 @@ function package:registerCommands ()
       end
 
       SILE.settings:set("document.parindent", parindent)
-      SILE.call("style:apply:paragraph", { name = "epigraph-text" }, function()
-        SILE.process(content)
-        if rule:tonumber() ~= 0 then
-          SILE.typesetter:leaveHmode()
-          SILE.call("noindent")
-          SILE.call("raise", { height = "0.5ex" }, function ()
-            -- HACK. Oh my. When left-aligned, the rule is seen as longer than The
-            -- line and a new line is inserted. Tweaking it by 0.05pt seems to avoid
-            -- it. Rounding issue somewhere? I feel tired.
-            SILE.call("hrule", {width = epigraphw - 0.05, height = rule })
-          end)
-        end
-        if source then
-          SILE.typesetter:leaveHmode(1)
-          if rule:tonumber() == 0 then
-            SILE.call("style:apply:paragraph", { name = "epigraph-source-norule" }, source)
-          else
-            SILE.call("style:apply:paragraph", { name = "epigraph-source-rule" }, source)
+      SILE.call("style:apply:paragraph", { name = "epigraph-text" }, {
+        utils.subTreeContent(content),
+        function ()
+          if rule:tonumber() ~= 0 then
+            SILE.typesetter:leaveHmode()
+            SILE.call("noindent")
+            SILE.call("raise", { height = "0.5ex" }, function ()
+              -- HACK. Oh my. When left-aligned, the rule is seen as longer than The
+              -- line and a new line is inserted. Tweaking it by 0.05pt seems to avoid
+              -- it. Rounding issue somewhere? I feel tired.
+              SILE.call("hrule", {width = epigraphw - 0.05, height = rule })
+            end)
+          end
+          if source then
+            SILE.typesetter:leaveHmode(1)
+            if rule:tonumber() == 0 then
+              SILE.call("style:apply:paragraph", { name = "epigraph-source-norule" }, source)
+            else
+              SILE.call("style:apply:paragraph", { name = "epigraph-source-rule" }, source)
+            end
           end
         end
-      end)
+      })
+
       SILE.typesetter:leaveHmode()
     end)
   end, "Displays an epigraph.")

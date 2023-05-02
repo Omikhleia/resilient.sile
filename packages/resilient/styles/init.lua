@@ -15,6 +15,7 @@ function package:_init (options)
   base._init(self, options)
 
   self.class:loadPackage("textsubsuper")
+  self.class:loadPackage("textcase")
 
   self.class:registerHook("finish", self.writeStyles)
 
@@ -158,6 +159,12 @@ SILE.scratch.styles = {
     raggedright = "style:align:left",
     raggedleft = "style:align:right",
   },
+  -- Known casing options
+  cases = {
+    upper = "uppercase",
+    lower = "lowercase",
+    title = "titlecase",
+  },
   -- Known skip options.
   -- Packages and classes can register custom skips there.
   skips = {
@@ -257,37 +264,65 @@ function package:registerCommands ()
   end, "Applies a font, with additional support for relative sizes.")
 
   -- Very naive cascading...
-  local styleForProperties = function (style, content)
-    if style.properties and style.properties.position and style.properties.position ~= "normal" then
-      local positionCommand = SILE.scratch.styles.positions[style.properties.position]
-      if not positionCommand then
-        SU.error("Invalid style position '"..style.position.position.."'")
-      end
-      SILE.call(positionCommand, {}, content)
-    else
-      SILE.process(content)
+  local characterStyle = function (style, content, options)
+    options = options or {}
+    local dump = false
+    if style.properties then
+        for k, v in ipairs(content) do
+          -- FIXME STYLES functions are annoyinng here...
+          if type(v) ~= "function" then
+            if style.properties.position and style.properties.position ~= "normal" then
+              local positionCommand = SILE.scratch.styles.positions[style.properties.position]
+              if not positionCommand then
+                SU.error("Invalid style position '"..style.properties.position.."'")
+              end
+              content[k] = utils.createCommand(positionCommand, {}, content[k])
+            end
+            if style.properties.case then
+              if style.properties.case and style.properties.case ~= "normal" then
+                local caseCommand = SILE.scratch.styles.cases[style.properties.case]
+                if not caseCommand then
+                  SU.error("Invalid style case '"..style.properties.case.."'")
+                end
+                content[k] = utils.createCommand(caseCommand, {}, content[k])
+              end
+            end
+          end
+        end
     end
-  end
-  local styleForColor = function (style, content)
     if style.color then
-      SILE.call("color", { color = style.color }, function ()
-        styleForProperties(style, content)
-      end)
-    else
-      styleForProperties(style, content)
+      content = utils.createCommand("color", { color = style.color }, content)
     end
+    if style.font and SU.boolean(options.font, true) then
+      content = utils.createCommand("style:font", style.font, content)
+    end
+    if dump then SU.dump(content) end
+    return content
   end
-  local styleForFont = function (style, content)
+
+  local characterStyleNoFont = function (style, content)
+    return characterStyle(style, content, { font = false })
+  end
+
+  local characterStyleFontOnly = function (style, content)
     if style.font then
-      SILE.call("style:font", style.font, function ()
-        styleForColor(style, content)
-      end)
-    else
-      styleForColor(style, content)
+      content = utils.createCommand("style:font", style.font, content)
     end
+    return content
   end
 
   local styleForAlignment = function (style, content, breakafter)
+    -- FIXME STYLES This messy, to extract the subContent and skip id nodes
+    local toProcess
+    if type(content) == "table" and content.command then
+      toProcess = {}
+      for _, v in ipairs(content) do
+        toProcess[#toProcess+1] = v
+      end
+    else
+      toProcess = content
+    end
+
     if style.paragraph and style.paragraph.align then
       if style.paragraph.align then
         local alignCommand = SILE.scratch.styles.alignments[style.paragraph.align]
@@ -300,28 +335,23 @@ function package:registerCommands ()
         -- correct even on the last paragraph. But the color introduces hboxes so
         -- must be applied last, no to cause havoc with the noindent/indent and
         -- centering etc. environments
+        local recontent = utils.createCommand(alignCommand, {}, {
+          characterStyleNoFont(style, toProcess),
+          not breakafter and utils.createCommand("novbreak") or nil
+        })
         if style.font then
-          SILE.call("style:font", style.font, function ()
-            SILE.call(alignCommand, {}, function ()
-              styleForColor(style, content)
-              if not breakafter then SILE.call("novbreak") end
-            end)
-          end)
-        else
-          SILE.call(alignCommand, {}, function ()
-            styleForColor(style, content)
-            if not breakafter then SILE.call("novbreak") end
-          end)
+          recontent = characterStyleFontOnly(style, recontent)
         end
+        SILE.process({ recontent })
       else
-        styleForFont(style, content)
+        SILE.process({ characterStyle(style, toProcess) })
         if not breakafter then SILE.call("novbreak") end
         -- NOTE: SILE.call("par") would cause a parskip to be inserted.
         -- Not really sure whether we expect this here or not.
         SILE.typesetter:leaveHmode()
       end
     else
-      styleForFont(style, content)
+      SILE.process({ characterStyle(style, toProcess) })
     end
   end
 
@@ -331,7 +361,19 @@ function package:registerCommands ()
     local name = SU.required(options, "name", "style:apply")
     local styledef = self:resolveStyle(name, options.discardable)
 
-    styleForFont(styledef, content)
+    -- FIXME STYLES This messy, to extract the subContent and skip id nodes
+    local toProcess
+    if type(content) == "table" and (content.command or content.id) then
+      toProcess = {}
+      for _, v in ipairs(content) do
+        toProcess[#toProcess+1] = v
+      end
+    else
+      toProcess = content
+    end
+
+    toProcess = characterStyle(styledef, toProcess)
+    SILE.process({ toProcess })
   end, "Applies a named character style to the content.")
 
   -- APPLY A PARAGRAPH STYLE

@@ -40,7 +40,7 @@ local function recursiveTableMerge(t1, t2)
 end
 
 -- Extract a node from SILE AST.
-local extractFromTree = function (tree, command)
+local function extractFromTree (tree, command)
   for i=1, #tree do
     if type(tree[i]) == "table" and tree[i].command == command then
       return table.remove(tree, i)
@@ -48,9 +48,62 @@ local extractFromTree = function (tree, command)
   end
 end
 
+--- SILE AST utilities
+-- @section ast
+
+--- Create a command from a simple content tree.
+-- So that's basically the same logic as the "inputfilter" package's
+-- createComment() (with col, lno, pos set to 0, as we don't get them
+-- from Lunamark or Pandoc.
+--
+-- @tparam  string command name of the command
+-- @tparam  table  options command options
+-- @tparam  table  content content tree
+-- @treturn table  SILE AST command
+local function createCommand (command, options, content)
+  local result = { content }
+  result.col = 0
+  result.lno = 0
+  result.pos = 0
+  result.options = options or {}
+  result.command = command
+  result.id = "command"
+  return result
+end
+
+--- Create a command from a structured content tree.
+-- The content is normally a table of an already prepared content list.
+--
+-- @tparam  string command name of the command
+-- @tparam  table  options command options
+-- @tparam  table  contents content tree list
+-- @treturn table  SILE AST command
+local function createStructuredCommand (command, options, contents)
+  -- contents = normally a table of an already prepared content list.
+  local result = type(contents) == "table" and contents or { contents }
+  result.col = 0
+  result.lno = 0
+  result.pos = 0
+  result.options = options or {}
+  result.command = command
+  result.id = "command"
+  return result
+end
+
+local function subTreeContent (content)
+  local out = {}
+  for _, val in ipairs(content) do
+    out[#out+1] = val
+  end
+  return out
+end
+
 return {
   castKern = castKern,
   extractFromTree = extractFromTree,
   interwordSpace = interwordSpace,
   recursiveTableMerge = recursiveTableMerge,
+  createCommand = createCommand,
+  createStructuredCommand = createStructuredCommand,
+  subTreeContent = subTreeContent,
 }

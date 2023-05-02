@@ -5,6 +5,7 @@
 -- License: MIT
 --
 local base = require("packages.resilient.base")
+local utils = require("resilient.utils")
 
 local package = pl.class(base)
 package._name = "resilient.sectioning"
@@ -107,45 +108,50 @@ function package:registerCommands ()
     -- 3. Process the section content
     local numSty = secStyle.numberstyle.main and self:resolveStyle(secStyle.numberstyle.main)
     local numDisplay = numSty and numSty.numbering and numSty.numbering.display or "arabic"
-    SILE.call("style:apply:paragraph", { name = name }, function ()
-      -- 3A. Counter for numbered sections
-      local number
-      if numbering then
-        SILE.call("increment-multilevel-counter", {
-          id = secStyle.counter.id,
-          level = secStyle.counter.level,
-          display = numDisplay
-        })
-        number = self.class.packages.counters:formatMultilevelCounter(
-          self.class:getMultilevelCounter(secStyle.counter.id), { noleadingzeros = true }
-        )
-      end
+    -- FIXME We could refactor more here: some bits do not have to be in the paragraph style.
+    SILE.call("style:apply:paragraph", { name = name }, {
+      function ()
+        -- 3A. Counter for numbered sections
+        local number
+        if numbering then
+          SILE.call("increment-multilevel-counter", {
+            id = secStyle.counter.id,
+            level = secStyle.counter.level,
+            display = numDisplay
+          })
+          number = self.class.packages.counters:formatMultilevelCounter(
+            self.class:getMultilevelCounter(secStyle.counter.id), { noleadingzeros = true }
+          )
+        end
 
-      -- 3B. TOC entry
-      local toclevel = secStyle.settings.toclevel
-      local bookmark = secStyle.settings.bookmark
-      if toclevel and toc then
-        SILE.call("tocentry", { level = toclevel, number = number, bookmark = bookmark }, SU.subContent(content))
-      end
+        -- 3B. TOC entry
+        local toclevel = secStyle.settings.toclevel
+        local bookmark = secStyle.settings.bookmark
+        if toclevel and toc then
+          SILE.call("tocentry", { level = toclevel, number = number, bookmark = bookmark }, SU.subContent(content))
+        end
 
-      -- 3C. Show section number (if numbering is true AND a main style is defined)
-      if numbering then
-        if secStyle.numberstyle.main then
-          SILE.call("style:apply:number", { name = secStyle.numberstyle.main, text = number })
-          if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
-            SILE.call("break") -- HACK. Pretty weak unless the parent paragraph style is ragged.
+        -- 3C. Show section number (if numbering is true AND a main style is defined)
+        if numbering then
+          if secStyle.numberstyle.main then
+            SILE.call("style:apply:number", { name = secStyle.numberstyle.main, text = number })
+            if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
+              SILE.call("break") -- HACK. Pretty weak unless the parent paragraph style is ragged.
+            end
           end
         end
-      end
+      end,
       -- 3D. Section (title) content
-      SILE.process(content)
+      utils.subTreeContent(content),
       -- 3E. Cross-reference label
+      function ()
       -- If the \label command is defined, assume a cross-reference package
       -- is loaded and allow specifying a label marker. This makes it less clumsy
       -- than having to put it in the section title content, or just after the section
       -- (with the risk of impacting indent/noindent and novbreak decisions here)
       if marker and SILE.Commands["label"] then SILE.call("label", { marker = marker }) end
-    end)
+      end
+    })
     -- Was present in the original book class for section and subsection
     -- But seems to behave weird = cancelled for now.
     -- SILE.typesetter:inhibitLeading()

@@ -230,15 +230,7 @@ end
 
 -- RESUME PROCESSING
 
--- Hacky-whacky way to create a ptable tree programmatically
--- loosely inspired by what inputfilter.createCommand() does.
-local function C(command, options, content)
-  local result = content
-  result.options = options
-  result.command = command
-  result.id = "command"
-  return result
-end
+local C = utils.createStructuredCommand
 
 local function doEntry (rows, _, content)
   local topic = utils.extractFromTree(content, "topic")
