@@ -238,8 +238,28 @@ function package:doNestedList (listType, options, content)
     if not((SILE.settings:get("lists.current.itemize.depth")
         + SILE.settings:get("lists.current.enumerate.depth")) > 0)
     then
-      local g = SILE.settings:get("document.parskip").height - SILE.settings:get("lists.parskip").height
-      SILE.typesetter:pushVglue(g)
+      -- So we reached the list top level:
+      -- We want to have a document.parskip here, but the previous level already
+      -- added a lists.parskip normally.
+      -- HACK:
+      --   Having to check the typesetter's internal queue is probably fragile.
+      --   Having to compare glue references too...
+      --   So we just compare their string representation, which is someting
+      --   such as "VG<text represention of the dimension>", possibly in a
+      --   some relative unit ("non-absolutized").
+      local prev = SILE.typesetter.state.outputQueue[#SILE.typesetter.state.outputQueue]
+      if prev:tostring() == SILE.settings:get("lists.parskip"):tostring() then
+        SU.debug("lists", "Replacing last lists.parskip by document.parskip")
+        SILE.typesetter.state.outputQueue[#SILE.typesetter.state.outputQueue] = SILE.settings:get("document.parskip")
+      else
+        -- Shouldn't occur, but let's be cautious:
+        -- The problem here is that we need to make them absolute to perform a
+        -- computation. "Too early" absolutization may be problematic, however,
+        -- that's why we tried to avoid it. Bah.
+        SU.debug("lists", "Compensating last lists.parskip")
+        local g = SILE.settings:get("document.parskip").height:absolute() - SILE.settings:get("lists.parskip").height:absolute()
+        SILE.typesetter:pushVglue(g)
+      end
     end
   end
 end
