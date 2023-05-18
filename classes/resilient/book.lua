@@ -435,7 +435,10 @@ function class:registerCommands ()
           and sty.sectioning.numberstyle.header
         if numsty and sty.sectioning.counter.id then
           local number = self.packages.counters:formatMultilevelCounter(
-            self:getMultilevelCounter(sty.sectioning.counter.id), { noleadingzeros = true }
+            self:getMultilevelCounter(sty.sectioning.counter.id), {
+              noleadingzeros = true,
+              level = sty.sectioning.counter.level -- up to the section level
+            }
           )
           SILE.call("style:apply:number", { name = numsty, text = number })
         end
