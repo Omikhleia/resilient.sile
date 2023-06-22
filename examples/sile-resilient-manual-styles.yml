@@ -449,7 +449,6 @@ sectioning-chapter:
         level: 1
       hook: "sectioning:chapter:hook"
       numberstyle:
-        header: "sectioning-chapter-head-number"
         main: "sectioning-chapter-main-number"
         reference: "sectioning-chapter-ref-number"
       settings:

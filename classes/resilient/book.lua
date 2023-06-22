@@ -373,6 +373,24 @@ function class:declareSettings ()
   })
 end
 
+function class:runningHeaderSectionReference (options, content)
+  if SU.boolean(options.numbering, true) then
+    local sty = self:resolveStyle(options.style)
+    local numsty = sty.sectioning and sty.sectioning.numberstyle
+      and sty.sectioning.numberstyle.header
+    if numsty and sty.sectioning.counter.id then
+      local number = self.packages.counters:formatMultilevelCounter(
+        self:getMultilevelCounter(sty.sectioning.counter.id), {
+          noleadingzeros = true,
+          level = sty.sectioning.counter.level -- up to the sectioning level
+        }
+      )
+      SILE.call("style:apply:number", { name = numsty, text = number })
+    end
+  end
+  SILE.process(content)
+end
+
 function class:registerCommands ()
   base.registerCommands(self)
 
@@ -416,34 +434,22 @@ function class:registerCommands ()
     SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
   end, "Apply part hooks (counter resets, footers and headers, etc.)")
 
-  self:registerCommand("sectioning:chapter:hook", function (_, content)
+  self:registerCommand("sectioning:chapter:hook", function (options, content)
     -- Chapters re-enable folios, have no header, and reset the footnote counter.
     SILE.call("noheaderthispage")
     SILE.call("folios")
     SILE.call("set-counter", { id = "footnote", value = 1 })
 
     -- Chapters, here, go in the even header.
-    SILE.call("even-running-header", {}, content)
+    SILE.call("even-running-header", {}, function ()
+      self:runningHeaderSectionReference(options, content)
+    end)
   end, "Apply chapter hooks (counter resets, footers and headers, etc.)")
 
   self:registerCommand("sectioning:section:hook", function (options, content)
     -- Sections, here, go in the odd header.
     SILE.call("odd-running-header", {}, function ()
-      if SU.boolean(options.numbering, true) then
-        local sty = self:resolveStyle("sectioning-section")
-        local numsty = sty.sectioning and sty.sectioning.numberstyle
-          and sty.sectioning.numberstyle.header
-        if numsty and sty.sectioning.counter.id then
-          local number = self.packages.counters:formatMultilevelCounter(
-            self:getMultilevelCounter(sty.sectioning.counter.id), {
-              noleadingzeros = true,
-              level = sty.sectioning.counter.level -- up to the section level
-            }
-          )
-          SILE.call("style:apply:number", { name = numsty, text = number })
-        end
-      end
-      SILE.process(content)
+      self:runningHeaderSectionReference(options, content)
     end)
   end, "Applies section hooks (footers and headers, etc.)")
 
