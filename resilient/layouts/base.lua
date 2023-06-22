@@ -187,14 +187,18 @@ function layout:draw (W, H, options)
       local painter = PathRenderer(rough and RoughPainter())
       local path
       path = buildFrameRect (painter, frames.bindinggutter, wratio, hratio, {
-        stroke = "0.1pt", fillcolor = "230", strokecolor = "225"
+        stroke = "0.1pt",
+        strokecolor = "225",
+        fillcolor = "220"
       })
       SILE.outputter:drawSVG(path, saveX, saveY, w, h, 1)
       path = buildFrameRect (painter, frames.page, wratio, hratio, {
-        stroke = "0.5pt"
+        stroke = "0.5pt",
+        strokecolor = "black"
       })
       SILE.outputter:drawSVG(path, saveX, saveY, w, h, 1)
       path = buildFrameRect(painter, frames.textblock, wratio, hratio, {
+        strokecolor = "black",
         fillcolor = "200"
       })
       SILE.outputter:drawSVG(path, saveX, saveY, w, h, 1)
