@@ -261,6 +261,14 @@ Cross-references are supported via the \autodoc:package{labelrefs} package, henc
 the \autodoc:command{\label}, \autodoc:command{\ref} and \autodoc:command{\pageref} commands are
 available.
 
+\medskip
+A few layout-related commands are also provided.
+
+The \autodoc:command{\layout[layout=<layout spec>]} command inserts a page break and changes the page layout from that point. An optional \autodoc:parameter{offset=<dimen>} may be specified to also alter the binding offset. By default, the global offset (that is, as possibly defined via the corresponding class option) is used.
+
+Mostly intended for documentation, the \autodoc:command{\showlayout[layout=<layout spec>, papersize=<paper spec>]} command outputs an image representing the selected page layout and paper size.
+Optional parameters are \autodoc:parameter{offset=<dimen>} for the binding offset (0, that is no offset, by default), \autodoc:parameter{ratio=<number>} for the image down-scaling (dividing the paper size by the specified amount, 6.5 by default), and \autodoc:parameter{rough=<boolean>} (false by default).
+
 \chapter{A \em{curriculum vitae} class}
 
 The \strong{resilient.resume} class provides a minimalist (read, naive) way to make a modern \em{résumé} (CV) with SILE.

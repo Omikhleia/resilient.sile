@@ -573,8 +573,7 @@ function class:registerCommands ()
     local spec = SU.required(options, "layout", "layout")
     local papersize = SU.required(options, "papersize", "layout")
     local offset = SU.cast("measurement", options.offset or "0")
-    local parser = require("resilient.layoutparser")
-    local layout = parser:match(spec)
+    local layout = layoutParser:match(spec)
     if not layout then
       SU.error("Unrecognized layout '" .. spec .. "'")
     end
@@ -585,6 +584,34 @@ function class:registerCommands ()
     layout:setPaperHack(W, H)
     layout:draw(W, H, { ratio = options.ratio, rough = options.rough })
   end, "Show a graphical representation of a page layout")
+
+  self:registerCommand("layout", function (options, _)
+    local spec = SU.required(options, "layout", "layout")
+    local layout = layoutParser:match(spec)
+    if not layout then
+      SU.error("Unknown page layout '".. spec .. "'")
+    end
+    local offset = SU.cast("measurement", self.options["offset"])
+    layout:setOffset(offset)
+    -- Kind of a hack dues to restrictions with frame parsers.
+    layout:setPaperHack(SILE.documentState.paperSize[1], SILE.documentState.paperSize[2])
+
+    SILE.call("supereject")
+    SILE.typesetter:leaveHmode()
+
+    local oddFrameset, evenFrameset = layout:frameset()
+    self:defineMaster({
+      id = "right",
+      firstContentFrame = self.firstContentFrame,
+      frames = oddFrameset
+    })
+    self:defineMaster({
+      id = "left",
+      firstContentFrame = self.firstContentFrame,
+      frames = evenFrameset
+    })
+    self:switchMaster(self:oddPage() and "right" or "left")
+  end, "Set the page layout")
 end
 
 return class
