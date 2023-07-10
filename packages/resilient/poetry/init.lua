@@ -122,9 +122,10 @@ function package:registerCommands ()
 
   self:registerCommand("resilient.poetry:prosody", function (options, content)
     local prosodyBox
-    local vadjust
+    local vadjust -- FIXME whhy in style without absolute?
 
     SILE.call("style:apply", { name = "poetry-prosody" }, function ()
+      -- FIXME bad style design
       vadjust = options.lower or SILE.measurement()
       prosodyBox = SILE.call("hbox", {}, function()
         SILE.typesetter:typeset(options.name)
@@ -235,6 +236,7 @@ function package:registerCommands ()
     local setback = SILE.length("1.75em"):absolute()
     SILE.settings:temporarily(function ()
       SILE.call("style:apply", { name = "poetry-verseno"}, function ()
+        -- FIXME: bad style and hbox design
         local w = SILE.length("6em"):absolute()
 
         local h = SILE.call("hbox", {}, { mark })

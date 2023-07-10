@@ -87,7 +87,7 @@ function package:registerCommands ()
               -- HACK. Oh my. When left-aligned, the rule is seen as longer than The
               -- line and a new line is inserted. Tweaking it by 0.05pt seems to avoid
               -- it. Rounding issue somewhere? I feel tired.
-              SILE.call("hrule", {width = epigraphw - 0.05, height = rule })
+              SILE.call("hrule", { width = epigraphw - 0.05, height = rule })
             end)
           end
           if source then

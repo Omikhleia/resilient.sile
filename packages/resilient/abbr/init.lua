@@ -82,14 +82,10 @@ function package:registerCommands ()
     SILE.process(content)
     if SU.boolean(options.sq) then
       -- Latin sequiturque ("and next page")
-      SILE.call("font", { style = "italic", language = "und" }, function ()
-        SILE.typesetter:typeset(" sq.")
-      end)
+      SILE.call("font", { style = "italic", language = "und" }, { " sq." })
     elseif SU.boolean(options.sqq) then
       -- Latin sequiturque, plural ("and following pages")
-      SILE.call("font", { style = "italic", language = "und" }, function ()
-        SILE.typesetter:typeset(" sqq.")
-      end)
+      SILE.call("font", { style = "italic", language = "und" }, { " sqq." })
     elseif SU.boolean(options.suiv) then
       -- French ("et suivant") for those finding the latin sequiturque pedantic
       -- as Lacroux in his Orthotypographie book..
@@ -108,9 +104,7 @@ function package:registerCommands ()
     elseif century:match("^[ivx]+$") == nil then
       SU.error("Not a valid century '"..century.. "' in abbr:siecle")
     end
-    SILE.call("font", { features = "+smcp" }, function ()
-      SILE.typesetter:typeset(century)
-    end)
+    SILE.call("font", { features = "+smcp" }, { century })
     if century == "i" then
       SILE.call("textsuperscript", {}, { "er" })
     else

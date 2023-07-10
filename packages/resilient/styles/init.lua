@@ -264,31 +264,30 @@ function package:registerCommands ()
   end, "Applies a font, with additional support for relative sizes.")
 
   -- Very naive cascading...
-  local characterStyle = function (style, content, options)
+  local function characterStyle (style, content, options)
     options = options or {}
-    local dump = false
     if style.properties then
-        for k, v in ipairs(content) do
-          -- FIXME STYLES functions are annoyinng here...
-          if type(v) ~= "function" then
-            if style.properties.position and style.properties.position ~= "normal" then
-              local positionCommand = SILE.scratch.styles.positions[style.properties.position]
-              if not positionCommand then
-                SU.error("Invalid style position '"..style.properties.position.."'")
-              end
-              content[k] = utils.createCommand(positionCommand, {}, content[k])
-            end
-            if style.properties.case then
-              if style.properties.case and style.properties.case ~= "normal" then
-                local caseCommand = SILE.scratch.styles.cases[style.properties.case]
-                if not caseCommand then
-                  SU.error("Invalid style case '"..style.properties.case.."'")
-                end
-                content[k] = utils.createCommand(caseCommand, {}, content[k])
-              end
-            end
-          end
+      local tocentry = utils.extractFromTree(content, "tocentry") -- HACK for sectioning styles
+      if style.properties.position and style.properties.position ~= "normal" then
+        local positionCommand = SILE.scratch.styles.positions[style.properties.position]
+        if not positionCommand then
+          SU.error("Invalid style position '"..style.properties.position.."'")
         end
+        content = utils.createCommand(positionCommand, {}, content)
+      end
+      if style.properties.case and style.properties.case ~= "normal" then
+        local caseCommand = SILE.scratch.styles.cases[style.properties.case]
+        if not caseCommand then
+          SU.error("Invalid style case '"..style.properties.case.."'")
+        end
+        content = utils.createCommand(caseCommand, {}, content)
+      end
+      if tocentry then -- HACK for sectioning styles
+        -- We don't want character styles from a paragraph level to be applied
+        -- to the TOC entry content, esp. text casing.
+        SU.debug("resilient.styles", "TOC entry reinserted due to character styling")
+        content = { tocentry, content }
+      end
     end
     if style.color then
       content = utils.createCommand("color", { color = style.color }, content)
@@ -296,12 +295,29 @@ function package:registerCommands ()
     if style.font and SU.boolean(options.font, true) then
       content = utils.createCommand("style:font", style.font, content)
     end
-    if dump then SU.dump(content) end
     return content
   end
 
-  local characterStyleNoFont = function (style, content)
+  local function characterStyleNoFont (style, content)
     return characterStyle(style, content, { font = false })
+  end
+
+  local function hackSubContent(content, name)
+    if type(content) == "table" then
+      if content.command or content.id then
+        -- We want to skip the calling content key values (id, command, etc.)
+        return utils.subTreeContent(content)
+      end
+      return content
+    end
+    if name ~= "footnote" then -- HACK: Could not avoid function call in resilient.footnotes...
+      SU.warn("Invocation of style '" .. name .. "'' with unexpected content ("
+        .. type(content) ..")" .. [[
+    For styles to apply correctly, the content should be an AST table.
+    Some constructs may fail or generate errors later (text case, position, etc.)
+]])
+    end
+    return content
   end
 
   local characterStyleFontOnly = function (style, content)
@@ -312,17 +328,6 @@ function package:registerCommands ()
   end
 
   local styleForAlignment = function (style, content, breakafter)
-    -- FIXME STYLES This messy, to extract the subContent and skip id nodes
-    local toProcess
-    if type(content) == "table" and content.command then
-      toProcess = {}
-      for _, v in ipairs(content) do
-        toProcess[#toProcess+1] = v
-      end
-    else
-      toProcess = content
-    end
-
     if style.paragraph and style.paragraph.align then
       if style.paragraph.align then
         local alignCommand = SILE.scratch.styles.alignments[style.paragraph.align]
@@ -336,7 +341,7 @@ function package:registerCommands ()
         -- must be applied last, no to cause havoc with the noindent/indent and
         -- centering etc. environments
         local recontent = utils.createCommand(alignCommand, {}, {
-          characterStyleNoFont(style, toProcess),
+          characterStyleNoFont(style, content),
           not breakafter and utils.createCommand("novbreak") or nil
         })
         if style.font then
@@ -344,14 +349,14 @@ function package:registerCommands ()
         end
         SILE.process({ recontent })
       else
-        SILE.process({ characterStyle(style, toProcess) })
+        SILE.process({ characterStyle(style, content) })
         if not breakafter then SILE.call("novbreak") end
         -- NOTE: SILE.call("par") would cause a parskip to be inserted.
         -- Not really sure whether we expect this here or not.
         SILE.typesetter:leaveHmode()
       end
     else
-      SILE.process({ characterStyle(style, toProcess) })
+      SILE.process({ characterStyle(style, content) })
     end
   end
 
@@ -361,19 +366,10 @@ function package:registerCommands ()
     local name = SU.required(options, "name", "style:apply")
     local styledef = self:resolveStyle(name, options.discardable)
 
-    -- FIXME STYLES This messy, to extract the subContent and skip id nodes
-    local toProcess
-    if type(content) == "table" and (content.command or content.id) then
-      toProcess = {}
-      for _, v in ipairs(content) do
-        toProcess[#toProcess+1] = v
-      end
-    else
-      toProcess = content
-    end
+    content = hackSubContent(content, name) -- HACK: see above
 
-    toProcess = characterStyle(styledef, toProcess)
-    SILE.process({ toProcess })
+    content = characterStyle(styledef, content)
+    SILE.process({ content })
   end, "Applies a named character style to the content.")
 
   -- APPLY A PARAGRAPH STYLE
@@ -492,6 +488,8 @@ function package:registerCommands ()
     local name = SU.required(options, "name", "style:apply:paragraph")
     local styledef = self:resolveParagraphStyle(name, options.discardable)
     local parSty = styledef.paragraph
+
+    content = hackSubContent(content, name) -- HACK: see above
 
     local bb = SU.boolean(parSty.before.vbreak, true)
     if #SILE.typesetter.state.nodes then

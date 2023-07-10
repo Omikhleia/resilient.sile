@@ -65,16 +65,16 @@ function class:_init (options)
   -- Package "folio" is loaded by the plain class.
   self:registerCommand("foliostyle", function (_, content)
     local styleName = SILE.documentState.documentClass:oddPage() and "folio-odd" or "folio-even"
-    SILE.call("style:apply:paragraph", { name = styleName }, function ()
+    SILE.call("style:apply:paragraph", { name = styleName }, {
       -- Ensure proper baseline alignment with a strut rule.
       -- The baseline placement depends on the line output algorithm, and we cannot
       -- trust it if it just uses the line ascenders.
       -- Typically, if folios use "old-style" numbers, 16 and 17 facing pages shall have
       -- aligned folios, but the 1 is smaller than the 6 and 7, the former ascends above,
       -- and the latter descends below the baseline).
-      SILE.call("strut", { method = "rule"})
-      SILE.process(content)
-    end)
+      utils.createCommand("strut", { method = "rule"}),
+      utils.subTreeContent(content)
+    })
   end)
 
   -- Override the standard urlstyle hook to rely on styles
@@ -374,24 +374,6 @@ function class:declareSettings ()
   })
 end
 
-function class:runningHeaderSectionReference (options, content)
-  if SU.boolean(options.numbering, true) then
-    local sty = self:resolveStyle(options.style)
-    local numsty = sty.sectioning and sty.sectioning.numberstyle
-      and sty.sectioning.numberstyle.header
-    if numsty and sty.sectioning.counter.id then
-      local number = self.packages.counters:formatMultilevelCounter(
-        self:getMultilevelCounter(sty.sectioning.counter.id), {
-          noleadingzeros = true,
-          level = sty.sectioning.counter.level -- up to the sectioning level
-        }
-      )
-      SILE.call("style:apply:number", { name = numsty, text = number })
-    end
-  end
-  SILE.process(content)
-end
-
 function class:registerCommands ()
   base.registerCommands(self)
 
@@ -401,10 +383,10 @@ function class:registerCommands ()
     local closure = SILE.settings:wrap()
     SILE.scratch.headers.even = function ()
       closure(function ()
-        SILE.call("style:apply:paragraph", { name = "header-even" }, function ()
-          SILE.call("strut", { method = "rule"})
-          SILE.process(content)
-        end)
+        SILE.call("style:apply:paragraph", { name = "header-even" }, {
+          utils.createCommand("strut", { method = "rule"}),
+          utils.subTreeContent(content)
+        })
       end)
     end
   end, "Text to appear on the top of the even page(s).")
@@ -413,10 +395,10 @@ function class:registerCommands ()
     local closure = SILE.settings:wrap()
     SILE.scratch.headers.odd = function ()
       closure(function ()
-        SILE.call("style:apply:paragraph", { name = "header-odd" }, function ()
-          SILE.call("strut", { method = "rule"})
-          SILE.process(content)
-        end)
+        SILE.call("style:apply:paragraph", { name = "header-odd" }, {
+          utils.createCommand("strut", { method = "rule"}),
+          utils.subTreeContent(content)
+        })
       end)
     end
   end, "Text to appear on the top of the odd page(s).")
@@ -435,23 +417,19 @@ function class:registerCommands ()
     SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
   end, "Apply part hooks (counter resets, footers and headers, etc.)")
 
-  self:registerCommand("sectioning:chapter:hook", function (options, content)
+  self:registerCommand("sectioning:chapter:hook", function (_, content)
     -- Chapters re-enable folios, have no header, and reset the footnote counter.
     SILE.call("noheaderthispage")
     SILE.call("folios")
     SILE.call("set-counter", { id = "footnote", value = 1 })
 
     -- Chapters, here, go in the even header.
-    SILE.call("even-running-header", {}, function ()
-      self:runningHeaderSectionReference(options, content)
-    end)
+    SILE.call("even-running-header", {}, content)
   end, "Apply chapter hooks (counter resets, footers and headers, etc.)")
 
-  self:registerCommand("sectioning:section:hook", function (options, content)
+  self:registerCommand("sectioning:section:hook", function (_, content)
     -- Sections, here, go in the odd header.
-    SILE.call("odd-running-header", {}, function ()
-      self:runningHeaderSectionReference(options, content)
-    end)
+    SILE.call("odd-running-header", {}, content)
   end, "Applies section hooks (footers and headers, etc.)")
 
   self:registerCommand("part", function (options, content)
