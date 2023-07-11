@@ -5,6 +5,8 @@
 --
 local base = require("packages.resilient.base")
 
+local hboxer = require("resilient-compat.hboxing") -- Compatibility hack/shim
+
 local package = pl.class(base)
 package._name = "resilient.poetry"
 
@@ -121,30 +123,32 @@ function package:registerCommands ()
   end
 
   self:registerCommand("resilient.poetry:prosody", function (options, content)
-    local prosodyBox
-    local vadjust -- FIXME whhy in style without absolute?
+    local vadjust = options.lower or SILE.measurement()
 
-    SILE.call("style:apply", { name = "poetry-prosody" }, function ()
-      -- FIXME bad style design
-      vadjust = options.lower or SILE.measurement()
-      prosodyBox = SILE.call("hbox", {}, function()
-        SILE.typesetter:typeset(options.name)
-      end)
+    local prosodyBox = hboxer.makeHbox(function ()
+      SILE.call("style:apply", { name = "poetry-prosody" }, { options.name })
     end)
 
-    SILE.typesetter.state.nodes[#(SILE.typesetter.state.nodes)] = nil
     local origWidth = prosodyBox.width
     prosodyBox.width = SILE.length()
     prosodyBox.height = SILE.settings:get("resilient.poetry.lineheight")
     SILE.call("rebox", {height=0, width=0}, function()
-      SILE.call("raise", { height = SILE.settings:get("resilient.poetry.offset"):absolute() + vadjust:tonumber()}, function ()
-          SILE.typesetter:pushHbox(prosodyBox)
+      -- FIXME: the vadjust is empirically determined, and should perhaps be
+      -- absolutized with respect to the poetry-prosody font size rather than
+      -- the current font size.
+      -- Even the "resilient.poetry.lineheight" is empirical (and what is its intent?)
+      -- Dunno what I was thinking when I wrote this code, a better strategy
+      -- would be needed.
+      SILE.call("raise", { height = SILE.settings:get("resilient.poetry.offset"):absolute() + vadjust:absolute() }, function ()
+        SILE.typesetter:pushHbox(prosodyBox)
       end)
     end)
-    local inVerseBox = SILE.call("hbox", {}, content)
+    local inVerseBox, hlist = hboxer.makeHbox(content)
     if inVerseBox.width < origWidth then
-    inVerseBox.width = origWidth
+      inVerseBox.width = origWidth
     end
+    SILE.typesetter:pushHbox(inVerseBox)
+    hboxer.pushHlist(hlist)
   end, "Insert a prosody annotation above the text (theoretically an internal command)")
 
   self:registerCommand("poetry", function (options, content)
@@ -178,6 +182,10 @@ function package:registerCommands ()
         + SILE.length(SILE.settings:get("document.parindent")):absolute()
     end
 
+    local labelRefs = self.class.packages.labelrefs
+    local numsty = self:resolveStyle("poetry-verseno")
+    local verseNumDisplay = numsty.numbering and numsty.numbering.display or "arabic"
+
     SILE.settings:temporarily(function()
       SILE.settings:set("current.parindent", SILE.length(0))
       SILE.settings:set("document.parindent", SILE.length(0))
@@ -194,15 +202,15 @@ function package:registerCommands ()
       for i = 1, #content do
         if type(content[i]) == "table" then
           if content[i].command == "v" then
+            local n = SU.formatNumber(iVerse, { system = verseNumDisplay })
             if numbering and (iVerse % step == 0 or (iVerse == start and first)) then
-              content[i].options.n = iVerse
+              content[i].options.n = n
             end
             content[i].options.mode = options.mode
             content[i].command = "resilient.poetry:v"
-            local labelRefs = self.class.packages.labelrefs
             if labelRefs then
               -- Cross-reference support
-              labelRefs:pushLabelRef(iVerse)
+              labelRefs:pushLabelRef(n)
               SILE.process({ content[i] })
               labelRefs:popLabelRef()
             else
@@ -234,28 +242,26 @@ function package:registerCommands ()
 
   local typesetVerseNumber = function (mark)
     local setback = SILE.length("1.75em"):absolute()
-    SILE.settings:temporarily(function ()
-      SILE.call("style:apply", { name = "poetry-verseno"}, function ()
-        -- FIXME: bad style and hbox design
-        local w = SILE.length("6em"):absolute()
+    -- FIXME: setback and whole position logic is empirical
+    -- We should use styles rather than the current approach (which predates them, here)
 
-        local h = SILE.call("hbox", {}, { mark })
-        table.remove(SILE.typesetter.state.nodes)
+    local h = hboxer.makeHbox(function ()
+      SILE.call("style:apply:number", { name = "poetry-verseno", text = mark })
+    end)
 
-        SILE.typesetter:pushGlue({ width = -w })
-        SILE.call("rebox", { width = w, height = 0 }, function()
-          SILE.typesetter:pushGlue({ width = w - setback - h.width })
-          SILE.typesetter:pushHbox(h)
-        end)
-      end)
+    local w = SILE.length("6em"):absolute()
+    SILE.typesetter:pushGlue({ width = -w })
+    SILE.call("rebox", { width = w, height = 0 }, function()
+      SILE.typesetter:pushGlue({ width = w - setback - h.width })
+      SILE.typesetter:pushHbox(h)
     end)
   end
 
   self:registerCommand("resilient.poetry:v", function (options, content)
-    local n = options.n and SU.cast("integer", options.n)
+    local n = options.n -- as string already in appropriate numbering system
     SILE.typesetter:leaveHmode()
     if n then
-      typesetVerseNumber(""..n)
+      typesetVerseNumber(n)
     end
     SILE.process(self.class.packages.inputfilter:transformContent(content, prosodyFilter, { mode = options.mode }))
     SILE.typesetter:leaveHmode()
@@ -287,7 +293,8 @@ function package:registerStyles ()
   })
 
   self:registerStyle("poetry-verseno", {}, {
-    font = { features = "+onum", size = "0.9em" }
+    font = { features = "+onum", size = "0.9em" },
+    numbering = { display = "arabic" }
   })
 
 end
