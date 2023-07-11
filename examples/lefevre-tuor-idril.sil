@@ -25,7 +25,7 @@
 % as it has a fixed height not taking into account the effect of that stretchability.
 % We therefore wrap the concerned paragraph in a temporary environment where the
 % stretchability is canceled...
-\script{
+\lua{
 local class = SILE.documentState.documentClass
 class:registerCommand("initial", function (options, content)
   SILE.settings:temporarily(function()

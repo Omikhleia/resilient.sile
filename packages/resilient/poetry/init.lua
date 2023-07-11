@@ -349,20 +349,21 @@ As can be seen, verses are automatically numbered, by default. This feature can 
 with the \autodoc:parameter{numbering} option set to false. The \autodoc:parameter{start} option
 may also be provided, to define the number of the initial verse, would it be
 different from one. Quoting \em{Beowulf}, chapter XI, starting at verse 710:
-\script{
+\lua{
   -- Conditional in this documentation
+  local class = SILE.documentState.documentClass
   if SILE.Commands["label"] and SILE.Commands["ref"] then
-    SILE.registerCommand("conditional:label", function(options, content)
+    class:registerCommand("conditional:label", function(options, content)
       SILE.call("label", options, content)
     end)
-    SILE.registerCommand("conditional:ref", function(options, content)
+    class:registerCommand("conditional:ref", function(options, content)
       SILE.call("ref", options, content)
     end)
   else
-    SILE.registerCommand("conditional:label", function(options, content)
+    class:registerCommand("conditional:label", function(options, content)
       -- ignore
     end)
-    SILE.registerCommand("conditional:ref", function(options, content)
+    class:registerCommand("conditional:ref", function(options, content)
       SILE.typesetter:typeset("[reference not available]")
     end)
   end
