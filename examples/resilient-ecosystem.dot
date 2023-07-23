@@ -86,6 +86,12 @@ digraph omikhleia {
       sectioning -> pbase
       tableofcontents ->pbase
     }
+    subgraph cluster_resilient_ins {
+      label = "inputters";
+
+      silm [shape=component,style=filled,fillcolor=lemonchiffon,label="inputters.silm"]
+      silm -> book [style=dashed]
+    }
 
   }
 

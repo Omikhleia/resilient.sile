@@ -114,6 +114,16 @@ version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
 
 \include[src=manual-intro/howto.dj]
 
+% ---------------------- MASTER DOCUMENTS
+\part[marker=master-document]{The master document}
+%
+\begin{figure}%
+\svg[src=images/oldmanandbooks.svg, width=50%pw]
+\caption{“Master books, but do not let them master you.”\footnote[mark=†]{Quote by Edward Bulwer-Lytton.}}
+\end{figure}
+
+\include[src=manual-masterdoc/masterdoc.dj]
+
 
 % ---------------------- PAGE LAYOUTS
 \part[marker=page-layout]{The page layout}

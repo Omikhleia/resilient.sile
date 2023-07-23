@@ -1,0 +1,107 @@
+# Writing a master document
+
+Say you have a collection of individual chapters (or any other appropriate division scheme) in Djot, Markdown or even SIL, and you want to gather these as a single book, with all bells and whistles.
+
+Seasoned users experienced with the SIL language surely know how to write a "wrapper" document in that format, invoking all required commands and including their content files.
+All the low-level constructs are there for them to do so.
+There are some things, however, that they will end up doing all the time, repetitively: at the very least, pick up a font, set a main language, load fairly standard packages, set PDF metadata...
+Moreover, if your content, or most of it, was authored in Djot or Markdown[^md-metadata-blocks], it feels quite cumbersome to have to write such a wrapper in SIL syntax, doesn't it ?
+
+[^md-metadata-blocks]: Several Markdown processors support metadata blocks as a special construct in (extended) Markdown, with a varying syntax and often _ad hoc_ conventions.
+We are trying, here, to be more general and consistent, regardless of the input format.
+
+The resilient collection introduces a "master document" format which aims at simplifying and streamlining the process, abstracting the wearisome tasks and taking care of (most of) the usual needs.
+
+![Using a resilient master document.](manual-masterdoc/masterdoc-workflow.dot){width=7cm}
+
+Master documents usually have the `.silm` extension and can be processed as shown below.
+
+```shell
+sile -u inputters.silm mybook.silm
+```
+
+The format consists in a simple description of the book properties and content, expressed in [YAML](https://en.wikipedia.org/wiki/YAML), a lightweight human-readable data-representation language.
+Here is an example, showing all the elements.
+
+```yaml
+masterfile: 1.0
+metadata:
+  title: Excerpts from the Chronicles of Alstre
+  subtitle: Annotated tales from the works of the poet Celdre 
+  subject: Translation and commentary
+  keywords:
+    - Mythology
+    - Fantasy
+    - Feigned history
+  authors: Emma Lenski
+  translators: Sylvain Forestier
+  publisher: Omikhleia
+  pubdate: 2023-07-14
+  ISBN: 978-1-4028-9462-6
+  url: https://github.com/Omikhleia/resilient.sile
+  copyright: © 2023, Omikhleia pour la présente édition.
+  legal: |
+    Standard copyright applies.
+font:
+  family: [EB Garamond, Libertinus Serif]
+  size: 12pt
+language: fr
+sile:
+  options:
+    # class: resilient.book # (this is the default choice if not set)
+    papersize: 6in x 9in
+    layout: ateliers demiluxe
+    resolution: 300
+  settings:
+    textsubsuper.fake: false
+    typesetter.italicCorrection: true
+  packages:
+    - dropcaps
+    - couyards
+content:
+  - frontmatter.dj
+  - chap1.dj
+  - chap2.dj
+  - backmatter.dj
+```
+
+The `masterfile` entry is a number corresponding to a version, for compatibility purposes.[^masterdoc-compat]
+
+[^masterdoc-compat]: Currently unused, but it may become useful if we introduce breaking changes in the master document format later.
+
+## Metadata section
+
+The `metadata` object contains several general document properties.
+
+ - The `title`, `authors`, `subject` and `keywords` will automatically be used as PDF metadata.
+
+ - As denoted by the plural, `authors`, `translators` and `keywords` may consist in a list of strings, but they also accept a single string.
+
+ - The `title` may be used in running headers (possibly, depending on the document class).
+
+All these properties may eventually be used in the cover or other places.
+
+## Default font
+
+The `font` object defines the default font, as a font `family` and a `size`
+
+ - The `family` is either a font name (as a string) or an array of font names.
+   In the latter case, the first font is used as default font and the others are declared as "font fallbacks", would some charaters be unavailable.
+ - The `size`, as expected, is the default font size, usually expressed in points.
+
+## SILE setup
+
+The `sile` object provides intructions for processing the master document with SILE.
+
+ - The `options` there are to be understood as document class options.
+  (They can be overridden from the command line  when invoking SILE.)
+  If you don't specify a `class` then *resilient.book* is assumed.
+
+- The `settings` can be used to globally set some SILE parameters.
+
+- The `packages` object lists of extra packages that SILE must load.
+  It can be used to load add-on packages needed by your content but not already provided by the document class and its supporting packages.
+
+## Content files
+
+Quite obviously, the `content` array is an ordered list of filenames defining the content of the book.
