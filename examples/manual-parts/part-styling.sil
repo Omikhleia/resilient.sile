@@ -1,0 +1,8 @@
+\begin{document}
+\part[marker=styling-paradigm]{The styling paradigm}
+
+\begin{figure}
+\img[src=images/condottiere.png, width=55%pw]
+\caption{A man with a \em{certain} style.\footnote[mark=†]{From Leonardo da Vinci’s “Condottiero”, \em{circa} 1475.}}
+\end{figure}
+\end{document}

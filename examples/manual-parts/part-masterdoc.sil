@@ -1,0 +1,8 @@
+\begin{document}
+\part[marker=master-document]{The master document}
+
+\begin{figure}%
+\svg[src=images/oldmanandbooks.svg, width=50%pw]
+\caption{“Master books, but do not let them master you.”\footnote[mark=†]{Quote by Edward Bulwer-Lytton.}}
+\end{figure}
+\end{document}

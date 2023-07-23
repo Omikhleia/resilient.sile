@@ -1,0 +1,85 @@
+masterfile: 1.0
+metadata:
+  title: The resilient collection of classes & packages for SILE
+  subject: User manual for the resilient.sile module
+  keywords:
+    - SILE
+    - typesetting
+    - book
+  authors: Didier Willis
+  pubdate: 2022-07-30
+  url: https://github.com/Omikhleia/resilient.sil
+  copyright: © 2021–2023 Didier Willis.
+  legal: |
+    This material may be distributed only subject to the terms and conditions
+    set forth in the  Creative Commons Attribution, Share-Alike License,
+    version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
+font:
+  family: Libertinus Serif
+  size: 10pt
+language: en
+sile:
+  options:
+    # These are class options, so can be overridden via the CLI
+    # class: resilient.book # optional (default)
+    papersize: 6in x 9in
+    layout: division 9
+    resolution: 300
+  settings:
+    textsubsuper.fake: false
+    autodoc.highlighting: true
+    document.baselineskip: 1.2em
+    # typesetter.italicCorrection: true
+  packages:
+    - autodoc-resilient # REQUIRED FOR RESILIENT, do not use regular autodoc
+    - background
+    - lorem
+    - dropcaps
+    - resilient.abbr
+    - resilient.epigraph
+    - resilient.lists
+    - framebox
+    - fancytoc
+    - printoptions
+    - qrcode
+    - couyards
+parts:
+  - content:
+      - manual-front.sil
+  - file: manual-parts/part-intro.sil
+    content:
+      - manual-intro/howto.dj
+  - file: manual-parts/part-masterdoc.sil
+    content:
+      - manual-masterdoc/masterdoc.dj
+  - file: manual-parts/part-layouts.sil
+    content:
+      - manual-layouts/layouts.sil
+  - file: manual-parts/part-styling.sil
+    content:
+      - manual-styling/basics/concepts.md
+      - manual-styling/basics/definitions.md
+      - manual-styling/basics/character.md
+      - manual-styling/basics/lists.md
+      - manual-styling/basics/paragraph.md
+      - manual-styling/basics/toc.md
+      - manual-styling/basics/sectioning.md
+      - manual-styling/advanced/intro.md
+      - manual-styling/advanced/folio.md
+      - manual-styling/advanced/footnotes.md
+      - manual-styling/advanced/toclevels.md
+      - manual-styling/advanced/liststyles.md
+      - manual-styling/advanced/other.md
+  # unfinished
+  # - manual-styling/captioned.md
+  - file: manual-parts/part-packages.sil
+    content:
+      - manual-packages/packages.sil
+  - file: manual-parts/part-classes.sil
+    content:
+      - manual-classes/classes.sil
+  # not sure about these
+  # - manual-parts/part-appendices.sil
+  #   content:
+  #     - manual-prefaces/edition1.sil
+  #     - manual-prefaces/edition2.sil
