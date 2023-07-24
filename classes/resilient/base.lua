@@ -62,7 +62,7 @@ function class:loadPackage (packname, options)
   if type(pack) == "table" and pack.type == "package" then -- new package
     -- I beg to disagree with SILE here
     if self.packages[pack._name] then
-      return SU.debug("resiient", "Already load into class (hack) "..pack._name)
+      return SU.debug("resilient", "Already load into class (hack) "..pack._name)
     end
     self.packages[pack._name] = pack(options)
   else -- legacy package
