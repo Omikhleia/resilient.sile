@@ -39,6 +39,7 @@ function class:_init (options)
   self:loadPackage("struts")
   self:loadPackage("resilient.headers")
   self:loadPackage("markdown")
+  self:loadPackage("djot")
 
   -- Override document.parindent default to this author's taste
   SILE.settings:set("document.parindent", "1.25em")
