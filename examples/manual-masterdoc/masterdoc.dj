@@ -104,4 +104,11 @@ The `sile` object provides intructions for processing the master document with S
 
 ## Content files
 
-Quite obviously, the `content` array is an ordered list of filenames defining the content of the book.
+Quite obviously, the `content` array is an ordered list of files defining the content of the book.
+
+Those files may be of any type supported by SILE, the document class or loaded packages.[^masterdoc-nesting]
+
+[^masterdoc-nesting]: In particular, you can include a master document in another.
+In that case, though, a few elements only from the nested document are used (namely, the declared
+extra packages and the content files).
+

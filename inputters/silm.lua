@@ -18,6 +18,46 @@ local function Cc (command, options, content)
   return result
 end
 
+-- SCHEMA VALIDATION
+-- Loosely inspired from JSON schema / openAPI specs
+
+local OptionSchema = {
+  type = "object",
+  additionalProperties = {
+    type = { -- oneOf
+      { type = "string" },
+      { type = "boolean" },
+      { type = "number" },
+    },
+  },
+  properties = {}
+}
+
+local contentSchema = {
+  type = "array",
+  items = {
+    type = { -- oneOf
+      { type = "string" },
+      { type = "object",
+        properties = {
+          caption = { type = "string" },
+          -- content (self reference, handled below)
+        }
+      },
+      { type = "object",
+        properties = {
+          file = { type = "string" },
+          format = { type = "string" },
+          options = OptionSchema,
+          -- content (self reference, handled below)
+        }
+      }
+    }
+  }
+}
+contentSchema.items.type[2].properties.content = contentSchema
+contentSchema.items.type[3].properties.content = contentSchema
+
 local masterSchema = {
   type = "object",
   additionalProperties = true, -- Allow unknown property for extensibility
@@ -50,7 +90,7 @@ local masterSchema = {
         publisher = { type = "string" },
         pubdate = {
           type = "object",
-          -- tinyyaml converts dates to date-time objects
+          -- tinyyaml converts dates to osdate objects
           -- We don't care about hours, minutes, etc.
           additionalProperties = true,
           properties = {
@@ -59,7 +99,7 @@ local masterSchema = {
             day = { type = "number" }
           }
         },
-        ISBN = { type = "string" },
+        isbn = { type = "string" },
         url = { type = "string" },
         copyright = { type = "string" },
         legal = { type = "string" },
@@ -103,13 +143,18 @@ local masterSchema = {
         }
       }
     },
-    content = {
-      type = "array",
-      items = { type = "string" }
-    },
+    -- parts and chapters are exclusive, but we don't enforce it here.
+    -- We will check it later in the inputter
+    parts = contentSchema,
+    chapters = contentSchema
   }
 }
 
+--- Naive recursive schema validation
+---@param obj table parsed YAML object
+---@param schema table schema to validate against
+---@param context? table parent schema context for error messages
+---@return boolean, string true if valid, false and error message otherwise
 local function validate (obj, schema, context)
   context = context or ""
   if type(schema.type) == "table" then
@@ -173,6 +218,101 @@ local function validate (obj, schema, context)
   return false, "Internal error - Unknown schema type" .. schema.type
 end
 
+-- Metadata
+
+local pdfMetadata = {
+  title = "Title",
+  subject = "Subject",
+  keywords = "Keywords",
+  authors = "Author",
+}
+
+--- Insert PDF metadata into SILE AST
+---@param content table SILE AST for insertion
+---@param metadata table Metadata (key, value) table
+local function insertPdfMetadata (content, metadata)
+  for key, value in pairs(metadata) do
+    if pdfMetadata[key] then
+      content[#content+1] = Cc("pdf:metadata", {
+        key = pdfMetadata[key],
+        value = type(value) == "table" and table.concat(value, "; ") or value
+      })
+    end
+  end
+end
+
+--- Returned prepared Djot metadata
+---@param metadata table Metadata (key, value) table
+---@return table Prefixed metadata table (keys as expected by the Djot inputter)
+local function handleDjotMetadata (metadata) -- Naive approach
+  local meta = {}
+  for key, value in pairs(metadata) do
+    if key == "authors" then
+      if type(value) == "table" then
+        meta["meta:authors"] = table.concat(value, ", ")
+        meta["meta:author"] = value[1]
+      else
+        meta["meta:authors"] = value
+        meta["meta:author"] = value
+      end
+    elseif key == "translators" then
+      if type(value) == "table" then
+        meta["meta:translators"] = table.concat(value, ", ")
+        meta["meta:translator"] = value[1]
+      else
+        meta["meta:translators"] = value
+        meta["meta:translator"] = value
+      end
+    elseif key == "pubdate" then
+      meta["meta:pubdate"] = os.date("%Y-%m-%d", os.time(value)) -- back to string
+    else
+      meta["meta:" .. key] = type(value) == "table" and table.concat(value, ", ") or value
+    end
+  end
+  return meta
+end
+
+local Levels = { "part", "chapter", "section", "subsection", "subsubsection" }
+
+--- Recursively process content sections
+---@param content table SILE AST for insertion
+---@param entries table Content entries to process (list of strings or tables)
+---@param shiftHeadings number Shift headings by this amount
+---@param metaopts table Metadata options
+local function doLevel(content, entries, shiftHeadings, metaopts)
+  for _, inc in ipairs(entries) do
+    local spec
+    if type(inc) == "string" then
+      spec = pl.tablex.union(metaopts, {
+        src = inc,
+        shift_headings = shiftHeadings })
+      content[#content+1] = Cc("include", spec)
+    elseif inc.file then
+      local fullopts = inc.options and pl.tablex.union(inc.options, metaopts) or metaopts
+      spec = pl.tablex.union(fullopts, {
+        src = inc.file,
+        format = inc.format,
+        shift_headings = shiftHeadings })
+      content[#content+1] = Cc("include", spec)
+      if inc.content then
+        doLevel(content, inc.content, shiftHeadings + 1, metaopts)
+      end
+    elseif inc.caption then
+      local command = Levels[shiftHeadings + 2] or SU.error("Invalid master document (too many nested levels)")
+      content[#content+1] = Cc(command, {}, inc.caption)
+      if inc.content then
+        doLevel(content, inc.content, shiftHeadings + 1, metaopts)
+      end
+    elseif inc.content then
+      doLevel(content, inc.content, shiftHeadings + 1, metaopts)
+    else
+      SU.error("Invalid master document (invalid content section)")
+    end
+  end
+end
+
+-- INPUTTER
+
 local base = require("inputters.base")
 
 local inputter = pl.class(base)
@@ -184,49 +324,69 @@ function inputter.appropriate (round, filename, _)
     return filename:match("silm$")
   end
   -- No other round supported...
-  -- FIXME we could check syntax (YAML file with masterfile field)
+  -- FIXME we could check syntax (YAML file with masterfile field, at least)
   return false
 end
 
-function inputter.parse (_, doc)
+function inputter:parse (doc)
   local yaml = require("resilient-tinyyaml")
   local master = yaml.parse(doc)
-
+  if type(master) ~= "table" then
+    SU.error("Invalid master document (not a table)")
+  end
   local ok, err = validate(master, masterSchema)
   if not ok then
     SU.error("Invalid master document (" .. err .. ")")
   end
+  if master.parts and master.chapters then
+    SU.error("Invalid master document (both parts and chapters)")
+  end
+
+  local baseShiftHeadings = self.options.shift_headings or 0
+
+  -- Are we the root document, or some included subdocument?
+  -- in the latter case, we only honor some of the fields.
+  local isRoot = not SILE.documentState.documentClass
 
   local content = {}
 
-  -- Document global settings
-  if master.font then
-    if type(master.font.family) == "table" then
-      content[#content+1] = Cc("use", {
-        module = "packages.font-fallback"
-      })
-      content[#content+1] = Cc("font", {
-        family = master.font.family[1],
-        size = master.font.size
-      })
-      for i = 2, #master.font.family do
-        content[#content+1] = Cc("font:add-fallback", {
-          family = master.font.family[i],
+  local sile = master.sile or {}
+  local metadata = master.metadata or {}
+
+  if isRoot then
+    -- Document global settings
+    if master.font then
+      if type(master.font.family) == "table" then
+        content[#content+1] = Cc("use", {
+          module = "packages.font-fallback"
+        })
+        content[#content+1] = Cc("font", {
+          family = master.font.family[1],
+          size = master.font.size
+        })
+        for i = 2, #master.font.family do
+          content[#content+1] = Cc("font:add-fallback", {
+            family = master.font.family[i],
+          })
+        end
+      else
+        content[#content+1] = Cc("font", {
+          family = master.font.family,
+          size = master.font.size
         })
       end
-    else
-      content[#content+1] = Cc("font", {
-        family = master.font.family,
-        size = master.font.size
+    end
+    -- FIXME QUESTION: I start too think that main language should
+    -- be class option so that some decisions could be delegated to
+    -- the class (e.g. style overrides in the case of resilient classes)
+    -- Not sure how to behave with legacy classes though...
+    if master.language then
+      content[#content+1] = Cc("language", {
+        main = master.language
       })
     end
   end
-  if master.language then
-    content[#content+1] = Cc("language", {
-      main = master.language
-    })
-  end
-  local sile = master.sile or {}
+
   local packages = sile.packages or {}
   if packages then
     for _, pkg in ipairs(packages) do
@@ -235,65 +395,51 @@ function inputter.parse (_, doc)
       })
     end
   end
-  local settings = sile.settings or {}
-  if settings then
-    for k, v in pairs(settings) do
-      content[#content+1] = Cc("set", {
-        parameter = k,
-        value = v
-      })
+
+  if isRoot then
+    local settings = sile.settings or {}
+    if settings then
+      for k, v in pairs(settings) do
+        content[#content+1] = Cc("set", {
+          parameter = k,
+          value = v
+        })
+      end
+    end
+    if metadata.title then
+      content[#content+1] = Cc("odd-running-header", {}, { metadata.title })
     end
   end
-  local metadata = master.metadata or {}
-  if metadata.title then
-    content[#content+1] = Cc("odd-running-header", {}, { metadata.title })
-  end
+
   -- Document content
-  for _, inc in ipairs(master.content) do
-    content[#content+1] = Cc("include", { src = inc })
+  -- FIXME QUESTION: if not a root document, should we wrap the includes
+  -- in a language group?
+  local metaopts = handleDjotMetadata(metadata)
+  if master.parts then
+    doLevel(content, master.parts, baseShiftHeadings - 1, metaopts)
+  elseif master.chapters then
+    doLevel(content, master.chapters, baseShiftHeadings, metaopts)
   end
 
-  -- PDF metadata
-  -- HACK: inserted at the very end of the document because (at least in SILE 0.14)
-  -- it introduces hboxes than can affect indents, centering, page breaks and paragraphs...
-  if metadata.title then
-    content[#content+1] = Cc("pdf:metadata", {
-      key = "Title",
-      value = master.metadata.title
-    })
+  if isRoot then
+    -- PDF metadata
+    -- NOTE: inserted at the very end of the document because (at least in SILE 0.14)
+    -- it introduces hboxes than can affect indents, centering, page breaks and paragraphs...
+    insertPdfMetadata(content, metadata)
   end
-  if metadata.authors then
-    content[#content+1] = Cc("pdf:metadata", {
-      key = "Author",
-      value = type(metadata.authors) == "table" and table.concat(metadata.authors, "; ") or metadata.authors
-    })
-  end
-  if metadata.subject then
-    content[#content+1] = Cc("pdf:metadata", {
-      key = "Subject",
-      value = metadata.subject
-    })
-  end
-  if metadata.keywords then
-    content[#content+1] = Cc("pdf:metadata", {
-      key = "Keywords",
-      value = type(metadata.keywords) == "table" and table.concat(metadata.keywords, "; ") or metadata.keywords
-    })
-  end
+
   -- Document wrap-up
   local options = master.sile.options or {}
+  local classopts = isRoot and {
+      class = options.class or "resilient.book", -- Sane default. We Are Resilient.
+      papersize = options.papersize,
+      layout = options.layout,
+      resolution = options.resolution
+    } or {}
 
   local tree = {
-    Cc("document", {
-      class = options.class or "resilient.book", -- Sane default. We Are Resilient.
-      layout = options.layout,
-      papersize = options.papersize,
-      resolution = options.resolution
-    }, {
-      content
-    }),
+    Cc("document", classopts, { content }),
   }
-
   return tree
 end
 
