@@ -1,8 +1,0 @@
-\begin{document}
-\part[marker=page-layout]{The page layout}
-
-\begin{figure}
-\img[src=images/duerer_messung_1525.png, width=45%pw]
-\caption{Elegant proportions.\footnote[mark=†]{Albrecht Dürer, \language[main=de]{\em{Underweysung der Messung mit dem Zirckel und Richtscheyt,}} 1525.}}
-\end{figure}
-\end{document}

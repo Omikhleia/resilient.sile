@@ -1,8 +1,0 @@
-\begin{document}
-\part[marker=resilient-packages]{Resilient packages}
-
-\begin{figure}
-\img[src=images/printing_press.png, width=60%pw]
-\caption{Gutenberg’s press.}
-\end{figure}
-\end{document}

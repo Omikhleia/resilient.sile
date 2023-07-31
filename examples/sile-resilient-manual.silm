@@ -20,7 +20,6 @@ font:
 language: en
 sile:
   options:
-    # These are class options, so can be overridden via the CLI
     # class: resilient.book # optional (default)
     papersize: 6in x 9in
     layout: division 9
@@ -36,8 +35,6 @@ sile:
     - lorem
     - dropcaps
     - resilient.abbr
-    - resilient.epigraph
-    - resilient.lists
     - framebox
     - fancytoc
     - printoptions
@@ -46,16 +43,16 @@ sile:
 parts:
   - content:
       - manual-front.sil
-  - file: manual-parts/part-intro.sil
+  - file: manual-parts/part-intro.dj
     content:
       - manual-intro/howto.dj
-  - file: manual-parts/part-masterdoc.sil
+  - file: manual-parts/part-masterdoc.dj
     content:
       - manual-masterdoc/masterdoc.dj
-  - file: manual-parts/part-layouts.sil
+  - file: manual-parts/part-layouts.dj
     content:
       - manual-layouts/layouts.sil
-  - file: manual-parts/part-styling.sil
+  - file: manual-parts/part-styling.dj
     content:
       - manual-styling/basics/concepts.md
       - manual-styling/basics/definitions.md
@@ -70,16 +67,11 @@ parts:
       - manual-styling/advanced/toclevels.md
       - manual-styling/advanced/liststyles.md
       - manual-styling/advanced/other.md
-  # unfinished
-  # - manual-styling/captioned.md
-  - file: manual-parts/part-packages.sil
+      # unfinished
+      # - manual-styling/captioned.md
+  - file: manual-parts/part-packages.dj
     content:
       - manual-packages/packages.sil
-  - file: manual-parts/part-classes.sil
+  - file: manual-parts/part-classes.dj
     content:
       - manual-classes/classes.sil
-  # not sure about these
-  # - manual-parts/part-appendices.sil
-  #   content:
-  #     - manual-prefaces/edition1.sil
-  #     - manual-prefaces/edition2.sil
