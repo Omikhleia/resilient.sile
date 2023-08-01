@@ -21,7 +21,7 @@ sile -u inputters.silm mybook.silm
 ```
 
 The format consists in a simple description of the book properties and content, expressed in [YAML](https://en.wikipedia.org/wiki/YAML), a lightweight human-readable data-representation language.
-Here is an example, showing all the elements.
+Here is an example, showing most of the elements.
 
 ```yaml
 masterfile: 1.0
@@ -37,11 +37,10 @@ metadata:
   translators: Sylvain Forestier
   publisher: Omikhleia
   pubdate: 2023-07-14
-  ISBN: 978-1-4028-9462-6
+  isbn: 978-1-4028-9462-6
   url: https://github.com/Omikhleia/resilient.sile
-  copyright: © 2023, Omikhleia pour la présente édition.
-  legal: |
-    Standard copyright applies.
+  copyright: © 2023, Omikhleia.
+  legal: Tous droits réservés.
 font:
   family: [EB Garamond, Libertinus Serif]
   size: 12pt
@@ -58,7 +57,7 @@ sile:
   packages:
     - dropcaps
     - couyards
-content:
+chapters:
   - frontmatter.dj
   - chap1.dj
   - chap2.dj
@@ -69,7 +68,7 @@ The `masterfile` entry is a number corresponding to a version, for compatibility
 
 [^masterdoc-compat]: Currently unused, but it may become useful if we introduce breaking changes in the master document format later.
 
-## Metadata section
+## The metadata section
 
 The `metadata` object contains several general document properties.
 
@@ -79,36 +78,86 @@ The `metadata` object contains several general document properties.
 
  - The `title` may be used in running headers (possibly, depending on the document class).
 
-All these properties may eventually be used in the cover or other places.
+All properties are passed as metadata made available to the content files.
+In the current implementation, this is only effective with Djot documents, wherein the medatada are exposed as Djot symbols (e.g. `:title:`, `:authors:`, and so on).
+For convenience, for authors and translators, the symbols `:author:` and `:translator:`{.nobreak} are also exposed, and contain the first entry.
 
-## Default font
+## The font section
 
-The `font` object defines the default font, as a font `family` and a `size`
+The `font` object defines the _default_ font, as a font `family` and a `size`.
 
  - The `family` is either a font name (as a string) or an array of font names.
-   In the latter case, the first font is used as default font and the others are declared as "font fallbacks", would some charaters be unavailable.
+   In the latter case, the first font is used as default font and the others are declared as "font fallbacks", would some characters be unavailable.
  - The `size`, as expected, is the default font size, usually expressed in points.
 
-## SILE setup
+## The SILE configuratin section
 
 The `sile` object provides intructions for processing the master document with SILE.
 
- - The `options` there are to be understood as document class options.
-  (They can be overridden from the command line  when invoking SILE.)
+ - The `options` are to be understood as document class options.
+  (As such, they can notably be overridden from the command line when invoking SILE.)
   If you don't specify a `class` then *resilient.book* is assumed.
 
 - The `settings` can be used to globally set some SILE parameters.
 
-- The `packages` object lists of extra packages that SILE must load.
+- The `packages` object lists extra packages that SILE must use.
   It can be used to load add-on packages needed by your content but not already provided by the document class and its supporting packages.
 
-## Content files
+## Up to the content
 
-Quite obviously, the `content` array is an ordered list of files defining the content of the book.
+Last but not least, the `chapters` array (or `parts`, see further below) lists the files to include in the work.
+In its simplest form, it consists in an ordered list of file names.
+These files may be of any type supported by SILE, the document class or loaded packages.[^masterdoc-nesting]
 
-Those files may be of any type supported by SILE, the document class or loaded packages.[^masterdoc-nesting]
+```yaml
+chapters:
+  - chap1.md
+  - chap2.dj
+```
 
-[^masterdoc-nesting]: In particular, you can include a master document in another.
-In that case, though, a few elements only from the nested document are used (namely, the declared
-extra packages and the content files).
+This is actually a convenience short form for the fuller syntax.
 
+```yaml
+chapters:
+  - file: chap1.md
+  - file: chap2.dj
+```
+
+In this structured form, other fields are accepted, for enforcing the input format (which can be useful if the extension is non-standard) and the options passed to the input handler.
+
+```yaml
+chapters:
+  - file: chap1.txt
+    format: markdown
+    options:
+      smart: false # disable smart typography support in Markdown
+```
+
+There is another structured form which just takes a "caption" string.
+To be honest, it's mostly provided as a quick convenience placeholder.
+
+```yaml
+chapters:
+  - caption: My adventures
+```
+
+It's the perfect time now to introduce you with content nesting and header shifting.
+All structured forms accept a `content` entry, which is again a list of files to include, with the exact same rules.
+With Djot, Markdown on other formats supporting this feature,[^masterdoc-sil-nesting] the headings in these files are then _shifted_.
+
+```yaml
+chapters:
+  - file: chap1.dj # Level 1 headings = chapters, etc.
+    content:
+      - file: sect.dj # Level 1 headings = sections, etc.
+```
+
+We earlier mentioned the `parts` keywords.
+With document classes supporting parts, such as **resilient.book**, it allows using them, starting at that level.[^masterdoc-astute]
+
+[^masterdoc-nesting]: In particular, you may include a master document in another.
+In that case, though, only the declared extra packages and the content files are used.
+
+[^masterdoc-sil-nesting]: Not available for SIL documents.
+
+[^masterdoc-astute]: Astute readers will realize that the `chapters` structure is just a convenience facility.
