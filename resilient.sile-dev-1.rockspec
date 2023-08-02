@@ -60,6 +60,8 @@ build = {
 
     ["sile.resilient.adapters.frameset"] = "resilient/adapters/frameset.lua",
 
+    ["sile.inputters.silm"] = "inputters/silm.lua",
+
     ["sile.resilient-tinyyaml"]  = "lua-libraries/resilient-tinyyaml.lua",
   }
 }

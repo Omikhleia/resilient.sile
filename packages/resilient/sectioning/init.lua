@@ -14,6 +14,24 @@ function package:_init (options)
   self.class:loadPackage("counters")
 end
 
+local function hasContent()
+  -- Important, flushes nodes to output queue.
+  SILE.typesetter:leaveHmode()
+  -- The frame breaking logic is a bit messy:
+  -- It's not enough to check if the output queue is empty, because in some
+  -- cases where horizontal mode was already left, the output queue might still
+  -- contain vglue nodes. These are ignored afterwards at the top of a frame,
+  -- so do not count.
+  local hasNonGlueContent = false
+  for _, vnode in ipairs(SILE.typesetter.state.outputQueue) do
+    if not vnode.is_vglue then
+      hasNonGlueContent = true
+      break
+    end
+  end
+  return hasNonGlueContent
+end
+
 function package:registerCommands ()
 
   local resolveSectionStyleDef = function (name)
@@ -141,7 +159,7 @@ function package:registerCommands ()
     -- I really had hard times to make this work correctly. It now
     -- seems ok, but it might be fragile.
     SILE.typesetter:leaveHmode() -- Important, flushes nodes to output queue.
-    if #SILE.typesetter.state.outputQueue ~= 0 then
+    if hasContent() then
       -- We are not at the top of a page, eject the current content.
       SILE.call("supereject")
     end
@@ -149,7 +167,7 @@ function package:registerCommands ()
     -- ... so now we are at the top of a page, and only need
     -- to add a blank page if we have not landed on an odd page.
     if not SILE.documentState.documentClass:oddPage() then
-      SILE.typesetter:typeset("")
+      SILE.typesetter:typeset("") -- Some non glue empty content to force a page break.
       SILE.typesetter:leaveHmode()
       -- Disable headers and footers if we can... i.e. the
       -- supporting class loaded all the necessary commands.
@@ -166,7 +184,7 @@ function package:registerCommands ()
 
   self:registerCommand("open-on-any-page", function (_, _)
     SILE.typesetter:leaveHmode() -- Important, flushes nodes to output queue.
-    if #SILE.typesetter.state.outputQueue ~= 0 then
+    if hasContent() then
       -- We are not at the top of a page, eject the current content.
       SILE.call("supereject")
     end

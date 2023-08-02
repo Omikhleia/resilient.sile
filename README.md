@@ -16,6 +16,7 @@ This collection offers:
   - Highly configurable table of contents, headers, footers, footnotes and sectioning environments,
   - And other useful features, from cross-references to advanced captioned figure and table environments, and more…
   - A great parity with Markdown, including many Pandoc-like extensions.
+- A “master document” format, for easily assembling your content.
 - A lightweight “résumé” class, for you to produce a colorful and yet professional-looking _curriculum vitæ_.
 
 ## Installation
