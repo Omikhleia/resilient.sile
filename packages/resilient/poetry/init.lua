@@ -5,8 +5,6 @@
 --
 local base = require("packages.resilient.base")
 
-local hboxer = require("resilient-compat.hboxing") -- Compatibility hack/shim
-
 local package = pl.class(base)
 package._name = "resilient.poetry"
 
@@ -125,7 +123,7 @@ function package:registerCommands ()
   self:registerCommand("resilient.poetry:prosody", function (options, content)
     local vadjust = options.lower or SILE.measurement()
 
-    local prosodyBox = hboxer.makeHbox(function ()
+    local prosodyBox = SILE.typesetter:makeHbox(function ()
       SILE.call("style:apply", { name = "poetry-prosody" }, { options.name })
     end)
 
@@ -143,12 +141,12 @@ function package:registerCommands ()
         SILE.typesetter:pushHbox(prosodyBox)
       end)
     end)
-    local inVerseBox, hlist = hboxer.makeHbox(content)
+    local inVerseBox, hlist = SILE.typesetter:makeHbox(content)
     if inVerseBox.width < origWidth then
       inVerseBox.width = origWidth
     end
     SILE.typesetter:pushHbox(inVerseBox)
-    hboxer.pushHlist(hlist)
+    SILE.typesetter:pushHlist(hlist)
   end, "Insert a prosody annotation above the text (theoretically an internal command)")
 
   self:registerCommand("poetry", function (options, content)
@@ -245,7 +243,7 @@ function package:registerCommands ()
     -- FIXME: setback and whole position logic is empirical
     -- We should use styles rather than the current approach (which predates them, here)
 
-    local h = hboxer.makeHbox(function ()
+    local h = SILE.typesetter:makeHbox(function ()
       SILE.call("style:apply:number", { name = "poetry-verseno", text = mark })
     end)
 

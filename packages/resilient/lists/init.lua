@@ -37,8 +37,6 @@
 --
 local base = require("packages.resilient.base")
 
-local hboxer = require("resilient-compat.hboxing") -- Compatibility hack/shim
-
 local package = pl.class(base)
 package._name = "resilient.lists"
 
@@ -105,7 +103,7 @@ function package:doItem (options, content)
     SILE.call("par")
   end
 
-  local mark = hboxer.makeHbox(function ()
+  local mark = SILE.typesetter:makeHbox(function ()
     local text
     if enumStyle.character then
       local cp = unichar(enumStyle.character)

@@ -8,7 +8,6 @@ local base = require("packages.base")
 local package = pl.class(base)
 package._name = "resilient.styles"
 
-local hboxer = require("resilient-compat.hboxing") -- Compatibility hack/shim
 local utils = require("resilient.utils")
 
 function package:_init (options)
@@ -564,7 +563,7 @@ function package:registerCommands ()
       -- was plain weird before v0.14.9. The width of the box was "adjusted" with
       -- respect to the parindent due to improper scoping.
       -- The fix is kept here, but should have no effect after 0.14.9.
-      local hbox = hboxer.makeHbox(function ()
+      local hbox = SILE.typesetter:makeHbox(function ()
         SILE.call("style:apply", { name = name }, { text })
       end)
       if hbox.width < 0 then
