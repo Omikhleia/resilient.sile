@@ -24,6 +24,7 @@ dependencies = {
    "qrcode.sile",
    "textsubsuper.sile",
    "markdown.sile",
+   "silex.sile",
 }
 build = {
   type = "builtin",
@@ -47,7 +48,6 @@ build = {
 
     ["sile.packages.autodoc-resilient"] = "packages/autodoc-resilient/init.lua",
 
-    ["sile.resilient.hacks"] = "resilient/hacks.lua",
     ["sile.resilient.utils"] = "resilient/utils.lua",
     ["sile.resilient.layoutparser"] = "resilient/layoutparser.lua",
 

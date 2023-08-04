@@ -7,8 +7,8 @@
 -- CAVEAT:
 -- This is a modified version of the standard 'autodoc' package,
 -- so that it works with the 'resilient' module,
--- with a rather OPINIONATED change. See HACKS comments below, and in
--- classe.resilient.base
+-- with a rather OPINIONATED change. See HACKS comments below,
+-- and the "silex.sile" module.
 --
 
 local base = require("packages.base")
