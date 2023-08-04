@@ -49,9 +49,6 @@ function package:registerCommands ()
       local width =
         options.width ~= nil and SU.cast("measurement", options.width)
         or SILE.settings:get("epigraph.width")
-      local rule =
-        options.rule ~= nil and SU.cast("measurement", options.rule)
-        or SILE.settings:get("epigraph.rule")
       local margin =
         options.margin ~= nil and SU.cast("measurement", options.margin)
         or SILE.settings:get("epigraph.margin")
@@ -79,31 +76,44 @@ function package:registerCommands ()
       SILE.settings:set("document.parindent", parindent)
       SILE.call("style:apply:paragraph", { name = "epigraph-text" }, {
         utils.subTreeContent(content),
-        function ()
-          if rule:tonumber() ~= 0 then
-            SILE.typesetter:leaveHmode()
-            SILE.call("noindent")
-            SILE.call("raise", { height = "0.5ex" }, function ()
-              -- HACK. Oh my. When left-aligned, the rule is seen as longer than The
-              -- line and a new line is inserted. Tweaking it by 0.05pt seems to avoid
-              -- it. Rounding issue somewhere? I feel tired.
-              SILE.call("hrule", { width = epigraphw - 0.05, height = rule })
-            end)
-          end
-          if source then
-            SILE.typesetter:leaveHmode(1)
-            if rule:tonumber() == 0 then
-              SILE.call("style:apply:paragraph", { name = "epigraph-source-norule" }, source)
-            else
-              SILE.call("style:apply:paragraph", { name = "epigraph-source-rule" }, source)
-            end
-          end
-        end
+        utils.createStructuredCommand("epigraph:internal:source", {
+          width = epigraphw,
+          rule = options.rule
+        }, source),
       })
 
       SILE.typesetter:leaveHmode()
     end)
   end, "Displays an epigraph.")
+
+  self:registerCommand("epigraph:internal:source", function (options, content)
+    local rule =
+        options.rule ~= nil and SU.cast("measurement", options.rule)
+        or SILE.settings:get("epigraph.rule")
+
+    local width = SU.required(options, "width", "epigraph")
+    width = SU.cast("measurement", width)
+
+    if rule:tonumber() ~= 0 then
+      SILE.typesetter:leaveHmode()
+      SILE.call("noindent")
+      SILE.call("raise", { height = "0.5ex" }, function ()
+        -- HACK. Oh my. When left-aligned, the rule is seen as longer than The
+        -- line and a new line is inserted. Tweaking it by 0.05pt seems to avoid
+        -- it. Rounding issue somewhere? I feel tired.
+        SILE.call("hrule", { width = width - 0.05, height = rule })
+      end)
+    end
+
+    if SU.hasContent(content) then
+      SILE.typesetter:leaveHmode(1)
+      if rule:tonumber() == 0 then
+        SILE.call("style:apply:paragraph", { name = "epigraph-source-norule" }, content)
+      else
+        SILE.call("style:apply:paragraph", { name = "epigraph-source-rule" }, content)
+      end
+    end
+  end)
 end
 
 function package:registerStyles ()
