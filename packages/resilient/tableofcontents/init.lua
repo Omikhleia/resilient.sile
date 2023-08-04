@@ -5,6 +5,7 @@
 -- License: MIT
 --
 local base = require("packages.resilient.base")
+local utils = require("resilient.utils")
 
 local package = pl.class(base)
 package._name = "resilient.tableofcontents"
@@ -151,19 +152,19 @@ function package:registerCommands ()
     local oldLbl = SILE.Commands["label"]
     SILE.Commands["label"] = function () end
 
-    SILE.call("style:apply:paragraph", { name = "toc" }, function ()
-      for i = 1, #toc do
-        local item = toc[i]
-        if item.level >= start and item.level <= start + depth then
-          SILE.call("tableofcontents:item", {
-            level = item.level,
-            pageno = item.pageno,
-            number = item.number,
-            link = linking and item.link
-          }, item.label)
-        end
+    local tocItems = {}
+    for i = 1, #toc do
+      local item = toc[i]
+      if item.level >= start and item.level <= start + depth then
+        tocItems[#tocItems + 1] = utils.createCommand("tableofcontents:item", {
+          level = item.level,
+          pageno = item.pageno,
+          number = item.number,
+          link = linking and item.link
+        }, utils.subTreeContent(item.label))
       end
-    end)
+    end
+    SILE.call("style:apply:paragraph", { name = "toc" }, tocItems)
 
     SILE.Commands["footnote"] = oldFt
     SILE.Commands["label"] = oldLbl
@@ -194,7 +195,7 @@ function package:registerCommands ()
         -- (e.g. \raise), we cannot take a general decision, as it is a versatile
         -- object (e.g. \rebox) and its outputYourself could moreover have been
         -- redefine to do fancy things. Better warn and skip.
-        SU.warn("Some content could not be converted to text: "..node)
+        SU.warn("Some content could not be converted to text: " .. node)
       end
     end
     -- Trim leading and trailing spaces, and simplify internal spaces.
@@ -223,14 +224,18 @@ function package:registerCommands ()
         local title = nodesToText(SILE.typesetter.state.nodes)
         SILE.typesetter:popState()
 
-        SILE.call("pdf:bookmark", { title = title, dest = dest, level = options.level })
+        SILE.call("pdf:bookmark", {
+          title = title,
+          dest = dest,
+          level = options.level
+        })
       end
       dc = dc + 1
     end
     SILE.call("info", {
       category = "toc",
       value = {
-        label = SU.stripContentPos(content),
+        label = utils.subTreeContent(SU.stripContentPos(content)),
         level = (options.level or 1),
         number = options.number,
         link = dest
@@ -238,23 +243,24 @@ function package:registerCommands ()
     })
   end, "Register an entry in the current TOC - low-level command.")
 
-  local linkWrapper = function (dest, func)
+  local linkWrapper = function (dest, content)
     if dest and SILE.Commands["pdf:link"] then
-      return function()
-        SILE.call("pdf:link", { dest = dest }, func)
-      end
-    else
-      return func
+      return {
+        utils.createStructuredCommand("pdf:link", { dest = dest }, content)
+      }
     end
+    return content
   end
 
   self:registerCommand("tableofcontents:item", function (options, content)
     local level = SU.cast("integer", SU.required(options, "level", "tableofcontents:levelitem"))
-    if level < 0 or level > #tocStyles - 1 then SU.error("Invalid TOC level "..level) end
+    if level < 0 or level > #tocStyles - 1 then
+      SU.error("Invalid TOC level " .. level)
+    end
 
     local hasFiller = true
     local hasPageno = true
-    local tocSty = self:resolveStyle("toc-level"..level)
+    local tocSty = self:resolveStyle("toc-level" .. level)
     if tocSty.toc then
       hasPageno = SU.boolean(tocSty.toc.pageno, true)
       hasFiller = hasPageno and SU.boolean(tocSty.toc.dotfill, true)
@@ -262,29 +268,39 @@ function package:registerCommands ()
 
     SILE.settings:temporarily(function ()
       SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
-      SILE.call("style:apply:paragraph", { name = "toc-level"..level },
-        linkWrapper(options.link, function ()
-          if options.number then
-            SILE.call("tableofcontents:levelnumber", { level = level, text = options.number })
-          end
-          SILE.process(content)
-          SILE.call(hasFiller and "dotfill" or "hfill")
-          if hasPageno then
-            SILE.call("style:apply", { name = "toc-pageno"}, { options.pageno })
-          end
-        end)
-      )
+      local itemContent = {}
+      if options.number then
+        itemContent[#itemContent + 1] = utils.createCommand("tableofcontents:levelnumber", {
+          level = level,
+          text = options.number
+        })
+      end
+      itemContent[#itemContent + 1] = utils.subTreeContent(content)
+      itemContent[#itemContent + 1] = utils.createCommand(hasFiller and "dotfill" or "hfill")
+      if hasPageno then
+        itemContent[#itemContent + 1] = utils.createCommand("style:apply", {
+          name = "toc-pageno"
+        }, {options.pageno})
+      end
+      SILE.call("style:apply:paragraph", {
+        name = "toc-level" .. level
+      }, linkWrapper(options.link, itemContent))
     end)
   end, "Typeset a TOC entry - internal.")
 
   self:registerCommand("tableofcontents:levelnumber", function (options, _)
     local text = SU.required(options, "text", "tableofcontents:levelnumber")
     local level = SU.cast("integer", SU.required(options, "level", "tableofcontents:levelnumber"))
-    if level < 0 or level > #tocStyles - 1 then SU.error("Invalid TOC level "..level) end
+    if level < 0 or level > #tocStyles - 1 then
+      SU.error("Invalid TOC level " .. level)
+    end
 
-    local tocSty = self:resolveStyle("toc-level"..level)
+    local tocSty = self:resolveStyle("toc-level" .. level)
     if tocSty.toc and SU.boolean(tocSty.toc.numbered, false) then
-      SILE.call("style:apply:number", { name = "toc-number-level"..level, text = text })
+      SILE.call("style:apply:number", {
+        name = "toc-number-level" .. level,
+        text = text
+      })
     end
   end, "Typeset the (section) number in a TOC entry - internal.")
 end

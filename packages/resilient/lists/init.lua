@@ -106,31 +106,30 @@ function package:doItem (options, content)
   end
 
   local mark = hboxer.makeHbox(function ()
-    SILE.call("style:apply", { name = styleName }, function ()
-      if enumStyle.character then
-        local cp = unichar(enumStyle.character)
-        if cp then
-          SILE.typesetter:typeset(luautf8.char(cp + counter - 1))
-        else
-          SU.error("Invalid enumeration symbol in style '" .. styleName .. "'")
-        end
-      elseif enumStyle.display then
-        SILE.typesetter:typeset(enumStyle.before)
-        SILE.typesetter:typeset(self.class.packages.counters:formatCounter({
-          value = counter,
-          display = enumStyle.display })
-        )
-        SILE.typesetter:typeset(enumStyle.after)
-      else -- enumStyle.symbol
-        local bullet = options.bullet or enumStyle.symbol
-        local cp = unichar(bullet)
-        if cp then
-          SILE.typesetter:typeset(luautf8.char(cp))
-        else
-          SILE.typesetter:typeset(bullet)
-        end
+    local text
+    if enumStyle.character then
+      local cp = unichar(enumStyle.character)
+      if cp then
+        text = luautf8.char(cp + counter - 1)
+      else
+        SU.error("Invalid enumeration symbol in style '" .. styleName .. "'")
       end
-    end)
+    elseif enumStyle.display then
+      text = enumStyle.before
+        .. self.class.packages.counters:formatCounter({
+             value = counter,
+             display = enumStyle.display })
+        .. enumStyle.after
+    else -- enumStyle.symbol
+      local bullet = options.bullet or enumStyle.symbol
+      local cp = unichar(bullet)
+      if cp then
+        text = luautf8.char(cp)
+      else
+        text = bullet
+      end
+    end
+    SILE.call("style:apply", { name = styleName }, { text })
   end)
 
   local stepback

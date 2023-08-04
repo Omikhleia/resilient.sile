@@ -422,6 +422,8 @@ poetry-verseno:
     font:
       features: "+onum"
       size: "0.9em"
+    numbering:
+      display: "arabic"
 
 sectioning-base:
   origin: "resilient.book"

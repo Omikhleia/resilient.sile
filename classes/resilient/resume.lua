@@ -10,6 +10,7 @@ local class = pl.class(base)
 class._name = "resilient.resume"
 
 local utils = require("resilient.utils")
+local C = utils.createStructuredCommand
 
 SILE.scratch.resilient = SILE.scratch.resilient or {}
 SILE.scratch.resilient.resume = SILE.scratch.resilient.resume or {}
@@ -117,12 +118,12 @@ function class:_init (options)
   self:registerCommand("foliostyle", function (_, content)
     SILE.call("hbox", {}, {}) -- for vfill to be effective
     SILE.call("vfill")
-    SILE.call("rightalign", {}, function()
-        SILE.process(content)
-        SILE.typesetter:typeset("/")
-        SILE.call("pageref", { marker = "resilient.resume:end" })
-      end)
-      SILE.call("eject") -- for vfill to be effective
+    SILE.call("rightalign", {}, {
+     content,
+      "/",
+      C("pageref", { marker = "resilient.resume:end" })
+    })
+    SILE.call("eject") -- for vfill to be effective
   end)
 
   -- override default document.parindent, we do not want it.
@@ -230,35 +231,23 @@ end
 
 -- RESUME PROCESSING
 
--- Hacky-whacky way to create a ptable tree programmatically
--- loosely inspired by what inputfilter.createCommand() does.
-local function C(command, options, content)
-  local result = content
-  result.options = options
-  result.command = command
-  result.id = "command"
-  return result
-end
-
 local function doEntry (rows, _, content)
   local topic = utils.extractFromTree(content, "topic")
   local description = utils.extractFromTree(content, "description")
-  local titleRow = C("row", { }, {
-    C("cell", { valign = "top", padding = "4pt 4pt 0 4pt" }, { function ()
-        SILE.call("style:apply:paragraph", { name = "resume-topic" }, function ()
-          -- We are typesetting in a different style but want proper alignment
-          -- With the other style, so strut tweaking:
-          SILE.call("style:apply", { name = "resume-description" }, function ()
-            SILE.call("strut")
-          end)
-          -- Then go ahead.
-          SILE.process(topic)
-        end)
-      end
+  local titleRow = C("row", {}, {
+    C("cell", { valign = "top", padding = "4pt 4pt 0 4pt" }, {
+      -- We are typesetting in a different style but want proper alignment
+      -- With the other style, so strut tweaking:
+      C("style:apply:paragraph", { name = "resume-topic" }, {
+        C("style:apply", { name = "resume-description" }, {
+          C("strut"),
+        }),
+        -- Then go ahead.
+        utils.subTreeContent(topic)
+      })
     }),
-    C("cell", { valign = "top", span = 2, padding = "4pt 4pt 0.33cm 0" }, { function ()
-        SILE.call("style:apply", { name = "resume-description" }, description)
-      end
+    C("cell", { valign = "top", span = 2, padding = "4pt 4pt 0.33cm 0" }, {
+      C("style:apply", { name = "resume-description" }, description)
     })
   })
   for i = 0, #content do
@@ -271,16 +260,14 @@ end
 
 local doSection = function (rows, _, content)
   local title = utils.extractFromTree(content, "title")
-  local titleRow = C("row", { }, {
-    C("cell", { valign = "bottom", padding = "4pt 4pt 0 4pt" }, { function ()
-        SILE.call("style:apply", { name = "resume-section" }, function ()
-          SILE.call("hrule", { width = "100%fw", height= "1ex" })
-        end)
-      end
+  local titleRow = C("row", {}, {
+    C("cell", { valign = "bottom", padding = "4pt 4pt 0 4pt" }, {
+      C("style:apply", { name = "resume-section" }, {
+        C("hrule", { width = "100%fw", height= "1ex" })
+      })
     }),
-    C("cell", { span = 2, padding = "4pt 4pt 0.33cm 0" }, { function ()
-        SILE.call("style:apply", { name = "resume-section" }, title)
-      end
+    C("cell", { span = 2, padding = "4pt 4pt 0.33cm 0" }, {
+      C("style:apply", { name = "resume-section" }, title)
     })
   })
   table.insert(rows, titleRow)
@@ -312,16 +299,14 @@ function class:registerCommands ()
     local jobtitle = utils.extractFromTree(content, "jobtitle") or SU.error("jobtitle is mandatory")
     local headline = utils.extractFromTree(content, "headline") -- can be omitted
 
-    SILE.call("cv-footer", {}, function()
-      SILE.process({ contact })
-    end)
-    SILE.call("cv-header", {}, function ()
-      SILE.call("style:apply:paragraph", { name = "resume-header" }, function ()
-          SILE.call("style:apply", { name = "resume-firstname" }, firstname)
-          SILE.typesetter:typeset(" ")
-          SILE.call("style:apply", { name = "resume-lastname" }, lastname)
-        end)
-    end)
+    SILE.call("cv-footer", {}, { contact })
+    SILE.call("cv-header", {}, {
+      C("style:apply:paragraph", { name = "resume-header" }, {
+        C("style:apply", { name = "resume-firstname" }, { utils.subTreeContent(firstname) }),
+        " ",
+        C("style:apply", { name = "resume-lastname" }, { utils.subTreeContent(lastname) })
+      })
+    })
 
     local rows = {}
 
@@ -333,28 +318,26 @@ function class:registerCommands ()
           end)
         end
       }),
-      C("cell", { span = 2, border = "0 1pt 0 0", padding = "4pt 2pt 4pt 0",  valign = "bottom" }, { function ()
-        SILE.call("style:apply:paragraph", { name = "resume-fullname" }, function ()
-            SILE.call("style:apply", { name = "resume-firstname" }, firstname)
-            SILE.typesetter:typeset(" ")
-            SILE.call("style:apply", { name = "resume-lastname" }, lastname)
-          end)
-        end
+      C("cell", { span = 2, border = "0 1pt 0 0", padding = "4pt 2pt 4pt 0",  valign = "bottom" }, {
+        C("style:apply:paragraph", { name = "resume-fullname" }, {
+          C("style:apply", { name = "resume-firstname" }, { utils.subTreeContent(firstname) }),
+          " ",
+          C("style:apply", { name = "resume-lastname" }, { utils.subTreeContent(lastname) })
+         })
       })
     })
     table.insert(rows, fullnameAndPictureRow)
 
-    local jobtitleRow = C("row", { }, {
-      C("cell", { span = 3 }, { function ()
-          SILE.call("style:apply:paragraph", { name = "resume-jobtitle" }, jobtitle)
-        end
+    local jobtitleRow = C("row", {}, {
+      C("cell", { span = 3 }, {
+        C("style:apply:paragraph", { name = "resume-jobtitle" }, jobtitle)
       })
     })
     table.insert(rows, jobtitleRow)
 
     -- NOTE: if headline is absent, no problem. We still insert a row, just for
     -- vertical spacing.
-    local headlineRow = C("row", { }, {
+    local headlineRow = C("row", {}, {
       C("cell", { span = 3 }, { function ()
           SILE.call("center", {}, function ()
             SILE.call("parbox", { width = "80%fw" }, function()
@@ -398,16 +381,12 @@ function class:registerCommands ()
   self:registerCommand("ranking", function (options, _)
     local value = SU.cast("integer", options.value or 0)
     local scale = SU.cast("integer", options.scale or 5)
-    SILE.call("style:apply", { name = "resume-dingbats" }, function ()
-      for _ = 1, value do
-        SILE.typesetter:typeset(charFromUnicode("U+25CF"))
-        SILE.call("kern", { width = "0.1em" })
-      end
-      for _ = value + 1, scale do
-        SILE.typesetter:typeset(charFromUnicode("U+25CB"))
-        SILE.call("kern", { width = "0.1em" })
-      end
-    end)
+    local rank = {}
+    for i = 1, scale do
+      rank[#rank + 1] = i <= value and charFromUnicode("U+25CF") or charFromUnicode("U+25CB")
+      rank[#rank + 1] = utils.createCommand("kern", { width = "0.1em" })
+    end
+    SILE.call("style:apply", { name = "resume-dingbats" }, rank)
   end)
 
   self:registerCommand("cv-bullet", function (_, _)
@@ -427,15 +406,15 @@ function class:registerCommands ()
     local phone = SILE.inputter:findInTree(content, "phone") or SU.error("phone is mandatory")
     local email = SILE.inputter:findInTree(content, "email") or SU.error("email is mandatory")
 
-    SILE.call("style:apply:paragraph", { name = "resume-contact" }, function ()
-      SILE.call("cv-icon-text", { symbol="U+1F4CD" }, street)
-      SILE.call("cv-bullet")
-      SILE.process(city)
-      SILE.call("par")
-      SILE.process({ phone })
-      SILE.call("cv-bullet")
-      SILE.process({ email })
-    end)
+    SILE.call("style:apply:paragraph", { name = "resume-contact" }, {
+      C("cv-icon-text", { symbol="U+1F4CD" }, { utils.subTreeContent(street) }),
+      C("cv-bullet"),
+      utils.subTreeContent(city),
+      C("par"),
+      phone,
+      C("cv-bullet"),
+      email
+    })
   end)
 
   self:registerCommand("cv-icon-text", function (options, content)
