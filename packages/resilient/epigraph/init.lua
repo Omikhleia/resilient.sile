@@ -8,7 +8,9 @@ local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.epigraph"
 
-local utils = require("resilient.utils")
+local ast = require("silex.ast")
+local createStructuredCommand, subContent, extractFromTree
+        = ast.createStructuredCommand, ast.subContent, ast.extractFromTree
 
 function package:_init (options)
   base._init(self, options)
@@ -56,7 +58,7 @@ function package:registerCommands ()
       local framew = SILE.typesetter.frame:width()
       local epigraphw = width:absolute()
       local skip = framew - epigraphw - margin
-      local source = utils.extractFromTree(content, "source")
+      local source = extractFromTree(content, "source")
       SILE.typesetter:leaveHmode()
 
       local sty = self:resolveStyle("epigraph")
@@ -75,8 +77,8 @@ function package:registerCommands ()
 
       SILE.settings:set("document.parindent", parindent)
       SILE.call("style:apply:paragraph", { name = "epigraph-text" }, {
-        utils.subTreeContent(content),
-        utils.createStructuredCommand("epigraph:internal:source", {
+        subContent(content),
+        createStructuredCommand("epigraph:internal:source", {
           width = epigraphw,
           rule = options.rule
         }, source),

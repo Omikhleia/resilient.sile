@@ -9,6 +9,9 @@ local package = pl.class(base)
 package._name = "resilient.styles"
 
 local utils = require("resilient.utils")
+local ast = require("silex.ast")
+local createCommand, subContent, extractFromTree
+        = ast.createCommand, ast.subContent, ast.extractFromTree
 
 function package:_init (options)
   base._init(self, options)
@@ -266,20 +269,20 @@ function package:registerCommands ()
   local function characterStyle (style, content, options)
     options = options or {}
     if style.properties then
-      local tocentry = utils.extractFromTree(content, "tocentry") -- HACK for sectioning styles
+      local tocentry = extractFromTree(content, "tocentry") -- HACK for sectioning styles
       if style.properties.position and style.properties.position ~= "normal" then
         local positionCommand = SILE.scratch.styles.positions[style.properties.position]
         if not positionCommand then
           SU.error("Invalid style position '"..style.properties.position.."'")
         end
-        content = utils.createCommand(positionCommand, {}, content)
+        content = createCommand(positionCommand, {}, content)
       end
       if style.properties.case and style.properties.case ~= "normal" then
         local caseCommand = SILE.scratch.styles.cases[style.properties.case]
         if not caseCommand then
           SU.error("Invalid style case '"..style.properties.case.."'")
         end
-        content = utils.createCommand(caseCommand, {}, content)
+        content = createCommand(caseCommand, {}, content)
       end
       if tocentry then -- HACK for sectioning styles
         -- We don't want character styles from a paragraph level to be applied
@@ -289,10 +292,10 @@ function package:registerCommands ()
       end
     end
     if style.color then
-      content = utils.createCommand("color", { color = style.color }, content)
+      content = createCommand("color", { color = style.color }, content)
     end
     if style.font and SU.boolean(options.font, true) then
-      content = utils.createCommand("style:font", style.font, content)
+      content = createCommand("style:font", style.font, content)
     end
     return content
   end
@@ -305,7 +308,7 @@ function package:registerCommands ()
     if type(content) == "table" then
       if content.command or content.id then
         -- We want to skip the calling content key values (id, command, etc.)
-        return utils.subTreeContent(content)
+        return subContent(content)
       end
       return content
     end
@@ -321,7 +324,7 @@ function package:registerCommands ()
 
   local characterStyleFontOnly = function (style, content)
     if style.font then
-      content = utils.createCommand("style:font", style.font, content)
+      content = createCommand("style:font", style.font, content)
     end
     return content
   end
@@ -339,9 +342,9 @@ function package:registerCommands ()
         -- correct even on the last paragraph. But the color introduces hboxes so
         -- must be applied last, no to cause havoc with the noindent/indent and
         -- centering etc. environments
-        local recontent = utils.createCommand(alignCommand, {}, {
+        local recontent = createCommand(alignCommand, {}, {
           characterStyleNoFont(style, content),
-          not breakafter and utils.createCommand("novbreak") or nil
+          not breakafter and createCommand("novbreak") or nil
         })
         if style.font then
           recontent = characterStyleFontOnly(style, recontent)

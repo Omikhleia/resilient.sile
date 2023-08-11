@@ -7,7 +7,10 @@ local base = require("classes.resilient.base")
 local class = pl.class(base)
 class._name = "resilient.book"
 
-local utils = require("resilient.utils")
+local ast = require("silex.ast")
+local createCommand, subContent, extractFromTree
+        = ast.createCommand, ast.subContent, ast.extractFromTree
+
 local layoutParser = require("resilient.layoutparser")
 
 -- CLASS DEFINITION
@@ -72,8 +75,8 @@ function class:_init (options)
       -- Typically, if folios use "old-style" numbers, 16 and 17 facing pages shall have
       -- aligned folios, but the 1 is smaller than the 6 and 7, the former ascends above,
       -- and the latter descends below the baseline).
-      utils.createCommand("strut", { method = "rule"}),
-      utils.subTreeContent(content)
+      createCommand("strut", { method = "rule"}),
+      subContent(content)
     })
   end)
 
@@ -384,8 +387,8 @@ function class:registerCommands ()
     SILE.scratch.headers.even = function ()
       closure(function ()
         SILE.call("style:apply:paragraph", { name = "header-even" }, {
-          utils.createCommand("strut", { method = "rule"}),
-          utils.subTreeContent(content)
+          createCommand("strut", { method = "rule"}),
+          subContent(content)
         })
       end)
     end
@@ -396,8 +399,8 @@ function class:registerCommands ()
     SILE.scratch.headers.odd = function ()
       closure(function ()
         SILE.call("style:apply:paragraph", { name = "header-odd" }, {
-          utils.createCommand("strut", { method = "rule"}),
-          utils.subTreeContent(content)
+          createCommand("strut", { method = "rule"}),
+          subContent(content)
         })
       end)
     end
@@ -492,7 +495,7 @@ function class:registerCommands ()
 
   self:registerCommand("captioned-figure", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in figure environment") end
-    local caption = utils.extractFromTree(content, "caption")
+    local caption = extractFromTree(content, "caption")
 
     options.style = "figure-caption"
     SILE.call("style:apply:paragraph", { name = "figure" }, content)
@@ -507,7 +510,7 @@ function class:registerCommands ()
 
   self:registerCommand("captioned-table", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in table environment") end
-    local caption = utils.extractFromTree(content, "caption")
+    local caption = extractFromTree(content, "caption")
 
     options.style = "table-caption"
     SILE.call("style:apply:paragraph", { name = "table" }, content)

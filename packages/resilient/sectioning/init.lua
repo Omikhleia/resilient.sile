@@ -5,7 +5,10 @@
 -- License: MIT
 --
 local base = require("packages.resilient.base")
-local utils = require("resilient.utils")
+
+local ast = require("silex.ast")
+local createCommand, createStructuredCommand, subContent
+        = ast.createCommand, ast.createStructuredCommand, ast.subContent
 
 local package = pl.class(base)
 package._name = "resilient.sectioning"
@@ -125,8 +128,8 @@ function package:registerCommands ()
           and sty.sectioning.numberstyle.header
       if numbering and numsty then
         titleHookContent = {
-          utils.createCommand("style:apply:number", { name = numsty, text = number }),
-          utils.subTreeContent(content)
+          createCommand("style:apply:number", { name = numsty, text = number }),
+          subContent(content)
         }
       else
         titleHookContent = content
@@ -146,22 +149,23 @@ function package:registerCommands ()
     local bookmark = secStyle.settings.bookmark
     if toclevel and toc then
       titleContent[#titleContent + 1] =
-        utils.createStructuredCommand("tocentry", { level = toclevel, number = number, bookmark = bookmark }, utils.subTreeContent(content))
+        createStructuredCommand("tocentry",
+          { level = toclevel, number = number, bookmark = bookmark }, subContent(content))
     end
 
     -- Show section number (if numbering is true AND a main style is defined)
     if numbering then
       if secStyle.numberstyle.main then
         titleContent[#titleContent + 1] =
-          utils.createCommand("style:apply:number", { name = secStyle.numberstyle.main, text = number })
+          createCommand("style:apply:number", { name = secStyle.numberstyle.main, text = number })
         if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
           titleContent[#titleContent + 1] =
-            utils.createCommand("break") -- HACK. Pretty weak unless the parent paragraph style is ragged.
+            createCommand("break") -- HACK. Pretty weak unless the parent paragraph style is ragged.
         end
       end
     end
     -- Section (title) content
-    titleContent[#titleContent + 1] = utils.subTreeContent(content)
+    titleContent[#titleContent + 1] = subContent(content)
 
     -- Cross-reference label
     -- If the \label command is defined, assume a cross-reference package
@@ -169,7 +173,7 @@ function package:registerCommands ()
     -- than having to put it in the section title content, or just after the section
     -- (with the risk of impacting indent/noindent and novbreak decisions here)
     if marker and SILE.Commands["label"] then
-      titleContent[#titleContent + 1] = utils.createCommand("label", { marker = marker })
+      titleContent[#titleContent + 1] = createCommand("label", { marker = marker })
     end
     SILE.call("style:apply:paragraph", { name = name }, titleContent)
   end, "Apply sectioning")

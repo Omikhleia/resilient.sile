@@ -3,20 +3,8 @@
 -- @copyright License: MIT (c) 2023 Omikhleia
 -- @module inputters.silm
 --
--- FIXME: later refactor to use resilient.utils instead of copy-pasting
--- or consider moving resilient.utils to a separate common library
--- local utils = require("resilient.utils")
--- local Cc = utils.createCommand
-local function Cc (command, options, content)
-  local result = { content }
-  result.col = 0
-  result.lno = 0
-  result.pos = 0
-  result.options = options or {}
-  result.command = command
-  result.id = "command"
-  return result
-end
+local ast = require("silex.ast")
+local createCommand, createStructuredCommand = ast.createCommand, ast.createStructuredCommand
 
 -- SCHEMA VALIDATION
 -- Loosely inspired from JSON schema / openAPI specs
@@ -233,7 +221,7 @@ local pdfMetadata = {
 local function insertPdfMetadata (content, metadata)
   for key, value in pairs(metadata) do
     if pdfMetadata[key] then
-      content[#content+1] = Cc("pdf:metadata", {
+      content[#content+1] = createCommand("pdf:metadata", {
         key = pdfMetadata[key],
         value = type(value) == "table" and table.concat(value, "; ") or value
       })
@@ -286,20 +274,20 @@ local function doLevel(content, entries, shiftHeadings, metaopts)
       spec = pl.tablex.union(metaopts, {
         src = inc,
         shift_headings = shiftHeadings })
-      content[#content+1] = Cc("include", spec)
+      content[#content+1] = createCommand("include", spec)
     elseif inc.file then
       local fullopts = inc.options and pl.tablex.union(inc.options, metaopts) or metaopts
       spec = pl.tablex.union(fullopts, {
         src = inc.file,
         format = inc.format,
         shift_headings = shiftHeadings })
-      content[#content+1] = Cc("include", spec)
+      content[#content+1] = createCommand("include", spec)
       if inc.content then
         doLevel(content, inc.content, shiftHeadings + 1, metaopts)
       end
     elseif inc.caption then
       local command = Levels[shiftHeadings + 2] or SU.error("Invalid master document (too many nested levels)")
-      content[#content+1] = Cc(command, {}, inc.caption)
+      content[#content+1] = createCommand(command, {}, inc.caption)
       if inc.content then
         doLevel(content, inc.content, shiftHeadings + 1, metaopts)
       end
@@ -357,20 +345,20 @@ function inputter:parse (doc)
     -- Document global settings
     if master.font then
       if type(master.font.family) == "table" then
-        content[#content+1] = Cc("use", {
+        content[#content+1] = createCommand("use", {
           module = "packages.font-fallback"
         })
-        content[#content+1] = Cc("font", {
+        content[#content+1] = createCommand("font", {
           family = master.font.family[1],
           size = master.font.size
         })
         for i = 2, #master.font.family do
-          content[#content+1] = Cc("font:add-fallback", {
+          content[#content+1] = createCommand("font:add-fallback", {
             family = master.font.family[i],
           })
         end
       else
-        content[#content+1] = Cc("font", {
+        content[#content+1] = createCommand("font", {
           family = master.font.family,
           size = master.font.size
         })
@@ -381,7 +369,7 @@ function inputter:parse (doc)
     -- the class (e.g. style overrides in the case of resilient classes)
     -- Not sure how to behave with legacy classes though...
     if master.language then
-      content[#content+1] = Cc("language", {
+      content[#content+1] = createCommand("language", {
         main = master.language
       })
     end
@@ -390,7 +378,7 @@ function inputter:parse (doc)
   local packages = sile.packages or {}
   if packages then
     for _, pkg in ipairs(packages) do
-      content[#content+1] = Cc("use", {
+      content[#content+1] = createCommand("use", {
         module = "packages." .. pkg
       })
     end
@@ -400,14 +388,14 @@ function inputter:parse (doc)
     local settings = sile.settings or {}
     if settings then
       for k, v in pairs(settings) do
-        content[#content+1] = Cc("set", {
+        content[#content+1] = createCommand("set", {
           parameter = k,
           value = v
         })
       end
     end
     if metadata.title then
-      content[#content+1] = Cc("odd-running-header", {}, { metadata.title })
+      content[#content+1] = createCommand("odd-running-header", {}, metadata.title)
     end
   end
 
@@ -438,7 +426,7 @@ function inputter:parse (doc)
     } or {}
 
   local tree = {
-    Cc("document", classopts, { content }),
+    createStructuredCommand("document", classopts, content),
   }
   return tree
 end
