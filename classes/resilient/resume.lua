@@ -121,7 +121,7 @@ function class:_init (options)
   self:registerCommand("foliostyle", function (_, content)
     SILE.call("hbox", {}, {}) -- for vfill to be effective
     SILE.call("vfill")
-    SILE.call("rightalign", {}, {
+    SILE.call("raggedleft", {}, {
      content,
       "/",
       createCommand("pageref", { marker = "resilient.resume:end" })
