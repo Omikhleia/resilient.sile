@@ -46,6 +46,8 @@ build = {
     ["sile.packages.resilient.headers"]         = "packages/resilient/headers/init.lua",
     ["sile.packages.resilient.epigraph"]        = "packages/resilient/epigraph/init.lua",
 
+    ["sile.packages.resilient.bible.usx"]       = "packages/resilient/bible/usx/init.lua",
+
     ["sile.packages.autodoc-resilient"] = "packages/autodoc-resilient/init.lua",
 
     ["sile.resilient.utils"] = "resilient/utils.lua",

@@ -19,7 +19,7 @@ dependencies = {
    "barcodes.sile >= 1.0.0",
    "couyards.sile >= 1.0.0",
    "embedders.sile >= 0.1.0",
-   "fancytoc.sile >= 1.0.0",
+   "fancytoc.sile >= 1.0.1",
    "labelrefs.sile >= 0.1.0",
    "printoptions.sile >= 1.0.0",
    "ptable.sile >= 2.0.0",
@@ -47,6 +47,8 @@ build = {
     ["sile.packages.resilient.lists"]           = "packages/resilient/lists/init.lua",
     ["sile.packages.resilient.headers"]         = "packages/resilient/headers/init.lua",
     ["sile.packages.resilient.epigraph"]        = "packages/resilient/epigraph/init.lua",
+
+    ["sile.packages.resilient.bible.usx"]       = "packages/resilient/bible/usx/init.lua",
 
     ["sile.packages.autodoc-resilient"] = "packages/autodoc-resilient/init.lua",
 
