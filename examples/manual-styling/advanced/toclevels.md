@@ -37,7 +37,7 @@ toc-level0:
   style:
     font:
       size: "1.15em"
-      weight: 800
+      weight: 700
     paragraph:
       before:
         indent: false

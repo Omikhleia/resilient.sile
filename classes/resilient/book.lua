@@ -139,7 +139,7 @@ function class:registerStyles ()
                   after = { indent = false } }
   })
   self:registerStyle("sectioning-part", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "1.6em" },
+    font = { weight = 700, size = "1.6em" },
     paragraph = { before = { skip = "15%fh" },
                   align = "center",
                   after = { skip = "bigskip" } },
@@ -156,7 +156,7 @@ function class:registerStyles ()
                     hook = "sectioning:part:hook" },
   })
   self:registerStyle("sectioning-chapter", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "1.4em" },
+    font = { weight = 700, size = "1.4em" },
     paragraph = {  align = "left",
                    after = { skip = "bigskip" } },
     sectioning = { counter = { id = "sections", level = 1 },
@@ -172,7 +172,7 @@ function class:registerStyles ()
                     hook = "sectioning:chapter:hook" },
   })
   self:registerStyle("sectioning-section", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "1.2em" },
+    font = { weight = 700, size = "1.2em" },
     paragraph = { before = { skip = "bigskip" },
                   after = { skip = "medskip", vbreak = false } },
     sectioning = {  counter = { id = "sections", level = 2 },
@@ -187,7 +187,7 @@ function class:registerStyles ()
                     hook = "sectioning:section:hook" },
   })
   self:registerStyle("sectioning-subsection", { inherit = "sectioning-base"}, {
-    font = { weight = 800, size = "1.1em" },
+    font = { weight = 700, size = "1.1em" },
     paragraph = { before = { skip = "medskip" },
                   after = { skip = "smallskip", vbreak = false } },
     sectioning = {  counter = { id = "sections", level = 3 },
@@ -201,7 +201,7 @@ function class:registerStyles ()
                     } },
   })
   self:registerStyle("sectioning-subsubsection", { inherit = "sectioning-base" }, {
-    font = { weight = 800 },
+    font = { weight = 700 },
     paragraph = { before = { skip = "smallskip" },
                   after = { vbreak = false } },
     sectioning = {  counter = { id = "sections", level = 4 },

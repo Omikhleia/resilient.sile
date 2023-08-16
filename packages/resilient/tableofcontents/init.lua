@@ -14,12 +14,12 @@ package._name = "resilient.tableofcontents"
 
 local tocStyles = {
   -- level0 ~ part
-  { font = { weight = 800, size = "1.15em" },
+  { font = { weight = 700, size = "1.15em" },
     toc = { numbered = true, pageno = false },
     paragraph = { before = { skip = "medskip", indent = false, },
                   after = { skip = "medskip", vbreak = false } } },
   -- level1 ~ chapter
-  { font = { weight = 800, size = "1.1em" },
+  { font = { weight = 700, size = "1.1em" },
     toc = { dotfill = false},
     paragraph = { before = { indent = false },
                   after = { skip = "smallskip" } } },
@@ -365,7 +365,7 @@ As opposed to the original implementation, this package clears the table header
 and cancels the language-dependent title that the default implementation provides.
 This author thinks that such a package should only do one thing well: typesetting the table
 of contents, period. Any title (if one is even desired) should be left to the sole decision
-of the user, e.g. explicitely defined with a \autodoc:command[check=false]{\chapter[numbering=false]{…}}
+of the user, e.g. explicitly defined with a \autodoc:command[check=false]{\chapter[numbering=false]{…}}
 command or any other appropriate sectioning command, and with whatever additional content
 one may want in between. Even if LaTeX has a default title for the table of contents,
 there is no strong reason to do the same. It cannot be general: One could

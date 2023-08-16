@@ -90,7 +90,7 @@ The `font` object defines the _default_ font, as a font `family` and a `size`.
    In the latter case, the first font is used as default font and the others are declared as "font fallbacks", would some characters be unavailable.
  - The `size`, as expected, is the default font size, usually expressed in points.
 
-## The SILE configuratin section
+## The SILE configuration section
 
 The `sile` object provides intructions for processing the master document with SILE.
 

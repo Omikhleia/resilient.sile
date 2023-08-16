@@ -440,7 +440,7 @@ sectioning-chapter:
   style:
     font:
       size: "1.4em"
-      weight: 800
+      weight: 700
     paragraph:
       after:
         skip: "30pt"
@@ -505,7 +505,7 @@ sectioning-part:
   style:
     font:
       size: "1.6em"
-      weight: 800
+      weight: 700
     paragraph:
       after:
         skip: "bigskip"
@@ -565,7 +565,7 @@ sectioning-section:
   style:
     font:
       size: "1.2em"
-      weight: 800
+      weight: 700
     paragraph:
       after:
         skip: "medskip"
@@ -589,7 +589,7 @@ sectioning-subsection:
   style:
     font:
       size: "1.1em"
-      weight: 800
+      weight: 700
     paragraph:
       after:
         skip: "smallskip"
@@ -611,7 +611,7 @@ sectioning-subsubsection:
   origin: "resilient.book"
   style:
     font:
-      weight: 800
+      weight: 700
     paragraph:
       after:
         vbreak: false
@@ -700,7 +700,7 @@ toc-level0:
   style:
     font:
       size: "1.15em"
-      weight: 800
+      weight: 700
     paragraph:
       after:
         skip: "medskip"
@@ -718,7 +718,7 @@ toc-level1:
   style:
     font:
       size: "1.1em"
-      weight: 800
+      weight: 700
     paragraph:
       after:
         skip: "smallskip"
