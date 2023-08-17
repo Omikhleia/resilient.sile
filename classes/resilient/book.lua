@@ -412,7 +412,7 @@ function class:registerCommands ()
   end, "Text to appear on the top of odd pages, tracked via info node.")
 
   self:registerCommand("even-running-header", function (_, content)
-    SILE.scratch.headers.odd = function ()
+    SILE.scratch.headers.even = function ()
       SILE.call("style:apply:paragraph", { name = "header-even" }, {
         createCommand("strut", { method = "rule"}),
         subContent(content)
