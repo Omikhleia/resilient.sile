@@ -6,6 +6,10 @@
 --
 local base = require("packages.resilient.base")
 
+local ast = require("silex.ast")
+local createCommand, subContent
+        = ast.createCommand, ast.subContent
+
 local package = pl.class(base)
 package._name = "resilient.sectioning"
 
@@ -14,33 +18,51 @@ function package:_init (options)
   self.class:loadPackage("counters")
 end
 
+local function hasContent()
+  -- Important, flushes nodes to output queue.
+  SILE.typesetter:leaveHmode()
+  -- The frame breaking logic is a bit messy:
+  -- It's not enough to check if the output queue is empty, because in some
+  -- cases where horizontal mode was already left, the output queue might still
+  -- contain vglue nodes. These are ignored afterwards at the top of a frame,
+  -- so do not count.
+  local hasNonGlueContent = false
+  for _, vnode in ipairs(SILE.typesetter.state.outputQueue) do
+    if not vnode.is_vglue then
+      hasNonGlueContent = true
+      break
+    end
+  end
+  return hasNonGlueContent
+end
+
 function package:registerCommands ()
 
   local resolveSectionStyleDef = function (name)
     local styledef = self:resolveStyle(name)
     if styledef.sectioning then
-        -- Apply counter defaults
-        styledef.sectioning.counter = styledef.sectioning.counter or {}
-        styledef.sectioning.counter.id = styledef.sectioning.counter.id
-          or SU.error("Sectioning style '"..name.."' must have a counter")
-        styledef.sectioning.counter.level = styledef.sectioning.counter.level or 1
+      -- Apply counter defaults
+      styledef.sectioning.counter = styledef.sectioning.counter or {}
+      styledef.sectioning.counter.id = styledef.sectioning.counter.id
+        or SU.error("Sectioning style '"..name.."' must have a counter")
+      styledef.sectioning.counter.level = styledef.sectioning.counter.level or 1
 
-        -- Apply settings defaults
-        styledef.sectioning.settings = styledef.sectioning.settings or {}
-        -- styledef.sectioning.settings.open: if nil = do not open a page
-        styledef.sectioning.settings.toclevel = styledef.sectioning.settings.toclevel
-          and SU.cast("integer", styledef.sectioning.settings.toclevel)
-        styledef.sectioning.settings.goodbreak = SU.boolean(styledef.sectioning.settings.goodbreak, true)
-        styledef.sectioning.settings.bookmark = SU.boolean(styledef.sectioning.settings.bookmark, true)
+      -- Apply settings defaults
+      styledef.sectioning.settings = styledef.sectioning.settings or {}
+      -- styledef.sectioning.settings.open: if nil = do not open a page
+      styledef.sectioning.settings.toclevel = styledef.sectioning.settings.toclevel
+        and SU.cast("integer", styledef.sectioning.settings.toclevel)
+      styledef.sectioning.settings.goodbreak = SU.boolean(styledef.sectioning.settings.goodbreak, true)
+      styledef.sectioning.settings.bookmark = SU.boolean(styledef.sectioning.settings.bookmark, true)
 
-        -- Apply numberstyle defaults
-        styledef.sectioning.numberstyle = styledef.sectioning.numberstyle or {}
-        -- styledef.sectioning.numberstyle.main: no default, won't display if absent
-        -- styledef.sectioning.numberstyle.header: no default, won't display if absent
-        -- styledef.sectioning.numberstyle.reference: no default, won't display if absent
+      -- Apply numberstyle defaults
+      styledef.sectioning.numberstyle = styledef.sectioning.numberstyle or {}
+      -- styledef.sectioning.numberstyle.main: no default, won't display if absent
+      -- styledef.sectioning.numberstyle.header: no default, won't display if absent
+      -- styledef.sectioning.numberstyle.reference: no default, won't display if absent
 
-        -- styledef.sectioning.hook may be absent (no hook)
-        return styledef
+      -- styledef.sectioning.hook may be absent (no hook)
+      return styledef
     end
     SU.error("Style '"..name.."' is not a sectioning style")
   end
@@ -54,8 +76,8 @@ function package:registerCommands ()
     local sty = resolveSectionStyleDef(name)
     local secStyle = sty.sectioning
 
-    -- 1. Handle the page-break: opening page: "unset", "odd" or "any"
-    --    (Would "even" be useful? I do not think is has any actual use)
+    -- Handle the page-break: opening page: "unset", "odd" or "any"
+    -- (Would "even" be useful? I do not think is has any actual use)
     if secStyle.settings.open and secStyle.settings.open ~= "unset" then
       -- Sectioning style that causes a page-break.
       if secStyle.settings.open == "odd" then
@@ -76,61 +98,113 @@ function package:registerCommands ()
     -- consecutive styles (e.g. a subsection directly preceded by a section
     -- shouldn't trigger a goodbreak in-between).
 
-    -- 2. Handle the style hook if specified.
-    --    (Pass the user-defined options + the counter and level,
-    --    so it has the means to compute it, if needed)
+    -- Process the section (title) content
+    local numSty = secStyle.numberstyle.main and self:resolveStyle(secStyle.numberstyle.main)
+    local numDisplay = numSty and numSty.numbering and numSty.numbering.display or "arabic"
+
+    -- Counter for numbered sections
+    local number
+    if numbering then
+      SILE.call("increment-multilevel-counter", {
+        id = secStyle.counter.id,
+        level = secStyle.counter.level,
+        display = numDisplay
+      })
+      number = self.class.packages.counters:formatMultilevelCounter(
+        self.class:getMultilevelCounter(secStyle.counter.id), { noleadingzeros = true }
+      )
+    end
+
+    -- Handle the style hook if specified.
+    -- Pass the user-defined options, the counter and level, so it has them, if needed.
+    -- Also pass the styled header content (possibly with the number).
+    local titleHookContent
     if secStyle.hook then
       local hookOptions = pl.tablex.copy(options)
       hookOptions.counter = secStyle.counter.id
       hookOptions.level = secStyle.counter.level
-      SILE.call(secStyle.hook, hookOptions, content)
+      hookOptions.before = true -- HACK SEE BELOW
+      local numsty = sty.sectioning and sty.sectioning.numberstyle
+          and sty.sectioning.numberstyle.header
+      if numbering and numsty then
+        titleHookContent = {
+          createCommand("style:apply:number", { name = numsty, text = number }),
+          subContent(content)
+        }
+      else
+        titleHookContent = subContent(content)
+      end
+      -- HACK HOOK - BAD DESIGN WORKAROUND
+      -- https://github.com/Omikhleia/resilient.sile/issues/43
+      -- The hook logic does two different things and we cannot change it
+      -- without breaking existing style files. So we have to do this hack,
+      -- calling the hook twice for the before and after parts, where the
+      -- before part is responsible for settings things (presence or not of
+      -- header and folio, other counter resets, etc.) and the after part
+      -- is responsible for handling the running header.
+      -- Moreover, the running header will need to an info node, inserted
+      -- at the appropriate place in the content (see further below),
+      -- without the style applied to the content (esp. text casing).
+      -- So we hide it in a short-term command.
+      SILE.call(secStyle.hook, hookOptions)
+      hookOptions.before = false
+      self:registerCommand("sectioning:hack:hook", function ()
+        SILE.call(secStyle.hook, hookOptions, titleHookContent)
+      end)
     end
 
-    -- 3. Process the section content
-    local numSty = secStyle.numberstyle.main and self:resolveStyle(secStyle.numberstyle.main)
-    local numDisplay = numSty and numSty.numbering and numSty.numbering.display or "arabic"
-    SILE.call("style:apply:paragraph", { name = name }, function ()
-      -- 3A. Counter for numbered sections
-      local number
-      if numbering then
-        SILE.call("increment-multilevel-counter", {
-          id = secStyle.counter.id,
-          level = secStyle.counter.level,
-          display = numDisplay
-        })
-        number = self.class.packages.counters:formatMultilevelCounter(
-          self.class:getMultilevelCounter(secStyle.counter.id), { noleadingzeros = true }
-        )
-      end
+    local titleContent = {}
+    -- HACK TOC ENTRY - BAD DESIGN WORKAROUND
+    -- We pass it added to the content, so the toc entry info note occurs at the right place.
+    -- But we do not want the paragraph style applied around it
+    -- (and the TOC info node is located in the right place, notwithstanding breaks, skips, etc.).
+    -- That will be a problem later if the paragraph style includes input filters or needs
+    -- to tweaks (typically, text casing is in that situation).
+    -- We could have done things slightly differently (splitting how paragraph style is applied),
+    -- but I went another quick and dirty route in the styles package...
+    -- So we use the same hack as for the hook, hiding the content tree
+    -- in a short-term command.
+    local toclevel = secStyle.settings.toclevel
+    local bookmark = secStyle.settings.bookmark
+    if toclevel and toc then
+      self:registerCommand("sectioning:hack:toc", function ()
+        SILE.call("tocentry", { level = toclevel, number = number, bookmark = bookmark },
+          subContent(content))
+      end)
+      titleContent[#titleContent + 1] = createCommand("sectioning:hack:toc")
+    end
 
-      -- 3B. TOC entry
-      local toclevel = secStyle.settings.toclevel
-      local bookmark = secStyle.settings.bookmark
-      if toclevel and toc then
-        SILE.call("tocentry", { level = toclevel, number = number, bookmark = bookmark }, SU.subContent(content))
-      end
-
-      -- 3C. Show section number (if numbering is true AND a main style is defined)
-      if numbering then
-        if secStyle.numberstyle.main then
-          SILE.call("style:apply:number", { name = secStyle.numberstyle.main, text = number })
-          if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
-            SILE.call("break") -- HACK. Pretty weak unless the parent paragraph style is ragged.
-          end
+    -- Show section number (if numbering is true AND a main style is defined)
+    if numbering then
+      if secStyle.numberstyle.main then
+        titleContent[#titleContent + 1] =
+          createCommand("style:apply:number", { name = secStyle.numberstyle.main, text = number })
+        if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
+          titleContent[#titleContent + 1] =
+            createCommand("break") -- HACK. Pretty weak unless the parent paragraph style is ragged.
         end
       end
-      -- 3D. Section (title) content
-      SILE.process(content)
-      -- 3E. Cross-reference label
-      -- If the \label command is defined, assume a cross-reference package
-      -- is loaded and allow specifying a label marker. This makes it less clumsy
-      -- than having to put it in the section title content, or just after the section
-      -- (with the risk of impacting indent/noindent and novbreak decisions here)
-      if marker and SILE.Commands["label"] then SILE.call("label", { marker = marker }) end
-    end)
-    -- Was present in the original book class for section and subsection
-    -- But seems to behave weird = cancelled for now.
-    -- SILE.typesetter:inhibitLeading()
+    end
+    -- Section (title) content
+    titleContent[#titleContent + 1] = subContent(content)
+
+    -- Cross-reference label
+    -- If the \label command is defined, assume a cross-reference package
+    -- is loaded and allow specifying a label marker. This makes it less clumsy
+    -- than having to put it in the section title content, or just after the section
+    -- (with the risk of impacting indent/noindent and novbreak decisions here)
+    if marker and SILE.Commands["label"] then
+      titleContent[#titleContent + 1] = createCommand("label", { marker = marker })
+    end
+    -- Running headers
+    -- See HACK HOOK above
+    if titleHookContent then
+      -- As for labels, underlying info nodes will interact with indents/breaks, so we
+      -- also try to get them in the title. But we do not want the main style to
+      -- be applied to them, so we hid them in a short-term command...
+      titleContent[#titleContent + 1] = createCommand("sectioning:hack:hook")
+    end
+    SILE.call("style:apply:paragraph", { name = name }, titleContent)
   end, "Apply sectioning")
 
   self:registerCommand("open-on-odd-page", function (_, _)
@@ -141,7 +215,7 @@ function package:registerCommands ()
     -- I really had hard times to make this work correctly. It now
     -- seems ok, but it might be fragile.
     SILE.typesetter:leaveHmode() -- Important, flushes nodes to output queue.
-    if #SILE.typesetter.state.outputQueue ~= 0 then
+    if hasContent() then
       -- We are not at the top of a page, eject the current content.
       SILE.call("supereject")
     end
@@ -149,7 +223,7 @@ function package:registerCommands ()
     -- ... so now we are at the top of a page, and only need
     -- to add a blank page if we have not landed on an odd page.
     if not SILE.documentState.documentClass:oddPage() then
-      SILE.typesetter:typeset("")
+      SILE.typesetter:typeset("") -- Some non glue empty content to force a page break.
       SILE.typesetter:leaveHmode()
       -- Disable headers and footers if we can... i.e. the
       -- supporting class loaded all the necessary commands.
@@ -166,7 +240,7 @@ function package:registerCommands ()
 
   self:registerCommand("open-on-any-page", function (_, _)
     SILE.typesetter:leaveHmode() -- Important, flushes nodes to output queue.
-    if #SILE.typesetter.state.outputQueue ~= 0 then
+    if hasContent() then
       -- We are not at the top of a page, eject the current content.
       SILE.call("supereject")
     end

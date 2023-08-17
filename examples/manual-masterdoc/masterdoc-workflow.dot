@@ -1,0 +1,34 @@
+digraph G {
+  rankdir="LR"
+  edge[arrowhead="vee"];
+
+  subgraph cluster_ms {
+    doc0 [shape=note, label="master.silm"];
+    style=filled;
+    color="#e0e0f0";
+
+    subgraph cluster_in {
+      doc1 [shape=note, label="chapter1.dj"];
+      doc2 [shape=note, label="chapter2.sil"];
+      doc3 [shape=note, label="chapter3.md"];
+      style=filled;
+      color="#e0e0d0";
+    }
+  }
+
+  subgraph cluster_out {
+   pdf [shape=note, label="PDF"];
+   style=filled;
+   color="#e0f0e0";
+   label="output";
+  }
+
+  resilient [shape=doublecircle, color="#e8ccd7 ", style=filled, label="master\ndocument\ninputter"];
+
+  doc0 -> resilient
+  doc0 -> doc1
+  doc0 -> doc2
+  doc0 -> doc3
+
+  resilient -> pdf
+}

@@ -3,6 +3,7 @@
 -- 2023, Didier Willis
 -- License: MIT
 --
+require("silex")
 local base = require("packages.base")
 
 local package = pl.class(base)

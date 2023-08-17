@@ -213,16 +213,6 @@ to the page sides. It is provided here as \code{canonical}.
 
 \section{Non-standard layouts}
 
-\subsection{A poor man’s centered layout}
-
-In passing, the \code{none} layout uses margins of 1/6\textsuperscript{th} of the page dimensions.
-It just exists because it’s the base component for other layouts.
-
-\begin{figure}
-\showlayout[layout=none, papersize=6in x 9in] \showlayout[layout=none, papersize=a5]
-\caption{This is not really a layout.}
-\end{figure}
-
 \subsection{A layout with wide margins}
 
 Most of the common layouts presented above do not have both a dense text block and wide
@@ -238,6 +228,27 @@ critical text apparatus with an important amount of maginal notes.
 \end{figure}
 
 As can be seen, the header frame also goes past the text block, englobing the margin area.
+
+\subsection{A poor man’s centered layout}
+
+In passing, the \code{none} layout uses margins of 1/6\textsuperscript{th} of the page dimensions.
+It just exists because it’s the base component for other layouts.
+
+\begin{figure}
+\showlayout[layout=none, papersize=6in x 9in] \showlayout[layout=none, papersize=a5]
+\caption{This is not really a layout.}
+\end{figure}
+
+\subsection{An explicit page layout}
+
+Some users may think they know better and want to define their own page layout.
+This author thinks it is a bad idea, but it’s your choice, after all.
+The \code{geometry} layout allows explicitly setting the page margins, as either a pair of dimensions (\code{geometry ⟨vert⟩ ⟨horiz⟩}) or as a quadruplet of dimensions (\code{geometry ⟨head⟩ ⟨inner⟩ ⟨foot⟩ ⟨outer⟩}).
+
+\begin{figure}
+\showlayout[layout=geometry 0.75in 1in 0.75in 2in, papersize=6in x 9in]
+\caption{Be my guests — arbitrary margins.}
+\end{figure}
 
 \section{Summary table}
 
@@ -304,17 +315,25 @@ As can be seen, the header frame also goes past the text block, englobing the ma
     \cell[valign=top,halign=left]{Tschichold’s golden canon}
   \end{row}
   \begin{row}
-    \cell[valign=top,halign=left]{\code{none}}
-    \cell[valign=top,halign=left]{Centered with margins at 1/6\textsuperscript{th}}
-  \end{row}
-  \begin{row}
     \cell[valign=top,halign=left]{\code{marginal} = \code{marginal 8}}
     \cell[valign=top,halign=left]{Wide outer margin, other at 1/8\textsuperscript{th}}
   \end{row}
   \begin{row}
     \cell[valign=top,halign=left]{\code{marginal N}}
     \cell[valign=top,halign=left]{Wide outer margin, other at 1/\em{N\kern[width=0.1em]}\textsuperscript{th}}
-  \end{row}  
+  \end{row}
+  \begin{row}
+    \cell[valign=top,halign=left]{\code{none}}
+    \cell[valign=top,halign=left]{Centered with margins at 1/6\textsuperscript{th}}
+  \end{row}
+  \begin{row}
+    \cell[valign=top,halign=left]{\code{geometry V H}}
+    \cell[valign=top,halign=left]{Vertical margin, horizontal margin}
+  \end{row}
+  \begin{row}
+    \cell[valign=top,halign=left]{\code{geometry H I F O}}
+    \cell[valign=top,halign=left]{Head margin, inner margin, foot margin, outer margin}
+  \end{row}
 \end{ptable}
 \caption{Off-the-shelf layouts at a glance.}
 \end{table}

@@ -16,6 +16,7 @@ This collection offers:
   - Highly configurable table of contents, headers, footers, footnotes and sectioning environments,
   - And other useful features, from cross-references to advanced captioned figure and table environments, and more…
   - A great parity with Markdown, including many Pandoc-like extensions.
+- A “master document” format, for easily assembling your content.
 - A lightweight “résumé” class, for you to produce a colorful and yet professional-looking _curriculum vitæ_.
 
 ## Installation
@@ -24,15 +25,14 @@ These packages require SILE v0.14 or upper.
 
 Installation relies on the **luarocks** package manager.
 
-To install the latest development version and all its dependencies (see below),
+To install the latest version and all its dependencies (see below),
 you may use the provided “rockspec”:
 
 ```
-luarocks --lua-version 5.4 install --server=https://luarocks.org/dev resilient.sile
+luarocks install resilient.sile
 ```
 
-(Adapt to your version of Lua, if need be, and refer to the SILE manual for more
-detailed 3rd-party package installation information.)
+(Refer to the SILE manual for more detailed 3rd-party package installation information.)
 
 ## Usage
 

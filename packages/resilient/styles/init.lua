@@ -8,13 +8,16 @@ local base = require("packages.base")
 local package = pl.class(base)
 package._name = "resilient.styles"
 
-local hboxer = require("resilient-compat.hboxing") -- Compatibility hack/shim
 local utils = require("resilient.utils")
+local ast = require("silex.ast")
+local createCommand, subContent
+        = ast.createCommand, ast.subContent
 
 function package:_init (options)
   base._init(self, options)
 
   self.class:loadPackage("textsubsuper")
+  self.class:loadPackage("textcase")
 
   self.class:registerHook("finish", self.writeStyles)
 
@@ -150,13 +153,19 @@ SILE.scratch.styles = {
   -- Known aligns options, with the command implementing them.
   -- Users can register extra options in this table.
   alignments = {
-    center = "style:align:center",
-    left = "style:align:left",
-    right = "style:align:right",
-    justify = "style:align:justify",
+    center = "center",
+    left = "raggedright",
+    right = "raggedleft",
+    justify = "justified",
     -- be friendly with users...
-    raggedright = "style:align:left",
-    raggedleft = "style:align:right",
+    raggedright = "raggedright",
+    raggedleft = "raggedleft",
+  },
+  -- Known casing options
+  cases = {
+    upper = "uppercase",
+    lower = "lowercase",
+    title = "titlecase",
   },
   -- Known skip options.
   -- Packages and classes can register custom skips there.
@@ -257,34 +266,60 @@ function package:registerCommands ()
   end, "Applies a font, with additional support for relative sizes.")
 
   -- Very naive cascading...
-  local styleForProperties = function (style, content)
-    if style.properties and style.properties.position and style.properties.position ~= "normal" then
-      local positionCommand = SILE.scratch.styles.positions[style.properties.position]
-      if not positionCommand then
-        SU.error("Invalid style position '"..style.position.position.."'")
+  local function characterStyle (style, content, options)
+    options = options or {}
+    if style.properties then
+      if style.properties.position and style.properties.position ~= "normal" then
+        local positionCommand = SILE.scratch.styles.positions[style.properties.position]
+        if not positionCommand then
+          SU.error("Invalid style position '"..style.properties.position.."'")
+        end
+        content = createCommand(positionCommand, {}, content)
       end
-      SILE.call(positionCommand, {}, content)
-    else
-      SILE.process(content)
+      if style.properties.case and style.properties.case ~= "normal" then
+        local caseCommand = SILE.scratch.styles.cases[style.properties.case]
+        if not caseCommand then
+          SU.error("Invalid style case '"..style.properties.case.."'")
+        end
+        content = createCommand(caseCommand, {}, content)
+      end
     end
-  end
-  local styleForColor = function (style, content)
     if style.color then
-      SILE.call("color", { color = style.color }, function ()
-        styleForProperties(style, content)
-      end)
-    else
-      styleForProperties(style, content)
+      content = createCommand("color", { color = style.color }, content)
     end
+    if style.font and SU.boolean(options.font, true) then
+      content = createCommand("style:font", style.font, content)
+    end
+    return content
   end
-  local styleForFont = function (style, content)
-    if style.font then
-      SILE.call("style:font", style.font, function ()
-        styleForColor(style, content)
-      end)
-    else
-      styleForColor(style, content)
+
+  local function characterStyleNoFont (style, content)
+    return characterStyle(style, content, { font = false })
+  end
+
+  local function hackSubContent(content, name)
+    if type(content) == "table" then
+      if content.command or content.id then
+        -- We want to skip the calling content key values (id, command, etc.)
+        return subContent(content)
+      end
+      return content
     end
+    if name ~= "footnote" then -- HACK: Could not avoid function call in resilient.footnotes...
+      SU.warn("Invocation of style '" .. name .. "'' with unexpected content ("
+        .. type(content) ..")" .. [[
+    For styles to apply correctly, the content should be an AST table.
+    Some constructs may fail or generate errors later (text case, position, etc.)
+]])
+    end
+    return content
+  end
+
+  local characterStyleFontOnly = function (style, content)
+    if style.font then
+      content = createCommand("style:font", style.font, content)
+    end
+    return content
   end
 
   local styleForAlignment = function (style, content, breakafter)
@@ -300,28 +335,23 @@ function package:registerCommands ()
         -- correct even on the last paragraph. But the color introduces hboxes so
         -- must be applied last, no to cause havoc with the noindent/indent and
         -- centering etc. environments
+        local recontent = createCommand(alignCommand, {}, {
+          characterStyleNoFont(style, content),
+          not breakafter and createCommand("novbreak") or nil
+        })
         if style.font then
-          SILE.call("style:font", style.font, function ()
-            SILE.call(alignCommand, {}, function ()
-              styleForColor(style, content)
-              if not breakafter then SILE.call("novbreak") end
-            end)
-          end)
-        else
-          SILE.call(alignCommand, {}, function ()
-            styleForColor(style, content)
-            if not breakafter then SILE.call("novbreak") end
-          end)
+          recontent = characterStyleFontOnly(style, recontent)
         end
+        SILE.process({ recontent })
       else
-        styleForFont(style, content)
+        SILE.process({ characterStyle(style, content) })
         if not breakafter then SILE.call("novbreak") end
         -- NOTE: SILE.call("par") would cause a parskip to be inserted.
         -- Not really sure whether we expect this here or not.
         SILE.typesetter:leaveHmode()
       end
     else
-      styleForFont(style, content)
+      SILE.process({ characterStyle(style, content) })
     end
   end
 
@@ -331,7 +361,10 @@ function package:registerCommands ()
     local name = SU.required(options, "name", "style:apply")
     local styledef = self:resolveStyle(name, options.discardable)
 
-    styleForFont(styledef, content)
+    content = hackSubContent(content, name) -- HACK: see above
+
+    content = characterStyle(styledef, content)
+    SILE.process({ content })
   end, "Applies a named character style to the content.")
 
   -- APPLY A PARAGRAPH STYLE
@@ -451,6 +484,8 @@ function package:registerCommands ()
     local styledef = self:resolveParagraphStyle(name, options.discardable)
     local parSty = styledef.paragraph
 
+    content = hackSubContent(content, name) -- HACK: see above
+
     local bb = SU.boolean(parSty.before.vbreak, true)
     if #SILE.typesetter.state.nodes then
       if not bb then
@@ -524,7 +559,7 @@ function package:registerCommands ()
       -- was plain weird before v0.14.9. The width of the box was "adjusted" with
       -- respect to the parindent due to improper scoping.
       -- The fix is kept here, but should have no effect after 0.14.9.
-      local hbox = hboxer.makeHbox(function ()
+      local hbox = SILE.typesetter:makeHbox(function ()
         SILE.call("style:apply", { name = name }, { text })
       end)
       if hbox.width < 0 then
@@ -557,94 +592,6 @@ function package:registerCommands ()
       end
     end
   end, "Applies a named number style to the text argument (no content).")
-
-  -- ALIGNMENT COMMANDS
-
-  -- It turns out we do not want to use SILE's default "center", "raggedleft",
-  -- and "raggedright" as they do not allow nesting, i.e. they reset the left
-  -- and/or right skips and thus apply to the full line width. In a way, they
-  -- are quite lame, loosing all margins.
-  -- As an example, say you have some nice indented block (margins on both
-  -- sides), and you "center" something in it, then that centering goes past
-  -- the block margins. That might be considered to be a "feature", but frankly,
-  -- most people won't expect it.
-  -- Anyway...
-  -- For styles to nest gracefully, we need to keep the "fixed" part of the
-  -- left/right skips, that is to cancel the stretch/shrink values, but keep
-  -- the indentation (a.k.a. margin).
-
-  local function fillglue (glue)
-    -- hack to avoid questioning what infinity is...
-    -- N.B. SILE.nodefactory.hfillglue(spec) is wrong, it will used the
-    -- spec directly, cancelling the infinity stretching. (At the time of
-    -- writing, SILE 0.14.8).
-    -- It's plain stupid, as it's then a basic glue despite the name
-    -- (in other terms, passing an argument has no interest at all).
-    -- This is what should have been done IMHO: keeping the fixed length
-    -- part, but adding the infinite stretch over it.
-    local fill = SILE.nodefactory.hfillglue()
-    fill.width.length = glue.width.length -- fixed part.
-    return fill
-  end
-
-  local function fixedglue (glue)
-    return  SILE.nodefactory.glue(glue.width.length) -- fixed part.
-  end
-
-  self:registerCommand("style:align:left", function (_, content)
-    SILE.settings:temporarily(function ()
-      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
-      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
-      SILE.settings:set("document.lskip", fixedglue(lskip))
-      SILE.settings:set("document.rskip", fillglue(rskip))
-      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
-      SILE.settings:set("document.spaceskip", SILE.length("1spc", 0, 0))
-      SILE.process(content)
-      SILE.call("par")
-    end)
-  end, "Typeset its contents in a left aligned block (keeping margins).")
-
-  self:registerCommand("style:align:right", function (_, content)
-    SILE.settings:temporarily(function ()
-      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
-      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
-      SILE.settings:set("document.lskip", fillglue(lskip))
-      SILE.settings:set("document.rskip", fixedglue(rskip))
-      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
-      SILE.settings:set("document.spaceskip", SILE.length("1spc", 0, 0))
-      SILE.process(content)
-      SILE.call("par")
-    end)
-  end, "Typeset its contents in a right aligned block (keeping margins).")
-
-  self:registerCommand("style:align:center", function (_, content)
-    SILE.settings:temporarily(function ()
-      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
-      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
-      SILE.settings:set("document.parindent", SILE.nodefactory.glue())
-      SILE.settings:set("current.parindent", SILE.nodefactory.glue())
-      SILE.settings:set("document.lskip", fillglue(lskip))
-      SILE.settings:set("document.rskip", fillglue(rskip))
-      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
-      SILE.settings:set("document.spaceskip", SILE.length("1spc", 0, 0))
-      SILE.process(content)
-      SILE.call("par")
-    end)
-  end, "Typeset its contents in a centered block (keeping margins).")
-
-  self:registerCommand("style:align:justify", function (_, content)
-    SILE.settings:temporarily(function ()
-      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
-      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
-      SILE.settings:set("document.lskip", fixedglue(lskip))
-      SILE.settings:set("document.rskip", fixedglue(rskip))
-      -- HACK. This knows too much about parfillskip defaults...
-      -- (Which must be big, but smaller than infinity. Doh!)
-      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue("0pt plus 10000pt"))
-      SILE.process(content)
-      SILE.call("par")
-    end)
-  end, "Typeset its contents in a centered block (keeping margins).")
 
   -- HARD DEPRECATIONS
   -- Considering 1.x was omikhleia-sile-packages and anything in between was

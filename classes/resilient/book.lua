@@ -7,7 +7,10 @@ local base = require("classes.resilient.base")
 local class = pl.class(base)
 class._name = "resilient.book"
 
-local utils = require("resilient.utils")
+local ast = require("silex.ast")
+local createCommand, subContent, extractFromTree
+        = ast.createCommand, ast.subContent, ast.extractFromTree
+
 local layoutParser = require("resilient.layoutparser")
 
 -- CLASS DEFINITION
@@ -39,6 +42,7 @@ function class:_init (options)
   self:loadPackage("struts")
   self:loadPackage("resilient.headers")
   self:loadPackage("markdown")
+  self:loadPackage("djot")
 
   -- Override document.parindent default to this author's taste
   SILE.settings:set("document.parindent", "1.25em")
@@ -64,16 +68,16 @@ function class:_init (options)
   -- Package "folio" is loaded by the plain class.
   self:registerCommand("foliostyle", function (_, content)
     local styleName = SILE.documentState.documentClass:oddPage() and "folio-odd" or "folio-even"
-    SILE.call("style:apply:paragraph", { name = styleName }, function ()
+    SILE.call("style:apply:paragraph", { name = styleName }, {
       -- Ensure proper baseline alignment with a strut rule.
       -- The baseline placement depends on the line output algorithm, and we cannot
       -- trust it if it just uses the line ascenders.
       -- Typically, if folios use "old-style" numbers, 16 and 17 facing pages shall have
       -- aligned folios, but the 1 is smaller than the 6 and 7, the former ascends above,
       -- and the latter descends below the baseline).
-      SILE.call("strut", { method = "rule"})
-      SILE.process(content)
-    end)
+      createCommand("strut", { method = "rule"}),
+      subContent(content)
+    })
   end)
 
   -- Override the standard urlstyle hook to rely on styles
@@ -135,7 +139,7 @@ function class:registerStyles ()
                   after = { indent = false } }
   })
   self:registerStyle("sectioning-part", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "1.6em" },
+    font = { weight = 700, size = "1.6em" },
     paragraph = { before = { skip = "15%fh" },
                   align = "center",
                   after = { skip = "bigskip" } },
@@ -152,7 +156,7 @@ function class:registerStyles ()
                     hook = "sectioning:part:hook" },
   })
   self:registerStyle("sectioning-chapter", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "1.4em" },
+    font = { weight = 700, size = "1.4em" },
     paragraph = {  align = "left",
                    after = { skip = "bigskip" } },
     sectioning = { counter = { id = "sections", level = 1 },
@@ -168,7 +172,7 @@ function class:registerStyles ()
                     hook = "sectioning:chapter:hook" },
   })
   self:registerStyle("sectioning-section", { inherit = "sectioning-base" }, {
-    font = { weight = 800, size = "1.2em" },
+    font = { weight = 700, size = "1.2em" },
     paragraph = { before = { skip = "bigskip" },
                   after = { skip = "medskip", vbreak = false } },
     sectioning = {  counter = { id = "sections", level = 2 },
@@ -183,7 +187,7 @@ function class:registerStyles ()
                     hook = "sectioning:section:hook" },
   })
   self:registerStyle("sectioning-subsection", { inherit = "sectioning-base"}, {
-    font = { weight = 800, size = "1.1em" },
+    font = { weight = 700, size = "1.1em" },
     paragraph = { before = { skip = "medskip" },
                   after = { skip = "smallskip", vbreak = false } },
     sectioning = {  counter = { id = "sections", level = 3 },
@@ -197,7 +201,7 @@ function class:registerStyles ()
                     } },
   })
   self:registerStyle("sectioning-subsubsection", { inherit = "sectioning-base" }, {
-    font = { weight = 800 },
+    font = { weight = 700 },
     paragraph = { before = { skip = "smallskip" },
                   after = { vbreak = false } },
     sectioning = {  counter = { id = "sections", level = 4 },
@@ -354,11 +358,14 @@ function class:registerStyles ()
 end
 
 function class:endPage ()
-  local headerContent = (self:oddPage() and SILE.scratch.headers.odd)
-        or (not(self:oddPage()) and SILE.scratch.headers.even)
-  if headerContent then
-    self.packages["resilient.headers"]:outputHeader(headerContent)
+  if SILE.scratch.info.thispage.headerOdd then
+    SILE.scratch.headers.odd = SILE.scratch.info.thispage.headerOdd[#SILE.scratch.info.thispage.headerOdd]
   end
+  if SILE.scratch.info.thispage.headerEven then
+    SILE.scratch.headers.even = SILE.scratch.info.thispage.headerEven[#SILE.scratch.info.thispage.headerEven]
+  end
+  self.packages["resilient.headers"]:outputHeader(
+      self:oddPage() and SILE.scratch.headers.odd or SILE.scratch.headers.even)
   return base.endPage(self)
 end
 
@@ -378,73 +385,86 @@ function class:registerCommands ()
 
   -- Running headers
 
-  self:registerCommand("even-running-header", function (_, content)
-    local closure = SILE.settings:wrap()
-    SILE.scratch.headers.even = function ()
-      closure(function ()
-        SILE.call("style:apply:paragraph", { name = "header-even" }, function ()
-          SILE.call("strut", { method = "rule"})
-          SILE.process(content)
-        end)
-      end)
+  self:registerCommand("even-tracked-header", function (_, content)
+    local headerContent = function ()
+      SILE.call("style:apply:paragraph", { name = "header-even" }, {
+        createCommand("strut", { method = "rule"}),
+        subContent(content)
+      })
     end
-  end, "Text to appear on the top of the even page(s).")
+    SILE.call("info", {
+      category = "headerEven",
+      value = headerContent
+    })
+  end, "Text to appear on the top of even pages, tracked via info nodes.")
+
+  self:registerCommand("odd-tracked-header", function (_, content)
+    local headerContent = function ()
+      SILE.call("style:apply:paragraph", { name = "header-odd" }, {
+        createCommand("strut", { method = "rule"}),
+        subContent(content)
+      })
+    end
+    SILE.call("info", {
+      category = "headerOdd",
+      value = headerContent
+    })
+  end, "Text to appear on the top of odd pages, tracked via info node.")
+
+  self:registerCommand("even-running-header", function (_, content)
+    SILE.scratch.headers.even = function ()
+      SILE.call("style:apply:paragraph", { name = "header-even" }, {
+        createCommand("strut", { method = "rule"}),
+        subContent(content)
+      })
+    end
+  end, "Text to appear on the top of even pages.")
 
   self:registerCommand("odd-running-header", function (_, content)
-    local closure = SILE.settings:wrap()
     SILE.scratch.headers.odd = function ()
-      closure(function ()
-        SILE.call("style:apply:paragraph", { name = "header-odd" }, function ()
-          SILE.call("strut", { method = "rule"})
-          SILE.process(content)
-        end)
-      end)
+      SILE.call("style:apply:paragraph", { name = "header-odd" }, {
+        createCommand("strut", { method = "rule"}),
+        subContent(content)
+      })
     end
-  end, "Text to appear on the top of the odd page(s).")
+  end, "Text to appear on the top odd pages.")
 
   -- Sectioning hooks and commands
 
-  self:registerCommand("sectioning:part:hook", function (_, _)
-    -- Parts cancel headers and folios
-    SILE.call("noheaderthispage")
-    SILE.call("nofoliothispage")
-    SILE.scratch.headers.odd = nil
-    SILE.scratch.headers.even = nil
+  self:registerCommand("sectioning:part:hook", function (options, _)
+    local before = SU.boolean(options.before, false)
+    if before then
+      -- Parts cancel headers and folios
+      SILE.call("noheaderthispage")
+      SILE.call("nofoliothispage")
+      SILE.scratch.headers.odd = nil
+      SILE.scratch.headers.even = nil
 
-    -- Parts reset footnotes and chapters
-    SILE.call("set-counter", { id = "footnote", value = 1 })
-    SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
+      -- Parts reset footnotes and chapters
+      SILE.call("set-counter", { id = "footnote", value = 1 })
+      SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
+    end
   end, "Apply part hooks (counter resets, footers and headers, etc.)")
 
-  self:registerCommand("sectioning:chapter:hook", function (_, content)
-    -- Chapters re-enable folios, have no header, and reset the footnote counter.
-    SILE.call("noheaderthispage")
-    SILE.call("folios")
-    SILE.call("set-counter", { id = "footnote", value = 1 })
-
-    -- Chapters, here, go in the even header.
-    SILE.call("even-running-header", {}, content)
+  self:registerCommand("sectioning:chapter:hook", function (options, content)
+    local before = SU.boolean(options.before, false)
+    if before then
+      -- Chapters re-enable folios, have no header, and reset the footnote counter.
+      SILE.call("noheaderthispage")
+      SILE.call("folios")
+      SILE.call("set-counter", { id = "footnote", value = 1 })
+    else
+      -- Chapters, here, go in the even header.
+      SILE.call("even-tracked-header", {}, content)
+    end
   end, "Apply chapter hooks (counter resets, footers and headers, etc.)")
 
   self:registerCommand("sectioning:section:hook", function (options, content)
-    -- Sections, here, go in the odd header.
-    SILE.call("odd-running-header", {}, function ()
-      if SU.boolean(options.numbering, true) then
-        local sty = self:resolveStyle("sectioning-section")
-        local numsty = sty.sectioning and sty.sectioning.numberstyle
-          and sty.sectioning.numberstyle.header
-        if numsty and sty.sectioning.counter.id then
-          local number = self.packages.counters:formatMultilevelCounter(
-            self:getMultilevelCounter(sty.sectioning.counter.id), {
-              noleadingzeros = true,
-              level = sty.sectioning.counter.level -- up to the section level
-            }
-          )
-          SILE.call("style:apply:number", { name = numsty, text = number })
-        end
-      end
-      SILE.process(content)
-    end)
+    local before = SU.boolean(options.before, false)
+    if not before then
+      -- Sections, here, go in the odd header.
+      SILE.call("odd-tracked-header", {}, content)
+    end
   end, "Applies section hooks (footers and headers, etc.)")
 
   self:registerCommand("part", function (options, content)
@@ -507,7 +527,7 @@ function class:registerCommands ()
 
   self:registerCommand("captioned-figure", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in figure environment") end
-    local caption = utils.extractFromTree(content, "caption")
+    local caption = extractFromTree(content, "caption")
 
     options.style = "figure-caption"
     SILE.call("style:apply:paragraph", { name = "figure" }, content)
@@ -522,7 +542,7 @@ function class:registerCommands ()
 
   self:registerCommand("captioned-table", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in table environment") end
-    local caption = utils.extractFromTree(content, "caption")
+    local caption = extractFromTree(content, "caption")
 
     options.style = "table-caption"
     SILE.call("style:apply:paragraph", { name = "table" }, content)
@@ -567,8 +587,7 @@ function class:registerCommands ()
     local spec = SU.required(options, "layout", "layout")
     local papersize = SU.required(options, "papersize", "layout")
     local offset = SU.cast("measurement", options.offset or "0")
-    local parser = require("resilient.layoutparser")
-    local layout = parser:match(spec)
+    local layout = layoutParser:match(spec)
     if not layout then
       SU.error("Unrecognized layout '" .. spec .. "'")
     end
@@ -579,6 +598,34 @@ function class:registerCommands ()
     layout:setPaperHack(W, H)
     layout:draw(W, H, { ratio = options.ratio, rough = options.rough })
   end, "Show a graphical representation of a page layout")
+
+  self:registerCommand("layout", function (options, _)
+    local spec = SU.required(options, "layout", "layout")
+    local layout = layoutParser:match(spec)
+    if not layout then
+      SU.error("Unknown page layout '".. spec .. "'")
+    end
+    local offset = SU.cast("measurement", self.options["offset"])
+    layout:setOffset(offset)
+    -- Kind of a hack dues to restrictions with frame parsers.
+    layout:setPaperHack(SILE.documentState.paperSize[1], SILE.documentState.paperSize[2])
+
+    SILE.call("supereject")
+    SILE.typesetter:leaveHmode()
+
+    local oddFrameset, evenFrameset = layout:frameset()
+    self:defineMaster({
+      id = "right",
+      firstContentFrame = self.firstContentFrame,
+      frames = oddFrameset
+    })
+    self:defineMaster({
+      id = "left",
+      firstContentFrame = self.firstContentFrame,
+      frames = evenFrameset
+    })
+    self:switchMaster(self:oddPage() and "right" or "left")
+  end, "Set the page layout")
 end
 
 return class

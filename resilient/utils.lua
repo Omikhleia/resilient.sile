@@ -39,18 +39,8 @@ local function recursiveTableMerge(t1, t2)
   end
 end
 
--- Extract a node from SILE AST.
-local extractFromTree = function (tree, command)
-  for i=1, #tree do
-    if type(tree[i]) == "table" and tree[i].command == command then
-      return table.remove(tree, i)
-    end
-  end
-end
-
 return {
   castKern = castKern,
-  extractFromTree = extractFromTree,
   interwordSpace = interwordSpace,
   recursiveTableMerge = recursiveTableMerge,
 }

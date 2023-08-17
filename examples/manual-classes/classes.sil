@@ -229,9 +229,20 @@ The class also defines two commands for manipulating the page headers.
     \cell[valign=top]{\autodoc:command{\odd-running-header{<content>}}}
     \cell[valign=top]{Registers the content to be used in odd running headers.}
   \end{row}
+  \begin{row}
+    \cell[valign=top]{\autodoc:command{\even-tracked-header{<content>}}}
+    \cell[valign=top]{Registers the content to be used in even running headers, tracked.}
+  \end{row}
+  \begin{row}
+    \cell[valign=top]{\autodoc:command{\odd-tracked-header{<content>}}}
+    \cell[valign=top]{Registers the content to be used in odd running headers, tracked.}
+  \end{row}  
 \end{ptable}
 \caption{Commands for manipulating page headers.}
 \end{table}
+
+The “tracked” variants ensure the content is tracked per page (using “info nodes”), which is usually what you want for section headers.
+The other versions do not introduce info nodes, are intended to be used with direct content (such as a document title) or content already tracked elsewhere.
 
 Page headers rely on the functionality provided by the \autodoc:package{resilient.headers} package,
 so the \autodoc:command{\noheaders}, \autodoc:command{\noheaderthispage} and \autodoc:command{\headers}
@@ -260,6 +271,14 @@ therefore change many styling and appearance aspects to create a custom table of
 Cross-references are supported via the \autodoc:package{labelrefs} package, henceforth
 the \autodoc:command{\label}, \autodoc:command{\ref} and \autodoc:command{\pageref} commands are
 available.
+
+\medskip
+A few layout-related commands are also provided.
+
+The \autodoc:command{\layout[layout=<layout spec>]} command inserts a page break and changes the page layout from that point. An optional \autodoc:parameter{offset=<dimen>} may be specified to also alter the binding offset. By default, the global offset (that is, as possibly defined via the corresponding class option) is used.
+
+Mostly intended for documentation, the \autodoc:command{\showlayout[layout=<layout spec>, papersize=<paper spec>]} command outputs an image representing the selected page layout and paper size.
+Optional parameters are \autodoc:parameter{offset=<dimen>} for the binding offset (0, that is no offset, by default), \autodoc:parameter{ratio=<number>} for the image down-scaling (dividing the paper size by the specified amount, 6.5 by default), and \autodoc:parameter{rough=<boolean>} (false by default).
 
 \chapter{A \em{curriculum vitae} class}
 

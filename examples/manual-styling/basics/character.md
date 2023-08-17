@@ -12,6 +12,7 @@ A regular character style obeys to the following specification
     color: "⟨color specification⟩"
     properties:
       position: "normal|super|sub"
+      case: "normal|upper|lower|title"
 ```
 
 The ⟨font specification⟩ is an object which can contain any of the usual elements, as
@@ -19,9 +20,8 @@ used in the SILE `\font` command.
 
 The ⟨color specification⟩ follows the same syntax as defined in the SILE **color** package.
 
-The "properties" might be extended in a future revision; for now they support a position
-element, to specify a superscript or subscript formatting. The "normal" value may be used
-to override a parent style definition, when style inheritance is used.
+The "properties" might be extended in a future revision; for now they support a position element, to specify a superscript or subscript formatting, and a text case element.
+The "normal" values may be used to override a parent style definition, when style inheritance is used.
 
 As an example, the following style results in a blue italic superscript in the Libertinus
 Serif font.
