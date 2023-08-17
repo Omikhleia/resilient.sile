@@ -55,26 +55,28 @@ function package.outputHeader (_, headerContent, frame)
     local headerFrame = SILE.getFrame(frame)
     if headerFrame then
       SILE.typesetNaturally(headerFrame, function ()
-        SILE.settings:pushState()
-        -- Restore the settings to the top of the queue, which should be the document
-        SILE.settings:toplevelState()
-        SILE.settings:set("current.parindent", SILE.nodefactory.glue())
-        SILE.settings:set("document.lskip", SILE.nodefactory.glue())
-        SILE.settings:set("document.rskip", SILE.nodefactory.glue())
+        if headerContent then
+          SILE.settings:pushState()
+          -- Restore the settings to the top of the queue, which should be the document
+          SILE.settings:toplevelState()
+          SILE.settings:set("current.parindent", SILE.nodefactory.glue())
+          SILE.settings:set("document.lskip", SILE.nodefactory.glue())
+          SILE.settings:set("document.rskip", SILE.nodefactory.glue())
 
-        -- Temporarilly kill footnotes and labels (fragile)
-        local oldFt = SILE.Commands["footnote"]
-        SILE.Commands["footnote"] = function() end
-        local oldLbl = SILE.Commands["label"]
-        SILE.Commands["label"] = function () end
+          -- Temporarilly kill footnotes and labels (fragile)
+          local oldFt = SILE.Commands["footnote"]
+          SILE.Commands["footnote"] = function() end
+          local oldLbl = SILE.Commands["label"]
+          SILE.Commands["label"] = function () end
 
-        SILE.process(headerContent)
+          SILE.process(headerContent)
 
-        SILE.typesetter:leaveHmode()
+          SILE.typesetter:leaveHmode()
 
-        SILE.Commands["footnote"] = oldFt
-        SILE.Commands["label"] = oldLbl
-        SILE.settings:popState()
+          SILE.Commands["footnote"] = oldFt
+          SILE.Commands["label"] = oldLbl
+          SILE.settings:popState()
+        end
 
         if SILE.scratch.headers.rule then
           local rule = SILE.scratch.headers.rule

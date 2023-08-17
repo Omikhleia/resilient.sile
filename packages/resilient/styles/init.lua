@@ -10,8 +10,8 @@ package._name = "resilient.styles"
 
 local utils = require("resilient.utils")
 local ast = require("silex.ast")
-local createCommand, subContent, extractFromTree
-        = ast.createCommand, ast.subContent, ast.extractFromTree
+local createCommand, subContent
+        = ast.createCommand, ast.subContent
 
 function package:_init (options)
   base._init(self, options)
@@ -269,7 +269,6 @@ function package:registerCommands ()
   local function characterStyle (style, content, options)
     options = options or {}
     if style.properties then
-      local tocentry = extractFromTree(content, "tocentry") -- HACK for sectioning styles
       if style.properties.position and style.properties.position ~= "normal" then
         local positionCommand = SILE.scratch.styles.positions[style.properties.position]
         if not positionCommand then
@@ -283,12 +282,6 @@ function package:registerCommands ()
           SU.error("Invalid style case '"..style.properties.case.."'")
         end
         content = createCommand(caseCommand, {}, content)
-      end
-      if tocentry then -- HACK for sectioning styles
-        -- We don't want character styles from a paragraph level to be applied
-        -- to the TOC entry content, esp. text casing.
-        SU.debug("resilient.styles", "TOC entry reinserted due to character styling")
-        content = { tocentry, content }
       end
     end
     if style.color then
