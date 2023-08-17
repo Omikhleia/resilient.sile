@@ -58,6 +58,7 @@ build = {
     ["sile.resilient.layouts.canonical"]   = "resilient/layouts/canonical.lua",
     ["sile.resilient.layouts.division"]    = "resilient/layouts/division.lua",
     ["sile.resilient.layouts.frenchcanon"] = "resilient/layouts/frenchcanon.lua",
+    ["sile.resilient.layouts.geometry"]    = "resilient/layouts/geometry.lua",
     ["sile.resilient.layouts.marginal"]    = "resilient/layouts/marginal.lua",
 
     ["sile.resilient.adapters.frameset"] = "resilient/adapters/frameset.lua",
