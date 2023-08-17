@@ -285,8 +285,7 @@ function class:registerCommands ()
   base.registerCommands(self)
 
   self:registerCommand("cv-header", function (_, content)
-    local closure = SILE.settings:wrap()
-    SILE.scratch.headers.content = function () closure(content) end
+    SILE.scratch.headers.content = content
   end, "Text to appear at the top of the page")
 
   self:registerCommand("cv-footer", function (_, content)

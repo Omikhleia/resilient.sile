@@ -358,11 +358,14 @@ function class:registerStyles ()
 end
 
 function class:endPage ()
-  local headerContent = (self:oddPage() and SILE.scratch.headers.odd)
-        or (not(self:oddPage()) and SILE.scratch.headers.even)
-  if headerContent then
-    self.packages["resilient.headers"]:outputHeader(headerContent)
+  if SILE.scratch.info.thispage.headerOdd then
+    SILE.scratch.headers.odd = SILE.scratch.info.thispage.headerOdd[#SILE.scratch.info.thispage.headerOdd]
   end
+  if SILE.scratch.info.thispage.headerEven then
+    SILE.scratch.headers.even = SILE.scratch.info.thispage.headerEven[#SILE.scratch.info.thispage.headerEven]
+  end
+  self.packages["resilient.headers"]:outputHeader(
+      self:oddPage() and SILE.scratch.headers.odd or SILE.scratch.headers.even)
   return base.endPage(self)
 end
 
@@ -382,57 +385,86 @@ function class:registerCommands ()
 
   -- Running headers
 
-  self:registerCommand("even-running-header", function (_, content)
-    local closure = SILE.settings:wrap()
-    SILE.scratch.headers.even = function ()
-      closure(function ()
-        SILE.call("style:apply:paragraph", { name = "header-even" }, {
-          createCommand("strut", { method = "rule"}),
-          subContent(content)
-        })
-      end)
+  self:registerCommand("even-tracked-header", function (_, content)
+    local headerContent = function ()
+      SILE.call("style:apply:paragraph", { name = "header-even" }, {
+        createCommand("strut", { method = "rule"}),
+        subContent(content)
+      })
     end
-  end, "Text to appear on the top of the even page(s).")
+    SILE.call("info", {
+      category = "headerEven",
+      value = headerContent
+    })
+  end, "Text to appear on the top of even pages, tracked via info nodes.")
+
+  self:registerCommand("odd-tracked-header", function (_, content)
+    local headerContent = function ()
+      SILE.call("style:apply:paragraph", { name = "header-odd" }, {
+        createCommand("strut", { method = "rule"}),
+        subContent(content)
+      })
+    end
+    SILE.call("info", {
+      category = "headerOdd",
+      value = headerContent
+    })
+  end, "Text to appear on the top of odd pages, tracked via info node.")
+
+  self:registerCommand("even-running-header", function (_, content)
+    SILE.scratch.headers.odd = function ()
+      SILE.call("style:apply:paragraph", { name = "header-even" }, {
+        createCommand("strut", { method = "rule"}),
+        subContent(content)
+      })
+    end
+  end, "Text to appear on the top of even pages.")
 
   self:registerCommand("odd-running-header", function (_, content)
-    local closure = SILE.settings:wrap()
     SILE.scratch.headers.odd = function ()
-      closure(function ()
-        SILE.call("style:apply:paragraph", { name = "header-odd" }, {
-          createCommand("strut", { method = "rule"}),
-          subContent(content)
-        })
-      end)
+      SILE.call("style:apply:paragraph", { name = "header-odd" }, {
+        createCommand("strut", { method = "rule"}),
+        subContent(content)
+      })
     end
-  end, "Text to appear on the top of the odd page(s).")
+  end, "Text to appear on the top odd pages.")
 
   -- Sectioning hooks and commands
 
-  self:registerCommand("sectioning:part:hook", function (_, _)
-    -- Parts cancel headers and folios
-    SILE.call("noheaderthispage")
-    SILE.call("nofoliothispage")
-    SILE.scratch.headers.odd = nil
-    SILE.scratch.headers.even = nil
+  self:registerCommand("sectioning:part:hook", function (options, _)
+    local before = SU.boolean(options.before, false)
+    if before then
+      -- Parts cancel headers and folios
+      SILE.call("noheaderthispage")
+      SILE.call("nofoliothispage")
+      SILE.scratch.headers.odd = nil
+      SILE.scratch.headers.even = nil
 
-    -- Parts reset footnotes and chapters
-    SILE.call("set-counter", { id = "footnote", value = 1 })
-    SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
+      -- Parts reset footnotes and chapters
+      SILE.call("set-counter", { id = "footnote", value = 1 })
+      SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
+    end
   end, "Apply part hooks (counter resets, footers and headers, etc.)")
 
-  self:registerCommand("sectioning:chapter:hook", function (_, content)
-    -- Chapters re-enable folios, have no header, and reset the footnote counter.
-    SILE.call("noheaderthispage")
-    SILE.call("folios")
-    SILE.call("set-counter", { id = "footnote", value = 1 })
-
-    -- Chapters, here, go in the even header.
-    SILE.call("even-running-header", {}, content)
+  self:registerCommand("sectioning:chapter:hook", function (options, content)
+    local before = SU.boolean(options.before, false)
+    if before then
+      -- Chapters re-enable folios, have no header, and reset the footnote counter.
+      SILE.call("noheaderthispage")
+      SILE.call("folios")
+      SILE.call("set-counter", { id = "footnote", value = 1 })
+    else
+      -- Chapters, here, go in the even header.
+      SILE.call("even-tracked-header", {}, content)
+    end
   end, "Apply chapter hooks (counter resets, footers and headers, etc.)")
 
-  self:registerCommand("sectioning:section:hook", function (_, content)
-    -- Sections, here, go in the odd header.
-    SILE.call("odd-running-header", {}, content)
+  self:registerCommand("sectioning:section:hook", function (options, content)
+    local before = SU.boolean(options.before, false)
+    if not before then
+      -- Sections, here, go in the odd header.
+      SILE.call("odd-tracked-header", {}, content)
+    end
   end, "Applies section hooks (footers and headers, etc.)")
 
   self:registerCommand("part", function (options, content)

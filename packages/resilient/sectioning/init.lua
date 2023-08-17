@@ -7,8 +7,8 @@
 local base = require("packages.resilient.base")
 
 local ast = require("silex.ast")
-local createCommand, createStructuredCommand, subContent
-        = ast.createCommand, ast.createStructuredCommand, ast.subContent
+local createCommand, subContent
+        = ast.createCommand, ast.subContent
 
 local package = pl.class(base)
 package._name = "resilient.sectioning"
@@ -118,12 +118,12 @@ function package:registerCommands ()
     -- Handle the style hook if specified.
     -- Pass the user-defined options, the counter and level, so it has them, if needed.
     -- Also pass the styled header content (possibly with the number).
+    local titleHookContent
     if secStyle.hook then
       local hookOptions = pl.tablex.copy(options)
       hookOptions.counter = secStyle.counter.id
       hookOptions.level = secStyle.counter.level
-
-      local titleHookContent
+      hookOptions.before = true -- HACK SEE BELOW
       local numsty = sty.sectioning and sty.sectioning.numberstyle
           and sty.sectioning.numberstyle.header
       if numbering and numsty then
@@ -132,25 +132,46 @@ function package:registerCommands ()
           subContent(content)
         }
       else
-        titleHookContent = content
+        titleHookContent = subContent(content)
       end
-      SILE.call(secStyle.hook, hookOptions, titleHookContent)
+      -- HACK HOOK - BAD DESIGN WORKAROUND
+      -- https://github.com/Omikhleia/resilient.sile/issues/43
+      -- The hook logic does two different things and we cannot change it
+      -- without breaking existing style files. So we have to do this hack,
+      -- calling the hook twice for the before and after parts, where the
+      -- before part is responsible for settings things (presence or not of
+      -- header and folio, other counter resets, etc.) and the after part
+      -- is responsible for handling the running header.
+      -- Moreover, the running header will need to an info node, inserted
+      -- at the appropriate place in the content (see further below),
+      -- without the style applied to the content (esp. text casing).
+      -- So we hide it in a short-term command.
+      SILE.call(secStyle.hook, hookOptions)
+      hookOptions.before = false
+      self:registerCommand("sectioning:hack:hook", function ()
+        SILE.call(secStyle.hook, hookOptions, titleHookContent)
+      end)
     end
 
     local titleContent = {}
-    -- TOC entry
-    -- We pass it added to the content, so the paragraph style is applied around it
+    -- HACK TOC ENTRY - BAD DESIGN WORKAROUND
+    -- We pass it added to the content, so the toc entry info note occurs at the right place.
+    -- But we do not want the paragraph style applied around it
     -- (and the TOC info node is located in the right place, notwithstanding breaks, skips, etc.).
-    -- BUT that will be a problem later if the paragraph style includes input filters or needs
+    -- That will be a problem later if the paragraph style includes input filters or needs
     -- to tweaks (typically, text casing is in that situation).
     -- We could have done things slightly differently (splitting how paragraph style is applied),
     -- but I went another quick and dirty route in the styles package...
+    -- So we use the same hack as for the hook, hiding the content tree
+    -- in a short-term command.
     local toclevel = secStyle.settings.toclevel
     local bookmark = secStyle.settings.bookmark
     if toclevel and toc then
-      titleContent[#titleContent + 1] =
-        createStructuredCommand("tocentry",
-          { level = toclevel, number = number, bookmark = bookmark }, subContent(content))
+      self:registerCommand("sectioning:hack:toc", function ()
+        SILE.call("tocentry", { level = toclevel, number = number, bookmark = bookmark },
+          subContent(content))
+      end)
+      titleContent[#titleContent + 1] = createCommand("sectioning:hack:toc")
     end
 
     -- Show section number (if numbering is true AND a main style is defined)
@@ -174,6 +195,14 @@ function package:registerCommands ()
     -- (with the risk of impacting indent/noindent and novbreak decisions here)
     if marker and SILE.Commands["label"] then
       titleContent[#titleContent + 1] = createCommand("label", { marker = marker })
+    end
+    -- Running headers
+    -- See HACK HOOK above
+    if titleHookContent then
+      -- As for labels, underlying info nodes will interact with indents/breaks, so we
+      -- also try to get them in the title. But we do not want the main style to
+      -- be applied to them, so we hid them in a short-term command...
+      titleContent[#titleContent + 1] = createCommand("sectioning:hack:hook")
     end
     SILE.call("style:apply:paragraph", { name = name }, titleContent)
   end, "Apply sectioning")
