@@ -229,9 +229,20 @@ The class also defines two commands for manipulating the page headers.
     \cell[valign=top]{\autodoc:command{\odd-running-header{<content>}}}
     \cell[valign=top]{Registers the content to be used in odd running headers.}
   \end{row}
+  \begin{row}
+    \cell[valign=top]{\autodoc:command{\even-tracked-header{<content>}}}
+    \cell[valign=top]{Registers the content to be used in even running headers, tracked.}
+  \end{row}
+  \begin{row}
+    \cell[valign=top]{\autodoc:command{\odd-tracked-header{<content>}}}
+    \cell[valign=top]{Registers the content to be used in odd running headers, tracked.}
+  \end{row}  
 \end{ptable}
 \caption{Commands for manipulating page headers.}
 \end{table}
+
+The “tracked” variants ensure the content is tracked per page (using “info nodes”), which is usually what you want for section headers.
+The other versions do not introduce info nodes, are intended to be used with direct content (such as a document title) or content already tracked elsewhere.
 
 Page headers rely on the functionality provided by the \autodoc:package{resilient.headers} package,
 so the \autodoc:command{\noheaders}, \autodoc:command{\noheaderthispage} and \autodoc:command{\headers}
