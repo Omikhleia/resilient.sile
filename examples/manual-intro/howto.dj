@@ -34,7 +34,7 @@ When used with this collection, it's leveraged with additional capabilities.
 On the other hand, if you are not already experienced with the SIL language and your content is reasonably simple, this author would recommend to seriously consider Markdown or Djot (with even a preference for Djot when possible).
 Not only are they simpler and lightweight, but they are also more portable, with great tools such as Pandoc to convert them to other formats, so you won't be stuck with a custom mark-up.
 
-![](./temp/manicule.svg){height="0.60em"} Check the _Markdown and Djot to PDF with SILE_ user guide.
+![](./manicule.svg){height="0.60em"} Check the _Markdown and Djot to PDF with SILE_ user guide.
 
 {.unnumbered}
 ## Assembling your content
@@ -49,7 +49,7 @@ It is perfectly legit, so follow that path if it has your preference.
 Yet, the task could be made more straightforward, right?
 Truly, the resilient "master document format" aims at simplifying and streamlining that process.
 
-![](./temp/manicule.svg){height="0.60em"} Read part [](#master-document){.section}.
+![](./manicule.svg){height="0.60em"} Read part [](#master-document){.section}.
 
 {.unnumbered}
 ## Styling your book
@@ -57,23 +57,23 @@ Truly, the resilient "master document format" aims at simplifying and streamlini
 You have chosen a paper size for your book, and are using one of our classes, say the *resilient.book* class.
 It's time then to select a page layout.
 
-![](./temp/manicule.svg){height="0.60em"} Read part [](#page-layout){.section}.
+![](./manicule.svg){height="0.60em"} Read part [](#page-layout){.section}.
 
 You are nearly done.
 You may want now to customize the document styles according your needs.
 
-![](./temp/manicule.svg){height="0.60em"} Read part [](#styling-paradigm){.section}.
+![](./manicule.svg){height="0.60em"} Read part [](#styling-paradigm){.section}.
 
 {.unnumbered}
 ## Going further
 
 In composing your book, you may need some of the cool packages provided here.
 
-![](./temp/manicule.svg){height="0.65em"} Read part [](#resilient-packages){.section}.
+![](./manicule.svg){height="0.65em"} Read part [](#resilient-packages){.section}.
 
 Likewise, you may need more details about the available document classes and their capabilities.
 
-![](./temp/manicule.svg){height="0.65em"} Read part [](#resilient-classes){.section}.
+![](./manicule.svg){height="0.65em"} Read part [](#resilient-classes){.section}.
 
 {.pendant}
 ---
