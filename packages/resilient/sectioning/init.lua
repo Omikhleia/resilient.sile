@@ -181,7 +181,7 @@ function package:registerCommands ()
           createCommand("style:apply:number", { name = secStyle.numberstyle.main, text = number })
         if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
           titleContent[#titleContent + 1] =
-            createCommand("break") -- HACK. Pretty weak unless the parent paragraph style is ragged.
+            createCommand("hardbreak")
         end
       end
     end
@@ -246,6 +246,22 @@ function package:registerCommands ()
     end
     SILE.typesetter:leaveHmode()
   end, "Open a single page")
+
+  self:registerCommand("hardbreak", function (_, _)
+    -- We don't want to use a cr here, because it would affect parindents,
+    -- insert a parskip, and maybe other things.
+    -- It's a bit tricky to handle a hardbreak depending on the alignment
+    -- of the paragraph:
+    --    justified = we can't use a break, a cr (hfill+break) would work
+    --    ragged left = we can't use a cr
+    --    centered = we can't use a cr
+    --    ragged right = we don't care, a break is sufficient and safer
+    -- Knowning the alignment is not obvious, neither guessing it from the skips.
+    -- Using a parfillskip seems to do the trick, but it's maybe a bit hacky.
+    -- This is nevertheless what would have occurred with a par.
+    SILE.typesetter:pushGlue(SILE.settings:get("typesetter.parfillskip"))
+    SILE.call("break")
+  end, "Insert a hard break respecting the paragraph alignment")
 
 end
 
