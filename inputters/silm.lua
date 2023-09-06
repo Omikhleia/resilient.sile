@@ -1,15 +1,26 @@
 --- Some YAML master file inputter for SILE
 --
--- @copyright License: MIT (c) 2023 Omikhleia
+-- @copyright License: MIT (c) 2023 Omikhleia, Didier Willis
 -- @module inputters.silm
 --
 local ast = require("silex.ast")
 local createCommand, createStructuredCommand = ast.createCommand, ast.createStructuredCommand
 
+SILE.registerCommand("has:book-title-support", function (_, content)
+  -- Fairly lame command detection, and it's not even doing the proper
+  -- thing. Should be refactored after having addressed issue
+  -- https://github.com/Omikhleia/resilient.sile/issues/58
+  if SILE.Commands["odd-running-header"] then
+    -- At least resilient.book will do something
+    SILE.call("odd-running-header", {}, content)
+  end
+  -- I am not going to care for the core book class...
+end, nil, nil, true) -- HACK (*sigh*)
+
 -- SCHEMA VALIDATION
 -- Loosely inspired from JSON schema / openAPI specs
 
-local OptionSchema = {
+local OptionsSchema = {
   type = "object",
   additionalProperties = {
     type = { -- oneOf
@@ -21,7 +32,20 @@ local OptionSchema = {
   properties = {}
 }
 
-local contentSchema = {
+local SingleFileSchema = {
+  type = { -- oneOf
+    { type = "string" },
+    { type = "object",
+      properties = {
+        file = { type = "string" },
+        format = { type = "string" },
+        options = OptionsSchema
+      }
+    }
+  }
+}
+
+local ContentSchema = {
   type = "array",
   items = {
     type = { -- oneOf
@@ -36,17 +60,64 @@ local contentSchema = {
         properties = {
           file = { type = "string" },
           format = { type = "string" },
-          options = OptionSchema,
+          options = OptionsSchema,
           -- content (self reference, handled below)
         }
       }
     }
   }
 }
-contentSchema.items.type[2].properties.content = contentSchema
-contentSchema.items.type[3].properties.content = contentSchema
+ContentSchema.items.type[2].properties.content = ContentSchema
+ContentSchema.items.type[3].properties.content = ContentSchema
 
-local masterSchema = {
+local BookSchema = {
+  type = "object",
+  properties = {
+    enabled = { type = "boolean" },
+    cover = {
+      type = "object",
+      properties = {
+        front = {
+          type = "object",
+          properties = {
+            image = { type = "string" }
+          }
+        },
+        back = {
+          type = "object",
+          properties = {
+            image = { type = "string" },
+            background = { type = "string" },
+            content = SingleFileSchema
+          }
+        }
+      }
+    },
+    halftitle = {
+      type = "object",
+      properties = {
+        recto = { type = "string" },
+        verso = { type = "string" }
+      }
+    },
+    title = {
+      type = "object",
+      properties = {
+        recto = { type = "string" },
+        verso = { type = "string" }
+      }
+    },
+    endpaper = {
+      type = "object",
+      properties = {
+        recto = { type = "string" },
+        verso = { type = "string" }
+      }
+    }
+  }
+}
+
+local MasterSchema = {
   type = "object",
   additionalProperties = true, -- Allow unknown property for extensibility
   properties = {
@@ -131,18 +202,19 @@ local masterSchema = {
         }
       }
     },
+    book = BookSchema,
     -- parts and chapters are exclusive, but we don't enforce it here.
     -- We will check it later in the inputter
-    parts = contentSchema,
-    chapters = contentSchema
+    parts = ContentSchema,
+    chapters = ContentSchema
   }
 }
 
 --- Naive recursive schema validation
----@param obj table parsed YAML object
----@param schema table schema to validate against
----@param context? table parent schema context for error messages
----@return boolean, string true if valid, false and error message otherwise
+---@param obj      table           parsed YAML object
+---@param schema   table           schema to validate against
+---@param context? table           parent schema context for error messages
+---@return         boolean,string  true if valid, false and error message otherwise
 local function validate (obj, schema, context)
   context = context or ""
   if type(schema.type) == "table" then
@@ -208,7 +280,7 @@ end
 
 -- Metadata
 
-local pdfMetadata = {
+local knownPdfMetadata = {
   title = "Title",
   subject = "Subject",
   keywords = "Keywords",
@@ -216,13 +288,13 @@ local pdfMetadata = {
 }
 
 --- Insert PDF metadata into SILE AST
----@param content table SILE AST for insertion
----@param metadata table Metadata (key, value) table
+---@param content  table   SILE AST for insertion
+---@param metadata table   Metadata (key, value) table
 local function insertPdfMetadata (content, metadata)
   for key, value in pairs(metadata) do
-    if pdfMetadata[key] then
+    if knownPdfMetadata[key] then
       content[#content+1] = createCommand("pdf:metadata", {
-        key = pdfMetadata[key],
+        key = knownPdfMetadata[key],
         value = type(value) == "table" and table.concat(value, "; ") or value
       })
     end
@@ -230,9 +302,9 @@ local function insertPdfMetadata (content, metadata)
 end
 
 --- Returned prepared Djot metadata
----@param metadata table Metadata (key, value) table
----@return table Prefixed metadata table (keys as expected by the Djot inputter)
-local function handleDjotMetadata (metadata) -- Naive approach
+---@param metadata table   Metadata (key, value) table
+---@return         table   Prefixed metadata table (keys as expected by the Djot inputter)
+local function handleDjotMetadata (metadata)
   local meta = {}
   for key, value in pairs(metadata) do
     if key == "authors" then
@@ -253,6 +325,9 @@ local function handleDjotMetadata (metadata) -- Naive approach
       end
     elseif key == "pubdate" then
       meta["meta:pubdate"] = os.date("%Y-%m-%d", os.time(value)) -- back to string
+      meta["meta:pubdate-year"] = tostring(value.year)
+      meta["meta:pubdate-month"] = tostring(value.month)
+      meta["meta:pubdate-day"] = tostring(value.day)
     else
       meta["meta:" .. key] = type(value) == "table" and table.concat(value, ", ") or value
     end
@@ -263,40 +338,64 @@ end
 local Levels = { "part", "chapter", "section", "subsection", "subsubsection" }
 
 --- Recursively process content sections
----@param content table SILE AST for insertion
----@param entries table Content entries to process (list of strings or tables)
----@param shiftHeadings number Shift headings by this amount
----@param metaopts table Metadata options
-local function doLevel(content, entries, shiftHeadings, metaopts)
-  for _, inc in ipairs(entries) do
+---@param content       table   SILE AST for insertion
+---@param entries       table   Content entries to process (list of strings or tables)
+---@param shiftHeadings number  Shift headings by this amount
+---@param metaopts      table   Metadata options
+local function doLevel (content, entries, shiftHeadings, metaopts)
+  for _, entry in ipairs(entries) do
     local spec
-    if type(inc) == "string" then
+    if type(entry) == "string" then
       spec = pl.tablex.union(metaopts, {
-        src = inc,
+        src = entry,
         shift_headings = shiftHeadings })
       content[#content+1] = createCommand("include", spec)
-    elseif inc.file then
-      local fullopts = inc.options and pl.tablex.union(inc.options, metaopts) or metaopts
+    elseif entry.file then
+      local fullopts = entry.options and pl.tablex.union(entry.options, metaopts) or metaopts
       spec = pl.tablex.union(fullopts, {
-        src = inc.file,
-        format = inc.format,
+        src = entry.file,
+        format = entry.format,
         shift_headings = shiftHeadings })
       content[#content+1] = createCommand("include", spec)
-      if inc.content then
-        doLevel(content, inc.content, shiftHeadings + 1, metaopts)
+      if entry.content then
+        doLevel(content, entry.content, shiftHeadings + 1, metaopts)
       end
-    elseif inc.caption then
+    elseif entry.caption then
       local command = Levels[shiftHeadings + 2] or SU.error("Invalid master document (too many nested levels)")
-      content[#content+1] = createCommand(command, {}, inc.caption)
-      if inc.content then
-        doLevel(content, inc.content, shiftHeadings + 1, metaopts)
+      content[#content+1] = createCommand(command, {}, entry.caption)
+      if entry.content then
+        doLevel(content, entry.content, shiftHeadings + 1, metaopts)
       end
-    elseif inc.content then
-      doLevel(content, inc.content, shiftHeadings + 1, metaopts)
+    elseif entry.content then
+      doLevel(content, entry.content, shiftHeadings + 1, metaopts)
     else
       SU.error("Invalid master document (invalid content section)")
     end
   end
+end
+
+--- Process back cover content (text included in the back cover)
+---@param entry    table|string  Back cover content entry
+---@param metaopts table         Metadata options
+---@return         table         SILE AST for insertion
+local function doBackCoverContent (entry, metaopts)
+  local content
+  local spec
+  if not entry then
+    content = {}
+  elseif type(entry) == "string" then
+    spec = pl.tablex.union(metaopts, { src = entry })
+    content = createCommand("include", spec)
+  elseif entry.file then
+    local fullopts = entry.options and pl.tablex.union(entry.options, metaopts) or metaopts
+    spec = pl.tablex.union(fullopts, {
+      src = entry.file,
+      format = entry.format })
+    content = createCommand("include", spec)
+  else
+    SU.error("Invalid master document (invalid cover content)")
+  end
+  return content
 end
 
 -- INPUTTER
@@ -312,7 +411,10 @@ function inputter.appropriate (round, filename, _)
     return filename:match("silm$")
   end
   -- No other round supported...
-  -- FIXME we could check syntax (YAML file with masterfile field, at least)
+  -- TODO QUESTION:
+  -- We could check syntax (YAML file with masterfile field, at least),
+  -- but there's no way it seems to properly cache the result and avoid
+  -- re-reading the file at later parsing...
   return false
 end
 
@@ -322,7 +424,7 @@ function inputter:parse (doc)
   if type(master) ~= "table" then
     SU.error("Invalid master document (not a table)")
   end
-  local ok, err = validate(master, masterSchema)
+  local ok, err = validate(master, MasterSchema)
   if not ok then
     SU.error("Invalid master document (" .. err .. ")")
   end
@@ -331,15 +433,11 @@ function inputter:parse (doc)
   end
 
   local baseShiftHeadings = self.options.shift_headings or 0
+  local content = {}
 
   -- Are we the root document, or some included subdocument?
   -- in the latter case, we only honor some of the fields.
   local isRoot = not SILE.documentState.documentClass
-
-  local content = {}
-
-  local sile = master.sile or {}
-  local metadata = master.metadata or {}
 
   if isRoot then
     -- Document global settings
@@ -364,7 +462,7 @@ function inputter:parse (doc)
         })
       end
     end
-    -- FIXME QUESTION: I start too think that main language should
+    -- TODO QUESTION: I start too think that main language should
     -- be class option so that some decisions could be delegated to
     -- the class (e.g. style overrides in the case of resilient classes)
     -- Not sure how to behave with legacy classes though...
@@ -375,7 +473,10 @@ function inputter:parse (doc)
     end
   end
 
+  local sile = master.sile or {}
+  local metadata = master.metadata or {}
   local packages = sile.packages or {}
+
   if packages then
     for _, pkg in ipairs(packages) do
       content[#content+1] = createCommand("use", {
@@ -394,19 +495,79 @@ function inputter:parse (doc)
         })
       end
     end
+    if SU.boolean(self.options.cropmarks, false) then
+      content[#content+1] = createCommand("use", {
+        module = "packages.cropmarks"
+      })
+      content[#content+1] = createCommand("cropmarks:setup")
+    end
     if metadata.title then
-      content[#content+1] = createCommand("odd-running-header", {}, metadata.title)
+      content[#content+1] = createCommand("has:book-title-support", {}, { metadata.title })
     end
   end
 
+  local metadataOptions = handleDjotMetadata(metadata)
+
+  local bookmatter = master.book or {}
+  bookmatter = {
+    halftitle = bookmatter.halftitle or {},
+    title = bookmatter.title or {},
+    endpaper = bookmatter.endpaper or {},
+    cover = bookmatter.cover or {},
+    enabled = SU.boolean(bookmatter.enabled, false)
+  }
+  local enabledBook = isRoot and SU.boolean(self.options.bookmatter, bookmatter.enabled)
+  local enabledCover = isRoot and SU.boolean(self.options.cover, bookmatter.enabled)
+
+  if enabledBook or enabledCover then
+    content[#content+1] = createCommand("use", {
+      module = "packages.resilient.bookmatters"
+    })
+  end
+
+  if enabledCover and bookmatter.cover.front then
+    content[#content+1] = createCommand("bookmatters:front-cover", {
+      image = bookmatter.cover.front.image,
+      metadata = metadataOptions
+    })
+  end
+
+  if enabledBook then
+    content[#content+1] = createCommand("bookmatters:template", {
+      recto = bookmatter.halftitle.recto or "halftitle-recto",
+      verso = bookmatter.halftitle.verso or "halftitle-verso",
+      metadata = metadataOptions
+    })
+    content[#content+1] =  createCommand("bookmatters:template", {
+      recto = bookmatter.title.recto or "title-recto",
+      verso = bookmatter.title.verso or "title-verso",
+      metadata = metadataOptions
+    })
+  end
+
   -- Document content
-  -- FIXME QUESTION: if not a root document, should we wrap the includes
-  -- in a language group?
-  local metaopts = handleDjotMetadata(metadata)
+  -- TODO QUESTION: if not a root document, should we wrap the includes
+  -- in a language group? Mixing documents with different languages
+  -- is probably not a good idea, anyhow...
   if master.parts then
-    doLevel(content, master.parts, baseShiftHeadings - 1, metaopts)
+    doLevel(content, master.parts, baseShiftHeadings - 1, metadataOptions)
   elseif master.chapters then
-    doLevel(content, master.chapters, baseShiftHeadings, metaopts)
+    doLevel(content, master.chapters, baseShiftHeadings, metadataOptions)
+  end
+
+  if enabledBook then
+    content[#content+1] = createCommand("bookmatters:template", {
+      recto = bookmatter.endpaper.recto or "endpaper-recto",
+      verso = bookmatter.endpaper.verso or "endpaper-verso",
+      metadata = metadataOptions
+    })
+  end
+  if enabledCover and bookmatter.cover.back then
+    content[#content+1] = createCommand("bookmatters:back-cover", {
+      image = bookmatter.cover.back.image,
+      background = bookmatter.cover.back.background,
+      metadata = metadataOptions
+    }, doBackCoverContent(bookmatter.cover.back.content, metadataOptions))
   end
 
   if isRoot then

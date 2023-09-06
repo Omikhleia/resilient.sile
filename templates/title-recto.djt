@@ -1,0 +1,32 @@
+``` =sile-lua
+SILE.call("hbox") -- so top page glues are not suppressed
+```
+{custom-style="center"}
+::::
+{?author custom-style="bookmatter-author"}
+:::
+:author:
+:::
+
+{?title custom-style="bookmatter-title"}
+:::
+:title:
+
+{.pendant type=4 width="30%lw"}
+---
+:::
+
+{?subtitle custom-style="bookmatter-subtitle"}
+:::
+:subtitle:
+:::
+
+``` =sile-lua
+SILE.call("vfill")
+```
+
+{?publisher custom-style="bookmatter-publisher"}
+:::
+:publisher:
+:::
+::::

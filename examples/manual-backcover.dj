@@ -1,0 +1,17 @@
+The _re·sil·ient_ collection for the SILE typesetting system provides advanced classes, packages and tools for streamlining the production of high-quality books and documents in a variety of formats.
+
+Content can be written in Markdown or Djot, with great syntax extensions.
+SILE’s own SIL markup language may still be used, but you should not even need it for most documents.
+
+From the cover design to the page layout, from the fine typography to the final output, _re·sil·ient_ is designed to make the process of creating beautiful books as simple as possible.
+
+Master documents allow you to combine multiple chapters into a single book and to organize the structure of your content in a flexible way.
+
+The collection also offers a challenging and interesting styling paradigm, allowing to configure many styling decisions with a consistent and unified approach, abstracting the complexity.
+
+Its pretty strong “book” document class comes with a mind-bogling choice of sound page layouts.
+It has everything you may expect for such a class, from cross-references to advanced captioned figure and table environments, and more...
+
+Everything is highly configurable, from the table of contents to the headers, footers, footnotes and sectioning environments.
+
+Discover the capabilities of _re·sil·ient_ in this manual, and start writing your own _perfect_ book today!

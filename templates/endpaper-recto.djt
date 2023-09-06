@@ -1,0 +1,24 @@
+``` =sile-lua
+SILE.call("hbox") -- so top page vfill is not suppressed
+SILE.call("vfill")
+```
+
+{custom-style="center"}
+::::
+{?title}
+:::
+_:title:_
+:::
+
+{?isbn}
+:::
+ISBN: :isbn:
+
+:isbn:{custom-style="bookmatter-ean13"}
+:::
+
+{?publisher}
+:::
+:publisher:{.smallcaps}
+:::
+::::

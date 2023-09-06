@@ -1,0 +1,10 @@
+``` =sile-lua
+SILE.call("hbox") -- so top page vfill is not suppressed
+SILE.call("vfill")
+```
+
+{custom-style="center"}
+::::
+_This book is composed with the SILE typesetting system
+and the _re·sil·ient_ collection of classes & packages._
+::::

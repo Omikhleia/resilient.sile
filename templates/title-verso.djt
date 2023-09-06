@@ -1,0 +1,38 @@
+
+``` =sile-lua
+SILE.call("hbox") -- so top page vfill is not suppressed
+SILE.call("vfill")
+```
+
+{custom-style="bookmatter-copyright"}
+::::::
+{?copyright}
+:::
+:copyright:
+:::
+
+{!copyright}
+::::
+{?pubdate-year ?publisher}
+:::
+© :pubdate-year:, :publisher:.
+:::
+{?pubdate-year !publisher}
+:::
+© :pubdate-year:.
+:::
+{!pubdate-year ?publisher}
+:::
+© :publisher:.
+:::
+::::
+
+{?isbn}
+:::
+ISBN: :isbn:
+:::
+{?legal custom-style="bookmatter-legal"}
+:::
+:legal:
+:::
+::::::

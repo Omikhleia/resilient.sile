@@ -11,6 +11,89 @@ blockquote:
       before:
         skip: "smallskip"
 
+bookmatter-author:
+  inherit: "bookmatter-titlepage"
+  origin: "resilient.bookmatters"
+  style:
+    font:
+      size: "16pt"
+    properties:
+      case: "upper"
+
+bookmatter-backcover:
+  origin: "resilient.bookmatters"
+  style:
+    font:
+      size: "0.95em"
+
+bookmatter-copyright:
+  origin: "resilient.bookmatters"
+  style:
+    paragraph:
+      align: "noparindent"
+
+bookmatter-halftitle:
+  origin: "resilient.bookmatters"
+  style:
+    font:
+      size: "14pt"
+    paragraph:
+      after:
+        skip: "5%fh"
+      align: "center"
+      before:
+        skip: "25%fh"
+    properties:
+      case: "upper"
+
+bookmatter-legal:
+  origin: "resilient.bookmatters"
+  style:
+    font:
+      size: "0.8em"
+    paragraph:
+      before:
+        skip: "smallskip"
+
+bookmatter-publisher:
+  inherit: "bookmatter-titlepage"
+  origin: "resilient.bookmatters"
+  style:
+
+bookmatter-subtitle:
+  inherit: "bookmatter-titlepage"
+  origin: "resilient.bookmatters"
+  style:
+    font:
+      size: "16pt"
+    paragraph:
+      after:
+        skip: "5%fh"
+
+bookmatter-title:
+  inherit: "bookmatter-titlepage"
+  origin: "resilient.bookmatters"
+  style:
+    font:
+      size: "20pt"
+    paragraph:
+      after:
+        skip: "5%fh"
+      before:
+        skip: "30%fh"
+
+bookmatter-titlepage:
+  origin: "resilient.bookmatters"
+  style:
+
+dropcap:
+  origin: "resilient.book"
+  style:
+    font:
+      family: "Zallman Caps"
+    special:
+      lines: 2
+
 epigraph:
   origin: "resilient.epigraph"
   style:
@@ -474,9 +557,9 @@ sectioning-chapter-main-number:
   inherit: "sectioning-chapter-base-number"
   origin: "resilient.book"
   style:
+    color: "#66a0b3"
     font:
       size: "3em"
-    color: "#66a0b3"
     numbering:
       after:
         kern: "3spc"
