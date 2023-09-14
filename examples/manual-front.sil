@@ -8,57 +8,7 @@ padding=2%fw, bordercolor=#59b24c, fillcolor=230, shadowcolor=#96A8C7, shadow=fa
 \parbox[width=96%lw]{\set[parameter=document.parindent, value=0]\font[size=9pt]\color[color=100]{\process}\par}%
 }}%
 \medskip}
-%
-% We do not have a true titlepage for now, build it manually.
-\background[color=#66a0b3,allpages=false]
-\noheaderthispage
-\nofoliothispage
-\hbox{}\skip[height=30%fh]
 
-\begin{center}
-\font[size=20pt]{The
-
-\medskip
-\font[size=35pt, style=italic]{\kern[width=-0.1em]re·sil·ient}
-
-collection
-
-of
-
-classes & packages
-
-\smallskip
-for SILE
-
-}
-\end{center}
-
-\vfill
-
-\break
-
-% Now a legal matter page
-\begin{center}
-\font[features=+smcp]{The resilient collection of classes & packages for SILE}
-
-\raise[height=0.5ex]{\hrule[height=0.4pt, width=5em]}
-
-\medskip
-\href[src=https://github.com/Omikhleia/resilient.sile]{\qrcode[code=https://github.com/Omikhleia/resilient.sile]}
-\end{center}
-
-\vfill
-
-\noindent{}© 2021–2023 Didier Willis.
-
-\noindent{}This material may be distributed only subject to the terms and conditions set forth in the
-Creative Commons Attribution, Share-Alike License,
-version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
-
-\hbox{}\par\break%
-%
-\noheaderthispage%
-\nofoliothispage%
 %
 % There we go for the content.
 %

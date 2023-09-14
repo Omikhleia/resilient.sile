@@ -42,7 +42,7 @@ Not only are they simpler and lightweight, but they are also more portable, with
 Now, let's consider you have some input content ready, as an assortment of files, possibly in different mark-up languages:
 For any long work, indeed, you likely split your content into chapters or any other appropriate division scheme; and you may have used Markdown, Djot or even SIL depending on the effects to achieve.
 
-You now need assemble all these files in some wrapper document, to pick a paper size, a page layout and to set some global parameters (such as, minimally, the default font and language).
+You now need to assemble all these files in some wrapper document, pick a paper size, a page layout and set some global parameters (such as, minimally, the default font and language).
 You can do that with the SIL language in a variety of ways, having at hands all the required low-level constructs.
 It is perfectly legit, so follow that path if it has your preference.
 
@@ -60,7 +60,7 @@ It's time then to select a page layout.
 ![](./manicule.svg){height="0.60em"} Read part [](#page-layout){.section}.
 
 You are nearly done.
-You may want now to customize the document styles according your needs.
+You may want now to customize the document styles according to your needs.
 
 ![](./manicule.svg){height="0.60em"} Read part [](#styling-paradigm){.section}.
 
@@ -69,11 +69,11 @@ You may want now to customize the document styles according your needs.
 
 In composing your book, you may need some of the cool packages provided here.
 
-![](./manicule.svg){height="0.65em"} Read part [](#resilient-packages){.section}.
+![](./manicule.svg){height="0.60em"} Read part [](#resilient-packages){.section}.
 
 Likewise, you may need more details about the available document classes and their capabilities.
 
-![](./manicule.svg){height="0.65em"} Read part [](#resilient-classes){.section}.
+![](./manicule.svg){height="0.60em"} Read part [](#resilient-classes){.section}.
 
 {.pendant}
 ---

@@ -1,15 +1,17 @@
 masterfile: 1.0
 metadata:
-  title: The resilient collection of classes & packages for SILE
+  title: The re·sil·ient collection of classes & packages for SILE
+  subtitle: User Guide
   subject: User manual for the resilient.sile module
   keywords:
     - SILE
     - typesetting
     - book
   authors: Didier Willis
-  pubdate: 2022-07-30
-  url: https://github.com/Omikhleia/resilient.sil
-  copyright: © 2021–2023 Didier Willis.
+  publisher: Omikhleia
+  pubdate: 2023-10-31
+  url: https://github.com/Omikhleia/resilient.sile
+  copyright: © 2021–2023, Didier Willis.
   legal: |
     This material may be distributed only subject to the terms and conditions
     set forth in the  Creative Commons Attribution, Share-Alike License,
@@ -18,6 +20,15 @@ font:
   family: Libertinus Serif
   size: 10pt
 language: en
+book:
+  enabled: true
+  cover:
+    front:
+      image: images/cover-resilient.jpg
+    back:
+      image: images/backcover-resilient.jpg
+      content: manual-backcover.dj
+      background: "#d3b697"
 sile:
   options:
     # class: resilient.book # optional (default)
@@ -28,10 +39,10 @@ sile:
     textsubsuper.fake: false
     autodoc.highlighting: true
     document.baselineskip: 1.2em
-    # typesetter.italicCorrection: true
+    # typesetter.italicCorrection: true # Not yet available in SILE 0.14.x
   packages:
     - autodoc-resilient # REQUIRED FOR RESILIENT, do not use regular autodoc
-    - background
+    - background        # Some of the packages below might not be required...
     - lorem
     - dropcaps
     - resilient.abbr
@@ -49,6 +60,7 @@ parts:
   - file: manual-parts/part-masterdoc.dj
     content:
       - manual-masterdoc/masterdoc.dj
+      - manual-masterdoc/bookmatters.dj
   - file: manual-parts/part-layouts.dj
     content:
       - manual-layouts/layouts.sil

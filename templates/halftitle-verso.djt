@@ -1,0 +1,11 @@
+{custom-style="center"}
+::::
+{?publisher}
+:::
+:publisher:{.smallcaps}
+
+---
+:::
+
+:url:{?url custom-style="bookmatter-qrcode"}
+::::

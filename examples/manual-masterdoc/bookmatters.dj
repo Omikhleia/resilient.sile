@@ -1,0 +1,157 @@
+# Book matters
+
+Surely, books matter!
+But beyond the pun, this chapter addresses usual material that make a real book.
+An assumption here is that your book is using a resilient class, such as *resilient.book*.
+We will also suppose your master document only contains the elements briefly introduced in the previous chapter, and you processed it with:
+
+```shell
+sile -u inputters.silm mybook.silm
+```
+
+Then you got all your parts or chapters assembled, but you do know that they do not yet make a book, right? Well, try this, now:
+
+```shell
+sile -u inputters.silm[bookmatter=true] mybook.silm
+```
+
+Suddenly, your book contains a few extra pages...
+We just passed an option to the master document handler, and your metadata were used to fill additional pages automatically.
+Would you want to enable them by default, you can also add the following lines to your master document file:[^bookmatters:enabled]
+
+[^bookmatters:enabled]: The option also enables the back and front covers, when those are defined (see further below).
+
+```yaml
+book:
+  enabled: true
+```
+
+... Wow. Pretty cool, isn't it? Let's see what these pages are.
+
+## Understanding the anatomy of a book
+
+Publishers have a long tradition of making books, and they have developed various conventions.
+It's near to impossible to cover all of them, but we can try to address a reasonable subset of them.
+The aim of the resilient master document is to provide a default set of conventions, so you can quickly obtain a decent book.
+
+- The _half-title page_ is the first page of a book, and usually contains only the title of the book, often typeset in capital letters.
+- The verso of the half-title page is often empty, but some publishers use it for providing additional information such as other works they published.
+- The _title page_ follows, with the author, title, subtitle, and publisher.
+- The verso of the title page is often used for legal notices, such as the ISBN, the publisher's address, etc. It's therefore usually a _copyright page_.
+- At the end of the book, some _end-papers_ occur.
+  On the recto one may find the title, the publisher, sometimes the ISBN is barcode form, and possibly other important mentions --- In some countries, the legal deposit is required to be printed there, etc. This page is also known as an _impressum,_ and its verso is (generally) left blank.
+
+![A resilient book structure](images/book-anatomy.svg){width="65%lw"}
+
+## Customizing the title and endpaper pages
+
+All theses pages are actually implemented as a set of "Djot templates" (`.djt` files) that you can override.[^bookmatters:templates]
+
+[^bookmatters:templates]: The template syntax is not addressed here, as it is described in the _Markdown and Djot to PDF with SILE_ user guide.
+
+By default, the following templates are used:
+
+```yaml
+book:
+  enabled: true|false
+  halftitle:
+    recto: halftitle-recto
+    verso: halftitle-verso
+  title:
+    recto: title-recto
+    verso: title-verso
+  endpaper:
+    recto: endpaper-recto
+    verso: endpaper-verso
+```
+
+Note that the file extension is omitted.
+These templates are first searched in a `templates/` folder besides your master document file, or in your current working directory (that is, with the same rules SILE applies for images), and then in your class and packages, wherever installed.
+
+So if you just proceeded with the previous command, you normally obtained the default templates from the resilient module.
+You can override them by placing your own templates in the `templates/book` directory of your project.
+If you have several templates for different needs, just specify their names in the `book` section of your master document, as shown above.
+
+## Adding covers
+
+Cover pages are supposed to be designed externally --- with any appropriate tool --- as images of the appropriate size and resolution.[^bookmatters:cover] (This is what we did with the GIMP for this manual.)
+
+[^bookmatters:cover]: If the size doesn't fit your paper size, the images will be scaled.
+
+Including these cover images in your book is then just a matter of adding the following lines in the `book` section of your master document:
+
+```yaml
+book:
+  cover:
+    front:
+      image: mycover-front.jpg
+    back:
+      image: mycover-back.jpg
+```
+
+The covers can be disabled by passing the `cover=false` option to the master document handler:
+
+```shell
+sile -u inputters.silm[cover=false] mybook.silm
+```
+
+Why would you want to enable book matters, but then disable your nice covers?
+Most publishers or print-on-demand services will ask you to provide your content in a PDF file, and the covers as a separate one-page PDF with extra provisions for full-bleed printing, safety margins, and the book spine.
+If you just want a nice PDF for handling it over as-is, having covers as allowed here is neat.
+Yet, when going to print, you may need to have them removed.
+
+## Adding back-cover content
+
+Once you have declared a back cover image, you will notice it automatically contains the ISBN of your book in an overlay at its bottom-right, if you defined it in your metadata.
+(If you didn't, this space is nevertheless reserved.)
+
+The back cover can also contain additional content, such as a description of the book.
+Let's therefore go on with our possibilities.
+
+```yaml
+book:
+  cover:
+    back:
+      image: mycover-back.jpg
+      content: mybackcover.dj
+```
+
+As previously for your book content files, this is the short form for:
+
+```yaml
+book:
+  cover:
+    back:
+      image: mycover-back.jpg
+      content:
+        file: ⟨file name⟩
+        format: ⟨format name⟩"
+        options: ⟨...⟩
+```
+
+The said file will be included over you back cover image, framed in a box.
+The latter has a white background by default, and the text is typeset in black.
+Great, but let's even go further!
+
+```yaml
+book:
+  cover:
+    back:
+      image: mycover-back.jpg
+      background: ⟨named color⟩|"#⟨RGB color⟩"
+      content: mybackcover.dj
+```
+
+The frame containing the back-cover text now has a colored background.
+The text is automatically typeset in either white or black, to ensure a good contrast.
+
+## Other options
+
+The master document handler also accepts a `cropmarks=true` option, which can be useful when you print your book on larger sheets of paper.
+It then take cares of invoking the relevant SILE packages and commands.
+
+If your paper size is 6 per 9 inches (US trade book), for instance, you can print it on A4 sheets and have cropmarks shown:
+
+```shell
+sile -u inputters.silm[cropmarks=true] -O sheetsize=a4 mybook.silm
+```

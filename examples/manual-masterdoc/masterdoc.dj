@@ -143,7 +143,7 @@ chapters:
 
 It's the perfect time now to introduce you with content nesting and header shifting.
 All structured forms accept a `content` entry, which is again a list of files to include, with the exact same rules.
-With Djot, Markdown on other formats supporting this feature,[^masterdoc-sil-nesting] the headings in these files are then _shifted_.
+With Djot, Markdown or other formats supporting this feature,[^masterdoc-sil-nesting] the headings in these files are then _shifted_.
 
 ```yaml
 chapters:

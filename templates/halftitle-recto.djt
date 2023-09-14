@@ -1,0 +1,10 @@
+``` =sile-lua
+SILE.call("hbox") -- so top page glues are not suppressed
+```
+{custom-style="center"}
+::::
+{?title custom-style="bookmatter-halftitle"}
+:::
+:title:
+:::
+::::

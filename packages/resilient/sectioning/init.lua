@@ -181,7 +181,7 @@ function package:registerCommands ()
           createCommand("style:apply:number", { name = secStyle.numberstyle.main, text = number })
         if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
           titleContent[#titleContent + 1] =
-            createCommand("break") -- HACK. Pretty weak unless the parent paragraph style is ragged.
+            createCommand("hardbreak")
         end
       end
     end
@@ -207,13 +207,18 @@ function package:registerCommands ()
     SILE.call("style:apply:paragraph", { name = name }, titleContent)
   end, "Apply sectioning")
 
-  self:registerCommand("open-on-odd-page", function (_, _)
-    -- NOTE: We do not use the "open-double-page" from the two side
+  self:registerCommand("internal:open-spread", function (options, _)
+    -- NOTE: We do not use the "open-double-page"/"open-spread" from the twoside
     -- package as it has doesn't have the nice logic we have here:
     --  - check we are not already at the top of a page
-    --  - disable header and folio on blank even page
+    --  - disable header and folio on blank pages
     -- I really had hard times to make this work correctly. It now
     -- seems ok, but it might be fragile.
+    local parity = SU.required(options, "parity", "sectioning")
+    if parity ~= "odd" and parity ~= "even" then
+      SU.error("Invalid parity '"..parity.."' for internal open-spread")
+    end
+
     SILE.typesetter:leaveHmode() -- Important, flushes nodes to output queue.
     if hasContent() then
       -- We are not at the top of a page, eject the current content.
@@ -221,8 +226,11 @@ function package:registerCommands ()
     end
     SILE.typesetter:leaveHmode() -- Important again...
     -- ... so now we are at the top of a page, and only need
-    -- to add a blank page if we have not landed on an odd page.
-    if not SILE.documentState.documentClass:oddPage() then
+    -- to add a blank page if we have not landed on the right one.
+    local isOnOddPage = SILE.documentState.documentClass:oddPage()
+    local needBlankPage = (parity == "odd" and not isOnOddPage)
+                          or (parity == "even" and isOnOddPage)
+    if needBlankPage then
       SILE.typesetter:typeset("") -- Some non glue empty content to force a page break.
       SILE.typesetter:leaveHmode()
       -- Disable headers and footers if we can... i.e. the
@@ -238,6 +246,14 @@ function package:registerCommands ()
     SILE.typesetter:leaveHmode() -- and again!
   end, "Open a double page without header and folio")
 
+  self:registerCommand("open-on-odd-page", function (_, _)
+    SILE.call("internal:open-spread", { parity = "odd" })
+  end, "Open an odd page, with a blank page without header and folio before if needed")
+
+  self:registerCommand("open-on-even-page", function (_, _)
+    SILE.call("internal:open-spread", { parity = "even" })
+  end, "Open an even page, with a blank page without header and folio before if needed")
+
   self:registerCommand("open-on-any-page", function (_, _)
     SILE.typesetter:leaveHmode() -- Important, flushes nodes to output queue.
     if hasContent() then
@@ -246,6 +262,22 @@ function package:registerCommands ()
     end
     SILE.typesetter:leaveHmode()
   end, "Open a single page")
+
+  self:registerCommand("hardbreak", function (_, _)
+    -- We don't want to use a cr here, because it would affect parindents,
+    -- insert a parskip, and maybe other things.
+    -- It's a bit tricky to handle a hardbreak depending on the alignment
+    -- of the paragraph:
+    --    justified = we can't use a break, a cr (hfill+break) would work
+    --    ragged left = we can't use a cr
+    --    centered = we can't use a cr
+    --    ragged right = we don't care, a break is sufficient and safer
+    -- Knowning the alignment is not obvious, neither guessing it from the skips.
+    -- Using a parfillskip seems to do the trick, but it's maybe a bit hacky.
+    -- This is nevertheless what would have occurred with a par.
+    SILE.typesetter:pushGlue(SILE.settings:get("typesetter.parfillskip"))
+    SILE.call("break")
+  end, "Insert a hard break respecting the paragraph alignment")
 
 end
 
@@ -294,9 +326,7 @@ The only assumption here being, obviously, that a \code{sectioning-chapter}
 style has been appropriately defined to convey all the usual features a sectioning
 command may need.
 
-The package also provides the \autodoc:command{\open-on-odd-page} and
-\autodoc:command{\open-on-any-page} low level commands, which are used
-by the styling specifications.
+The package also provides the \autodoc:command{\open-on-odd-page}, \autodoc:command{\open-on-even-page} and \autodoc:command{\open-on-any-page} low level commands, which are used by the styling specifications.
 \end{document}]]
 
 return package

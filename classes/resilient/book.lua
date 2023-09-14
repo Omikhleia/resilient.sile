@@ -355,6 +355,14 @@ function class:registerStyles ()
   self:registerStyle("url", {}, {
     font = { family = "Hack", size = "1.4ex" }
   })
+
+  -- Special non-standard style for dropcaps (for commands initial-joined and initial-unjoined)
+  self:registerStyle("dropcap", {}, {
+    font = { family = "Zallman Caps" },
+    special = {
+      lines = 2
+    }
+  })
 end
 
 function class:endPage ()
@@ -580,6 +588,33 @@ function class:registerCommands ()
 
     SILE.call("tableofcontents", { start = start, depth = 0 })
   end, "Output the list of tables.")
+
+  -- Special dropcaps (provided as convenience)
+  -- Also useful as pseudo custom style in Markdown or Djot.
+
+  self:registerCommand("book:dropcap", function (options, content)
+    local join = SU.boolean(options.join, true)
+    local style = options.style or "dropcap"
+
+    if type(content) ~= "table" then SU.error("Expected a table content in dropcap environment") end
+    if #content ~= 1 then SU.error("Expected a single letter in dropcap environment") end
+    local letter = content[1]
+
+    local dropcapSty = self.styles:resolveStyle(style)
+    local family = dropcapSty.font and dropcapSty.font.family
+    local lines = dropcapSty.special and dropcapSty.special.lines
+
+    SILE.call("use", { module = "packages.dropcaps" })
+    SILE.call("dropcap", { family = family, lines = lines, join = join }, { letter })
+  end, "Style-aware initial capital letter (normally and internal command)")
+
+  self:registerCommand("initial-joined", function (options, content)
+    SILE.call("book:dropcap", { style = options.style, join = true }, content)
+  end, "Style-aware initial capital letter, joined to the following text.")
+
+  self:registerCommand("initial-unjoined", function (options, content)
+    SILE.call("book:dropcap", { style = options.style, join = false }, content)
+  end, "Style-aware initial capital letter, not joined to the following text.")
 
   -- Layouts
 
