@@ -94,12 +94,13 @@ function package:registerCommands ()
 
   self:registerCommand("bookmatters:front-cover", function (options, _)
     local image = SU.required(options, "image", "bookmatters:front-cover")
+    local src = SILE.resolveFile(image) or SU.error("Cannot find image file: " .. image)
     -- local metadata = options.metadata or {} -- Unusual: table of metadata options
 
     SILE.call("switch-master-one-page", { id = "bookmatters-front-cover" })
     SILE.call("hbox") -- To ensure some content
     SILE.call("background", {
-      src = SILE.resolveFile(image),
+      src = src,
       allpages = false
     })
     SILE.call("noheaders")
@@ -110,6 +111,7 @@ function package:registerCommands ()
 
   self:registerCommand("bookmatters:back-cover", function (options, content)
     local image = SU.required(options, "image", "bookmatters:back-cover")
+    local src = SILE.resolveFile(image) or SU.error("Cannot find image file: " .. image)
     local metadata = options.metadata or {} -- Unusual: table of metadata options
     local backgroundColor = options.background or "white"
     local textColor = contrastColor(SILE.color(backgroundColor))
@@ -118,7 +120,7 @@ function package:registerCommands ()
     SILE.call("switch-master-one-page", { id = "bookmatters-back-cover" })
     SILE.call("hbox") -- To ensure some content
     SILE.call("background", {
-      src = SILE.resolveFile(image),
+      src = src,
       allpages = false
     })
     SILE.call("noheaders")
