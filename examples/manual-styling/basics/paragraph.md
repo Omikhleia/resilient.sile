@@ -60,7 +60,7 @@ low-level paragraph formatting options (paragraph indent, etc.)[^styles-par-marg
 [^styles-par-margins]: This might be considered in a future revision, but note
 that it may also be addressed by defining extra alignment options.
 The **resilient.book** class, for instance, defines its own `block` alignment option
-(used in block quotes, see further).
+(used in block quotes, see further); the **resilient.verbatim** packages defines and `obeylines` alignment, etc.
 
 Please note that changing an existing character style into a paragraph style
 does not imply that the content is magically turned into paragraphs.

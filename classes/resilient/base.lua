@@ -18,6 +18,25 @@ function class:_init (options)
   self:registerStyles()
 end
 
+local resilientAwareVariant = {
+  lists = "resilient.lists",
+  verbatim = "resilient.verbatim",
+}
+
+function class:loadPackage (packname, options)
+  if resilientAwareVariant[packname] then
+    packname = resilientAwareVariant[packname]
+    SU.warn("Loading the resilient variant of package '" .. packname .. "'"
+    .. [[
+
+This should be compatible, but there might be differences such as hooks not
+being available, as the resilient version use styles instead.
+Please consider using resilient-compatible packages when available!
+]])
+  end
+  return parent.loadPackage(self, packname, options)
+end
+
 function class:registerStyle (name, opts, styledef)
   return self.styles:defineStyle(name, opts, styledef, self._name)
 end

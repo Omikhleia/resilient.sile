@@ -308,6 +308,7 @@ function package:registerCommands ()
     if name ~= "footnote" then -- HACK: Could not avoid function call in resilient.footnotes...
       SU.warn("Invocation of style '" .. name .. "'' with unexpected content ("
         .. type(content) ..")" .. [[
+
     For styles to apply correctly, the content should be an AST table.
     Some constructs may fail or generate errors later (text case, position, etc.)
 ]])

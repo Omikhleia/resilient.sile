@@ -162,6 +162,10 @@ And here it is stating at level 1, i.e. chapters and sections.
 
 \package-documentation{resilient.poetry}
 
+\section{Verbatim content}
+
+\package-documentation{resilient.verbatim}
+
 %%%
 %%% INPUT FORMATS
 %%%

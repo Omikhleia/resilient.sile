@@ -349,11 +349,18 @@ function class:registerStyles ()
     numbering = { before = { text = "table " } }
   })
 
-  -- url style
-  -- Default is similar to the plain \code command, and quite as bad, but at
+  -- code
+  -- Default is similar to the original plain \code command, and quite as bad, but at
   -- least uses a font-relative size.
-  self:registerStyle("url", {}, {
-    font = { family = "Hack", size = "1.4ex" }
+  self:registerStyle("code", {}, {
+    font = {
+      family = "Hack",
+      size = "1.4ex"
+    }
+  })
+
+  -- url style
+  self:registerStyle("url", { inherit = "code"}, {
   })
 
   -- Special non-standard style for dropcaps (for commands initial-joined and initial-unjoined)
@@ -661,6 +668,12 @@ function class:registerCommands ()
     })
     self:switchMaster(self:oddPage() and "right" or "left")
   end, "Set the page layout")
+
+  -- Override inherited plain class commands with style-aware variants
+
+  self:registerCommand('code', function(_, content)
+    SILE.call('style:apply', { name = 'code' }, content)
+  end, "Style the content as code")
 end
 
 return class
