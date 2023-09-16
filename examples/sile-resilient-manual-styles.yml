@@ -86,6 +86,13 @@ bookmatter-titlepage:
   origin: "resilient.bookmatters"
   style:
 
+code:
+  origin: "resilient.book"
+  style:
+    font:
+      family: "Hack"
+      size: "1.4ex"
+
 dropcap:
   origin: "resilient.book"
   style:
@@ -980,9 +987,16 @@ toc-pageno:
   style:
 
 url:
+  inherit: "code"
   origin: "resilient.book"
   style:
-    font:
-      family: "Hack"
-      size: "1.4ex"
+
+verbatim:
+  inherit: "code"
+  origin: "resilient.verbatim"
+  style:
+    paragraph:
+      align: "obeylines"
+      before:
+        skip: "smallskip"
 

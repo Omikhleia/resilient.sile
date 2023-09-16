@@ -47,7 +47,7 @@ font:
 language: fr
 sile:
   options:
-    # class: resilient.book # (this is the default choice if not set)
+    # class: resilient.book # (default choice if not set)
     papersize: 6in x 9in
     layout: ateliers demiluxe
     resolution: 300
