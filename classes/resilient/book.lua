@@ -391,7 +391,7 @@ function class:declareSettings ()
     parameter = "book.blockquote.margin",
     type = "measurement",
     default = SILE.measurement("2em"),
-    help = "Left margin (indentation) for enumerations"
+    help = "Margin (indentation) for block quotes"
   })
 end
 
@@ -514,8 +514,8 @@ function class:registerCommands ()
       local indent = SILE.settings:get("book.blockquote.margin"):absolute()
       local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
       local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
-      SILE.settings:set("document.lskip", SILE.nodefactory.glue(lskip.width.length + indent))
-      SILE.settings:set("document.rskip", SILE.nodefactory.glue(rskip.width.length + indent))
+      SILE.settings:set("document.lskip", SILE.nodefactory.glue(lskip.width:absolute() + indent))
+      SILE.settings:set("document.rskip", SILE.nodefactory.glue(rskip.width:absolute() + indent))
       SILE.process(content)
       SILE.call("par")
     end)
@@ -526,8 +526,8 @@ function class:registerCommands ()
       local indent = SILE.settings:get("book.blockquote.margin"):absolute() * 0.875
       local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
       local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
-      SILE.settings:set("document.lskip", SILE.nodefactory.glue(lskip.width.length + indent))
-      SILE.settings:set("document.rskip", SILE.nodefactory.glue(rskip.width.length + indent * 0.5))
+      SILE.settings:set("document.lskip", SILE.nodefactory.glue(lskip.width:absolute() + indent))
+      SILE.settings:set("document.rskip", SILE.nodefactory.glue(rskip.width:absolute() + indent * 0.5))
       SILE.process(content)
       SILE.call("par")
     end)
