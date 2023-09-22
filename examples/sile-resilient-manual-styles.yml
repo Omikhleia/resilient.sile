@@ -500,6 +500,18 @@ lists-itemize6:
     itemize:
       symbol: "–"
 
+poetry:
+  origin: "resilient.poetry"
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "poetry"
+      before:
+        skip: "medskip"
+
 poetry-prosody:
   origin: "resilient.poetry"
   style:
@@ -514,6 +526,16 @@ poetry-verseno:
       size: "0.9em"
     numbering:
       display: "arabic"
+
+prosody:
+  origin: "resilient.poetry"
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      align: "poetry"
+      before:
+        skip: "smallskip"
 
 sectioning-base:
   origin: "resilient.book"
