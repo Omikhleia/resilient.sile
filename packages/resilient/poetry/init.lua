@@ -3,6 +3,9 @@
 -- 2021, 2023 Didier Willis
 -- License: MIT
 --
+local ast = require("silex.ast")
+local createStructuredCommand = ast.createStructuredCommand
+
 local base = require("packages.resilient.base")
 
 local package = pl.class(base)
@@ -149,7 +152,7 @@ function package:registerCommands ()
     SILE.typesetter:pushHlist(hlist)
   end, "Insert a prosody annotation above the text (theoretically an internal command)")
 
-  self:registerCommand("poetry", function (options, content)
+  self:registerCommand("resilient.poetry:poetry", function (options, content)
     local step = SU.cast("integer", options.step or 5)
     local start = SU.cast("integer", options.start or 1)
     local iVerse = start
@@ -185,17 +188,14 @@ function package:registerCommands ()
     local verseNumDisplay = numsty.numbering and numsty.numbering.display or "arabic"
 
     SILE.settings:temporarily(function()
+      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
       SILE.settings:set("current.parindent", SILE.length(0))
       SILE.settings:set("document.parindent", SILE.length(0))
-      SILE.settings:set("document.lskip", indent)
+      SILE.settings:set("document.lskip", lskip.width:absolute() + indent)
       SILE.settings:set("document.rskip", regularIdent)
-      SILE.typesetter:leaveHmode()
       if SU.boolean(options.prosody, false) then
         SILE.settings:set("document.parskip", SILE.length("0.75bs"))
         SILE.typesetter:pushVglue(SILE.settings:get("document.parskip"))
-        SILE.call("smallskip")
-      else
-        SILE.call("medskip")
       end
       for i = 1, #content do
         if type(content[i]) == "table" then
@@ -232,11 +232,16 @@ function package:registerCommands ()
         end
         -- All text nodes in ignored
       end
-      if not SU.boolean(options.prosody, false) then
-        SILE.call("medskip")
-      end
     end)
-  end, "A poetry environment")
+  end, "Internal command for the poetry environment(s)")
+
+  self:registerCommand("poetry", function (options, content)
+    local prosody = SU.boolean(options.prosody, false)
+    local style = prosody and "prosody" or "poetry"
+    SILE.call("style:apply:paragraph", { name = style }, {
+      createStructuredCommand("resilient.poetry:poetry", options, content)
+    })
+  end, "A styled poetry environment")
 
   local typesetVerseNumber = function (mark)
     local setback = SILE.length("1.75em"):absolute()
@@ -262,9 +267,24 @@ function package:registerCommands ()
       typesetVerseNumber(n)
     end
     SILE.process(self.class.packages.inputfilter:transformContent(content, prosodyFilter, { mode = options.mode }))
-    SILE.typesetter:leaveHmode()
-    SILE.typesetter:pushVglue(SILE.settings:get("document.parskip"))
+    SILE.call("par")
   end, "A single verse (theoretically an internal command).")
+
+  self:registerCommand("poetryindent", function (_, content)
+    SILE.settings:temporarily(function ()
+      local indent = SILE.settings:get("poetry.margin"):absolute()
+      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
+      SILE.settings:set("document.lskip", SILE.nodefactory.glue(lskip.width.length + indent))
+      SILE.process(content)
+      SILE.call("par")
+    end)
+  end, "Special poetry block alignment.")
+  -- HACK.
+  -- This poetry "alignment" is lame, but the real thing is hard!
+  -- See the discussion (esp. the "extra bonus"):
+  -- https://github.com/sile-typesetter/sile/discussions/1602
+  SILE.scratch.styles.alignments["poetry"] = "poetryindent"
+
 end
 
 function package.declareSettings (_)
@@ -281,6 +301,13 @@ function package.declareSettings (_)
     default = SILE.length("4mm"),
     help = "Length (height) of the prodosy annotation line."
   })
+
+  SILE.settings:declare({
+    parameter = "poetry.margin",
+    type = "measurement",
+    default = SILE.measurement("0.75em"),
+    help = "Left margin (indentation) for poetry"
+  })
 end
 
 function package:registerStyles ()
@@ -295,8 +322,31 @@ function package:registerStyles ()
     numbering = { display = "arabic" }
   })
 
-end
+  self:registerStyle("prosody", {}, {
+    font = { size = "0.95em" },
+    paragraph = {
+      align = "poetry",
+      before = {
+        skip = "smallskip"
+      },
+      -- as implemented, we use a modified parskip to leave room for the
+      -- prosody annotation, so we don't need to add extra space after
+    }
+  })
 
+  self:registerStyle("poetry", {}, {
+    font = { size = "0.95em" },
+    paragraph = {
+      before = {
+        skip = "medskip"
+      },
+      align = "poetry",
+      after = {
+        skip = "medskip"
+      },
+    }
+  })
+end
 
 package.documentation = [[\begin{document}
 If this package is called \autodoc:package{resilient.poetry}, it is not only because
@@ -445,7 +495,7 @@ ch. 4, p. 123.}
 \v{W<S>orse <W>on F<S>rid<W>ay}
 \v{D<S>ied <W>on <S>Sa\em{tur<W>day}}
 \v{B<S>u\em{ri<W>ed on} <S>Sund<W>ay}
-\v{Th<S>is \em{is<W> the} <S>end}
+\v{Th<S>is \em{is<W> the} <S>end}
 \v{<W>Of <S>So\em{lo<W>mon} G<S>run<W>dy}
 \end{poetry}
 
@@ -508,8 +558,11 @@ This package supports cross-references as defined for instance by the \autodoc:p
 loaded by the document class. In the \em{Beowulf} extract on page \conditional:ref[marker=hrothgar, type=page],
 Hrothgar was mentioned in verse \conditional:ref[marker=hrothgar].
 
+The whole environment is wrapped in a \code{poetry} or \code{prosody} paragraph style, depending on its nature.
 When shown, verse numbers are typeset according to the \code{poetry-verseno} style.
 Scansion indications follow the \code{poetry-prosody} style.
+
+The package also defines the \code{poetry} alignment option for paragraph styles.
 
 \end{document}]]
 
