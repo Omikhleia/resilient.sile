@@ -10,6 +10,8 @@
 -- with a rather OPINIONATED change. See HACKS comments below,
 -- and the "silex.sile" module.
 --
+local ast = require("silex.ast")
+local createCommand, subContent = ast.createCommand, ast.subContent
 
 local base = require("packages.base")
 
@@ -28,9 +30,9 @@ local theme = {
 local colorWrapper = function (ctype, content)
   local color = SILE.scratch.autodoc.theme[ctype]
   if color and SILE.settings:get("autodoc.highlighting") and SILE.Commands["color"] then
-    SILE.call("color", { color = color }, content)
+    return { createCommand("color", { color = color }, subContent(content)) }
   else
-    SILE.process(content)
+    return content
   end
 end
 
@@ -45,68 +47,70 @@ local function optionSorter (o1, o2)
   return o1 < o2
 end
 
-local function typesetAST (options, content)
-  if not content then return end
+local function astToDisplay (options, content)
+  local result = {}
+  if not content then return result end
   local seenCommandWithoutArg = false
   for i = 1, #content do
-    local ast = content[i]
-    if type(ast) == "string" then
-      if seenCommandWithoutArg and ast:sub(1,1) ~= " " and ast:sub(1,1) ~= "{" then
+    local tree = content[i]
+    if type(tree) == "string" then
+      if seenCommandWithoutArg and tree:sub(1,1) ~= " " and tree:sub(1,1) ~= "{" then
         -- Touchy:
         -- There might have been a space or a {} here in the original code. The AST does
         -- not remember it, we only know we have to separate somehow the string from
         -- the previous command...
-        SILE.typesetter:typeset(" ")
+        result[#result+1] = " "
         seenCommandWithoutArg = false
       end
-      if ast:sub(1, 1) == "<" and ast:sub(-1) == ">" then
-        SILE.call("autodoc:internal:bracketed", {}, { ast:sub(2, -2) })
+      if tree:sub(1, 1) == "<" and tree:sub(-1) == ">" then
+        result[#result+1] = createCommand("autodoc:internal:bracketed", {}, tree:sub(2, -2))
       else
-        SILE.typesetter:typeset(ast)
+        result[#result+1] = tree
       end
-    elseif ast.command then
-      local cmd = SILE.Commands[ast.command]
+    elseif tree.command then
+      local cmd = SILE.Commands[tree.command]
       if not cmd and SU.boolean(options.check, true) then
-        SU.error("Unexpected command '"..ast.command.."'")
+        SU.error("Unexpected command '"..tree.command.."'")
       end
-      SILE.typesetter:typeset("\\")
-      SILE.call("autodoc:code:style", { type = "command" }, { ast.command })
+      result[#result+1] = "\\"
+      result[#result+1] = createCommand("autodoc:code:style", { type = "command" }, tree.command)
       local sortedOpts = {}
-      for k, _ in pairs(ast.options) do table.insert(sortedOpts, k) end
+      for k, _ in pairs(tree.options) do table.insert(sortedOpts, k) end
       table.sort(sortedOpts, optionSorter)
       if #sortedOpts > 0 then
-        SILE.typesetter:typeset("[")
+        result[#result+1] = "["
         for iOpt, option in ipairs(sortedOpts) do
-          SILE.call("autodoc:code:style", { type = "parameter" }, { option })
-          SILE.typesetter:typeset("=")
-          SILE.call("penalty", { penalty = 100 }) -- Quite decent to break here if need be.
-          SILE.call("autodoc:value", {}, { ast.options[option] })
-          if iOpt == #sortedOpts then
-            SILE.typesetter:typeset("]")
-          else
-            SILE.typesetter:typeset(", ")
-          end
+          result[#result+1] = {
+            createCommand("autodoc:code:style", { type = "parameter" }, option),
+            "=",
+            createCommand("penalty", { penalty = 100 }), -- Quite decent to break here if need be.
+            createCommand("autodoc:value", {}, tree.options[option]),
+            (iOpt == #sortedOpts) and "]" or ", "
+          }
         end
       end
-      if (#ast >= 1) then
-        SILE.call("penalty", { penalty = 200 }) -- Less than optimal break.
-        SILE.typesetter:typeset("{")
-        typesetAST(options, ast)
-        SILE.typesetter:typeset("}")
+      if (#tree >= 1) then
+        result[#result+1] = {
+          createCommand("penalty", { penalty = 200 }), -- Less than optimal break.
+          "{",
+          astToDisplay(options, tree),
+          "}"
+        }
       else
         seenCommandWithoutArg = true
       end
-    elseif ast.id == "texlike_stuff" or (not ast.command and not ast.id) then
+    elseif tree.id == "texlike_stuff" or (not tree.command and not tree.id) then
       -- Due to the way it is implemented, the SILE-inputter may generate such
       -- nodes in the AST. It's poorly documented, so it's not clear why they
       -- are even kept there (esp. the "texlike_stuff" nodes), but anyhow, as
       -- far as autodoc is concerned for presentation purposes, just
       -- recurse into them.
-      typesetAST(options, ast)
+      result[#result+1] = astToDisplay(options, tree)
     else
-      SU.error("Unrecognized AST element, type "..type(ast))
+      SU.error("Unrecognized AST element, type "..type(tree))
     end
   end
+  return result
 end
 
 function package:_init (options)
@@ -188,9 +192,7 @@ function package:registerCommands ()
   end)
 
   self:registerCommand("autodoc:package:style", function (_, content)
-    SILE.call("font", { weight = 700 }, function()
-      colorWrapper("package", content)
-    end)
+    SILE.call("font", { weight = 700 }, colorWrapper("package", content))
   end)
 
   self:registerCommand("autodoc:code:style", function (options, content)
@@ -201,15 +203,11 @@ function package:registerCommands ()
     if options.type == "ast" then
       SILE.call("code", {}, content)
     elseif options.type == "setting" then
-      SILE.call("code", {}, function()
-        colorWrapper(options.type, content)
-      end)
+      SILE.call("code", {}, colorWrapper(options.type, content))
     elseif options.type == "environment" then
-      SILE.call("code", {}, function()
-        colorWrapper("command", content)
-      end)
+      SILE.call("code", {}, colorWrapper("command", content))
     else
-      colorWrapper(options.type, content)
+      SILE.process(colorWrapper(options.type, content))
     end
   end)
 
@@ -231,16 +229,14 @@ function package:registerCommands ()
 
   self:registerCommand("autodoc:internal:ast", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content") end
-    SILE.call("autodoc:code:style", { type = "ast" }, function ()
-      typesetAST(options, content)
-    end)
+    SILE.call("autodoc:code:style", { type = "ast" }, astToDisplay(options, content))
   end, "Outputs a nicely typeset AST (low-level command).")
 
   self:registerCommand("autodoc:internal:bracketed", function (_, content)
     SILE.typesetter:typeset("⟨")
-    SILE.call("autodoc:code:style", { type = "bracketed" }, function()
-      SILE.call("em", {}, content)
-    end)
+    SILE.call("autodoc:code:style", { type = "bracketed" }, {
+      createCommand("em", {}, subContent(content))
+    })
     SILE.call("kern", { width = "0.1em" }) -- fake italic correction.
     SILE.typesetter:typeset("⟩")
   end, "Outputs a nicely formatted user-given value within <brackets>.")
@@ -279,16 +275,15 @@ function package:registerCommands ()
     for v in string.gmatch(param, "[^=]+") do
       parts[#parts+1] = v
     end
-    SILE.call("autodoc:code:style", { type = "ast" }, function ()
-      if #parts < 1 or #parts > 2 then SU.error("Unexpected parameter '"..param.."'") end
-      SILE.call("autodoc:code:style", { type = "parameter" }, { parts[1] })
-      if #parts == 2 then
-        SILE.typesetter:typeset("=")
-
-        SILE.call("penalty", { penalty = 100 }, nil) -- Quite decent to break here if need be.
-        SILE.call("autodoc:value", {}, { parts[2] })
-      end
-    end)
+    if #parts < 1 or #parts > 2 then SU.error("Unexpected parameter '"..param.."'") end
+    SILE.call("autodoc:code:style", { type = "ast" }, {
+      createCommand("autodoc:code:style", { type = "parameter" }, parts[1]),
+      (#parts == 2) and {
+        "=",
+        createCommand("penalty", { penalty = 100 }, nil), -- Quite decent to break here if need be.
+        createCommand("autodoc:value", {}, parts[2])
+      } or nil
+    })
   end, "Outputs a nicely presented parameter, possibly with a value.")
 
   -- Documenting an environment
@@ -321,27 +316,8 @@ function package:registerCommands ()
   -- Homogenizing the appearance of blocks of code
 
   self:registerCommand("autodoc:codeblock", function(_, content)
-      SILE.call("bigskip")
-      SILE.settings:temporarily(function()
-        -- Note: We avoid using the verbatim environment and simplify things a bit
-        -- (and try to better enforce novbreak points of insertion)
-        SILE.call("verbatim:font")
-        SILE.settings:set("typesetter.parseppattern", "\n")
-        SILE.settings:set("typesetter.obeyspaces", true)
-        SILE.settings:set("document.parindent", SILE.nodefactory.glue())
-        SILE.settings:set("document.parskip", SILE.nodefactory.vglue("1pt"))
-        SILE.settings:set("document.baselineskip", SILE.nodefactory.glue("1.2em"))
-        SILE.settings:set("document.spaceskip", SILE.length("1spc"))
-        SILE.settings:set("shaper.variablespaces", false)
-        SILE.settings:set("document.language", "und")
-        SILE.call("autodoc:line")
-        SILE.call("novbreak")
-        SILE.process(content)
-        SILE.call("novbreak")
-        SILE.typesetter:leaveHmode()
-    end)
-    SILE.call("novbreak")
-    SILE.call("autodoc:line")
+    SILE.call("smallskip")
+    SILE.call("style:apply:paragraph", { name = "verbatim"}, content)
     SILE.call("smallskip")
   end, "Outputs its content as a standardized block of code")
 
@@ -367,29 +343,31 @@ function package:registerCommands ()
       SILE.settings:set("document.rskip", SILE.nodefactory.glue())
 
       SILE.call("noindent")
-      colorWrapper("note", function ()
-        SILE.call("hrule", { width = linethickness, height = linethickness, depth = linedimen })
-        SILE.call("hrule", { width = 3 * linedimen, height = linethickness })
-        SILE.call("hfill")
-        SILE.call("hrule", { width = 3 * linedimen, height = linethickness })
-        SILE.call("hrule", { width = linethickness, height = linethickness, depth = linedimen })
+      SILE.process(
+        colorWrapper("note", function ()
+          SILE.call("hrule", { width = linethickness, height = linethickness, depth = linedimen })
+          SILE.call("hrule", { width = 3 * linedimen, height = linethickness })
+          SILE.call("hfill")
+          SILE.call("hrule", { width = 3 * linedimen, height = linethickness })
+          SILE.call("hrule", { width = linethickness, height = linethickness, depth = linedimen })
 
-        SILE.call("novbreak")
-        SILE.settings:temporarily(function ()
-          SILE.settings:set("document.lskip", SILE.nodefactory.glue(leftindent + innerindent))
-          SILE.settings:set("document.rskip", SILE.nodefactory.glue(innerindent))
-          SILE.call("font", { size = "0.95em", style = "italic "}, content)
           SILE.call("novbreak")
-        end)
+          SILE.settings:temporarily(function ()
+            SILE.settings:set("document.lskip", SILE.nodefactory.glue(leftindent + innerindent))
+            SILE.settings:set("document.rskip", SILE.nodefactory.glue(innerindent))
+            SILE.call("font", { size = "0.95em", style = "italic "}, content)
+            SILE.call("novbreak")
+          end)
 
-        SILE.call("noindent")
-        SILE.call("hrule", { width  = linethickness, depth = linethickness, height = linedimen })
-        SILE.call("hrule", { width  = 3 * linedimen, depth = linethickness })
-        SILE.call("hfill")
-        SILE.call("hrule", { width  = 3 * linedimen, depth = linethickness })
-        SILE.call("hrule", { width  = linethickness, depth = linethickness, height  = linedimen })
-        SILE.typesetter:leaveHmode()
-      end)
+          SILE.call("noindent")
+          SILE.call("hrule", { width  = linethickness, depth = linethickness, height = linedimen })
+          SILE.call("hrule", { width  = 3 * linedimen, depth = linethickness })
+          SILE.call("hfill")
+          SILE.call("hrule", { width  = 3 * linedimen, depth = linethickness })
+          SILE.call("hrule", { width  = linethickness, depth = linethickness, height  = linedimen })
+          SILE.typesetter:leaveHmode()
+        end)
+      )
     end)
     SILE.call("smallskip")
   end, "Outputs its content as a note in a specific boxed and indented block")
