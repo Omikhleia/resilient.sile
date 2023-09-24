@@ -47,6 +47,7 @@ build = {
     ["sile.packages.resilient.epigraph"]        = "packages/resilient/epigraph/init.lua",
     ["sile.packages.resilient.bookmatters"]     = "packages/resilient/bookmatters/init.lua",
     ["sile.packages.resilient.verbatim"]        = "packages/resilient/verbatim/init.lua",
+    ["sile.packages.resilient.defn"]            = "packages/resilient/defn/init.lua",
 
     ["sile.packages.resilient.bible.usx"]       = "packages/resilient/bible/usx/init.lua",
     ["sile.packages.resilient.bible.tei"]       = "packages/resilient/bible/tei/init.lua",

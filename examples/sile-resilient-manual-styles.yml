@@ -93,6 +93,32 @@ code:
       family: "Hack"
       size: "1.4ex"
 
+defn-base:
+  origin: "resilient.defn"
+  style:
+
+defn-desc:
+  inherit: "defn-base"
+  origin: "resilient.defn"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        vbreak: false
+
+defn-term:
+  inherit: "defn-base"
+  origin: "resilient.defn"
+  style:
+    font:
+      weight: 700
+    paragraph:
+      after:
+        vbreak: false
+      before:
+        skip: "smallskip"
+
 dropcap:
   origin: "resilient.book"
   style:
