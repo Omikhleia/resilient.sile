@@ -24,7 +24,7 @@ dependencies = {
    "printoptions.sile >= 1.0.0",
    "ptable.sile >= 2.0.0",
    "qrcode.sile >= 1.0.0",
-   "textsubsuper.sile >= 1.0.0",
+   "textsubsuper.sile >= 1.1.0",
    "markdown.sile >= 1.5.0",
    "silex.sile >= 0.3.0",
 }
