@@ -7,12 +7,10 @@ local ast = require("silex.ast")
 local createCommand, createStructuredCommand = ast.createCommand, ast.createStructuredCommand
 
 SILE.registerCommand("has:book-title-support", function (_, content)
-  -- Fairly lame command detection, and it's not even doing the proper
-  -- thing. Should be refactored after having addressed issue
-  -- https://github.com/Omikhleia/resilient.sile/issues/58
-  if SILE.Commands["odd-running-header"] then
+  -- Fairly lame command detection
+  if SILE.Commands["book-title"] then
     -- At least resilient.book will do something
-    SILE.call("odd-running-header", {}, content)
+    SILE.call("book-title", {}, content)
   end
   -- I am not going to care for the core book class...
 end, nil, nil, true) -- HACK (*sigh*)
@@ -186,7 +184,9 @@ local MasterSchema = {
             class = { type = "string" },
             papersize = { type = "string" },
             layout = { type = "string" },
-            resolution = { type = "number" }
+            resolution = { type = "number" },
+            headers = { type = "string" },
+            offset = { type = "string" },
           }
         },
         settings = {
@@ -583,7 +583,9 @@ function inputter:parse (doc)
       class = options.class or "resilient.book", -- Sane default. We Are Resilient.
       papersize = options.papersize,
       layout = options.layout,
-      resolution = options.resolution
+      resolution = options.resolution,
+      headers = options.headers,
+      offset = options.offset,
     } or {}
 
   local tree = {

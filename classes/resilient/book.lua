@@ -13,6 +13,13 @@ local createCommand, subContent, extractFromTree
 
 local layoutParser = require("resilient.layoutparser")
 
+SILE.scratch.book = SILE.scratch.book or {}
+SILE.scratch.book.headers = {
+  novel = true,
+  technical = true,
+  none = true
+}
+
 -- CLASS DEFINITION
 
 function class:_init (options)
@@ -103,16 +110,28 @@ function class:declareOptions ()
     end
     return self.offset
   end)
+
+  self:declareOption("headers", function(_, value)
+    if value then
+      if not SILE.scratch.book.headers[value] then
+        SU.warn("Unknown headers type '".. value .. "', switching to 'technical'")
+        value = "technical"
+      end
+      self.headers = value
+    end
+    return self.headers
+  end)
 end
 
 function class:setOptions (options)
   options = options or {}
   options.layout = options.layout or "division"
+  options.headers = options.headers or "technical"
   base.setOptions(self, options) -- so that papersize etc. get processed...
 
   local layout = layoutParser:match(options.layout)
   if not layout then
-    SU.warn("Unknown page layout '".. options.layout .. "', switching to division")
+    SU.warn("Unknown page layout '".. options.layout .. "', switching to 'division'")
     layout = layoutParser:match("division")
   end
 
@@ -379,8 +398,11 @@ function class:endPage ()
   if SILE.scratch.info.thispage.headerEven then
     SILE.scratch.headers.even = SILE.scratch.info.thispage.headerEven[#SILE.scratch.info.thispage.headerEven]
   end
-  self.packages["resilient.headers"]:outputHeader(
-      self:oddPage() and SILE.scratch.headers.odd or SILE.scratch.headers.even)
+  if self:oddPage() then
+    self.packages["resilient.headers"]:outputHeader(SILE.scratch.headers.odd)
+  else
+    self.packages["resilient.headers"]:outputHeader(SILE.scratch.headers.even)
+  end
   return base.endPage(self)
 end
 
@@ -399,6 +421,12 @@ function class:registerCommands ()
   base.registerCommands(self)
 
   -- Running headers
+
+  self:registerCommand("book-title", function (_, content)
+    if self.headers == "novel" then
+      SILE.call("even-running-header", {}, content)
+    end
+  end, "Book title low-level command (for running headers depending on headers type)")
 
   self:registerCommand("even-tracked-header", function (_, content)
     local headerContent = function ()
@@ -469,16 +497,20 @@ function class:registerCommands ()
       SILE.call("folios")
       SILE.call("set-counter", { id = "footnote", value = 1 })
     else
-      -- Chapters, here, go in the even header.
-      SILE.call("even-tracked-header", {}, content)
+      if self.headers == "novel" then
+        SILE.call("odd-tracked-header", {}, content)
+      elseif self.headers == "technical" then
+        SILE.call("even-tracked-header", {}, content)
+      end
     end
   end, "Apply chapter hooks (counter resets, footers and headers, etc.)")
 
   self:registerCommand("sectioning:section:hook", function (options, content)
     local before = SU.boolean(options.before, false)
     if not before then
-      -- Sections, here, go in the odd header.
-      SILE.call("odd-tracked-header", {}, content)
+      if self.headers == "technical" then
+        SILE.call("odd-tracked-header", {}, content)
+      end
     end
   end, "Applies section hooks (footers and headers, etc.)")
 
