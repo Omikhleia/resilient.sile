@@ -32,7 +32,6 @@ metadata:
   keywords:
     - Mythology
     - Fantasy
-    - Feigned history
   authors: Emma Lenski
   translators: Sylvain Forestier
   publisher: Omikhleia
@@ -50,6 +49,7 @@ sile:
     # class: resilient.book # (default choice if not set)
     papersize: 6in x 9in
     layout: ateliers demiluxe
+    headers: novel
     resolution: 300
   settings:
     textsubsuper.fake: false
@@ -58,10 +58,8 @@ sile:
     - dropcaps
     - couyards
 chapters:
-  - frontmatter.dj
   - chap1.dj
   - chap2.dj
-  - backmatter.dj
 ```
 
 The `masterfile` entry is a number corresponding to a version, for compatibility purposes.[^masterdoc-compat]
@@ -76,7 +74,7 @@ The `metadata` object contains several general document properties.
 
  - As denoted by the plural, `authors`, `translators` and `keywords` may consist in a list of strings, but they also accept a single string.
 
- - The `title` may be used in running headers (possibly, depending on the document class).
+ - The `title` may be used in running headers (possibly, depending on the document class and its options).
 
 All properties are passed as metadata made available to the content files.
 In the current implementation, this is only effective with Djot documents, wherein the medatada are exposed as Djot symbols (e.g. `:title:`, `:authors:`, and so on).
@@ -96,7 +94,10 @@ The `sile` object provides intructions for processing the master document with S
 
  - The `options` are to be understood as document class options.
   (As such, they can notably be overridden from the command line when invoking SILE.)
-  If you don't specify a `class` then *resilient.book* is assumed.
+
+   - If you don't specify a `class` then *resilient.book* is assumed.
+
+   - Other supported options are `papersize`, and, with the resilient book class, `layout`, `offset`, `headers` and `resolution`.
 
 - The `settings` can be used to globally set some SILE parameters.
 

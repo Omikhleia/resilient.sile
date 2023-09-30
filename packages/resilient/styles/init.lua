@@ -332,7 +332,7 @@ function package:registerCommands ()
         end
         if not breakafter then SILE.call("novbreak") end
         SILE.typesetter:leaveHmode()
-        -- Here we must apply the font, then the alignement, so that line heights are
+        -- Here we must apply the font, then the alignment, so that line heights are
         -- correct even on the last paragraph. But the color introduces hboxes so
         -- must be applied last, no to cause havoc with the noindent/indent and
         -- centering etc. environments

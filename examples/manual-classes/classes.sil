@@ -6,6 +6,36 @@ default book class from SILE to this author’s needs and taste. It eventually
 evolved into a full redesign on different grounds. This very document uses it,
 so you can see it in real action.
 
+\section{Class options}
+
+In addition to the class options provided by SILE, the class also supports the following options:
+
+\begin{defn}
+\term{layout}
+\desc{Specifies the default (global) page layout. See part \ref[marker=page-layout].}
+\end{defn}
+
+\begin{defn}
+\term{offset}
+\desc{Specifies the binding offset. See part \ref[marker=page-layout].}
+\end{defn}
+
+\begin{defn}
+\term{headers}
+\desc{Specifies how running headers are used:
+\begin{itemize}
+\item{\code{none}: No running headers.}
+\item{\code{technical} (default): Chapter and section titles go in the even and odd running headers, respectively.}
+\item{\code{novel}: Chapter titles go in the odd running headers, and the title of the book, if set, goes in the even running headers.\footnote{The low-level command to set the book title is \autodoc:command{\book-title{<text>}.}}}
+\end{itemize}}
+\end{defn}
+
+\begin{defn}
+\term{resolution}
+\desc{Specifies the global resolution in DPI (dots per inch). Some add-on packages may use it in order to
+compute the size of generated images, etc.}
+\end{defn}
+
 \section{Standard sectioning commands}
 
 The class supports the following sectioning commands, from the highest
@@ -54,8 +84,9 @@ Chapters have page numbering enabled on their first page and make sure
 no header shown is shown on that page. Both start on an odd page\footnote{Again,
 as almost everything depending on styles, this can be customized.}, and the previous
 even page, if inserted blank, is shown without page number and header. Parts and chapters
-reset the footnote counter. Chapter and section titles go in odd and even running
-headers respectively, unless customized otherwise.
+reset the footnote counter.
+Depending on the `headers` class option (see above), chapter and section titles go in running
+headers, unless customized otherwise.
 
 Notably, the class also defines a few commands currenty used as hooks in some of the
 above sectioning styles.
