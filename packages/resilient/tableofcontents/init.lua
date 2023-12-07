@@ -100,7 +100,8 @@ end
 
 function package.writeToc (_)
   local tocdata = pl.pretty.write(SILE.scratch.tableofcontents)
-  local tocfile, err = io.open(SILE.masterFilename .. '.toc', "w")
+  local basename = pl.path.splitext(SILE.input.filenames[1])
+  local tocfile, err = io.open(basename .. '.toc', "w")
   if not tocfile then return SU.error(err) end
   tocfile:write("return " .. tocdata)
   tocfile:close()
@@ -115,7 +116,8 @@ function package.readToc (_)
     -- already loaded
     return SILE.scratch._tableofcontents
   end
-  local tocfile, _ = io.open(SILE.masterFilename .. '.toc')
+  local basename = pl.path.splitext(pl.path.normpath(SILE.input.filenames[1]))
+  local tocfile, _ = io.open(basename .. '.toc')
   if not tocfile then
     return false -- No TOC yet
   end
