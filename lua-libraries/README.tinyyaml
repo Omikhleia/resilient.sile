@@ -1,6 +1,5 @@
 The "vendored" version of tinyyaml used here is:
-https://github.com/api7/lua-tinyyaml (0.4.3 rockspec at the time of initial
-import)
+https://github.com/api7/lua-tinyyaml (0.4.4 rockspec)
 
 It's a fork from:
 https://github.com/peposso/lua-tinyyaml (which had a 1.0 rockspec earlier)

@@ -611,8 +611,10 @@ function Parser:parseseq(line, lines, indent)
       error("did not find expected alphabetic or numeric character")
     elseif rest then
       -- Array entry with a value
+      local nextline = lines[1]
+      local indent2 = countindent(nextline)
       tremove(lines, 1)
-      tinsert(seq, self:parsescalar(rest, lines))
+      tinsert(seq, self:parsescalar(rest, lines, indent2))
     end
   end
   return seq
