@@ -18,3 +18,5 @@ RESILIENT was to avoid a C binding dependency, since style files are
 reasonably small theoretically (so performance do not really matter) and
 only need a subset of YAML (so a pure-Lua implementation, even possibly
 incomplete, ought to be sufficient.)
+
+Modications are marked with comments MODIFIED RESILIENT

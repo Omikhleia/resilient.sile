@@ -107,7 +107,7 @@ function types.timestamp:__init(y, m, d, h, i, s, f, z)
   self.minute = tonumber(i or 0)
   self.second = tonumber(s or 0)
   if type(f) == 'string' and sfind(f, '^%d+$') then
-    self.fraction = tonumber(f) * math.pow(10, 3 - #f)
+    self.fraction = tonumber(f) * 10^(3 - #f) -- MODIFIED RESILIENT Lua min compat
   elseif f then
     self.fraction = f
   else

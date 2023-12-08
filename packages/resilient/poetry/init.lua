@@ -5,6 +5,7 @@
 --
 local ast = require("silex.ast")
 local createStructuredCommand = ast.createStructuredCommand
+local LOG10 = math.log(10)
 
 local base = require("packages.resilient.base")
 
@@ -178,7 +179,8 @@ function package:registerCommands ()
         digitSize = SILE.shaper:measureChar("0").width
       end)
       local setback = SILE.length("1.75em"):absolute()
-      indent = SILE.length((math.floor(math.log10(nVerse + iVerse)) + 1) * digitSize):absolute()
+      local logv = math.floor(math.log(nVerse + iVerse) / LOG10) -- Reminder: math.log10 is not in Lua "min" profiile
+      indent = SILE.length((logv + 1) * digitSize):absolute()
         + setback
         + SILE.length(SILE.settings:get("document.parindent")):absolute()
     end
