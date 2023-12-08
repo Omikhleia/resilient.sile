@@ -775,6 +775,11 @@ end
 -- : (list<str>)->dict
 function Parser:parsedocuments(lines)
   lines = compactifyemptylines(lines)
+  -- BEGIN MODIFIED RESILIENT
+  if #lines == 0 then
+    return {}
+  end
+  -- END MODIFIED RESILIENT
 
   if sfind(lines[1], '^%%YAML') then tremove(lines, 1) end
 
