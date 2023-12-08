@@ -1,0 +1,396 @@
+{.unnumbered}
+# On the Gravitational Field of a Sphere of Incompressible Fluid
+according to Einstein's Theory[^1]
+
+[^1]: Sitzungsberichte der Königlich Preussischen Akademie der Wissenschaften zu Berlin, Phys.-Math. Klasse 1916, 424-434.
+
+{custom-style=Author}
+:::
+[by K. Schwarzschild]{.smallcaps}
+
+(Communicated February 24th, 1916 [see above p. 313].)
+
+(Translation[^2] by S. Antoci{.smallcaps}[^3])
+:::
+
+{custom-style=FramedPara}
+:::
+This is an attempt at typesetting an existing article from [arXiv](https://arxiv.org/pdf/physics/9912033.pdf)[^arxiv], with the SILE typesetting system and the *re·sil·ient* classes, and an input file in *Djot* format.
+
+This is intended as test and proof-of-concept experiment to evaluate how the above perform on an actual text of scientific nature.
+
+Please note that the author and arXiv have not been asked for permission to reproduce this content.
+The current version might have introduced errors (esp. in mathematical formulae, adapted to the subset currently supported by SILE) and the ouput might not match the quality of the original TeX sources.
+:::
+
+[^2]: The valuable advice of A. Loinger is gratefully acknowledged.
+[^3]: Dipartimento di Fisica "A. Volta", Università di Pavia, Via Bassi 6 --- 27100 Pavia (Italy).
+[^arxiv]: (Editor's note) https://arxiv.org/pdf/physics/9912033.pdf
+
+§1. As a further example of Einstein's theory of gravitation I have calculated the gravitational field of a homogeneous sphere of finite radius, which consists of incompressible fluid. The addition "of incompressible fluid" is necessary, since in the theory of relativity gravitation depends not only on the quantity of matter, but also on its energy, and _e. g._ a solid body in a given state of tension would yield a gravitation different from a fluid.
+
+The computation is an immediate extension of my communication on the gravitational field of a mass point (these Sitzungsberichte 1916, p. 189), that I shall quote as "Mass point" for short.
+
+§2. Einstein's field equations of gravitation (these Sitzungsber. 1915, p. 845) read in general:
+$$`\sum_{\alpha} \frac{\partial \Gamma^{\alpha}_{\mu\nu}}{\partial x_{\alpha}}
+    + \sum_{\alpha\beta} \Gamma^\alpha_{\mu\beta} \Gamma^\beta_{\nu\alpha} = G_{\mu\nu}. {\quad(1)}`
+The quantities $`G_{\mu\nu}` vanish where no matter is present.
+In the interior of an incompressible fluid they are determined in the following way:
+the "mixed energy tensor" of an incompressible fluid at rest is, according to Mr. Einstein (these Sitzungsber. 1914, p. 1062, the $`P` present there vanishes due to the incompressibility):
+$$`T^{1}_{1} = T^{2}_{2} = T^{3}_{3} = -p,\quad T^{4}_{4} = \rho_{0},
+    \quad (the~remaining~T^{\nu}_{\mu} = 0). {\quad(2)}`
+
+Here $`p` means the pressure, $`\rho_{0}` the constant density of the fluid.
+
+The "covariant energy tensor" will be:
+$$`T_{\mu\nu} = \sum_\sigma T^{\sigma}_{\mu} g_{\nu\sigma}. {\quad(3)}`
+
+Furthermore:
+$$`T= \sum_{\sigma} T^{\sigma}_{\sigma} = \rho_{0} - 3p. {\quad(4)}`
+
+and
+$$`\kappa=8\pi k^{2},`
+where $`k^{2}` is Gauss' gravitational constant.
+Then according to Mr. Einstein (these Berichte 1915, p. 845, Eq. 2a) the right-hand sides of the field equations read:
+$$`G_{\mu\nu} = -\kappa(T_{\mu\nu} - {\frac{1}{2}}g_{\mu\nu}T). {\quad(5)}`
+
+Since the fluid is in equilibrium, the conditions
+$$`\sum_{\alpha} \frac{\partial T^{\alpha}_{\sigma}}{\partial x_{\alpha}}
+    + \sum_{\mu\nu} \Gamma^{\mu}_{\sigma\nu}T^{\nu}_{\mu} = 0 {\quad(6)}` must
+be satisfied (ibidem Eq. 7a).
+
+§3. Just as in "Mass point", also for the sphere the general equations must be specialised to the case of rotation symmetry around the origin.
+Like there, it is convenient to introduce the polar coordinates of determinant $`1`:
+
+$$`x_{1}=\frac{r^3}{3}, \quad x_{2}=-\mo{cos}\theta, \quad x_{3}=\phi, \quad x_{4}=t. {\quad(7)}`
+Then the line element, like there, must have the form:
+
+$$`ds^{2}=f_{4}dx_{4}^{2}-f_{1}dx_{1}^{2}-f_{2}\frac{dx_{2}^{2}}{1-x_2^2}
+    -f_{2}dx_{3}^{2}{(1-x_{2}^{2})}, {\quad(8)}`
+hence one has:
+
+$$`g_{11}=-f_{1}, \quad g_{22}=-\frac{f_{2}}{1-x_{2}^{2}},
+    \quad g_{33}=-f_{2}{(1-x_{2}^{2})}, \quad g_{44}=f_{4}`
+$$`(the~remaining~g_{\mu\nu}=0).`
+Moreover the $`f` are functions only of $`x_{1}`.
+
+The solutions (10), (11), (12) reported in that paper hold also
+for the space outside the sphere:
+$$`f_{4}=1-\alpha(3x_{1}+\rho)^{-1/3}, \quad f_{2}=(3x_{1}+\rho)^{2/3},
+    \quad f_{1}f_{2}^{2}f_{4}=1, {\quad(9)}`
+where $`\alpha` and $`\rho` are for now two arbitrary constants, that must be determined afterwards by the mass and by the radius of our sphere.
+
+It remains the task to establish the field equations for the interior of the sphere by means of the expression (8) of the line element, and to solve them.
+For the right-hand sides one obtains in sequence:
+
+$$`T_{11}=T^1_1g_{11}=-pf_1, \quad T_{22}=T^2_2g_{22}=-\frac{pf_2}{1-x^2_2},`
+$$`T_{33}=T^3_3g_{33}=-pf_2(1-x^2_2), \quad T_{44}=T^4_4g_{44}=\rho_0f_4.`
+$$`G_{11}=\frac{\kappa f_1}{2} (p-\rho_0),
+    \quad G_{22}=\frac{\kappa f_2}{2}\,\frac{1}{1-x^2_2} (p-\rho_0),`
+$$`G_{33}=\frac{\kappa f_2}{2} (1-x^2_2)(p-\rho_0),
+    \quad G_{44}=-\frac{\kappa f_4}{2} (\rho_0+3p).`
+The expressions of the components $`\Gamma^{\alpha}_{\mu\nu}` of the gravitational field in terms of the functions $`f` and the left-hand sides of the field equations can be taken without change from "Mass point" (§4).
+If one again restricts himself to the equator ($`x_{2}=0`), one gets the following overall system of equations:
+
+First the three field equations:
+$$`-\,\frac{1}{2}\,\frac{\partial}{\partial x_1}
+    \,(\frac{1}{f_1}\,\frac{\partial f_1}{\partial x_1})
+    +\frac{1}{4}
+        \,\frac{1}{f_1^2}(\frac{\partial f_1}{\partial x_1})^2+\frac{1}{2}
+        \,\frac{1}{f_2^2}(\frac{\partial f_2}{\partial x_1})^2
+        +\frac{1}{4}\,\frac{1}{f_4^2}(\frac{\partial f_4}{\partial x_1})^2
+            = -\,\frac{\kappa}{2}f_1(\rho_0-p),   {\quad(a)}`
+$$`+\frac{1}{2}\,\frac{\partial}{\partial x_1}(\frac{1}{f_1}
+    \, \frac{\partial f_2}{\partial x_1})
+        -1 - \,\frac{1}{2}\,\frac{1}{f_1f_2}(\frac{\partial f_2}{\partial x_1})^2
+            = -\,\frac{\kappa}{2}f_2(\rho_0-p),   {\quad(b)}`
+$$`-\,\frac{1}{2}\,\frac{\partial}{\partial x_1}(\frac{1}{f_1}
+    \,\frac{\partial f_4}{\partial x_1})
+    +\frac{1}{2}\,\frac{1}{f_1f_4}(\frac{\partial f_4}{\partial x_1})^2
+        = -\,\frac{\kappa}{2}f_4(\rho_0+3p).    {\quad(c)}`
+
+In addition comes the equation for the determinant:
+$$`f_1f^2_2f_4=1. {\quad(d)}`
+
+The equilibrium conditions (6) yield the single equation:
+
+$$`-\,\frac{\partial p}{\partial x_1}
+    = -\,\frac{p}{2}[\frac{1}{f_1}\,\frac{\partial f_1}{\partial x_1}
+        +\frac{2}{f_2}\,\frac{\partial f_2}{\partial x_1}]
+        +\frac{\rho_0}{2}\,\frac{1}{f_4}\,\frac{\partial f_4}{x_1}. {\quad(e)}`
+
+From the general considerations of Mr. Einstein it turns out that the present 5 equations with the 4 unknown functions $`f_1`, $`f_2`, $`f_4`, $`p` are mutually compatible.
+
+We have to determine a solution of these 5 equations that is free from singularities in the interior of the sphere.
+At the surface of the sphere it must be $`p=0`, and there the functions $`f` together with their first derivatives must reach with continuity the values (9) that hold outside the sphere.
+
+For simplicity the index $`1` of $`x_1` will be henceforth omitted.
+
+§4. By means of the equation for the determinant the equilibrium condition (e) becomes:
+$$`-\frac{\partial p}{\partial x}=\frac{\rho_0+p}{2}\,\frac{1}{f_4}
+    \,\frac{\partial f_4}{\partial x}.`
+
+This can be immediately integrated and gives:
+$$`(\rho_0+p)\sqrt(f_4)=\mo{const.}=\gamma. {\quad(10)}`
+
+Through multiplication by the factors $`-2`, $`+2f_1/f_2`, $`-2f_1/f_4` the field equations (a), (b), (c) transform into:
+
+$$`\frac{\partial}{\partial x}(\frac{1}{f_1}\,\frac{\partial f_1}{\partial x})
+    = \frac{1}{2f^2_1}(\frac{\partial f_1}{\partial x})^2
+        + \frac{1}{f^2_2} (\frac{\partial f_2}{\partial x})^2
+        + \frac{1}{2f^2_4} (\frac{\partial f_4}{\partial x})^2
+        + \kappa f_1(\rho_0-p), {\quad(a')}`
+$$`\frac{\partial}{\partial x}(\frac{1}{f_2}\,\frac{\partial f_2}{\partial x})
+    = 2\frac{f_1}{f_2}
+    + \frac{1}{f_1f_2}\,\frac{\partial f_1}{\partial x}
+        \,\frac{\partial f_2}{\partial x}
+        \,-\,\kappa f_1(\rho_0-p),  {\quad(b')}`
+$$`\frac{\partial}{\partial x}(\frac{1}{f_4}\,\frac{\partial f_4}{\partial x})
+    = \frac{1}{f_1f_4}\,\frac{\partial f_1}{\partial x}
+        \,\frac{\partial f_4}{\partial x}
+            +\kappa f_1(\rho_0+3p). {\quad(c')}`
+
+If one builds the combinations $`a'+2b'+c'` and $`a'+c'`, by availing of the equation for the determinant one gets:
+$$`0 = 4\frac{f_1}{f_2}
+    \,-\,\frac{1}{f^2_2}(\frac{\partial f_2}{\partial x})^2
+    \,-\,\frac{2}{f_2f_4}\,\frac{\partial f_2}{\partial x}
+        \,\frac{\partial f_4}{\partial x}+
+            4\kappa f_1p    {\quad(11)}`
+$$`0 = 2\frac{\partial}{\partial x}(\frac{1}{f_2}\,\frac{\partial f_2}{\partial x})
+    + \frac{3}{f^2_2}(\frac{\partial f_2}{\partial x})^2
+    + 2\kappa f_1(\rho_0+p).    {\quad(12)}`
+
+We will introduce here new variables, which recommend themselves since, according to the results of "Mass point", they behave in a very simple way outside the sphere.
+Therefore they must bring also the parts of the present equations free from $`\rho_{0}` and $`p` to a simple form.
+One sets:
+
+$$`f_2=\eta^{2/3}, \quad f_4=\zeta\eta^{-1/3}, \quad f_1=\frac{1}{\zeta\eta}.    {\quad(13)}`
+
+Then according to (9) one has outside the sphere:
+$$`\eta=3x+\rho, \quad \zeta=\eta^{1/3}\,-\,\alpha,  {\quad(14)}`
+$$`\frac{\partial\eta}{\partial x} = 3,
+    \quad \frac{\partial\zeta}{\partial x} = \eta^{-2/3}.   {\quad(15)}`
+
+If one introduces these new variables and substitutes $`\gamma f^{-1/2}_4` for $`\rho_0+p` according to (10), the equations (11) and (12) become:
+$$`\frac{\partial\eta}{\partial x}\,\frac{\partial\zeta}{\partial x}
+    = 3\eta^{-2/3}+3\kappa\gamma\zeta^{-1/2}\eta^{1/6}
+        \,-\,3\kappa\rho_0, {\quad(16)}`
+$$`2\zeta\frac{\partial^2\eta}{\partial x^2}
+    = -3\kappa\gamma\zeta^{-1/2}\eta^{1/6}. {\quad(17)}`
+
+The addition of these two equations gives:
+$$`2\zeta\frac{\partial^2\eta}{\partial x^2}
+    +\frac{\partial\eta}{\partial x}\,\frac{\partial\zeta}{\partial x}
+        = 3\eta^{-2/3}\,-3\,\kappa\rho_0.`
+
+The integrating factor of this equation is $`\partial\eta/{\partial x}`.
+The integration gives:
+$$`\zeta(\frac{\partial\eta}{\partial x})^2
+    = 9\eta^{1/3}\,-3\,\kappa\rho_0\eta+9\lambda \quad 
+    {(\lambda~integration~constant)}. {\quad(18)}`
+
+When raised to the power $`3/2`, this gives:
+$$`\zeta^{3/2}(\frac{\partial\eta}{\partial x})^3
+    = (9\eta^{1/3}\,-\,3\kappa\rho_0\eta+9\lambda)^{3/2}`
+
+If one divides (17) by this equation, $`zeta` disappears, and it remains the following differential equation for $`\eta`:
+$$`\frac{2\frac{\partial^2\eta}{\partial x^2}}{(\frac{\partial\eta}{\partial x})^3}
+        = -\frac{3\kappa\gamma\eta^{1/6}}{(9\eta^{1/3}\,-\,3\kappa\rho_0\eta+\lambda)^{3/2}}.`
+
+Here $`\partial\eta/{\partial x}` is again the integrating factor.
+The integration gives:
+$$`\frac{2}{(\frac{\partial\eta}{\partial x})}
+    = 3\kappa\gamma\int {\frac{\eta^{1/6}d\eta}{(9\eta^{1/3}-3\kappa\rho_0\eta+\lambda)^{3/2}}}
+    {\quad(19)}`
+and since:
+$$`\frac{2}{\frac{\delta\eta}{\delta x}}
+    = \frac{2\delta x}{\delta\eta}`
+through a further integration it follows:
+$$`x=\frac{\kappa\gamma}{18} \int d\eta \int \frac{\eta^{1/6}d\eta}{(\eta^{1/3}\,-\,\frac{\kappa\rho_0}{3}\eta+\lambda)^{3/2}}.    {\quad(20)}`
+
+From here $`x` turns out as function of $`\eta`, and through inversion $`\eta` as function of $`x`.
+Then $`\zeta` follows from (18) and (19), and the functions $`f` through (13).
+Hence our problem is reduced to quadratures.
+
+§5. The integration constants must now be determined in such a way that the interior of the sphere remains free from singularities and the continuous junction to the external values of the functions $`f` and of their derivatives at the surface of the sphere is realised.
+
+Let us put $`r=r_{a}`, $`x=x_{a}`, $`\eta=\eta_{a}`, etc. at the surface of the sphere.
+The continuity of $`\eta` and $`\zeta` can always be secured through a subsequent appropriate determination of the constants $`\alpha` and $`\rho` in (14).
+In order that also the derivatives stay continuous and, in keeping with (15), $`(d\eta/dx)_{a}=3` and $`(d\zeta/dx)_{a}=\eta^{-2/3}_{a}`, according to (16) and (18) it must be:
+$$`\gamma = \rho_{0}\zeta^{1/2}_{a}\eta^{-1/6}_{a},\quad
+\zeta_{a} = \eta^{1/3}_{a} - \frac{\kappa\rho_{0}}{3}\eta_{a} + \lambda. {\quad(21)}`
+
+From here follows:
+$$`\zeta_a\eta^{-1/3}_a=(f_4)_a=1-\frac{\kappa\rho_0}{3}\eta_a^{2/3}+\lambda\eta^{-1/3}_a.`
+
+Therefore
+$$`\gamma=\rho_0\sqrt((f_4)_a). {\quad(22)}`
+
+One sees from the comparison with (10) that in this way also the condition $`p=0` at the surface is satisfied.
+The condition $`(d\eta/dx)_a=3` yields the following determination for the limits of integration in (19):
+
+$$`\frac{3dx}{d\eta}= 1\,-\,\frac{\kappa\gamma}{6}
+    \int^{\eta_a}_{\eta} \frac{\eta^{1/6}d\eta}{(\eta^{1/3}\,-\,\frac{\kappa\rho_0}{3}\eta+\lambda)^{3/2}}  \, {\quad(23)}`
+and therefore (20) undergoes the following determination of the limits of integration:
+$$`3(x-x_a) = \eta-\eta_a+\frac{\kappa\gamma}{6}
+    \int^{\eta_a}_{\eta}d\eta\int^{\eta_a}_{\eta}
+        \frac{\eta^{1/6}d\eta}{(\eta^{1/3}\,-\,\frac{\kappa\rho_0}{3}\eta+\lambda)^{3/2}}. {\quad(24)}`
+The surface conditions are therefore completely satisfied.
+Still undetermined are the two constants $`\eta_a` and $`\lambda`, which will be fixed through the conditions of continuity at the origin.
+
+We must first of all require that for $`x=0` it should be also $`\eta=0`.
+If this were not the case, $`f_2` in the origin would be a finite quantity, and an angular variation $`d\phi=dx_3` in the origin, which in reality means no motion at all, would give a contribution to the line element.
+Hence from (24) follows the condition for fixing $`\eta_a`:
+
+$$`3x_a = \eta_a-\frac{\kappa\gamma}{6}
+    \int^{\eta_a}_0 d\eta \, \int^{\eta_a}_{\eta}
+\frac{\eta^{1/6}d\eta}{(\eta^{1/3}-\frac{\kappa\rho_0}{3}\eta+\lambda)^{3/2}}. {\quad(25)}`
+
+$`\lambda` will be fixed at last through the condition that the pressure at the center of the sphere shall remain finite and positive, from which according to (10) it follows that there $`f_4` must remain finite and different from zero.
+According to (13), (18) and (23) one has:
+$$`f_4 = \zeta\eta^{-1/3} = (1-\frac{\kappa\rho_0}{3} \eta^{2/3} + \lambda\eta^{-1/3})
+    [1-\frac{\kappa\gamma}{6}\,
+    \int^{\eta_a}_{\eta} {\frac{\eta^{1/6}d\eta}{(\eta^{1/3}
+        -\frac{\kappa\rho_0}{3}\eta+\lambda)^{3/2}}}]^2. {\quad(26)}`
+One provisorily supposes either $`\lambda>0` or $`\lambda<0`.
+Then, for very small $`\eta`:
+$$`f_4 = \frac{\lambda}{\eta^{1/3}} [K+\frac{\kappa\gamma}{7}
+    \frac{\eta^{7/6}}{\lambda^{3/2}}]^2,`
+where one has set:
+$$`K = 1\,-\,\frac{\kappa\gamma}{6}\,
+    \int^{\eta_a}_0 \frac{\eta^{1/6}d\eta}{(\eta^{1/3}
+    \,-\,\frac{\kappa\rho_0}{3}\eta+\lambda)^{3/2}}. {\quad(27)}`
+
+In the center ($`\eta=0`) $`f_4` will then be infinite, unless $`K=0`.
+But, if $`K=0`, $`f_4` vanishes for $`\eta=0`.
+In no case, for $`\eta=0`, $`f_4` results finite and different from zero.
+Hence one sees that the hypothesis: either $`\lambda>0` or $`\lambda<0`, does not bring to physically practicable solutions, and it turns out that it must be $`\lambda=0`.
+
+§6. With the condition $`\lambda=0` all the integration constants are now fixed.
+At the same time the integrations to be executed become very easy.
+If one introduces a new variable $`\chi` instead of $`\eta` through the definition:
+$$`\table{\mo{sin}\chi=\sqrt(\frac{\kappa\rho_0}{3})\cdot\eta^{1/3}\\
+    (\mo{sin}\chi_a = \sqrt(\frac{\kappa\rho_0}{3})\cdot\eta^{1/3}_a)
+} {\quad(28)}`
+through an elementary calculation the equations (13), (26), (10),
+(24), (25) transform themselves into the following:
+
+$$`f_2=\frac{3}{\kappa\rho_0}\,\mo{sin}^2\chi,
+    \quad f_4=(\frac{3\mo{cos}\chi_a-\mo{cos}\chi}{2})^2,
+    \quad f_1 f^2_2 f_4 = 1. {\quad(29)}`
+$$`\rho_0+p = \rho_0\frac{2\mo{cos}\chi_a}{3\mo{cos}\chi_a-\mo{cos}\chi}\, {\quad(30)}`
+$$`3x=r^3=(\frac{\kappa\rho_0}{3})^{-3/2}
+    [\frac{9}{4}\mo{cos}\chi_a(\chi-\frac{1}{2}\mo{sin}2\chi)
+    -\frac{1}{2}sin^3\chi] {\quad(31)}
+
+The constant $`\chi_a` is determined by the density $`\rho_{0}` and
+by the radius $`r_{a}` of the sphere according to the relation:
+
+$$`(\frac{\kappa\rho_0}{3})^{3/2}\,r^3_a
+    =\frac{9}{4}\mo{cos}\chi_a(\chi_a-\frac{1}{2}\mo{sin}2\chi_a)
+    -\frac{1}{2}sin^3\chi_a. {\quad(32)}`
+
+The constants $`\alpha` and $`\rho` of the solution for the external region come from (14):
+
+$$`\rho=\eta_a-3x_a, \quad \alpha=\eta^{1/3}_a-\zeta_a`
+and obtain the values:
+$$`\rho=(\frac{\kappa\rho_0}{3})^{-3/2}
+  [\frac{3}{2}\mo{sin}^3\chi_a-\frac{9}{4}\mo{cos}\chi_a(\chi_a-\frac{1}{2}\mo{sin}2\chi_a)] {\quad(33)}`
+$$`\alpha=(\frac{\kappa\rho_0}{3})^{-1/2}
+    \cdot \mo{sin}^3\chi_a. {\quad(34)}`
+_When one avails of the variables $`\chi`, $`\theta`, $`\phi` instead of $`x_1`, $`x_2`, $`x_3` ($`ix`), the line element in the interior of the sphere takes the simple form:_
+$$`ds^2=(\frac{3\mo{cos}\chi_a-\mo{cos}\chi}{2})^2\,dt^2
+    - \frac{3}{\kappa\rho_0}[d\chi^2 + sin^2\chi\,d\theta^2
+    + sin^2\chi\,sin^2\theta\,d\phi^2]. {\quad(35)}`
+
+_Outside the sphere the form of the line element remains the same as in "Mass point":_
+$$`\table{
+    ds^2 &= (1-\alpha/R)dt^2-\frac{dR^2}{1-\alpha/R} -R^2(d\theta^2+\mo{sin}^2\theta\,d\phi^2) \\
+         & \mo{where} \quad R^3=r^3+\rho.\\
+} {\quad(36)}`
+
+Now $`\rho` will be determined by (33), while for the mass point it was $`\rho=\alpha^3`.
+
+§7. The following remarks apply to the complete solution of our problem contained in the previous paragraphs.
+
+ 1. The spatial line element ($`dt=0`) in the interior of the sphere reads:
+
+    $$`-ds^{2}=\frac{3}{\kappa\rho_{0}}[d\chi^{2}+\mo{sin}^{2}\chi\,d\theta^{2}
+    +\mo{sin}^{2}\chi\,\mo{sin}^{2}\theta\,d\phi^{2}].`
+
+    This is the known line element of the so called non Euclidean geometry of the spherical space.
+    _Therefore the geometry of the spherical space holds in the interior of our sphere._
+    The curvature radius of the spherical space will be $`\sqrt(3/\kappa\rho_{0})`.
+    Our sphere does not constitute the whole spherical space, but only a part, since $`\chi` can not grow up to $`\pi/2`, but only up to the limit $`\chi_{a}`.
+    For the Sun the curvature radius of the spherical space, that rules the geometry in its interior, is about 500 times the radius of the Sun (see formulae (39) and (42)).
+
+    That the geometry of the spherical space, that up to now had to be considered as a mere possibility, requires to be real in the interior of gravitating spheres, is an interesting result of Einstein's theory.
+
+    Inside the sphere the quantities:
+    $$`\sqrt(\frac{3}{\kappa\rho_0})\,d\chi,
+        \quad \sqrt(\frac{3}{\kappa\rho_0})\,\mo{sin}\chi\,d\theta,
+        \quad \sqrt(\frac{3}{\kappa\rho_0})\,\mo{sin}\chi\,\mo{sin}\theta\,d\phi, {\quad(37)}`
+    are "naturally measured" lengths.
+    The radius "measured inside" from the center of the sphere up to its surface is:
+    $$`P_i=\sqrt(\frac{3}{\kappa\rho_0})\chi_a. {\quad(38)}`
+    The circumference of the sphere, measured along a meridian (or another great circle) and divided by $`2\pi`, is called the radius "measured outside" $`P_{o}`.
+    It turns out to be:
+    $$`P_o=\sqrt(\frac{3}{\kappa\rho_0}) \mo{sin}\chi_a. {\quad(39)}`
+    According to the expression (36) of the line element outside the sphere this $`P_{o}` is clearly identical with the value $`R_{a} = (r^{3}_{a}+\rho)^{1/3}` that the variable $`R` assumes at the surface of the sphere.
+
+    With the radius $`P_{o}` one gets for $`\alpha` from (34) the simple relations:
+    $$`\frac{\alpha}{P_o}=\mo{sin}^2\chi_a,
+        \quad \alpha=\frac{\kappa\rho_0}{3}P^3_o. {\quad(40)}`
+    The volume of our sphere is:
+    $$`\table{
+        V = (\sqrt(\frac{3}{\kappa\rho_0}))^3
+        \int^{\chi_a}_0 d\chi\,sin^2 \chi\,\int^{\pi}_0 d\theta\,\mo{sin}\theta
+        \int^{2\pi}_0 d\phi \\
+          = 2\pi (\sqrt(\frac{3}{\kappa\rho_0}))^3
+            (\chi_a-\frac{1}{2}\mo{sin} 2\chi_a).}`
+    Hence the mass of our sphere will be ($`\kappa=8\pi k^{2}`)
+
+    $$`M=\rho_{0}V=\frac{3}{4k^{2}}\sqrt(\frac{3}{\kappa\rho_{0}})
+        (\chi_{a}-\frac{1}{2}\mo{sin} 2\chi_{a}). {\quad(41)}`
+
+ 2. About the equations of motion of a point of infinitely small mass outside our sphere, which maintain
+    the same form as in "Mass point" (there equations (15)--(17)), one makes the following remarks:
+
+    For large distances the motion of the point occurs according to Newton's law, with $`\alpha/2k^{2}` playing the role of the attracting mass.
+    Therefore $`\alpha/2k^{2}` can be designated as "gravitational mass" of our sphere.
+
+    If one lets a point fall from the rest at infinity down to the surface of the sphere, the "naturally measured" fall velocity takes the value:
+
+    $$`v_{a}=\frac{1}{\sqrt(1-\alpha/R)}\,\frac{dR}{ds}
+        =\sqrt(\frac{\alpha}{R_{a}}).`
+    Hence, due to (40):
+    $$`v_{a}=\mo{sin}\chi_{a}. {\quad(42)}`
+    For the Sun the fall velocity is about 1/500 the velocity of light.
+    One easily satisfies himself that, with the small value thus resulting for $`\chi_{a}` and $`\chi` ($`<\chi_{a}`), all our equations coincide with the equations of Newton's theory apart from the known second order Einstein's effects.
+
+ 3. For the ratio between the gravitational mass $`\alpha/2 k^{2}` and the substantial mass $`M` one finds
+
+    $$`\frac{\alpha}{2k^{2}M}=\frac{2}{3}
+        \,\frac{sin^3\chi_{a}}{{\chi_{a}\,-\,\frac{1}{2}sin 2\chi_{a}}}. {\quad(43)}`
+
+    With the growth of the fall velocity $`v_{a}` ($`=\mo{sin}\chi_{a}`), the growth of the mass concentration lowers the ratio between the gravitational mass and the substantial mass.
+    This becomes clear for the fact that _e. g._ with constant mass and increasing density one has the transition to a smaller radius with emission of energy (lowering of the temperature through radiation).
+
+ 4. The velocity of light in our sphere is
+
+    $$`v=\frac{2}{3\mo{cos}\chi_a-\mo{cos}\chi}, {\quad(44)}`
+    hence it grows from the value $`1/\mo{cos}\chi_{a}` at the surface to the value $`2/(3\mo{cos}\chi_{a}-1)` at the center.
+    The value of the pressure quantity $`\rho_{0}+p` according to (10) and (30) grows in direct proportion to the velocity of light.
+
+    At the center of the sphere ($`\chi = 0`) velocity of light and pressure become infinite when $`\mo{cos} \chi_{a} = 1/3`, and the fall velocity becomes $`\sqrt({8/9})` of the (naturally measured) velocity of light.
+    Hence there is a limit to the concentration, above which a sphere of incompressible fluid can not exist.
+    If one would apply our equations to values $`\mo{cos}\chi_{a} < 1/3`, one would get discontinuities already outside the center of the sphere.
+    One can however find solutions of the problem for larger $`\chi_{a}`, which are continuous at least outside the center of the sphere, if one goes over to the case of either $`\lambda > 0` or $`\lambda < 0`, and satisfies the condition $`K=0` (Eq. 27).
+    On the road of these solutions, that are clearly not physically meaningful, since they give infinite pressure at the center, one can go over to the limit case of a mass concentrated to one point, and retrieves then the relation $`\rho = \alpha^{3}`, which, according to the previous study, holds for the mass point.
+    It is further noticed here that one can speak of a mass point only as far as one avails of the variable $`r`, that otherwise in a surprising way plays no role for the geometry and for the motion inside our gravitational field.
+    _For an observer measuring from outside it follows from (40) that a sphere of given gravitational mass $`\alpha/2k^{2}` can not have a radius measured from outside smaller than:_
+    $$`P_{o} = \alpha`
+    _For a sphere of incompressible fluid the limit will be $`9/8\alpha`._ (For the Sun $`\alpha` is equal to 3 km, for a mass of 1 gram is equal to $`1.5 \cdot 10^{-28}` cm.)
+
+{.bigrule}
+---
