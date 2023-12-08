@@ -563,14 +563,14 @@ function package:registerCommands ()
       local hbox = SILE.typesetter:makeHbox(function ()
         SILE.call("style:apply", { name = name }, { text })
       end)
-      if hbox.width < 0 then
+      if hbox.width:tonumber() < 0 then
         SU.warn("Negative hbox width should not occur any more, please report an issue")
       end
-      local remainingSpace = hbox.width < 0 and -hbox.width or -beforekern:absolute() - hbox.width
+      local remainingSpace = hbox.width:tonumber() < 0 and -hbox.width or -beforekern:absolute() - hbox.width
 
       -- We want at least the space of a figure digit between the number
       -- and the text.
-      if remainingSpace:tonumber() - SILE.length("1nspc"):absolute() <= 0 then
+      if remainingSpace:tonumber() - SILE.length("1nspc"):tonumber() <= 0 then
         -- It's not the case, the number goes beyond the available space.
         -- So add a fixed interword space after it.
         SILE.call("style:apply", { name = name }, { text })
