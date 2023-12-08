@@ -11,7 +11,7 @@ exclude_files = {
   "compare-*",
   "sile-*",
   "lua_modules",
-  "lua-libraries",
+  -- "lua-libraries",
   ".lua",
   ".luarocks",
   ".install"
