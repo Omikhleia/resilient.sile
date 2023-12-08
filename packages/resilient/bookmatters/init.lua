@@ -77,7 +77,11 @@ end
 
 -- Source: https://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
 local function weightedColorDistanceIn3D (color)
-  return math.sqrt(math.pow(color.r * 255, 2) * 0.241 + math.pow(color.g * 255, 2) * 0.691 + math.pow(color.b * 255, 2) * 0.068)
+  return math.sqrt(
+    (color.r * 255)^2 * 0.241
+    + (color.g * 255)^2 * 0.691
+    + (color.b * 255)^2 * 0.068
+  )
 end
 local function contrastColor(color)
   if not color.r then
@@ -160,7 +164,6 @@ function package:registerCommands ()
     end
 
     if metadata["meta:isbn"] then
-      -- local H = SILE.measurement("100%fh"):tonumber() - SILE.measurement("40mm"):tonumber()
       SILE.call("skip", { height = offset })
       SILE.call("kern", { width = SILE.nodefactory.hfillglue() })
       SILE.call("framebox", { fillcolor = "white", padding = pad1, borderwidth = 0 }, {

@@ -1,4 +1,4 @@
-std = "max"
+std = "min+sile"
 include_files = {
   "**/*.lua",
   "sile.in",
@@ -11,7 +11,6 @@ exclude_files = {
   "compare-*",
   "sile-*",
   "lua_modules",
-  "lua-libraries",
   ".lua",
   ".luarocks",
   ".install"
@@ -19,14 +18,13 @@ exclude_files = {
 files["**/*_spec.lua"] = {
   std = "+busted"
 }
-globals = {
-  "SILE",
-  "SU",
-  "luautf8",
-  "pl",
-  "fluent",
-  "SYSTEM_SILE_PATH",
-  "SHARED_LIB_EXT"
+files["lua-libraries"] = {
+  -- matter of taste and not harmful
+  ignore = {
+    "211", -- unused function / unused variable
+    "212/self", -- unused argument self
+    "412", --variable was previously defined as an argument
+  }
 }
 max_line_length = false
 ignore = {

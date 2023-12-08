@@ -1,6 +1,5 @@
 The "vendored" version of tinyyaml used here is:
-https://github.com/api7/lua-tinyyaml (0.4.3 rockspec at the time of initial
-import)
+https://github.com/api7/lua-tinyyaml (0.4.4 rockspec)
 
 It's a fork from:
 https://github.com/peposso/lua-tinyyaml (which had a 1.0 rockspec earlier)
@@ -18,3 +17,5 @@ RESILIENT was to avoid a C binding dependency, since style files are
 reasonably small theoretically (so performance do not really matter) and
 only need a subset of YAML (so a pure-Lua implementation, even possibly
 incomplete, ought to be sufficient.)
+
+Modications are marked with comments MODIFIED RESILIENT
