@@ -11,13 +11,20 @@ exclude_files = {
   "compare-*",
   "sile-*",
   "lua_modules",
-  -- "lua-libraries",
   ".lua",
   ".luarocks",
   ".install"
 }
 files["**/*_spec.lua"] = {
   std = "+busted"
+}
+files["lua-libraries"] = {
+  -- matter of taste and not harmful
+  ignore = {
+    "211", -- unused function / unused variable
+    "212/self", -- unused argument self
+    "412", --variable was previously defined as an argument
+  }
 }
 max_line_length = false
 ignore = {
