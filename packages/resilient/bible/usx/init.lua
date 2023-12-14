@@ -63,37 +63,81 @@ end
 local lastRef = {}
 
 local skippedParaStyles = { -- for now...
+  -- identification
   ide = true,
+  -- toc
+  toc = true,
   toc1 = true,
   toc2 = true,
+  toc3 = true,
+  toca1 = true,
+  toca2 = true,
+  toca3 = true,
+  -- chapter content
+  cd = true,
+  -- introductions
+  -- The people who invented this format are plain crazy...
+  -- Folks, you should have used a proper XML schema, with a tag for introduction matters
+  -- and just use regular paragraphs below. This schema is a madman's dream, right?
+  imt = true,
   imt1 = true,
   imt2 = true,
   imt3 = true,
-  ip = true,
-  ipi = true,
+  imte = true,
+  imte1 = true,
+  imte2 = true,
+  imte3 = true,
   is = true,
   is1 = true,
   is2 = true,
   is3 = true,
+  ip = true,
+  ipi = true,
+  im = true,
+  imi = true,
+  ipq = true,
+  imq = true,
+  ipr = true,
+  iq = true,
+  iq1 = true,
+  iq2 = true,
+  iq3 = true,
+  ib = true,
+  ili = true,
+  ili1 = true,
+  ili2 = true,
+  ili3 = true,
+  iot = true,
   io = true,
   io1 = true,
   io2 = true,
   io3 = true,
-  ib = true,
+  iex = true,
   ie = true,
+  -- titles and headings
+  mt2 = true, -- Erm... Should be used but comes before mt1 in the LSG
+  -- The structure is not obvious in this messy format, so
+  -- we skip it for now.
+  mt3 = true,
+  mte = true,
+  mte1 = true,
+  mte2 = true,
+  mte3 = true,
+  -- misc. unsupported...
   r = true,
   ms1 = true,
   ms2 = true,
+  ms3 = true,
   mr = true,
-  mt2 = true, -- Erm... Should be used but comes before mt1 in the LSG
-              -- The structure is not obvious in this messy format, so
-              -- we skip it for now.
-  mt3 = true,
+  -- special exceptions
+  usfm = true, -- not part of USX3 but used in the UGNT bible
+               -- (containing 3.0... This must be a joke of some sort, right?)
 }
 
 local skippedCharStyles = {
-  xo = true, -- We are generating the references ourselves
-             -- as we collate notes per verses.
+  -- We are generating the references ourselves as we collate notes per verses.
+  xo = true, -- xo (with xt content)
+  fr = true, -- fr (with ft content)
 }
 
 ---
@@ -189,6 +233,13 @@ function package:registerCommands()
       local first = refs[1]
       local last = refs[#refs]
       local ref
+      -- BEGIN HACK FIXME
+      -- Doh we are not going to guess headers if the sources are not providing them.
+      -- are we? FIXME TODO messy XML schema... The case occurred in the NCL bible, on two
+      -- books (EXO and JAS): this USX thing is somewhat messy, if it allows such things.
+      if not first.book then first.book = "" end
+      if not last.book then last.book = "" end
+      -- END HACK
       if first.book == last.book then
         if first.chapter == last.chapter then
           ref = first.book .. " " .. first.chapter .. ", " .. first.verse .. "–" .. last.verse
@@ -321,6 +372,11 @@ function package:registerCommands()
       SILE.call("style:apply:number", { name = "usx-noteno-innote", text = count })
       processAsStructure(content)
     end)
+  end)
+
+  self:registerCommand("unmatched", function(_, _)
+    -- Not part of USX3, but used in some Paratext USX files
+    -- Just ignore...
   end)
 end
 
