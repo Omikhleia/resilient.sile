@@ -1,3 +1,9 @@
+md-mark:
+  style:
+    decoration:
+      line: "mark"
+      color: "orange"
+      rough: true
 
 blockquote:
   origin: "resilient.book"
@@ -1046,5 +1052,7 @@ verbatim:
     paragraph:
       align: "obeylines"
       before:
+        skip: "smallskip"
+      after:
         skip: "smallskip"
 

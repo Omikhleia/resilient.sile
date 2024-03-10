@@ -13,15 +13,13 @@ A regular character style obeys to the following specification
     properties:
       position: "normal|super|sub"
       case: "normal|upper|lower|title"
+    decoration: ⟨decoration specification⟩
 ```
 
 The ⟨font specification⟩ is an object which can contain any of the usual elements, as
 used in the SILE `\font` command.
 
 The ⟨color specification⟩ follows the same syntax as defined in the SILE **color** package.
-
-The "properties" might be extended in a future revision; for now they support a position element, to specify a superscript or subscript formatting, and a text case element.
-The "normal" values may be used to override a parent style definition, when style inheritance is used.
 
 As an example, the following style results in a blue italic superscript in the Libertinus
 Serif font.
@@ -35,6 +33,52 @@ my-custom-style-name:
     color: "blue"
     properties:
       position: "super"
+```
+
+#### Properties {.unnumbered}
+
+The "properties" might be extended in a future revision; for now they support a position element, to specify a superscript or subscript formatting, and a text case element.
+The "normal" values may be used to override a parent style definition, when style inheritance is used.
+
+#### Decorations {.unnumbered}
+
+The ⟨decoration specification⟩ is an object which can contain any of the following elements.
+
+```yaml
+decoration:
+  line: "underline|strikethrough|redacted|mark"
+  color: "⟨color specification⟩"
+  thickness: "⟨dimen⟩"
+  rough: true|false
+  fillstyle: "hachure|solid|zigzag|cross-hatch|dashed|zigzag-line"
+```
+
+The "line" element specifies the type of decoration to be drawn.
+
+The "color" element denotes the color of the decoration.
+If unspecified, the current color is utilized.
+
+Positioning and thickness of underlines and strikethroughs adhere to the metrics of the current font, respecting values defined by the type designer.
+The thickness can be overridden if specified in the style definition.
+
+Setting the "rough" element to `true` results in a sketchy decoration resembling hand-drawn strokes, as opposed to a solid and
+straight appearance.
+
+A "mark" decoration places its content over a background, while "redacted" _replaces_ is content with a pattern occupying the same space.
+For these decorations, the "fillstyle" element dictates the pattern used to fill the area in rough mode.
+It defaults to "solid" and "zizag" respectively.
+The "thickness" defaults to `0.5pt`.
+
+For instance, the `md-mark` style overrides the Markdown or Djot default rendering of the "highlight" syntax.
+Let's ==mark some text== for the sake of demonstration, with the following style definition:
+
+```yaml
+md-mark:
+  style:
+    decoration:
+      line: "mark"
+      color: "orange"
+      rough: true
 ```
 
 ### Number styles
