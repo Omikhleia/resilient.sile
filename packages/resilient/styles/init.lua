@@ -18,6 +18,7 @@ function package:_init (options)
 
   self.class:loadPackage("textsubsuper")
   self.class:loadPackage("textcase")
+  self.class:loadPackage("resilient.liners")
 
   self.class:registerHook("finish", self.writeStyles)
 
@@ -179,6 +180,14 @@ SILE.scratch.styles = {
   positions = {
     super = "textsuperscript",
     sub = "textsubscript",
+  },
+  -- Known decoration options
+  -- Packages and classes can register extra options in this table.
+  decorations = {
+    underline = "resilient:liner:underline",
+    strikethrough = "resilient:liner:strikethrough",
+    mark = "resilient:liner:mark",
+    redacted = "resilient:liner:redacted",
   }
 }
 
@@ -282,6 +291,15 @@ function package:registerCommands ()
           SU.error("Invalid style case '"..style.properties.case.."'")
         end
         content = createCommand(caseCommand, {}, content)
+      end
+    end
+    if style.decoration then
+      if style.decoration.line then
+        local lineCommand = SILE.scratch.styles.decorations[style.decoration.line]
+        if not lineCommand then
+          SU.error("Invalid style decoration line '"..style.decoration.line.."'")
+        end
+        content = createCommand(lineCommand, style.decoration, content)
       end
     end
     if style.color then

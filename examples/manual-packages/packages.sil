@@ -210,6 +210,10 @@ class writers.
 
 \package-documentation{resilient.sectioning}
 
+\section{Helper multi-liners for character styles}
+
+\package-documentation{resilient.liners}
+
 %\section{Specialized packages}
 %
 %\subsection{(teidict) XML TEI P4 print dictionaries}

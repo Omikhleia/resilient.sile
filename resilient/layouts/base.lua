@@ -139,7 +139,7 @@ local function buildFrameRect (painter, frame, wratio, hratio, options)
     frame:top():tonumber() * hratio,
     frame:width():tonumber() * wratio,
     frame:height():tonumber() * hratio, {
-      fill = options.fillcolor and SILE.color(options.fillcolor),
+      fill = options.fillcolor and SILE.color(options.fillcolor) or "none",
       stroke = options.strokecolor and SILE.color(options.strokecolor),
       preserveVertices = SU.boolean(options.preserve, true),
       disableMultiStroke = SU.boolean(options.singlestroke, true),
