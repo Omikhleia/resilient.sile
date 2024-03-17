@@ -21,6 +21,7 @@ dependencies = {
    "fancytoc.sile",
    "labelrefs.sile",
    "printoptions.sile",
+   "piecharts.sile >= 0.2.0",
    "ptable.sile",
    "qrcode.sile",
    "textsubsuper.sile",

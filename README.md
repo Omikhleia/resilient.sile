@@ -54,6 +54,7 @@ This collection also imports several modules also provided separately, would you
 - [Fancy table of contents](https://github.com/Omikhleia/fancytoc.sile) (an alternative two-level table of contents with nice curly braces)
 - [Textual graphics embedders](https://github.com/Omikhleia/embedders.sile) (support for Graphviz, Lilypond, &c)
 - [Markdown](https://github.com/Omikhleia/markdown.sile) (support for Markdown, Djot etc.)
+- [Pie charts](https://github.com/Omikhleia/piecharts.sile) (support for pie charts)
 
 When used with this collection, the Markdown packages and the fancy table of contents are
 leveraged with additional capabilities.

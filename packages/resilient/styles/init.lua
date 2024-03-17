@@ -1,7 +1,7 @@
 --
 -- A style package for SILE
 -- License: MIT
--- 2021-2023, Didier Willis
+-- 2021-2024, Didier Willis
 --
 local base = require("packages.base")
 
