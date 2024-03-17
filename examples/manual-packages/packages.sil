@@ -94,6 +94,12 @@
 
 \embedder-documentation{lilypond}
 
+\section{Pie charts}
+
+\admon{This package is part of the \strong{piecharts.sile} collection.}
+
+\package-documentation{piecharts}
+
 %%%
 %%% Book parts and tools
 %%%
