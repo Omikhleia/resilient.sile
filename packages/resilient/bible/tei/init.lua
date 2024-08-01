@@ -36,10 +36,10 @@ function package.outputCollatedNotes (_)
   SILE.typesetNaturally(SILE.getFrame("margins"), function ()
     SILE.settings:pushState()
     SILE.settings:toplevelState()
-    SILE.settings:set("current.parindent", SILE.nodefactory.glue())
-    SILE.settings:set("document.parindent", SILE.nodefactory.glue())
-    SILE.settings:set("document.lskip", SILE.nodefactory.glue())
-    SILE.settings:set("document.rskip", SILE.nodefactory.hfillglue())
+    SILE.settings:set("current.parindent", SILE.types.node.glue())
+    SILE.settings:set("document.parindent", SILE.types.node.glue())
+    SILE.settings:set("document.lskip", SILE.types.node.glue())
+    SILE.settings:set("document.rskip", SILE.types.node.hfillglue())
     for _, v in ipairs({
       "current.hangAfter",
       "current.hangIndent",
@@ -47,7 +47,7 @@ function package.outputCollatedNotes (_)
       "linebreak.hangIndent" }) do
       SILE.settings:set(v, SILE.settings.defaults[v])
     end
-    -- SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
+    -- SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
     local refs = SILE.scratch.info.thispage.witnesses
     if not refs then return end
 
@@ -729,7 +729,7 @@ function package:registerCommands ()
       SILE.call("font", { family = "Ulfilas", features = "+liga" })
       SILE.call("font:add-fallback", { family = "Libertinus Serif" })
 
-      SILE.settings:set("linebreak.emergencyStretch", SILE.measurement("1em"))
+      SILE.settings:set("linebreak.emergencyStretch", SILE.types.measurement("1em"))
 
       processAsStructure(content)
     end)
@@ -1094,11 +1094,11 @@ function package:registerCommands ()
     breakAtPeriod = true
     -- Block indented centering
     SILE.settings:temporarily(function ()
-      SILE.settings:set("document.lskip", SILE.nodefactory.hfillglue("0.5cm"))
-      SILE.settings:set("document.rskip", SILE.nodefactory.hfillglue("0.5cm"))
-      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
-      SILE.settings:set("document.parindent", SILE.nodefactory.glue())
-      SILE.settings:set("document.spaceskip", SILE.length("1spc", 0, 0))
+      SILE.settings:set("document.lskip", SILE.types.node.hfillglue("0.5cm"))
+      SILE.settings:set("document.rskip", SILE.types.node.hfillglue("0.5cm"))
+      SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
+      SILE.settings:set("document.parindent", SILE.types.node.glue())
+      SILE.settings:set("document.spaceskip", SILE.types.length("1spc", 0, 0))
       SILE.process(content)
       SILE.call("par")
     end)

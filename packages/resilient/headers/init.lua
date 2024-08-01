@@ -59,9 +59,9 @@ function package.outputHeader (_, headerContent, frame)
           SILE.settings:pushState()
           -- Restore the settings to the top of the queue, which should be the document
           SILE.settings:toplevelState()
-          SILE.settings:set("current.parindent", SILE.nodefactory.glue())
-          SILE.settings:set("document.lskip", SILE.nodefactory.glue())
-          SILE.settings:set("document.rskip", SILE.nodefactory.glue())
+          SILE.settings:set("current.parindent", SILE.types.node.glue())
+          SILE.settings:set("document.lskip", SILE.types.node.glue())
+          SILE.settings:set("document.rskip", SILE.types.node.glue())
 
           -- Temporarilly kill footnotes and labels (fragile)
           local oldFt = SILE.Commands["footnote"]

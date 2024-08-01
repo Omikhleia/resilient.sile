@@ -130,7 +130,7 @@ function class:_init (options)
   end)
 
   -- override default document.parindent, we do not want it.
-  SILE.settings:set("document.parindent", SILE.nodefactory.glue())
+  SILE.settings:set("document.parindent", SILE.types.node.glue())
 end
 
 function class:newPage ()
@@ -155,10 +155,10 @@ function class:endPage ()
   SILE.typesetNaturally(SILE.getFrame("footer"), function ()
     SILE.settings:pushState()
     SILE.settings:toplevelState()
-    SILE.settings:set("document.parindent", SILE.nodefactory.glue())
-    SILE.settings:set("current.parindent", SILE.nodefactory.glue())
-    SILE.settings:set("document.lskip", SILE.nodefactory.glue())
-    SILE.settings:set("document.rskip", SILE.nodefactory.glue())
+    SILE.settings:set("document.parindent", SILE.types.node.glue())
+    SILE.settings:set("current.parindent", SILE.types.node.glue())
+    SILE.settings:set("document.lskip", SILE.types.node.glue())
+    SILE.settings:set("document.rskip", SILE.types.node.glue())
 
     SILE.call("hbox", {}, {}) -- for vfill to be applied
     SILE.call("vfill")
@@ -314,7 +314,7 @@ function class:registerCommands ()
 
     local fullnameAndPictureRow = createStructuredCommand("row", {}, {
       createStructuredCommand("cell", { border = "0 1pt 0 0", padding = "4pt 4pt 0 4pt", valign = "bottom" }, { function ()
-          local w = SILE.measurement("100%fw"):absolute() - 7.2 -- padding and border
+          local w = SILE.types.measurement("100%fw"):absolute() - 7.2 -- padding and border
           SILE.call("parbox", { width = w, border = "0.6pt", padding = "3pt" }, function ()
             SILE.call("img", { width = "100%fw", src = picture.options.src })
           end)

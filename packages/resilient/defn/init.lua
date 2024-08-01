@@ -40,7 +40,7 @@ function package.declareSettings (_)
   SILE.settings:declare({
     parameter = "defn.indent",
     type = "measurement",
-    default = SILE.measurement("2em"),
+    default = SILE.types.measurement("2em"),
     help = "Definition description indentation (styling)"
   })
 
@@ -61,8 +61,8 @@ function package:registerCommands ()
 
     SILE.settings:temporarily(function ()
       local indent = SILE.settings:get("defn.indent"):absolute()
-      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
-      SILE.settings:set("document.lskip", SILE.nodefactory.glue(lskip.width:absolute() + indent))
+      local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
+      SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width:absolute() + indent))
       SILE.call("style:apply:paragraph", { name = style }, content)
     end)
   end, "Definition block (internal)")

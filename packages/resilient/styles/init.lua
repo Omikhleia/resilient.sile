@@ -418,7 +418,7 @@ function package:registerCommands ()
         local X = t.frame.state.cursorX
         local Y = t.frame.state.cursorY
         local H = s.height:tonumber() + s.depth:tonumber() + s.adjustment:tonumber()
-        SILE.outputter:pushColor(SILE.color("orange"))
+        SILE.outputter:pushColor(SILE.types.color("orange"))
         -- Show a box representing the skip
         SILE.outputter:drawRule(X, Y, 0.4, H)
         SILE.outputter:drawRule(X, Y, 30, 0.4)
@@ -434,7 +434,7 @@ function package:registerCommands ()
     -- original glue.
     vglue.explicit = false
     vglue.discardable = true
-    return SILE.nodefactory.vglue(vglue)
+    return SILE.types.node.vglue(vglue)
   end
 
   local function styleForBeforeSkip(name, parSty, styledef)
@@ -542,7 +542,7 @@ function package:registerCommands ()
   -- APPLY A NUMBER STYLE
 
   self:registerCommand("style:apply:number", function (options, content)
-    if SU.hasContent(content) then
+    if SU.ast.hasContent(content) then
       SU.error("Unexpected content")
     end
     local name = SU.required(options, "name", "style:apply:number")
@@ -588,7 +588,7 @@ function package:registerCommands ()
 
       -- We want at least the space of a figure digit between the number
       -- and the text.
-      if remainingSpace:tonumber() - SILE.length("1nspc"):tonumber() <= 0 then
+      if remainingSpace:tonumber() - SILE.types.length("1nspc"):tonumber() <= 0 then
         -- It's not the case, the number goes beyond the available space.
         -- So add a fixed interword space after it.
         SILE.call("style:apply", { name = name }, { text })

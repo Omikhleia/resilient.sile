@@ -40,16 +40,16 @@ function package:registerCommands ()
           prosodyAnnotation = "–" -- endash
         elseif prosodyAnnotation == "u" then
           prosodyAnnotation = "ᵕ" -- some half circle
-          opts.lower = SILE.measurement("-0.33ex")
+          opts.lower = SILE.types.measurement("-0.33ex")
         end
       elseif options.mode == "classical" then
         if prosodyAnnotation == "x" then
           prosodyAnnotation = "×" -- U+00D7 times
         elseif prosodyAnnotation == "-" then
-          opts.lower = SILE.measurement("-0.66ex")
+          opts.lower = SILE.types.measurement("-0.66ex")
           prosodyAnnotation = "¯" -- macron
         elseif prosodyAnnotation == "u" then
-          opts.lower = SILE.measurement("-0.66ex")
+          opts.lower = SILE.types.measurement("-0.66ex")
           prosodyAnnotation = "˘" -- breve
         end
       elseif options.mode == "mixed" then
@@ -58,7 +58,7 @@ function package:registerCommands ()
         elseif prosodyAnnotation == "-" then
           prosodyAnnotation = "–" -- endash
         elseif prosodyAnnotation == "u" then
-          opts.lower = SILE.measurement("-0.66ex")
+          opts.lower = SILE.types.measurement("-0.66ex")
           prosodyAnnotation = "˘" -- breve
         end
       end
@@ -125,14 +125,14 @@ function package:registerCommands ()
   end
 
   self:registerCommand("resilient.poetry:prosody", function (options, content)
-    local vadjust = options.lower or SILE.measurement()
+    local vadjust = options.lower or SILE.types.measurement()
 
     local prosodyBox = SILE.typesetter:makeHbox(function ()
       SILE.call("style:apply", { name = "poetry-prosody" }, { options.name })
     end)
 
     local origWidth = prosodyBox.width
-    prosodyBox.width = SILE.length()
+    prosodyBox.width = SILE.types.length()
     prosodyBox.height = SILE.settings:get("resilient.poetry.lineheight")
     SILE.call("rebox", {height=0, width=0}, function()
       -- FIXME: the vadjust is empirically determined, and should perhaps be
@@ -168,9 +168,9 @@ function package:registerCommands ()
     end
 
     local indent
-    local regularIdent = SILE.length(SILE.settings:get("document.parindent")):absolute()
+    local regularIdent = SILE.types.length(SILE.settings:get("document.parindent")):absolute()
     if not numbering or nVerse < step then
-      indent = SILE.length(SILE.settings:get("document.parindent")):absolute()
+      indent = SILE.types.length(SILE.settings:get("document.parindent")):absolute()
     else
       local digitSize
       SILE.settings:temporarily(function ()
@@ -178,11 +178,11 @@ function package:registerCommands ()
         SILE.settings:set("font.features", "+onum")
         digitSize = SILE.shaper:measureChar("0").width
       end)
-      local setback = SILE.length("1.75em"):absolute()
+      local setback = SILE.types.length("1.75em"):absolute()
       local logv = math.floor(math.log(nVerse + iVerse) / LOG10) -- Reminder: math.log10 is not in Lua "min" profiile
-      indent = SILE.length((logv + 1) * digitSize):absolute()
+      indent = SILE.types.length((logv + 1) * digitSize):absolute()
         + setback
-        + SILE.length(SILE.settings:get("document.parindent")):absolute()
+        + SILE.types.length(SILE.settings:get("document.parindent")):absolute()
     end
 
     local labelRefs = self.class.packages.labelrefs
@@ -190,13 +190,13 @@ function package:registerCommands ()
     local verseNumDisplay = numsty.numbering and numsty.numbering.display or "arabic"
 
     SILE.settings:temporarily(function()
-      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
-      SILE.settings:set("current.parindent", SILE.length(0))
-      SILE.settings:set("document.parindent", SILE.length(0))
+      local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
+      SILE.settings:set("current.parindent", SILE.types.length(0))
+      SILE.settings:set("document.parindent", SILE.types.length(0))
       SILE.settings:set("document.lskip", lskip.width:absolute() + indent)
       SILE.settings:set("document.rskip", regularIdent)
       if SU.boolean(options.prosody, false) then
-        SILE.settings:set("document.parskip", SILE.length("0.75bs"))
+        SILE.settings:set("document.parskip", SILE.types.length("0.75bs"))
         SILE.typesetter:pushVglue(SILE.settings:get("document.parskip"))
       end
       for i = 1, #content do
@@ -246,7 +246,7 @@ function package:registerCommands ()
   end, "A styled poetry environment")
 
   local typesetVerseNumber = function (mark)
-    local setback = SILE.length("1.75em"):absolute()
+    local setback = SILE.types.length("1.75em"):absolute()
     -- FIXME: setback and whole position logic is empirical
     -- We should use styles rather than the current approach (which predates them, here)
 
@@ -254,7 +254,7 @@ function package:registerCommands ()
       SILE.call("style:apply:number", { name = "poetry-verseno", text = mark })
     end)
 
-    local w = SILE.length("6em"):absolute()
+    local w = SILE.types.length("6em"):absolute()
     SILE.typesetter:pushGlue({ width = -w })
     SILE.call("rebox", { width = w, height = 0 }, function()
       SILE.typesetter:pushGlue({ width = w - setback - h.width })
@@ -275,8 +275,8 @@ function package:registerCommands ()
   self:registerCommand("poetryindent", function (_, content)
     SILE.settings:temporarily(function ()
       local indent = SILE.settings:get("poetry.margin"):absolute()
-      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
-      SILE.settings:set("document.lskip", SILE.nodefactory.glue(lskip.width.length + indent))
+      local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
+      SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width.length + indent))
       SILE.process(content)
       SILE.call("par")
     end)
@@ -293,21 +293,21 @@ function package.declareSettings (_)
   SILE.settings:declare({
     parameter = "resilient.poetry.offset",
     type = "length",
-    default = SILE.length("2ex"),
+    default = SILE.types.length("2ex"),
     help = "Vertical offset between the prosody annotation and the text."
   })
 
   SILE.settings:declare({
     parameter = "resilient.poetry.lineheight",
     type = "length",
-    default = SILE.length("4mm"),
+    default = SILE.types.length("4mm"),
     help = "Length (height) of the prodosy annotation line."
   })
 
   SILE.settings:declare({
     parameter = "poetry.margin",
     type = "measurement",
-    default = SILE.measurement("0.75em"),
+    default = SILE.types.measurement("0.75em"),
     help = "Left margin (indentation) for poetry"
   })
 end

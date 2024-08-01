@@ -118,7 +118,7 @@ function package:registerCommands ()
     local src = SILE.resolveFile(image) or SU.error("Cannot find image file: " .. image)
     local metadata = options.metadata or {} -- Unusual: table of metadata options
     local backgroundColor = options.background or "white"
-    local textColor = contrastColor(SILE.color(backgroundColor))
+    local textColor = contrastColor(SILE.types.color(backgroundColor))
 
     SILE.call("open-on-even-page")
     SILE.call("switch-master-one-page", { id = "bookmatters-back-cover" })
@@ -132,10 +132,10 @@ function package:registerCommands ()
 
     -- Lots of empirical measurements here...
     -- I'm in a hurry, but maybe some readers can propose better...
-    local offset = SILE.measurement("15mm"):tonumber()
-    local pad1 = SILE.measurement("0.25cm"):tonumber()
+    local offset = SILE.types.measurement("15mm"):tonumber()
+    local pad1 = SILE.types.measurement("0.25cm"):tonumber()
     local pad2 = 3 * pad1
-    local W = SILE.measurement("100%fw"):tonumber() - 2 * offset - 2 * pad2
+    local W = SILE.types.measurement("100%fw"):tonumber() - 2 * offset - 2 * pad2
       local pbox, hlist = self.class.packages.parbox:makeParbox({
         width = W, strut="none" }, function ()
           SILE.call("style:apply", { name = "bookmatter-backcover" }, content)
@@ -144,8 +144,8 @@ function package:registerCommands ()
       SU.error("Migrating content (footnotes, etc.) not supported in back cover")
     end
     local hBox = pbox.height:tonumber() + pbox.depth:tonumber()
-    local hIsbnReserved = SILE.measurement("40mm"):tonumber() + offset
-    local H = SILE.measurement("100%fh"):tonumber() - hIsbnReserved - hBox - 2 * pad2
+    local hIsbnReserved = SILE.types.measurement("40mm"):tonumber() + offset
+    local H = SILE.types.measurement("100%fh"):tonumber() - hIsbnReserved - hBox - 2 * pad2
     if H < 0 then
       SU.error("Back cover content is too large, you need to reduce it")
     end
@@ -165,7 +165,7 @@ function package:registerCommands ()
 
     if metadata["meta:isbn"] then
       SILE.call("skip", { height = offset })
-      SILE.call("kern", { width = SILE.nodefactory.hfillglue() })
+      SILE.call("kern", { width = SILE.types.node.hfillglue() })
       SILE.call("framebox", { fillcolor = "white", padding = pad1, borderwidth = 0 }, {
         createCommand("ean13", { code = metadata["meta:isbn"] }),
       })
@@ -194,8 +194,8 @@ function package:registerCommands ()
 
   self:registerCommand("noparindent", function (_, content)
     SILE.settings:temporarily(function ()
-      SILE.settings:set("document.parindent", SILE.nodefactory.glue())
-      SILE.settings:set("current.parindent", SILE.nodefactory.glue())
+      SILE.settings:set("document.parindent", SILE.types.node.glue())
+      SILE.settings:set("current.parindent", SILE.types.node.glue())
       SILE.process(content)
       SILE.call("par")
     end)

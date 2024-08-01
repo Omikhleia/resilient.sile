@@ -137,7 +137,7 @@ end
 function package:registerRawHandlers ()
 
   self.class:registerRawHandler("autodoc:codeblock", function(options, content)
-    SILE.call("autodoc:codeblock", options, { content[1] }) -- Still issues with SU.contentToString() witb raw content
+    SILE.call("autodoc:codeblock", options, { content[1] }) -- Still issues with SU.ast.contentToString() witb raw content
   end)
 
 end
@@ -332,15 +332,15 @@ function package:registerCommands ()
 
   self:registerCommand("autodoc:note", function(_, content)
     -- Replacing the \note command from the original SILE manual...
-    local linedimen = SILE.length("0.75em")
-    local linethickness = SILE.length("0.3pt")
-    local ls = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
+    local linedimen = SILE.types.length("0.75em")
+    local linethickness = SILE.types.length("0.3pt")
+    local ls = SILE.settings:get("document.lskip") or SILE.types.node.glue()
     local p = SILE.settings:get("document.parindent")
     local leftindent = (p.width:absolute() + ls.width:absolute()).length -- fixed part
-    local innerindent = SILE.measurement("1em"):absolute()
+    local innerindent = SILE.types.measurement("1em"):absolute()
     SILE.settings:temporarily(function ()
       SILE.settings:set("document.lskip", leftindent)
-      SILE.settings:set("document.rskip", SILE.nodefactory.glue())
+      SILE.settings:set("document.rskip", SILE.types.node.glue())
 
       SILE.call("noindent")
       SILE.process(
@@ -353,8 +353,8 @@ function package:registerCommands ()
 
           SILE.call("novbreak")
           SILE.settings:temporarily(function ()
-            SILE.settings:set("document.lskip", SILE.nodefactory.glue(leftindent + innerindent))
-            SILE.settings:set("document.rskip", SILE.nodefactory.glue(innerindent))
+            SILE.settings:set("document.lskip", SILE.types.node.glue(leftindent + innerindent))
+            SILE.settings:set("document.rskip", SILE.types.node.glue(innerindent))
             SILE.call("font", { size = "0.95em", style = "italic "}, content)
             SILE.call("novbreak")
           end)

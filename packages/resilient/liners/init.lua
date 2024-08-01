@@ -70,7 +70,7 @@ function package:registerCommands ()
       underlineThickness = SU.cast("measurement", options.thickness):tonumber()
     end
     if options.color and options.color ~= "auto" then
-      color = SILE.color(options.color)
+      color = SILE.types.color(options.color)
     end
 
     local paintOptions = {}
@@ -116,7 +116,7 @@ function package:registerCommands ()
       yStrikeoutSize = SU.cast("measurement", options.thickness):tonumber()
     end
     if options.color and options.color ~= "auto" then
-      color = SILE.color(options.color)
+      color = SILE.types.color(options.color)
     end
 
     local paintOptions = {}
@@ -152,13 +152,13 @@ function package:registerCommands ()
   end, "Strikes out some content")
 
   self:registerCommand("resilient:liner:redacted", function (options, content)
-    local bs = SILE.measurement("0.9bs"):tonumber()
+    local bs = SILE.types.measurement("0.9bs"):tonumber()
     local bsratio = computeBaselineRatio()
     local isRough = SU.boolean(options.rough, false)
 
     -- TODO still some discrepancies with the color between rough and non-rough painter
     -- despite ptable 3.0 /!\
-    local color = SILE.color(options.color or "black")
+    local color = SILE.types.color(options.color or "black")
 
     local paintOptions = {}
     if isRough then
@@ -190,13 +190,13 @@ function package:registerCommands ()
   end)
 
   self:registerCommand("resilient:liner:mark", function (options, content)
-    local bs = SILE.measurement("0.9bs"):tonumber()
+    local bs = SILE.types.measurement("0.9bs"):tonumber()
     local bsratio = computeBaselineRatio()
     local isRough = SU.boolean(options.rough, false)
 
     -- TODO still some discrepancies with the color between rough and non-rough painter
     -- despite ptable 3.0 /!\
-    local color = SILE.color(options.color or "yellow")
+    local color = SILE.types.color(options.color or "yellow")
 
     local paintOptions = {}
     if isRough then
