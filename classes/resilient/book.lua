@@ -412,7 +412,7 @@ function class:declareSettings ()
   SILE.settings:declare({
     parameter = "book.blockquote.margin",
     type = "measurement",
-    default = SILE.measurement("2em"),
+    default = SILE.types.measurement("2em"),
     help = "Margin (indentation) for block quotes"
   })
 end
@@ -544,10 +544,10 @@ function class:registerCommands ()
   self:registerCommand("blockindent", function (_, content)
     SILE.settings:temporarily(function ()
       local indent = SILE.settings:get("book.blockquote.margin"):absolute()
-      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
-      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
-      SILE.settings:set("document.lskip", SILE.nodefactory.glue(lskip.width:absolute() + indent))
-      SILE.settings:set("document.rskip", SILE.nodefactory.glue(rskip.width:absolute() + indent))
+      local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
+      local rskip = SILE.settings:get("document.rskip") or SILE.types.node.glue()
+      SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width:absolute() + indent))
+      SILE.settings:set("document.rskip", SILE.types.node.glue(rskip.width:absolute() + indent))
       SILE.process(content)
       SILE.call("par")
     end)
@@ -556,10 +556,10 @@ function class:registerCommands ()
   self:registerCommand("quoteindent", function (_, content)
     SILE.settings:temporarily(function ()
       local indent = SILE.settings:get("book.blockquote.margin"):absolute() * 0.875
-      local lskip = SILE.settings:get("document.lskip") or SILE.nodefactory.glue()
-      local rskip = SILE.settings:get("document.rskip") or SILE.nodefactory.glue()
-      SILE.settings:set("document.lskip", SILE.nodefactory.glue(lskip.width:absolute() + indent))
-      SILE.settings:set("document.rskip", SILE.nodefactory.glue(rskip.width:absolute() + indent * 0.5))
+      local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
+      local rskip = SILE.settings:get("document.rskip") or SILE.types.node.glue()
+      SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width:absolute() + indent))
+      SILE.settings:set("document.rskip", SILE.types.node.glue(rskip.width:absolute() + indent * 0.5))
       SILE.process(content)
       SILE.call("par")
     end)

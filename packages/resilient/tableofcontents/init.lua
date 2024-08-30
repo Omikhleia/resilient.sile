@@ -173,10 +173,10 @@ function package:registerCommands ()
   end, "Output the table of contents.")
 
   -- Flatten a node list into just its string representation.
-  -- (Similar to SU.contentToString(), but allows passing typeset
+  -- (Similar to SU.ast.contentToString(), but allows passing typeset
   -- objects to functions that need plain strings).
   local function nodesToText (nodes)
-    local spc = SILE.measurement("0.8spc"):tonumber() -- approx. see below.
+    local spc = SILE.types.measurement("0.8spc"):tonumber() -- approx. see below.
     local string = ""
     for i = 1, #nodes do
       local node = nodes[i]
@@ -237,7 +237,7 @@ function package:registerCommands ()
     SILE.call("info", {
       category = "toc",
       value = {
-        label = subContent(SU.stripContentPos(content)),
+        label = subContent(SU.ast.stripContentPos(content)),
         level = (options.level or 1),
         number = options.number,
         link = dest
@@ -269,7 +269,7 @@ function package:registerCommands ()
     end
 
     SILE.settings:temporarily(function ()
-      SILE.settings:set("typesetter.parfillskip", SILE.nodefactory.glue())
+      SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
       local itemContent = {}
       if options.number then
         itemContent[#itemContent + 1] = createCommand("tableofcontents:levelnumber", {

@@ -34,7 +34,7 @@ function frameAdapter:_init (spec, frameParser)
   for method in pairs(alldims) do
     self.variables[method] = cassowary.Variable({ name = spec.id .. "_" .. method })
     self[method] = function (instance_self)
-      return SILE.measurement(instance_self.variables[method].value)
+      return SILE.types.measurement(instance_self.variables[method].value)
     end
   end
   -- Add definitions of width and height
@@ -90,7 +90,7 @@ function framesetAdapter:initFrameParser()
   local number = SILE.parserBits.number
   local identifier = SILE.parserBits.identifier
   local measurement = SILE.parserBits.measurement / function (str)
-    return SILE.measurement(str):tonumber()
+    return SILE.types.measurement(str):tonumber()
   end
   local ws = SILE.parserBits.ws
   local dims = P"top" + P"left" + P"bottom" + P"right" + P"width" + P"height"

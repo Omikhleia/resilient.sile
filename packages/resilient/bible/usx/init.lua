@@ -28,10 +28,10 @@ function package.outputCollatedNotes (_)
   SILE.typesetNaturally(SILE.getFrame("margins"), function ()
     SILE.settings:pushState()
     SILE.settings:toplevelState()
-    SILE.settings:set("current.parindent", SILE.nodefactory.glue())
-    SILE.settings:set("document.parindent", SILE.nodefactory.glue())
-    SILE.settings:set("document.lskip", SILE.nodefactory.glue())
-    SILE.settings:set("document.rskip", SILE.nodefactory.hfillglue())
+    SILE.settings:set("current.parindent", SILE.types.node.glue())
+    SILE.settings:set("document.parindent", SILE.types.node.glue())
+    SILE.settings:set("document.lskip", SILE.types.node.glue())
+    SILE.settings:set("document.rskip", SILE.types.node.hfillglue())
     for _, v in ipairs({
       "current.hangAfter",
       "current.hangIndent",

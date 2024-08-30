@@ -23,21 +23,21 @@ function package.declareSettings (_)
   SILE.settings:declare({
     parameter = "epigraph.width",
     type = "measurement",
-    default = SILE.measurement("60%lw"),
+    default = SILE.types.measurement("60%lw"),
     help = "Width of an epigraph (defaults to 60% of the current line width)."
   })
 
   SILE.settings:declare({
     parameter = "epigraph.rule",
     type = "measurement",
-    default = SILE.measurement(),
+    default = SILE.types.measurement(),
     help = "Thickness of the rule drawn below an epigraph text (defaults to 0, meaning no rule)."
   })
 
   SILE.settings:declare({
     parameter = "epigraph.margin",
     type = "measurement",
-    default = SILE.measurement(),
+    default = SILE.types.measurement(),
     help = "Margin (indent) for an epigraph (defaults to 0)."
   })
 end
@@ -64,15 +64,15 @@ function package:registerCommands ()
       local sty = self:resolveStyle("epigraph")
       local align = sty.paragraph and sty.paragraph.align or "right"
       if align == "left" then
-        SILE.settings:set("document.lskip", SILE.nodefactory.glue(margin))
-        SILE.settings:set("document.rskip", SILE.nodefactory.glue(skip))
+        SILE.settings:set("document.lskip", SILE.types.node.glue(margin))
+        SILE.settings:set("document.rskip", SILE.types.node.glue(skip))
       elseif align == "right" then
-        SILE.settings:set("document.lskip", SILE.nodefactory.glue(skip))
-        SILE.settings:set("document.rskip", SILE.nodefactory.glue(margin))
+        SILE.settings:set("document.lskip", SILE.types.node.glue(skip))
+        SILE.settings:set("document.rskip", SILE.types.node.glue(margin))
       else
         -- undocumented because ugly typographically, IMHO
-        SILE.settings:set("document.lskip", SILE.nodefactory.glue((skip + margin) / 2))
-        SILE.settings:set("document.lskip", SILE.nodefactory.glue((skip + margin) / 2))
+        SILE.settings:set("document.lskip", SILE.types.node.glue((skip + margin) / 2))
+        SILE.settings:set("document.lskip", SILE.types.node.glue((skip + margin) / 2))
       end
 
       SILE.settings:set("document.parindent", parindent)
@@ -107,7 +107,7 @@ function package:registerCommands ()
       end)
     end
 
-    if SU.hasContent(content) then
+    if SU.ast.hasContent(content) then
       SILE.typesetter:leaveHmode(1)
       if rule:tonumber() == 0 then
         SILE.call("style:apply:paragraph", { name = "epigraph-source-norule" }, content)

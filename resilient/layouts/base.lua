@@ -139,8 +139,8 @@ local function buildFrameRect (painter, frame, wratio, hratio, options)
     frame:top():tonumber() * hratio,
     frame:width():tonumber() * wratio,
     frame:height():tonumber() * hratio, {
-      fill = options.fillcolor and SILE.color(options.fillcolor) or "none",
-      stroke = options.strokecolor and SILE.color(options.strokecolor),
+      fill = options.fillcolor and SILE.types.color(options.fillcolor) or "none",
+      stroke = options.strokecolor and SILE.types.color(options.strokecolor),
       preserveVertices = SU.boolean(options.preserve, true),
       disableMultiStroke = SU.boolean(options.singlestroke, true),
       strokeWidth = SU.cast("measurement", options.stroke or "0.3pt"):tonumber()
@@ -167,7 +167,7 @@ function layout:draw (W, H, options)
   SILE.typesetter:pushHbox({
     width = W / ratio,
     height = H / ratio,
-    depth = SILE.length(),
+    depth = SILE.types.length(),
     outputYourself = function(node, typesetter, line)
       local saveX = typesetter.frame.state.cursorX
       local saveY = typesetter.frame.state.cursorY
