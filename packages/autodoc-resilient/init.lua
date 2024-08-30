@@ -99,12 +99,12 @@ local function astToDisplay (options, content)
       else
         seenCommandWithoutArg = true
       end
-    elseif tree.id == "texlike_stuff" or (not tree.command and not tree.id) then
+    elseif tree.id == "texlike_stuff" or tree.id == "content" or (not tree.command and not tree.id) then
       -- Due to the way it is implemented, the SILE-inputter may generate such
       -- nodes in the AST. It's poorly documented, so it's not clear why they
-      -- are even kept there (esp. the "texlike_stuff" nodes), but anyhow, as
-      -- far as autodoc is concerned for presentation purposes, just
-      -- recurse into them.
+      -- are even kept there (esp. the "texlike_stuff"/"content" nodes),
+      -- but anyhow, asfar as autodoc is concerned for presentation purposes,
+      -- justrecurse into them.
       result[#result+1] = astToDisplay(options, tree)
     else
       SU.error("Unrecognized AST element, type "..type(tree))
