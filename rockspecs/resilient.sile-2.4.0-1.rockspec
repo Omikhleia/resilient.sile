@@ -16,7 +16,7 @@ description = {
 }
 dependencies = {
    "lua >= 5.1",
-   "barcodes.sile >= 1.1.0",
+   "barcodes.sile >= 1.2.0",
    "couyards.sile >= 1.0.0",
    "embedders.sile >= 0.2.0",
    "fancytoc.sile >= 1.1.0",
