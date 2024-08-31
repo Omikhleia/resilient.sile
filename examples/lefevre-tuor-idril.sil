@@ -9,6 +9,7 @@
 \set[parameter=document.baselineskip, value=1.2em]
 \set[parameter=document.lineskip, value=0em]
 \set[parameter=epigraph.width, value=75%fw]
+\set[parameter=typesetter.italicCorrection, value=true]
 %
 \language[main=fr]
 \font[family=EB Garamond, size=12pt]
@@ -30,7 +31,7 @@ local class = SILE.documentState.documentClass
 class:registerCommand("initial", function (options, content)
   SILE.settings:temporarily(function()
     local blSkip = SILE.settings:get("document.baselineskip")
-    SILE.settings:set("document.baselineskip", SILE.nodefactory.vglue(SILE.length(blSkip.height.length)))
+    SILE.settings:set("document.baselineskip", SILE.types.node.vglue(SILE.types.length(blSkip.height.length)))
     SILE.call("dropcap", { lines = 2, family = "Zallman Caps", join = true },
       { options.letter })
     SILE.process(content)
