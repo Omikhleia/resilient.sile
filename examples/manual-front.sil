@@ -1,7 +1,9 @@
 \begin{document}
 \footnote:rule
-\define[command=admon]{%
+\define[command=admon]{% This is a quick but bad implementation. We ought to have used a style.
+\novbreak
 \smallskip%
+\novbreak
 \set[parameter=document.parindent, value=0]{%
 \roughbox[enlarge=true, singlestroke=true, preserve=true,
 padding=2%fw, bordercolor=#59b24c, fillcolor=230, shadowcolor=#96A8C7, shadow=false]{%

@@ -39,7 +39,7 @@ sile:
     textsubsuper.fake: false
     autodoc.highlighting: true
     document.baselineskip: 1.2em
-    typesetter.italicCorrection: true
+    typesetter.italicCorrection: true # Available in SILE 0.15 (comment out for earlier versions)
   packages:
     - autodoc-resilient # REQUIRED FOR RESILIENT, do not use regular autodoc
     - background        # Some of the packages below might not be required...
@@ -78,6 +78,7 @@ parts:
       - manual-styling/advanced/footnotes.md
       - manual-styling/advanced/toclevels.md
       - manual-styling/advanced/liststyles.md
+      - manual-styling/advanced/eqno.md
       - manual-styling/advanced/other.md
       # unfinished
       # - manual-styling/captioned.md
