@@ -34,6 +34,9 @@ end
 
 function package.outputCollatedNotes (_)
   SILE.typesetNaturally(SILE.getFrame("margins"), function ()
+    local refs = SILE.scratch.info.thispage.witnesses
+    if not refs then return end
+
     SILE.settings:pushState()
     SILE.settings:toplevelState()
     SILE.settings:set("current.parindent", SILE.types.node.glue())
@@ -47,9 +50,6 @@ function package.outputCollatedNotes (_)
       "linebreak.hangIndent" }) do
       SILE.settings:set(v, SILE.settings.defaults[v])
     end
-    -- SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
-    local refs = SILE.scratch.info.thispage.witnesses
-    if not refs then return end
 
     local resource
     local mainbook = refs[1].book and string.lower(refs[1].book)
@@ -736,11 +736,16 @@ function package:registerCommands ()
   end)
 
   self:registerCommand("body", function (_, content)
+    -- Ensure headers and folios are enabled.
+    -- They might have been cancelled by some external front material.
+    SILE.call("headers")
+    SILE.call("folios")
+    -- Register our own headers
     SILE.call("running-headers", {}, {
       createCommand("font", { family = "Ulfilas" }), {
         createCommand("range-reference")
       }
-     })
+    })
     processAsStructure(content)
   end)
 
@@ -825,7 +830,7 @@ function package:registerCommands ()
 
     SILE.call("save-verse-number", {}, { options.n })
     if tonumber(options.n) ~= 1 then
-      SILE.call("color", { color = "#74101c" }, function()
+      SILE.call("color", { color = "#74101c" }, function ()
         SILE.call("textsuperscript", { fake = true }, { options.n })
       end)
       SILE.call("kern", { width = "1spc" })
@@ -838,7 +843,7 @@ function package:registerCommands ()
       --if caseNeeded then SILE.typesetter:typeset("¤") end
       SILE.call("save-verse-witness", {}, { options.wit })
       if options._selected_secondary_ then
-        SILE.call("color", { color = "#4682B4" }, function()
+        SILE.call("color", { color = "#4682B4" },  function ()
           SILE.call("font", { family = "Symbola" }, { " ⸆" }) -- FIXME EXPLAIN + Absent from Libertinus
         end)
       end
@@ -890,7 +895,7 @@ function package:registerCommands ()
         if options._link_ then
           SILE.call("increment-counter", { id = "variant" })
           local count = self.class.packages.counters:formatCounter(SILE.scratch.counters.variant)
-          SILE.call("color", { color = "#4682B4" }, function()
+          SILE.call("color", { color = "#4682B4" }, function ()
             SILE.call("font", { family = "Libertinus Serif" }, function ()
               SILE.call("textsuperscript", { fake = true }, { count })
             end)
@@ -902,7 +907,7 @@ function package:registerCommands ()
             ref = "¤"
           end
           SILE.call("collated-variant", { ref = ref }, function ()
-            SILE.call("color", { color = "#4682B4" }, function()
+            SILE.call("color", { color = "#4682B4" }, function ()
               SILE.call("font", { family = "Libertinus Serif" }, function ()
                 SILE.call("textsuperscript", { fake = true }, { count })
                 SILE.call("kern", { width = "0.5en" })
@@ -932,7 +937,7 @@ function package:registerCommands ()
       if emended and not insideLinkingNote then
         SILE.call("increment-counter", { id = "emendation" })
         count = self.class.packages.counters:formatCounter(SILE.scratch.counters.emendation)
-        SILE.call("color", { color = "#4682B4" }, function()
+        SILE.call("color", { color = "#4682B4" }, function ()
           SILE.call("font", { family = "Libertinus Serif", style = "italic" }, function ()
             SILE.call("textsuperscript", { fake = true }, { count })
             SILE.call("kern", { width = "0.1em" }) -- pseudo italic correction
@@ -960,7 +965,7 @@ function package:registerCommands ()
             ref = "¤"
           end
           SILE.call("collated-note", { ref = ref }, function ()
-            SILE.call("color", { color = "#4682B4" }, function()
+            SILE.call("color", { color = "#4682B4" }, function ()
               SILE.call("font", { family = "Libertinus Serif", style = "italic" }, function ()
                 SILE.call("textsuperscript", { fake = true }, { count })
                 SILE.call("kern", { width = "0.5en" })
@@ -1042,7 +1047,7 @@ function package:registerCommands ()
     end
     SILE.call("increment-counter", { id = "emendation" })
     local count = self.class.packages.counters:formatCounter(SILE.scratch.counters.emendation)
-    SILE.call("color", { color = "#4682B4" }, function()
+    SILE.call("color", { color = "#4682B4" }, function ()
       SILE.call("font", { family = "Libertinus Serif", style = "italic" }, function ()
         SILE.call("textsuperscript", { fake = true }, { "□"..count })
         SILE.call("kern", { width = "0.1em" }) -- pseudo italic correction
@@ -1050,7 +1055,7 @@ function package:registerCommands ()
     end)
     local ref = lastRef.chapter .. ", " .. lastRef.verse
     SILE.call("collated-note", { ref = ref }, function ()
-      SILE.call("color", { color = "#4682B4" }, function()
+      SILE.call("color", { color = "#4682B4" }, function ()
         SILE.call("font", { family = "Libertinus Serif", style = "italic" }, function ()
           SILE.call("textsuperscript", { fake = true }, { count })
           SILE.call("kern", { width = "0.5en" })
@@ -1072,7 +1077,7 @@ function package:registerCommands ()
     if options._pos_  and options._pos_  > 1 then
       SILE.typesetter:typeset(" ")
     end
-    SILE.call("color", { color = "#4682B4" }, function()
+    SILE.call("color", { color = "#4682B4" }, function ()
       SILE.call("font", { family = "Libertinus Serif" }, { "⸉" })
     end)
     if isStructure(content) then
@@ -1080,7 +1085,7 @@ function package:registerCommands ()
     else
       SILE.process(trimSubContent(content))
     end
-    SILE.call("color", { color = "#4682B4" }, function()
+    SILE.call("color", { color = "#4682B4" }, function ()
       SILE.call("font", { family = "Libertinus Serif" }, { "⸊" })
     end)
   end)
@@ -1108,7 +1113,7 @@ function package:registerCommands ()
   self:registerCommand("opener", function (_, content)
     SILE.call("par")
     SILE.call("centered-text-block", {}, function ()
-      SILE.call("color", { color = "#74101c" }, function()
+      SILE.call("color", { color = "#74101c" }, function ()
         SILE.call("font", { size = 13 }, function ()
           -- FIXME tracking opener/closer witness is broken
           SILE.call("save-chapter-number", {}, {})
@@ -1126,7 +1131,7 @@ function package:registerCommands ()
     SILE.call("novbreak")
     SILE.call("centered-text-block", {}, function ()
       SILE.call("novbreak")
-      SILE.call("color", { color = "#74101c" }, function()
+      SILE.call("color", { color = "#74101c" }, function ()
         SILE.call("font", { size = 13 }, function ()
           -- FIXME tracking opener/closer witness is broken
           SILE.call("save-chapter-number", {}, {})
