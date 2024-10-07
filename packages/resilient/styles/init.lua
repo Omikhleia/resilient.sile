@@ -35,7 +35,7 @@ function package:_init (options)
   SILE.registerUnit("thsp", {
     relative = true,
     definition = function (value)
-      return value * 0.5 * utils.interwordSpace()
+      return value * 0.5 * utils.interwordSpace():tonumber()
     end
   })
   self:readStyles()

@@ -20,6 +20,47 @@ blockquote:
       before:
         skip: "smallskip"
 
+code:
+  origin: "resilient.book"
+  style:
+    font:
+      family: "Hack"
+      size: "1.4ex"
+
+defn-base:
+  origin: "resilient.defn"
+  style:
+
+defn-desc:
+  inherit: "defn-base"
+  origin: "resilient.defn"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        vbreak: false
+
+defn-term:
+  inherit: "defn-base"
+  origin: "resilient.defn"
+  style:
+    font:
+      weight: 700
+    paragraph:
+      after:
+        vbreak: false
+      before:
+        skip: "smallskip"
+
+dropcap:
+  origin: "resilient.book"
+  style:
+    font:
+      family: "Zallman Caps"
+    special:
+      lines: 2
+
 epigraph:
   origin: "resilient.epigraph"
   style:
@@ -883,4 +924,13 @@ url:
   style:
     font:
       language: "und"
+
+verbatim:
+  inherit: "code"
+  origin: "resilient.verbatim"
+  style:
+    paragraph:
+      align: "obeylines"
+      before:
+        skip: "smallskip"
 
