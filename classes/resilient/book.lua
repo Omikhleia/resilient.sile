@@ -92,6 +92,45 @@ function class:_init (options)
   self:registerCommand("urlstyle", function (_, content)
     SILE.call("style:apply", { name = "url" }, content)
   end)
+
+  -- Override the standard math:numberingstyle hook to rely on styles,
+  -- and also to subscribe for cross-references.
+  -- Package "math" is loaded by the markdown package.
+  self:registerCommand("math:numberingstyle", function (opts, _)
+    local text
+    local stylename = "eqno"
+    if opts.counter then
+      local altname = "eqno-" .. opts.counter
+      local fnSty = self:resolveStyle(altname, true) -- discardable
+      if not next(fnSty) then
+        fnSty = self:resolveStyle(stylename) -- fallback
+      else
+        stylename = altname
+      end
+
+      local display = fnSty.numbering and fnSty.numbering.display or "arabic"
+      -- Enforce the display style for the counter
+      -- (which might be the default 'equation' counter, or a custom one)
+      SILE.call("set-counter", { id = opts.counter, display = display })
+      text = self.packages.counters:formatCounter(SILE.scratch.counters[opts.counter])
+    elseif opts.number then
+      text = opts.number
+    else
+      SU.error("No counter or number provided for math numbering")
+    end
+    -- Cross-ref support (from markdown, we can get an id, in most of our packages,
+    -- we can get a marker, play fair with all)
+    local mark = opts.id or opts.marker
+    if mark then
+      local labelRefs = self.packages.labelrefs
+      labelRefs:pushLabelRef(text)
+      SILE.call("style:apply:number", { name = stylename, text = text })
+      SILE.call("label", { marker = mark })
+      labelRefs:popLabelRef()
+    else
+      SILE.call("style:apply:number", { name = stylename, text = text })
+    end
+  end)
 end
 
 function class:declareOptions ()
@@ -380,6 +419,15 @@ function class:registerStyles ()
 
   -- url style
   self:registerStyle("url", { inherit = "code"}, {
+  })
+
+  -- display math equation numberstyle
+  self:registerStyle("eqno", {}, {
+    numbering = {
+      before = { text = "(" },
+      display = "arabic",
+      after = { text = ")" }
+    }
   })
 
   -- Special non-standard style for dropcaps (for commands initial-joined and initial-unjoined)

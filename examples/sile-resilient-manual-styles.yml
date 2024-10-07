@@ -1,9 +1,3 @@
-md-mark:
-  style:
-    decoration:
-      line: "mark"
-      color: "orange"
-      rough: true
 
 blockquote:
   origin: "resilient.book"
@@ -172,6 +166,16 @@ epigraph-text:
   style:
     paragraph:
       align: "justify"
+
+eqno:
+  origin: "resilient.book"
+  style:
+    numbering:
+      after:
+        text: ")"
+      before:
+        text: "("
+      display: "arabic"
 
 fancytoc-base:
   style:
@@ -531,6 +535,13 @@ lists-itemize6:
   style:
     itemize:
       symbol: "–"
+
+md-mark:
+  style:
+    decoration:
+      color: "orange"
+      line: "mark"
+      rough: true
 
 poetry:
   origin: "resilient.poetry"
@@ -1050,9 +1061,9 @@ verbatim:
   origin: "resilient.verbatim"
   style:
     paragraph:
+      after:
+        skip: "smallskip"
       align: "obeylines"
       before:
-        skip: "smallskip"
-      after:
         skip: "smallskip"
 
