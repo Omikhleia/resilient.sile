@@ -75,10 +75,14 @@ local BookSchema = {
     cover = {
       type = "object",
       properties = {
+        image = { type = "string" },
+        background = { type = "string" },
         front = {
           type = "object",
           properties = {
-            image = { type = "string" }
+            image = { type = "string" },
+            background = { type = "string" },
+            template = { type = "string" },
           }
         },
         back = {
@@ -86,7 +90,8 @@ local BookSchema = {
           properties = {
             image = { type = "string" },
             background = { type = "string" },
-            content = SingleFileSchema
+            content = SingleFileSchema,
+            ['content-background'] = { type = "string" },
           }
         }
       }
@@ -513,7 +518,7 @@ function inputter:parse (doc)
     halftitle = bookmatter.halftitle or {},
     title = bookmatter.title or {},
     endpaper = bookmatter.endpaper or {},
-    cover = bookmatter.cover or {},
+    cover = bookmatter.cover,
     enabled = SU.boolean(bookmatter.enabled, false)
   }
   local enabledBook = isRoot and SU.boolean(self.options.bookmatter, bookmatter.enabled)
@@ -525,9 +530,12 @@ function inputter:parse (doc)
     })
   end
 
-  if enabledCover and bookmatter.cover.front then
+  if enabledCover and bookmatter.cover then
+    local cover = bookmatter.cover.front
     content[#content+1] = createCommand("bookmatters:front-cover", {
-      image = bookmatter.cover.front.image,
+      image = cover and cover.image or bookmatter.cover.image,
+      background = cover and cover.background or bookmatter.cover.background,
+      template = cover and cover.template,
       metadata = metadataOptions
     })
   end
@@ -562,12 +570,16 @@ function inputter:parse (doc)
       metadata = metadataOptions
     })
   end
-  if enabledCover and bookmatter.cover.back then
+  if enabledCover and bookmatter.cover then
+    local cover = bookmatter.cover.back
+    local background = cover and cover.background or bookmatter.cover.background
+    local coverContent = cover and cover.content or nil
     content[#content+1] = createCommand("bookmatters:back-cover", {
-      image = bookmatter.cover.back.image,
-      background = bookmatter.cover.back.background,
+      image = cover and cover.image or bookmatter.cover.image,
+      background = background,
+      bgcontent = cover and cover["content-background"] or background,
       metadata = metadataOptions
-    }, doBackCoverContent(bookmatter.cover.back.content, metadataOptions))
+    }, doBackCoverContent(coverContent, metadataOptions))
   end
 
   if isRoot then
