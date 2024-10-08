@@ -84,6 +84,7 @@ build = {
       ["sile.packages.resilient.bible.tei.monograms.lk"]      = "packages/resilient/bible/tei/monograms/lk.png",
       ["sile.packages.resilient.bible.tei.monograms.sign"]    = "packages/resilient/bible/tei/monograms/sign.png",
 
+      ["sile.templates.cover"]           = "templates/cover.djt",
       ["sile.templates.halftitle-recto"] = "templates/halftitle-recto.djt",
       ["sile.templates.halftitle-verso"] = "templates/halftitle-verso.djt",
       ["sile.templates.title-recto"]     = "templates/title-recto.djt",

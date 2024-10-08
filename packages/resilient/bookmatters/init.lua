@@ -97,36 +97,60 @@ function package:registerCommands ()
   -- Book matter support commands
 
   self:registerCommand("bookmatters:front-cover", function (options, _)
-    local image = SU.required(options, "image", "bookmatters:front-cover")
-    local src = SILE.resolveFile(image) or SU.error("Cannot find image file: " .. image)
-    -- local metadata = options.metadata or {} -- Unusual: table of metadata options
+    local image = options.image
+    local backgroundColor = options.background
+    local metadata = options.metadata or {} -- Unusual: table of metadata options
+    local template = options.template
+    local textColor = contrastColor(SILE.types.color(backgroundColor or "white"))
 
     SILE.call("switch-master-one-page", { id = "bookmatters-front-cover" })
     SILE.call("hbox") -- To ensure some content
-    SILE.call("background", {
-      src = src,
-      allpages = false
-    })
+    if image then
+      local src = SILE.resolveFile(image) or SU.error("Cannot find image file: " .. image)
+      SILE.call("background", {
+        src = src,
+        allpages = false
+      })
+    elseif backgroundColor then
+      SILE.call("background", {
+        color = backgroundColor,
+        allpages = false
+      })
+    end
     SILE.call("noheaders")
     SILE.call("nofolios")
-    SILE.call("eject")
+    if template then
+      SILE.call("color", { color = textColor }, function ()
+        SILE.call("include", getTemplateInclude(template, metadata))
+      end)
+    end
+    SILE.call("framebreak")
     SILE.call("set-counter", { id = "folio", value = -1 })
   end, "Create the front cover")
 
   self:registerCommand("bookmatters:back-cover", function (options, content)
-    local image = SU.required(options, "image", "bookmatters:back-cover")
-    local src = SILE.resolveFile(image) or SU.error("Cannot find image file: " .. image)
+    local image = options.image
     local metadata = options.metadata or {} -- Unusual: table of metadata options
-    local backgroundColor = options.background or "white"
-    local textColor = contrastColor(SILE.types.color(backgroundColor))
+    local backgroundColor = options.background
+    local backgroundContentColor = options.bgcontent or backgroundColor
+    local textColor = contrastColor(SILE.types.color(backgroundContentColor or "white"))
 
     SILE.call("open-on-even-page")
     SILE.call("switch-master-one-page", { id = "bookmatters-back-cover" })
     SILE.call("hbox") -- To ensure some content
-    SILE.call("background", {
-      src = src,
-      allpages = false
-    })
+    if image then
+      local src = SILE.resolveFile(image) or SU.error("Cannot find image file: " .. image)
+      SILE.call("background", {
+        src = src,
+        allpages = false
+      })
+      backgroundContentColor = backgroundContentColor or "white"
+    elseif backgroundColor then
+      SILE.call("background", {
+        color = backgroundColor,
+        allpages = false
+      })
+    end
     SILE.call("noheaders")
     SILE.call("nofolios")
 
@@ -153,7 +177,7 @@ function package:registerCommands ()
       SILE.call("skip", { height = H })
       SILE.call("noindent")
       SILE.call("kern", { width = offset })
-      SILE.call("framebox", { fillcolor = backgroundColor, padding = pad2, borderwidth = 0 }, function ()
+      SILE.call("framebox", { fillcolor = backgroundContentColor, padding = pad2, borderwidth = 0 }, function ()
         SILE.call("color", { color = textColor }, function ()
           SILE.typesetter:pushHbox(pbox)
         end)
@@ -227,6 +251,44 @@ function package:registerCommands ()
 end
 
 function package:registerStyles ()
+  -- Some default styles for (usually) the front cover
+  -- (When template-generated)
+  self:registerStyle("bookmatter-coverpage", {}, {
+  })
+  self:registerStyle("bookmatter-cover-title", { inherit = "bookmatter-coverpage" }, {
+    font = {
+      size = "20pt"
+    },
+    paragraph = {
+      after = {
+        skip = "5%fh"
+      },
+      before = {
+        skip = "30%fh"
+      }
+    },
+  })
+  self:registerStyle("bookmatter-cover-subtitle", { inherit = "bookmatter-coverpage" }, {
+    font = {
+      size = "16pt"
+    },
+    paragraph = {
+      after = {
+        skip = "5%fh"
+      }
+    }
+  })
+  self:registerStyle("bookmatter-cover-author", { inherit = "bookmatter-coverpage" }, {
+    font = {
+      size = "16pt"
+    },
+    properties = {
+      case = "upper"
+    },
+  })
+  self:registerStyle("bookmatter-cover-publisher", { inherit = "bookmatter-coverpage" }, {
+  })
+
   -- Some default styles for (usually) half-title page recto
   self:registerStyle("bookmatter-halftitle", {}, {
     font = {

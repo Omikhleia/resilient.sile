@@ -89,6 +89,10 @@ book:
       image: mycover-back.jpg
 ```
 
+For convenience, the `image` can be provided globally in the `cover` section.
+This is useful when the same image is used for both the front and back covers.
+In the absence of an image, a `background` element can be used to set a color for the cover, either globally or for the front and back covers separately. We will see this in a moment.
+
 The covers can be disabled by passing the `cover=false` option to the master document handler:
 
 ```shell
@@ -143,7 +147,36 @@ book:
 ```
 
 The frame containing the back-cover text now has a colored background.
-The text is automatically typeset in either white or black, to ensure a good contrast.
+The text is automatically set in either white or black, depending on the background, to ensure optimal contrast.
+
+If a back cover image is specified but no background color, the frame will default to white, with black text. If no image is provided, the background color will be applied to the entire back cover.
+You also have the option to specify a separate background color specifically for the back-cover text frame:
+
+```yaml
+book:
+  cover:
+    back:
+      background: ⟨named color⟩|"#⟨RGB color⟩"
+      content: mybackcover.dj
+      content-background: ⟨named color⟩|"#⟨RGB color⟩"
+```
+
+## Configuring the front cover
+
+In most cases, the text on the front cover of a book is part of the overall cover design, with its own typography and layout incorporated into the image.
+If this applies to you, no further steps are needed beyond the options previously discussed.
+
+However, if you're in a situation where the cover design is not yet finalized or the image lacks text, you can customize the front cover using a "Djot template."
+The text will be automatically typeset in either white or black, based on the background color, to ensure optimal contrast.
+
+```yaml
+book:
+  cover:
+    front:
+      image: ⟨file name⟩
+      background: ⟨named color⟩|"#⟨RGB color⟩"
+      template: cover
+```
 
 ## Other options
 
