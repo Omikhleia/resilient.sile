@@ -9,7 +9,7 @@ metadata:
     - book
   authors: Didier Willis
   publisher: Omikhleia
-  pubdate: 2024-03-17
+  pubdate: 2024-10-12
   url: https://github.com/Omikhleia/resilient.sile
   copyright: © 2021–2024, Didier Willis.
   legal: |
@@ -36,21 +36,13 @@ sile:
     layout: division 9
     resolution: 300
   settings:
-    textsubsuper.fake: false
+    textsubsuper.fake: true
     autodoc.highlighting: true
     document.baselineskip: 1.2em
     typesetter.italicCorrection: true # Available in SILE 0.15 (comment out for earlier versions)
   packages:
     - autodoc-resilient # REQUIRED FOR RESILIENT, do not use regular autodoc
-    - background        # Some of the packages below might not be required...
     - lorem
-    - dropcaps
-    - resilient.abbr
-    - framebox
-    - fancytoc
-    - printoptions
-    - qrcode
-    - couyards
 parts:
   - content:
       - manual-front.sil

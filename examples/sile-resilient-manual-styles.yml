@@ -32,6 +32,46 @@ bookmatter-copyright:
     paragraph:
       align: "noparindent"
 
+bookmatter-cover-author:
+  inherit: "bookmatter-coverpage"
+  origin: "resilient.bookmatters"
+  style:
+    font:
+      size: "16pt"
+    properties:
+      case: "upper"
+
+bookmatter-cover-publisher:
+  inherit: "bookmatter-coverpage"
+  origin: "resilient.bookmatters"
+  style:
+
+bookmatter-cover-subtitle:
+  inherit: "bookmatter-coverpage"
+  origin: "resilient.bookmatters"
+  style:
+    font:
+      size: "16pt"
+    paragraph:
+      after:
+        skip: "5%fh"
+
+bookmatter-cover-title:
+  inherit: "bookmatter-coverpage"
+  origin: "resilient.bookmatters"
+  style:
+    font:
+      size: "20pt"
+    paragraph:
+      after:
+        skip: "5%fh"
+      before:
+        skip: "30%fh"
+
+bookmatter-coverpage:
+  origin: "resilient.bookmatters"
+  style:
+
 bookmatter-halftitle:
   origin: "resilient.bookmatters"
   style:
