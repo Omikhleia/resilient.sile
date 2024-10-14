@@ -1,0 +1,20 @@
+\begin[papersize=a4, class=resilient.book, layout=none]{document}
+%
+% One day we won't even need a SILE preamble for setup...
+%
+\use[module=packages.djot]
+\use[module=packages.framebox]
+% Quick and dirty default definition of a new custom style...
+\define[command=customframe]{\center{\roughbox[bordercolor=#59b24c,
+  fillcolor=230,padding=15pt, enlarge=true]{\parbox[width=90%lw, minimize=false]{\process}}}}
+\lua{
+SILE.scratch.styles.alignments["framed"] = "customframe"
+}
+\language[main=en]
+\odd-running-header{Experimental Musings with SILE, re·sil·ient and Djot}%
+\font[family=Libertinus Serif]
+\set[parameter=document.parskip, value=1ex plus 1pt minus 1pt]
+\set[parameter=lists.parskip, value=1ex plus 1pt minus 1pt]
+%
+\include[src=schwarzschild2.dj]
+\end{document}
