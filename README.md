@@ -19,6 +19,15 @@ It offers a wide range of features, including:
 
 Whether you a seasoned typist or a beginner, the _re·sil·ient_ collection aims at making the process of creating beautiful books as simple as possible, from front cover to back cover, using a lightweight markup language for most of the content, if not all of it.
 
+## Demonstration
+
+Do you want to see what you can do with this collection? In addition to the nice “User Guide” documentation (see just below), there’s a whole repository of books and show-cases: [Awesome SILE books](https://github.com/Omikhleia/awesome-sile-books).
+
+## Documentation
+
+A complete PDF version of the documentation (but not necessarily always the latest) should be available [HERE](https://drive.google.com/file/d/1f54qDEGWaN-MFN932x-t0jm3V-5VSHee/view?usp=sharing), or in our [Calaméo bookshelf](https://www.calameo.com/accounts/7349338).
+
+
 ## Installation
 
 These packages require SILE v0.14 or upper (recommended: SILE v0.15.5 or upper).
@@ -33,10 +42,6 @@ luarocks install resilient.sile
 ```
 
 (Refer to the SILE manual for more detailed 3rd-party package installation information and configuration options.)
-
-## Usage
-
-A complete PDF version of the documentation (but not necessarily always the latest) should be available [HERE](https://drive.google.com/file/d/1f54qDEGWaN-MFN932x-t0jm3V-5VSHee/view?usp=sharing), or in our [Calaméo bookshelf](https://www.calameo.com/accounts/7349338).
 
 ## See also
 
