@@ -27,6 +27,8 @@ Do you want to see what you can do with this collection? In addition to the nice
 
 A complete PDF version of the documentation (but not necessarily always the latest) should be available [HERE](https://drive.google.com/file/d/1f54qDEGWaN-MFN932x-t0jm3V-5VSHee/view?usp=sharing), or in our [Calaméo bookshelf](https://www.calameo.com/accounts/7349338).
 
+Did we say complete? Well, we lied a bit. For Markdown and Djot input, there is also a dedicated booklet,available [HERE](https://drive.google.com/file/d/19VfSMmfBIZwr43U-W842IkSE349wdgZb/view?usp=sharing) — or, again, in our [Calaméo bookshelf](https://www.calameo.com/accounts/7349338).
+
 
 ## Installation
 
