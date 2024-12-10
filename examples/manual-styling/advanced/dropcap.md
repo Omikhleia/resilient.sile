@@ -1,0 +1,29 @@
+## Styling initial capitals
+
+Initial capitals (also known as drop caps) are a typographic feature where the first letter of a paragraph is enlarged and styled differently from the rest of the text.
+The **resilient.book** class defines two commands for this purpose: `initial-joined` and `initial-unjoined`.
+The former should be used when the initial capital is part of the first word of the paragraph, and the latter when it is a separate character.
+
+In Markdown or Djot, you may use one or the other directly as a style (although they are rather pseudo-styles, strictly speaking).
+
+By default, these commands rely on the `dropcap` style, which is a regular character style with an additional `special` property that specifies the number of lines to drop.
+The color and font family of the drop cap can be customized as well, but other properties from character styles are ignored.
+For instance, here is how a drop cap style using the Zallman Caps font and a somewhat "cerulean" color can be defined.
+
+```yaml
+dropcap:
+  style:
+    color: "#66a0b3"
+    font:
+      family: "Zallman Caps"
+    special:
+      lines: 3
+```
+
+Note that the style is supposed to be used on the initial letter of a paragraph.
+The implementation does not make any attempt to enforce this, and the result may be unexpected if the style is applied to other characters.
+Likewise, you are on your own if you want to style subsequent characters in a certain way --- such as using small capitals for a word or a group of words, as is common in some typographic traditions. Here is a typical example of how to use the `initial-joined` style in a Markdown or Djot document.
+
+```
+[L]{custom-style=initial-joined}[orem ipsum]{.smallcaps} dolor sit amet...
+```
