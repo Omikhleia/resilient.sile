@@ -688,11 +688,20 @@ function class:registerCommands ()
     local letter = content[1]
 
     local dropcapSty = self.styles:resolveStyle(style)
-    local family = dropcapSty.font and dropcapSty.font.family
     local lines = dropcapSty.special and dropcapSty.special.lines
-
-    SILE.call("use", { module = "packages.dropcaps" })
-    SILE.call("dropcap", { family = family, lines = lines, join = join }, { letter })
+    if not lines then
+      -- Fallback to regular style
+      SILE.call('style:apply', { name = style }, { letter })
+    else
+      local color = dropcapSty.color
+      local family = dropcapSty.font and dropcapSty.font.family
+      if dropcapSty.properties or dropcapSty.decoration then
+        -- I am not convinced the extra complexity is worth it for such an edge case.
+        SU.warn("Dropcap style does not support properties and decoration")
+      end
+      SILE.call("use", { module = "packages.dropcaps" })
+      SILE.call("dropcap", { family = family, lines = lines, join = join, color = color }, { letter })
+    end
   end, "Style-aware initial capital letter (normally and internal command)")
 
   self:registerCommand("initial-joined", function (options, content)
