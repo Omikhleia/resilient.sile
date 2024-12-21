@@ -5,7 +5,7 @@ The master document is where you can configure the bibliography style, language,
 
 ## Configuring the bibliography
 
-In you master document, you can set up the global bibliography configuration as follows:
+In your master document, you can set up the global bibliography configuration as follows:
 
 ```yaml
 bibliography:
@@ -16,13 +16,13 @@ bibliography:
 ```
 
 The `style` key specifies the citation style to use.
-It should be referring to a CSL (Citation Style Language) file, located where SILE expects to find it.[^csl-location]
+It must refer to a valid CSL (Citation Style Language) file, located where SILE expects to find it.[^csl-location]
 If left absent, the default style is whatever SILE has set as default, normally `chicago-author-date` (Chicago Manual of Style author-date format).
 
 The `language` key specifies the language to use for the bibliography.
 By default, it is the same as the main language as defined in your master document, but you can override it here if needed.
 Why would you need to do that?
-CSL locale files are not always available for all languages and variants, or may need to be specified as a specific BCP 47 language tag (i.e. `en-US`), possibly diffent from the main language set in your master document.
+CSL locale files are not always available for all languages and variants, or may need to be specified as a specific BCP 47 language tag (i.e. `en-US`), possibly different from the main language set in your master document.
 
 The `files` key is a list of bibliography files to use.
 You can specify multiple files, which will be merged into a single bibliography.

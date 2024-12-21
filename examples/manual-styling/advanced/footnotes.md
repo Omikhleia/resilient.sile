@@ -17,7 +17,6 @@ parent style.
 ```yaml
 footnote-reference-counter:
   inherit: "footnote-reference"
-
 footnote-reference-symbol:
   inherit: "footnote-reference"
 ```

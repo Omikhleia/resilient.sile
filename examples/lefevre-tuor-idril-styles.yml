@@ -101,6 +101,16 @@ epigraph-text:
     paragraph:
       align: "justify"
 
+eqno:
+  origin: "resilient.book"
+  style:
+    numbering:
+      after:
+        text: ")"
+      before:
+        text: "("
+      display: "arabic"
+
 figure:
   origin: "resilient.book"
   style:

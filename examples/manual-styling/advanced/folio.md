@@ -13,7 +13,6 @@ folio-even:
       align: "left"
       before:
         indent: false
-
 folio-odd:
   inherit: "folio-base"
   style:
