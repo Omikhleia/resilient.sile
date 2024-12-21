@@ -392,6 +392,65 @@ header-odd:
     paragraph:
       align: "right"
 
+listing:
+  origin: "resilient.book"
+  style:
+    paragraph:
+      after:
+        vbreak: false
+      before:
+        indent: false
+
+listing-caption:
+  origin: "resilient.book"
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        skip: "smallskip"
+        vbreak: false
+    sectioning:
+      counter:
+        id: "listings"
+        level: 1
+      numberstyle:
+        main: "listing-caption-main-number"
+        reference: "listing-caption-ref-number"
+      settings:
+        bookmark: false
+        goodbreak: false
+        toclevel: 7
+
+listing-caption-base-number:
+  origin: "resilient.book"
+  style:
+
+listing-caption-main-number:
+  inherit: "listing-caption-base-number"
+  origin: "resilient.book"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+      before:
+        text: "Listing "
+
+listing-caption-ref-number:
+  inherit: "listing-caption-base-number"
+  origin: "resilient.book"
+  style:
+    numbering:
+      before:
+        text: "listing "
+
 lists-enumerate-alternate1:
   inherit: "lists-enumerate-base"
   origin: "resilient.lists"

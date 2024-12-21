@@ -418,6 +418,37 @@ function class:registerStyles ()
     numbering = { before = { text = "table " } }
   })
 
+  self:registerStyle("listing", {}, {
+    paragraph = { before = { skip = "smallskip", indent = false },
+                  after = { vbreak = false } },
+  })
+  self:registerStyle("listing-caption", {}, {
+    font = { size = "0.95em" },
+    paragraph = { before = { skip = "smallskip", indent = false, vbreak = false },
+                  align = "center",
+                  after = { skip = "medskip" } },
+    sectioning = {  counter = { id = "listings", level = 1 },
+                    settings = {
+                      toclevel = 7,
+                      bookmark = false,
+                      goodbreak = false
+                    },
+                    numberstyle= {
+                      main ="listing-caption-main-number",
+                      reference ="listing-caption-ref-number"
+                    } },
+  })
+  self:registerStyle("listing-caption-base-number", {}, {})
+  self:registerStyle("listing-caption-main-number", { inherit = "listing-caption-base-number" }, {
+    numbering = { before = { text = "Listing " },
+                  after = { text = ".", kern = "iwsp" } },
+    font = { features = "+smcp" },
+  })
+  self:registerStyle("listing-caption-ref-number", { inherit = "listing-caption-base-number" }, {
+    numbering = { before = { text = "listing " } }
+  })
+
+
   -- code
   -- Default is similar to the original plain \code command, and quite as bad, but at
   -- least uses a font-relative size.
@@ -671,6 +702,21 @@ function class:registerCommands ()
     end
   end, "Insert a captioned table.")
 
+  self:registerCommand("captioned-listing", function (options, content)
+    if type(content) ~= "table" then SU.error("Expected a table content in listing environment") end
+    local caption = extractFromTree(content, "caption")
+
+    options.style = "listing-caption"
+    SILE.call("style:apply:paragraph", { name = "listing" }, content)
+    if caption then
+      SILE.call("sectioning", options, caption)
+    else
+      -- It's bad to use the table environment without caption, it's here for that.
+      -- So I am not even going to use styles here.
+      SILE.call("smallskip")
+    end
+  end, "Insert a captioned table.")
+
   self:registerCommand("table", function (options, content)
     SILE.call("captioned-table", options, content)
   end, "Alias to captioned-table.")
@@ -678,6 +724,10 @@ function class:registerCommands ()
   self:registerCommand("figure", function (options, content)
     SILE.call("captioned-figure", options, content)
   end, "Alias to captioned-figure.")
+
+  self:registerCommand("listing", function (options, content)
+    SILE.call("captioned-listing", options, content)
+  end, "Alias to captioned-listing.")
 
   self:registerCommand("listoffigures", function (_, _)
     local figSty = self.styles:resolveStyle("figure-caption")
@@ -696,6 +746,15 @@ function class:registerCommands ()
 
     SILE.call("tableofcontents", { start = start, depth = 0 })
   end, "Output the list of tables.")
+
+  self:registerCommand("listoflistings", function (_, _)
+    local lstSty = self.styles:resolveStyle("listing-caption")
+    local start = lstSty.sectioning
+      and lstSty.sectioning.settings and lstSty.sectioning.settings.toclevel
+      or SU.error("Listing style does not specify a TOC level sectioning")
+
+    SILE.call("tableofcontents", { start = start, depth = 0 })
+  end, "Output the list of listings.")
 
   -- Special dropcaps (provided as convenience)
   -- Also useful as pseudo custom style in Markdown or Djot.
