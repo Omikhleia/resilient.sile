@@ -539,9 +539,16 @@ function class:registerCommands ()
       -- Parts cancel headers and folios
       SILE.call("noheaderthispage")
       SILE.call("nofoliothispage")
+      -- Previous section titles (in technical mode) or chapter title (in novel mode)
+      -- is no longer valid (and in none mode, it's not valid anyway).
       SILE.scratch.headers.odd = nil
-      SILE.scratch.headers.even = nil
-
+      if self.headers == "technical" then
+        -- In novel mode, the book title is in the even header, and is still valid
+        -- So we don't reset it.
+        -- But in technical mode, even headers contain the current chapter title,
+        -- invalid upon a new part.
+        SILE.scratch.headers.even = nil
+      end
       -- Parts reset footnotes and chapters
       SILE.call("set-counter", { id = "footnote", value = 1 })
       SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
@@ -560,6 +567,9 @@ function class:registerCommands ()
         SILE.call("odd-tracked-header", {}, content)
       elseif self.headers == "technical" then
         SILE.call("even-tracked-header", {}, content)
+        -- In technical mode, the odd header contains a section title, and is
+        -- no longer valid upon a new chapter.
+        SILE.scratch.headers.odd = nil
       end
     end
   end, "Apply chapter hooks (counter resets, footers and headers, etc.)")
