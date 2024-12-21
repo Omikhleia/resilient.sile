@@ -48,8 +48,19 @@ function class:_init (options)
   self:loadPackage("labelrefs")
   self:loadPackage("struts")
   self:loadPackage("resilient.headers")
+
   self:loadPackage("markdown")
   self:loadPackage("djot")
+  -- Once Djot is loaded, we can register custom pre-defined symbols
+  self.packages["markdown.commands"]:registerSymbol("_BIBLIOGRAPHY_", true, function (opts)
+    if not self.packages.bibtex then
+      SU.warn("Bibliography support is not available")
+      return {}
+    end
+    return {
+      createCommand("printbibliography", opts)
+    }
+  end)
 
   -- Override document.parindent default to this author's taste
   SILE.settings:set("document.parindent", "1.25em")

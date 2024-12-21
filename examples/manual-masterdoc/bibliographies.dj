@@ -1,0 +1,59 @@
+# Using bibliographies
+
+For scholarly works, you may want to include bibliographic references in your book.
+The master document is where you can configure the bibliography style, language, and files to use.
+
+## Configuring the bibliography
+
+In you master document, you can set up the global bibliography configuration as follows:
+
+```yaml
+bibliography:
+  style: chicago-author-date
+  language: en-US
+  files:
+    - somebibfile.bib
+```
+
+The `style` key specifies the citation style to use.
+It should be referring to a CSL (Citation Style Language) file, located where SILE expects to find it.[^csl-location]
+If left absent, the default style is whatever SILE has set as default, normally `chicago-author-date` (Chicago Manual of Style author-date format).
+
+The `language` key specifies the language to use for the bibliography.
+By default, it is the same as the main language as defined in your master document, but you can override it here if needed.
+Why would you need to do that?
+CSL locale files are not always available for all languages and variants, or may need to be specified as a specific BCP 47 language tag (i.e. `en-US`), possibly diffent from the main language set in your master document.
+
+The `files` key is a list of bibliography files to use.
+You can specify multiple files, which will be merged into a single bibliography.
+The files must be in BibTeX format (in the subset supported by SILE), and located relative to your working directory.
+
+[^csl-location]: Whatever CSL files are bundled with SILE, any style supported by the Citation Style Language can be used.
+You can find lots of styles for a wide range of journals and publishers on the [CSL Styles Repository](https://github.com/citation-style-language/styles).
+The same applies to language files, which are used to localize the style to a specific language, see the [CSL Locales Repository](https://github.com/citation-style-language/locales).
+You will need to download the files you want to use and place them in a location where SILE can find them.
+Refer to _The SILE Book_ for more information on how to do this.
+
+## Printing the bibliography
+
+The **resilient.book** class registers a Djot symbol, `_BIBLIOGRAPHY_`, which you can use in a standalone paragraph to print the bibliography.[^bibliography-symbol]
+Attributes are passed through to the underlying implementation.
+For example, to print all the bibliography including uncited references, you can use:
+
+```
+:_BIBLIOGRAPHY_:{cited=false}
+```
+
+By default, only cited references (up to the point where the bibliography is printed) are included.
+After printing the bibliography, the list of cited entries will be cleared.
+This allows you to start fresh for subsequent uses (e.g., in a different chapter).
+
+## Citing references
+
+This is not covered here.
+Refer to the _Markdown and Djot to PDF with SILE_ user guide, or to _The SILE Book_ for more information on how to cite references depending on the format you are using to author your content.
+
+
+[^bibliography-symbol]: Obviously, this needs to be used in a Djot content file.
+If you are using Markdown, you will need to switch to Djot for this part.
+In SIL, you can use the `\printbibliography` command.

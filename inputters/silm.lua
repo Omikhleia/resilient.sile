@@ -120,6 +120,20 @@ local BookSchema = {
   }
 }
 
+local BibliographySchema = {
+  type = "object",
+  properties = {
+    style = { type = "string" },
+    language = { type = "string" },
+    files = {
+      type = { -- oneOf
+        { type = "string" },
+        { type = "array", items = { type = "string" } },
+      },
+    },
+  }
+}
+
 local MasterSchema = {
   type = "object",
   additionalProperties = true, -- Allow unknown property for extensibility
@@ -208,6 +222,7 @@ local MasterSchema = {
       }
     },
     book = BookSchema,
+    bibliography = BibliographySchema,
     -- parts and chapters are exclusive, but we don't enforce it here.
     -- We will check it later in the inputter
     parts = ContentSchema,
@@ -508,6 +523,28 @@ function inputter:parse (doc)
     end
     if metadata.title then
       content[#content+1] = createCommand("has:book-title-support", {}, { metadata.title })
+    end
+    if master.bibliography then
+      local bibfiles = master.bibliography.files
+      if type(bibfiles) == "string" then
+        bibfiles = { bibfiles }
+      end
+      content[#content+1] = createCommand("use", {
+        module = "packages.bibtex"
+      })
+      if #bibfiles > 0 then
+        local lang = master.bibliography.language or master.language or "en-US"
+        local style = master.bibliography.style or "chicago-author-date"
+        content[#content+1] = createCommand("bibliographystyle", {
+          style = style,
+          lang = lang
+        })
+        for _, bibfile in ipairs(bibfiles) do
+          content[#content+1] = createCommand("loadbibliography", {
+            file = bibfile
+          })
+        end
+      end
     end
   end
 
