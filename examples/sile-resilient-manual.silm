@@ -71,6 +71,7 @@ parts:
       - manual-styling/advanced/toclevels.md
       - manual-styling/advanced/liststyles.md
       - manual-styling/advanced/eqno.md
+      - manual-styling/advanced/dropcap.md
       - manual-styling/advanced/other.md
       # unfinished
       # - manual-styling/captioned.md
