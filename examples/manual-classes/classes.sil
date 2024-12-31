@@ -116,13 +116,13 @@ above sectioning styles.
 \caption{Predefined command hooks used by sectioning commands.}
 \end{table}
 
-\section{Captioned figures and tables}
+\section{Captioned environments}
 
-The class provides two additional environnments, \autodoc:environment{figure}
-and \autodoc:environment{table}. Both can contain arbitrary contents and a
-\autodoc:command[check=false]{\caption{<text>}} element. The latter is
-extracted and displayed below the contents.
-By default, these environments show their contents centered, with a numbered caption.
+The class provides three environnments, \autodoc:environment{figure}, \autodoc:environment{table}, and \autodoc:environment{listing}, for captioned figures, tables, and listings, respectively.
+They can contain arbitrary contents and a \autodoc:command[check=false]{\caption{<text>}} element.
+The latter, when present, is extracted and displayed below the contents.
+By default, the figure and table environments show their contents centered, with a numbered caption.
+The listing environment does not center its content, but otherwise behaves the same.
 Each of them has its own distinct counter.
 The figure environment is (normally) intended to be used around an illustration.
 
@@ -165,12 +165,32 @@ have guessed it.
 \caption{Styles used for tables.}
 \end{table}
 
-The figure and table caption styles are actually sectioning styles, and the captions are
-inserted into the table of contents at level 5 and 6 respectively. It implies that one has
-the possibility to have them shown in the TOC, if passing a sufficient \autodoc:parameter{depth}
-value to the \autodoc:command{\tableofcontents} command. While some authors may appreciate that,
-other, most likely, prefer having them in separate lists. Two convenience commands are
-provided to that effect.
+The listing environment is (normally) intended to be used around blocks of code, or similar.
+Note that the commmand does not switch to verbatim mode, it is up to you to do so if needed.
+
+\begin{table}
+\begin[cols=40%fw 50%fw, header=true]{ptable}
+  \begin[background=#eee]{row}
+    \cell[valign=top]{Style}
+    \cell[valign=top]{Description}
+  \end{row}
+  \begin{row}
+    \cell[valign=top]{\code{listing}}
+    \cell[valign=top]{Style applied to the listing content (not including the caption).}
+  \end{row}
+  \begin{row}
+    \cell[valign=top]{\code{listing-caption}}
+    \cell[valign=top]{(Sectioning) style applied to the listing caption.}
+  \end{row}
+\end{ptable}
+\caption{Styles used for listings.}
+\end{table}
+
+
+The caption styles are actually sectioning styles, and the captions are inserted into the table of contents at level 5, 6 and 7 respectively.
+It implies that one has the possibility to have them shown in the TOC, if passing a sufficient \autodoc:parameter{depth} value to the \autodoc:command{\tableofcontents} command.
+While some authors may appreciate that, other, most likely, prefer having them in separate lists.
+The following convenience commands are provided to that effect.
 
 \begin{table}
 \begin[cols=40%fw 50%fw, header=true]{ptable}
@@ -185,6 +205,10 @@ provided to that effect.
   \begin{row}
     \cell[valign=top]{\autodoc:command{\listoftables}}
     \cell[valign=top]{Outputs the list of tables.}
+  \end{row}
+  \begin{row}
+    \cell[valign=top]{\autodoc:command{\listoflistings}}
+    \cell[valign=top]{Outputs the list of listings.}
   \end{row}
 \end{ptable}
 \caption{Commands for lists of figures and tables.}
