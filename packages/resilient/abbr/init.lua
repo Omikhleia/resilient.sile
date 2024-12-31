@@ -39,7 +39,9 @@ function package:registerCommands ()
 
   self:registerCommand("abbr:no", function (_, content)
     local lang = SILE.settings:get("document.language")
-    if SILE.Commands["abbr:no:"..lang] then
+    -- We only need the language code, so truncate any BCP-47 tag
+    lang = lang:match("([^%-_]+)")
+    if lang and SILE.Commands["abbr:no:"..lang] then
       SILE.call("abbr:no:"..lang, {}, content)
     else
       SU.warn("Language not supported for abbr:no, fallback to English")
@@ -62,7 +64,9 @@ function package:registerCommands ()
 
   self:registerCommand("abbr:nos", function (_, content)
     local lang = SILE.settings:get("document.language")
-    if SILE.Commands["abbr:nos:"..lang] then
+    -- We only need the language code, so truncate any BCP-47 tag
+    lang = lang:match("([^%-_]+)")
+    if lang and SILE.Commands["abbr:nos:"..lang] then
       SILE.call("abbr:nos:"..lang, {}, content)
     else
       SU.warn("Language not supported for abbr:nos, fallback to English")
