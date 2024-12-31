@@ -44,4 +44,6 @@ luac.out
 *.ref
 tests/*.pdf
 tests/*.debug
-
+examples/converted/*
+examples/embedded/*
+temp/*
