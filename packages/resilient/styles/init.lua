@@ -1,7 +1,7 @@
 --
 -- A style package for SILE
 -- License: MIT
--- 2021-2024, Didier Willis
+-- 2021-2025, Didier Willis
 --
 local base = require("packages.base")
 
@@ -227,6 +227,11 @@ function package:resolveStyle (name, discardable)
     return res
   end
   return pl.tablex.deepcopy(stylespec.style)
+end
+
+function package:hasStyle (name)
+  local stylespec = SILE.scratch.styles.specs[name]
+  return stylespec and true or false
 end
 
 function package:resolveParagraphStyle (name, discardable)

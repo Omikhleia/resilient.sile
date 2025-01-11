@@ -1,7 +1,7 @@
 --
 -- Definition environment for SILE
 -- Very minimal implementation for Djot/Markdown needs, with styling support.
--- 2023, Didier Willis
+-- 2023, 2025 Didier Willis
 -- License: MIT
 --
 local ast = require("silex.ast")
@@ -50,14 +50,16 @@ function package:registerCommands ()
 
   self:registerCommand("defn:internal:term", function (options, content)
     local variant = options.variant or SILE.settings:get("defn.variant")
-    local style = variant and "defn-term-" .. variant or "defn-term"
+    local varstyle = variant and "defn-term-" .. variant
+    local style = varstyle and self.styles:hasStyle(varstyle) and varstyle or "defn-term"
 
     SILE.call("style:apply:paragraph", { name = style }, content)
   end, "Definition term (internal)")
 
   self:registerCommand("defn:internal:desc", function (options, content)
     local variant = options.variant or SILE.settings:get("defn.variant")
-    local style = variant and "defn-desc-" .. variant or "defn-desc"
+    local varstyle = variant and "defn-desc-" .. variant
+    local style = varstyle and self.styles:hasStyle(varstyle) and varstyle or "defn-desc"
 
     SILE.settings:temporarily(function ()
       local indent = SILE.settings:get("defn.indent"):absolute()
