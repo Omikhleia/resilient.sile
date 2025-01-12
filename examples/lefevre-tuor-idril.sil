@@ -1,4 +1,4 @@
-\begin[papersize=6in x 9in, class=resilient.book, layout=ateliers demiluxe]{document}
+\begin[papersize=6in x 9in, class=resilient.book, layout=ateliers demiluxe, headers=novel]{document}
 \use[module=packages.resilient.epigraph]
 \use[module=packages.resilient.abbr]
 \use[module=packages.background]
@@ -107,7 +107,7 @@ Toute représentation ou reproduction intégrale ou partielle faite par quelque 
 \noheaderthispage%
 \nofoliothispage%
 
-\odd-running-header{Tolkien, le façonnement d’un monde}
+\even-running-header{Tolkien, le façonnement d’un monde}
 \chapter[numbering=false]{Le conte perdu de Mercure}
 % The actual title had ..."— Tuor et Idril élevés au rang d’astre"
 % Too long with the default styling, and 2-line chapter titles look ugly.
