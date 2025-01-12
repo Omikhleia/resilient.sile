@@ -22,10 +22,8 @@ folio-odd:
         indent: false
 ```
 
-That common parent style is where we would ideally define the font, for instance
-to use old-style numbering. It is also where we can define the numbering format.
-Robert Bringhurst says: "It is usual to set folios in the text size"---so we won't
-change the font size.
+That common parent style is where we would ideally define the font, for instance to use old-style numbering.
+Robert Bringhurst says: "It is usual to set folios in the text size"---so we won't change the font size.
 
 ```yaml
 folio-base:
@@ -36,7 +34,23 @@ folio-base:
       display: "arabic"
 ```
 
-::: {custom-style="admon"}
-Frontmatter / mainmatter / backmatter sections are not implement yet.
-So for now, the above only documents the "mainmatter" general styling.
-:::
+The numbering format is defined in another set of numbering styles.
+The usual settings is to have roman numbers in the front matter, and arabic numbers in the main and back matters.
+
+```yaml
+folio-frontmatter:
+  style:
+    numbering:
+      display: "roman"
+folio-mainmatter:
+  style:
+    numbering:
+      display: "arabic"
+folio-backmatter:
+  style:
+    numbering:
+      display: "arabic"
+```
+
+In books without these high-level divisions, `folio-mainmatter` is implied for the whole document.
+As all of these are numbering styles, you can also extend them further, would you want to style the page numbers differently in these divisions.

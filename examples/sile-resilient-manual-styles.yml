@@ -297,6 +297,12 @@ figure-caption-ref-number:
       before:
         text: "fig. "
 
+folio-backmatter:
+  origin: "resilient.book"
+  style:
+    numbering:
+      display: "arabic"
+
 folio-base:
   origin: "resilient.book"
   style:
@@ -311,6 +317,18 @@ folio-even:
       align: "left"
       before:
         indent: false
+
+folio-frontmatter:
+  origin: "resilient.book"
+  style:
+    numbering:
+      display: "roman"
+
+folio-mainmatter:
+  origin: "resilient.book"
+  style:
+    numbering:
+      display: "arabic"
 
 folio-odd:
   inherit: "folio-base"

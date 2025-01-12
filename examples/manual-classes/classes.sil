@@ -291,7 +291,7 @@ The class also defines two commands for manipulating the page headers.
   \begin{row}
     \cell[valign=top]{\autodoc:command{\odd-tracked-header{<content>}}}
     \cell[valign=top]{Registers the content to be used in odd running headers, tracked.}
-  \end{row}  
+  \end{row}
 \end{ptable}
 \caption{Commands for manipulating page headers.}
 \end{table}
@@ -313,6 +313,39 @@ The environment relies on the same-named style for its styling and on the \autod
 
 The environment also accepts a \autodoc:parameter{variant} option, to switch to an alternate style, assumed to be named \code{blockquote-⟨\em{variant}⟩}.
 
+\section{Front, main and back divisions}
+
+The class supports the standard \autodoc:command{\frontmatter}, \autodoc:command{\mainmatter} and \autodoc:command{\backmatter} commands to switch between the different higher-level divisions of the document.
+Obviously, these commands can only occur once in the document, and in the order given above.
+They start a new page, and influence the style of folios.
+
+\begin{table}
+  \begin[cols=40%fw 50%fw, header=true]{ptable}
+    \begin[background=#eee]{row}
+      \cell[valign=top]{Style}
+      \cell[valign=top]{Description}
+    \end{row}
+    \begin{row}
+      \cell[valign=top]{\code{folio-frontmatter}}
+      \cell[valign=top]{Numbering style applied to folios in the front matter.}
+    \end{row}
+    \begin{row}
+      \cell[valign=top]{\code{folio-mainmatter}}
+      \cell[valign=top]{Numbering style applied to folios in the main matter.}
+    \end{row}
+    \begin{row}
+      \cell[valign=top]{\code{folio-backmatter}}
+      \cell[valign=top]{Numbering style applied to folios in the back matter.}
+    \end{row}
+  \end{ptable}
+  \caption{Styles used for folios in different document divisions.}
+\end{table}
+
+Books not using these divisions assume "main" matter by default.
+In the "front" and "back" matter divisions, parts and chapters are never numbered.
+Not that this is not a configurable style decision, but the very definition of these divisions.
+In "main" matter, they are numbered by default, although this can be changed either on the sectioning command itself, or globally with adequate styles.
+
 \section{Other features}
 
 The footnotes are based on the \autodoc:package{resilient.footnotes} package and therefore have the
@@ -329,7 +362,9 @@ available.
 \medskip
 A few layout-related commands are also provided.
 
-The \autodoc:command{\layout[layout=<layout spec>]} command inserts a page break and changes the page layout from that point. An optional \autodoc:parameter{offset=<dimen>} may be specified to also alter the binding offset. By default, the global offset (that is, as possibly defined via the corresponding class option) is used.
+The \autodoc:command{\layout[layout=<layout spec>]} command inserts a page break if needed, and changes the page layout from that point.
+An optional \autodoc:parameter{offset=<dimen>} may be specified to also alter the binding offset.
+By default, the global offset (that is, as possibly defined via the corresponding class option) is used.
 
 Mostly intended for documentation, the \autodoc:command{\showlayout[layout=<layout spec>, papersize=<paper spec>]} command outputs an image representing the selected page layout and paper size.
 Optional parameters are \autodoc:parameter{offset=<dimen>} for the binding offset (0, that is no offset, by default), \autodoc:parameter{ratio=<number>} for the image down-scaling (dividing the paper size by the specified amount, 6.5 by default), and \autodoc:parameter{rough=<boolean>} (false by default).
