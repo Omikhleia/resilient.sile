@@ -313,7 +313,7 @@ The environment relies on the same-named style for its styling and on the \autod
 
 The environment also accepts a \autodoc:parameter{variant} option, to switch to an alternate style, assumed to be named \code{blockquote-⟨\em{variant}⟩}.
 
-\section{Front, main and back divisions}
+\section{Additional book divisions}
 
 The class supports the standard \autodoc:command{\frontmatter}, \autodoc:command{\mainmatter} and \autodoc:command{\backmatter} commands to switch between the different higher-level divisions of the document.
 Obviously, these commands can only occur once in the document, and in the order given above.
@@ -341,10 +341,16 @@ They start a new page, and influence the style of folios.
   \caption{Styles used for folios in different document divisions.}
 \end{table}
 
-Books not using these divisions assume "main" matter by default.
-In the "front" and "back" matter divisions, parts and chapters are never numbered.
+Books not using these divisions assume “main” matter by default.
+In the “front” and “back” matter divisions, parts and chapters are never numbered.
 Not that this is not a configurable style decision, but the very definition of these divisions.
-In "main" matter, they are numbered by default, although this can be changed either on the sectioning command itself, or globally with adequate styles.
+In the main matter, they are numbered by default, although this can be changed either on the sectioning command itself, or globally with adequate styles.
+
+The class also supports the \autodoc:command{\appendix} command, which can only be invoke once, either in the main matter or in the back matter.
+After that, the chapter counter is reset and chapters now use appendix sectioning styles.
+By default, these styles derive from the chapter styles, with the numbering changed to uppercase letters, and the prefix text to “Appendix”.
+Note that appendices are numbered even in the back matter, by default, according to common practice.
+Again, this can be changed on the sectioning command itself, or globally with adequate styles.
 
 \section{Other features}
 

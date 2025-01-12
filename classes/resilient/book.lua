@@ -306,6 +306,14 @@ function class:registerStyles ()
                       reference = "sectioning-other-number",
                     } },
   })
+  self:registerStyle("sectioning-appendix", { inherit = "sectioning-chapter" }, {
+    sectioning = { numberstyle= {
+                      main = "sectioning-appendix-main-number",
+                      header = "sectioning-appendix-head-number",
+                      reference = "sectioning-appendix-ref-number",
+                    },
+                  },
+  })
 
   self:registerStyle("sectioning-part-base-number", {}, {
     numbering = { display = "ROMAN" }
@@ -322,6 +330,7 @@ function class:registerStyles ()
   self:registerStyle("sectioning-part-ref-number", { inherit = "sectioning-part-base-number" }, {
     numbering = { before = { text ="part " } },
   })
+
   self:registerStyle("sectioning-chapter-base-number", {}, {
   })
   self:registerStyle("sectioning-chapter-main-number", { inherit = "sectioning-chapter-base-number" }, {
@@ -335,6 +344,17 @@ function class:registerStyles ()
   })
   self:registerStyle("sectioning-chapter-ref-number", { inherit = "sectioning-chapter-base-number" }, {
     numbering = { before = { text ="chap. " } },
+  })
+
+  self:registerStyle("sectioning-appendix-main-number", { inherit = "sectioning-chapter-main-number" }, {
+    numbering = { before = { text = "Appendix "},
+                  display = "ALPHA",
+                },
+  })
+  self:registerStyle("sectioning-appendix-head-number", { inherit = "sectioning-chapter-head-number" }, {
+  })
+  self:registerStyle("sectioning-appendix-ref-number", { inherit = "sectioning-chapter-ref-number" }, {
+    numbering = { before = { text ="app. " } },
   })
 
   self:registerStyle("sectioning-other-number", {}, {
@@ -673,19 +693,34 @@ function class:registerCommands ()
     end
   end, "Applies section hooks (footers and headers, etc.)")
 
+  self:registerCommand("appendix", function (_, _)
+    if self.resilientState.appendix then
+      SU.error("Already in the \\appendix subdivision")
+    end
+    if self.resilientState.division and self.resilientState.division < 2 then
+      SU.error("\\appendix is not valid in " .. DIVISIONNAME[self.resilientState.division])
+    end
+    self.resilientState.appendix = true
+    SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
+  end, "Switch to appendix subdivision.")
+
   self:registerCommand("part", function (options, content)
     if self.resilientState.division and self.resilientState.division ~= 2 then
+      -- By definition, parts are unnumbered in all divisions except the mainmatter
       options.numbering = false
     end
     options.style = "sectioning-part"
+    -- Allow appendices again in a new part
+    self.resilientState.appendix = false
     SILE.call("sectioning", options, content)
   end, "Begin a new part.")
 
   self:registerCommand("chapter", function (options, content)
-    if self.resilientState.division and self.resilientState.division ~= 2 then
+    if not self.resilientState.appendix and self.resilientState.division and self.resilientState.division ~= 2 then
+      -- By definition, chapters are unnumbered in all divisions except the mainmatter
       options.numbering = false
     end
-    options.style = "sectioning-chapter"
+    options.style = self.resilientState.appendix and "sectioning-appendix" or "sectioning-chapter"
     SILE.call("sectioning", options, content)
   end, "Begin a new chapter.")
 
