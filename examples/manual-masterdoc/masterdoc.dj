@@ -55,11 +55,11 @@ sile:
     textsubsuper.fake: false
     typesetter.italicCorrection: true
   packages:
-    - dropcaps
-    - couyards
-chapters:
-  - chap1.dj
-  - chap2.dj
+    - resilient.poetry
+content:
+  chapters:
+    - chap1.dj
+    - chap2.dj
 ```
 
 The `masterfile` entry is a number corresponding to a version, for compatibility purposes.[^masterdoc-compat]
@@ -104,6 +104,7 @@ The `sile` object provides intructions for processing the master document with S
 - The `packages` object lists extra packages that SILE must use.
   It can be used to load add-on packages needed by your content but not already provided by the document class and its supporting packages.
 
+{#masterdoc-content-basic}
 ## Up to the content
 
 Last but not least, the `chapters` array (or `parts`, see further below) lists the files to include in the work.

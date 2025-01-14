@@ -1,0 +1,88 @@
+# More book divisions
+
+In §[](#masterdoc-content-basic), we explored how to declare a simple book consisting of chapters or parts.
+For books with chapters only:
+
+
+```yaml
+content:
+  chapters:
+    ⟨...⟩
+```
+
+Or for books with parts:
+
+```yaml
+content:
+  parts:
+    ⟨...⟩
+```
+
+## Front, main and back divisions
+
+Actually, the above examples are simplified versions of a book's structure.
+They are equivalent to the following full syntax:
+
+```yaml
+content:
+  mainmatter:
+    ⟨parts or chapters⟩
+```
+
+That is, your content is assumed to be part of the main matter by default.
+Some books, however, require a more complex structure, dividing content into front matter, main matter, and back matter.
+This is particularly common in academic works, where the front matter might include a preface, dedication, and table of contents.
+
+![Internal book divisions](images/book-divisions.svg){width="65%lw"}
+
+The back matter is more variable, but for instance, it might include an index, bibliography, or glossary.
+
+Each division begins on an odd-numbered page.
+Divisions influence both the format and numbering of pages:
+
+ - The front matter uses roman numerals for page numbers by default.
+ - The main and back matter use arabic numerals for page numbers by default.
+
+These defaults can be overridden to suit specific requirements, with adequate styles.
+Page numbering resets whenever the format changes between divisions (e.g., front matter from pages i--viii, main matter from 1--148).
+
+Divisions also influence the numbering of parts and chapters:
+
+ - In the front matter and back matter, parts and chapters are unnumbered by definition.
+ - In the main matter, parts and chapters are numbered by default, though this behavior can be customized with styles.
+
+All default styles can be overridden to suit specific requirements, but we will cover this in a later section.
+All divisions can include parts.
+However, it is up to you to maintain consistency with your structural expectations.
+
+```yaml
+content:
+  frontmatter:
+    ⟨parts or chapters⟩
+  mainmatter:
+    ⟨parts or chapters⟩
+  backmatter:
+    ⟨parts or chapters⟩
+```
+
+Below is an example of how to declare a book that incorporates these divisions.
+
+```yaml
+content:
+  frontmatter:
+    chapters:
+      - preface.dj
+  mainmatter:
+    parts:
+      - caption: Part 1
+        content:
+          - chapt1-1.dj
+          - chapt1-2.dj
+      - caption: Part 2
+        content:
+          - chapt2-1.dj
+          - chapt2-2.dj
+  backmatter:
+    chapters:
+      - postface.dj
+```

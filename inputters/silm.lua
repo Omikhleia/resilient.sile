@@ -1,6 +1,6 @@
 --- Some YAML master file inputter for SILE
 --
--- @copyright License: MIT (c) 2023 Omikhleia, Didier Willis
+-- @copyright License: MIT (c) 2023, 2025 Omikhleia, Didier Willis
 -- @module inputters.silm
 --
 local ast = require("silex.ast")
@@ -134,6 +134,123 @@ local BibliographySchema = {
   }
 }
 
+local MetaDataSchema = {
+  type = "object",
+  properties = {
+    title = { type = "string" },
+    subtitle = { type = "string" },
+    subject = { type = "string" },
+    keywords = {
+      type = { -- oneOf
+        { type = "string" },
+        { type = "array", items = { type = "string" } },
+      },
+    },
+    authors = {
+      type = { -- oneOf
+        { type = "string" },
+        { type = "array", items = { type = "string" } },
+      },
+    },
+    translators = { -- oneOf
+      type = "string",
+      items = { type = "string" }
+    },
+    publisher = { type = "string" },
+    pubdate = {
+      type = "object",
+      -- tinyyaml converts dates to osdate objects
+      -- We don't care about hours, minutes, etc.
+      additionalProperties = true,
+      properties = {
+        year = { type = "number" },
+        month = { type = "number" },
+        day = { type = "number" }
+      }
+    },
+    isbn = { type = "string" },
+    url = { type = "string" },
+    copyright = { type = "string" },
+    legal = { type = "string" },
+  }
+}
+
+local FontSchema = {
+  type = "object",
+  properties = {
+    family = {
+      type = { -- oneOf
+        { type = "string" },
+        { type = "array", items = { type = "string" } },
+      },
+    },
+    size = { type = "string" }
+  }
+}
+
+local SileConfigurationSchema = {
+  type = "object",
+  properties = {
+    options = {
+      type = "object",
+      properties = {
+        class = { type = "string" },
+        papersize = { type = "string" },
+        layout = { type = "string" },
+        resolution = { type = "number" },
+        headers = { type = "string" },
+        offset = { type = "string" },
+      }
+    },
+    settings = {
+      type = "object",
+      -- Allow any setting without validation
+      additionalProperties = true,
+      properties = {
+      }
+    },
+    packages = {
+      type = "array",
+      items = { type = "string" }
+    }
+  }
+}
+
+local PartPropertiesSchema = {
+  type = "object",
+  properties = {
+    parts = ContentSchema,
+  }
+}
+
+local ChapterPropertiesSchema = {
+  type = "object",
+  properties = {
+    chapters = ContentSchema,
+  }
+}
+
+local PartOrChapterSchema = {
+  type = { -- oneOf
+    PartPropertiesSchema,
+    ChapterPropertiesSchema,
+  }
+}
+
+local StructuredContentSchema = {
+  type = { -- oneOf
+    PartPropertiesSchema,
+    ChapterPropertiesSchema,
+    { type = "object",
+      properties = {
+        frontmatter = PartOrChapterSchema,
+        mainmatter = PartOrChapterSchema,
+        backmatter = PartOrChapterSchema,
+      }
+    },
+  }
+}
+
 local MasterSchema = {
   type = "object",
   additionalProperties = true, -- Allow unknown property for extensibility
@@ -141,92 +258,22 @@ local MasterSchema = {
     masterfile = {
       type = "number",
     },
-    metadata = {
-      type = "object",
-      properties = {
-        title = { type = "string" },
-        subtitle = { type = "string" },
-        subject = { type = "string" },
-        keywords = {
-          type = { -- oneOf
-            { type = "string" },
-            { type = "array", items = { type = "string" } },
-          },
-        },
-        authors = {
-          type = { -- oneOf
-            { type = "string" },
-            { type = "array", items = { type = "string" } },
-          },
-        },
-        translators = { -- oneOf
-          type = "string",
-          items = { type = "string" }
-        },
-        publisher = { type = "string" },
-        pubdate = {
-          type = "object",
-          -- tinyyaml converts dates to osdate objects
-          -- We don't care about hours, minutes, etc.
-          additionalProperties = true,
-          properties = {
-            year = { type = "number" },
-            month = { type = "number" },
-            day = { type = "number" }
-          }
-        },
-        isbn = { type = "string" },
-        url = { type = "string" },
-        copyright = { type = "string" },
-        legal = { type = "string" },
-      }
-    },
-    font = {
-      type = "object",
-      properties = {
-        family = {
-          type = { -- oneOf
-            { type = "string" },
-            { type = "array", items = { type = "string" } },
-          },
-        },
-        size = { type = "string" }
-      }
-    },
+    metadata = MetaDataSchema,
+    font = FontSchema,
     language = { type = "string" },
-    sile = {
-      type = "object",
-      properties = {
-        options = {
-          type = "object",
-          properties = {
-            class = { type = "string" },
-            papersize = { type = "string" },
-            layout = { type = "string" },
-            resolution = { type = "number" },
-            headers = { type = "string" },
-            offset = { type = "string" },
-          }
-        },
-        settings = {
-          type = "object",
-          -- Allow any setting without validation
-          additionalProperties = true,
-          properties = {
-          }
-        },
-        packages = {
-          type = "array",
-          items = { type = "string" }
-        }
-      }
-    },
+    sile = SileConfigurationSchema,
     book = BookSchema,
     bibliography = BibliographySchema,
-    -- parts and chapters are exclusive, but we don't enforce it here.
+    -- Legacy compatibility:
+    -- We can have parts and chapters at the root level.
+    -- parts, chapters and content are mutually exclusive, but we don't enforce it here.
     -- We will check it later in the inputter
     parts = ContentSchema,
-    chapters = ContentSchema
+    chapters = ContentSchema,
+    -- New recommended way:
+    -- content can have parts, chapters or a structured content (frontmatter, mainmatter, backmatter
+    -- divisons)
+    content = StructuredContentSchema,
   }
 }
 
@@ -394,6 +441,29 @@ local function doLevel (content, entries, shiftHeadings, metaopts)
   end
 end
 
+local function doDivisionContent (content, entry, shiftHeadings, metaopts)
+  if entry.parts then
+    doLevel(content, entry.parts, shiftHeadings - 1, metaopts)
+  elseif entry.chapters then
+    doLevel(content, entry.chapters, shiftHeadings, metaopts)
+  end
+end
+
+local function doDivision (content, entry, shiftHeadings, metaopts)
+  if entry.frontmatter then
+    content[#content+1] = createCommand("frontmatter")
+    doDivisionContent(content, entry.frontmatter, shiftHeadings, metaopts)
+  end
+  if entry.mainmatter then
+    content[#content+1] = createCommand("mainmatter")
+    doDivisionContent(content, entry.mainmatter, shiftHeadings, metaopts)
+  end
+  if entry.backmatter then
+    content[#content+1] = createCommand("backmatter")
+    doDivisionContent(content, entry.backmatter, shiftHeadings, metaopts)
+  end
+end
+
 --- Process back cover content (text included in the back cover)
 ---@param entry    table|string  Back cover content entry
 ---@param metaopts table         Metadata options
@@ -492,6 +562,9 @@ function inputter:parse (doc)
       })
     end
   end
+  -- TODO QUESTION: if not a root document, should we wrap the includes
+  -- in a language group? Mixing documents with different languages
+  -- is probably not a good idea, anyhow...
 
   local sile = master.sile or {}
   local metadata = master.metadata or {}
@@ -591,13 +664,21 @@ function inputter:parse (doc)
   end
 
   -- Document content
-  -- TODO QUESTION: if not a root document, should we wrap the includes
-  -- in a language group? Mixing documents with different languages
-  -- is probably not a good idea, anyhow...
+
   if master.parts then
     doLevel(content, master.parts, baseShiftHeadings - 1, metadataOptions)
   elseif master.chapters then
     doLevel(content, master.chapters, baseShiftHeadings, metadataOptions)
+  elseif master.content then
+    if master.content.parts then
+      doLevel(content, master.content.parts, baseShiftHeadings - 1, metadataOptions)
+    elseif master.content.chapters then
+      doLevel(content, master.content.chapters, baseShiftHeadings, metadataOptions)
+    elseif master.content.frontmatter or master.content.mainmatter or master.content.backmatter then
+      doDivision(content, master.content, baseShiftHeadings, metadataOptions)
+    else
+      SU.error("Invalid master document (no division, parts or chapters)")
+    end
   end
 
   if enabledBook then
