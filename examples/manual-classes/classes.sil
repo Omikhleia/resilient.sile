@@ -306,13 +306,12 @@ commands are available, as well as \autodoc:command{\header:rule}.
 \section{Block-indented quotes}
 
 The class provides the \autodoc:environment{blockquote} environment to typeset simple block-indented
-paragraphs of the kind shown in the \autodoc:package{resilient.styles} package documentation. It is sort
-of an extra, but it was so often needed by this author that he decided to include it in
-standard.
+paragraphs.
+Indented quotes can be nested.
 
-The environment relies on the same-named style for its styling and on the
-\autodoc:setting{book.blockquote.margin} setting for its indentation (defaults to 2em). Indented
-quotes can be nested.
+The environment relies on the same-named style for its styling and on the \autodoc:setting{book.blockquote.margin} setting for its indentation (defaults to 2em).
+
+The environment also accepts a \autodoc:parameter{variant} option, to switch to an alternate style, assumed to be named \code{blockquote-⟨\em{variant}⟩}.
 
 \section{Other features}
 

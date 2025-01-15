@@ -1,6 +1,6 @@
 --
 -- A new advanced book class for SILE
--- 2021-2023, Didier Willis
+-- 2021-2025, Didier Willis
 -- License: MIT
 --
 local base = require("classes.resilient.base")
@@ -665,8 +665,10 @@ function class:registerCommands ()
     end)
   end, "Typeset its contents in a right and left indented block (variant).")
 
-  self:registerCommand("blockquote", function (_, content)
-    SILE.call("style:apply:paragraph", { name = "blockquote" }, content)
+  self:registerCommand("blockquote", function (options, content)
+    local variant = options.variant and "blockquote-" .. options.variant or nil
+    local style = variant and self.styles:hasStyle(variant) and variant or "blockquote"
+    SILE.call("style:apply:paragraph", { name = style }, content)
   end, "Typeset its contents in a styled blockquote.")
 
   -- Captioned elements

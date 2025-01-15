@@ -1,6 +1,6 @@
 --
 -- Base resilient class
--- 2023, Didier Willis
+-- 2023, 2025 Didier Willis
 -- License: MIT
 --
 require("silex")
@@ -43,6 +43,10 @@ end
 
 function class:resolveStyle (name, discardable)
   return self.styles:resolveStyle(name, discardable)
+end
+
+function class:hasStyle (name)
+  return self.styles:hasStyle(name)
 end
 
 -- For overriding in subclass
