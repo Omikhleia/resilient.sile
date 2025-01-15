@@ -86,3 +86,39 @@ content:
     chapters:
       - postface.dj
 ```
+
+## Appendix subdivisions
+
+In some cases, you may want to include appendices in your book.
+Appendices are similar to chapters, but from the point where they begin, the numbering of chapters changes.
+With the default styles, appendices are numbered with uppercase letters.
+
+In some cases, you may want to include appendices as part of your book's structure.
+Appendices are similar to chapters and occur at the same level, but usually differ in how they are numbered.
+In other terms, from the point where the appendices begin, the chapter-level numbering transitions to a distinct format.
+By default, appendices are numbered using uppercase letters, such as "Appendix A".
+As with other aspects of your book's structure, appendices can be stlyed to suit your specific requirements.
+
+Appendices can occur in the main matter or back matter, and in any part.
+For instance, with a book without parts:
+
+```yaml
+content:
+  chapters:
+      - chapter1.dj
+  appendices:
+      - appendixA.dj
+```
+
+Or with a book with a part containing both chapters and appendices:
+
+```yaml
+content:
+  mainmatter:
+    parts:
+      - caption: Backmatter part
+        chapters:
+          - caption: Backmatter chapter
+        appendices:
+          - caption: Backmatter appendix
+```

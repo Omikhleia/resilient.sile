@@ -30,43 +30,64 @@ local OptionsSchema = {
   properties = {}
 }
 
-local SingleFileSchema = {
-  type = { -- oneOf
-    { type = "string" },
-    { type = "object",
-      properties = {
-        file = { type = "string" },
-        format = { type = "string" },
-        options = OptionsSchema
-      }
-    }
+local FileSchema = {
+  type = "object",
+  properties = {
+    file = { type = "string" },
+    format = { type = "string" },
+    options = OptionsSchema
   }
 }
 
+local SingleFileSchema = {
+  type = { -- oneOf
+    { type = "string" },
+    FileSchema
+  }
+}
+
+local CaptionSchema = {
+  type = "object",
+  properties = {
+    caption = { type = "string" },
+  }
+}
+
+local ContentCaptionSchema = pl.tablex.deepcopy(CaptionSchema)
+local ContentFileSchema = pl.tablex.deepcopy(FileSchema)
 local ContentSchema = {
   type = "array",
   items = {
     type = { -- oneOf
       { type = "string" },
-      { type = "object",
-        properties = {
-          caption = { type = "string" },
-          -- content (self reference, handled below)
-        }
-      },
-      { type = "object",
-        properties = {
-          file = { type = "string" },
-          format = { type = "string" },
-          options = OptionsSchema,
-          -- content (self reference, handled below)
-        }
-      }
+      ContentCaptionSchema,
+      ContentFileSchema,
     }
   }
 }
-ContentSchema.items.type[2].properties.content = ContentSchema
-ContentSchema.items.type[3].properties.content = ContentSchema
+-- Recursive content
+ContentCaptionSchema.properties.content = ContentSchema
+ContentFileSchema.properties.content = ContentSchema
+
+local InPartCaptionSchema = pl.tablex.deepcopy(CaptionSchema)
+local InPartFileSchema = pl.tablex.deepcopy(FileSchema)
+-- Recursive structured content
+InPartCaptionSchema.properties.chapters = ContentSchema
+InPartCaptionSchema.properties.appendices = ContentSchema
+InPartFileSchema.properties.chapters = ContentSchema
+InPartFileSchema.properties.appendices = ContentSchema
+local ContentInPartSchema = {
+  type = "array",
+  items = {
+    type = { -- oneOf
+      { type = "string" },
+      ContentCaptionSchema,
+      ContentFileSchema,
+      InPartCaptionSchema,
+      InPartFileSchema,
+    }
+  }
+}
 
 local BookSchema = {
   type = "object",
@@ -219,28 +240,29 @@ local SileConfigurationSchema = {
 local PartPropertiesSchema = {
   type = "object",
   properties = {
-    parts = ContentSchema,
+    parts = ContentInPartSchema,
   }
 }
 
-local ChapterPropertiesSchema = {
+local ChapterAppendicesSchema = {
   type = "object",
   properties = {
     chapters = ContentSchema,
+    appendices = ContentSchema,
   }
 }
 
 local PartOrChapterSchema = {
   type = { -- oneOf
     PartPropertiesSchema,
-    ChapterPropertiesSchema,
+    ChapterAppendicesSchema,
   }
 }
 
 local StructuredContentSchema = {
   type = { -- oneOf
     PartPropertiesSchema,
-    ChapterPropertiesSchema,
+    ChapterAppendicesSchema,
     { type = "object",
       properties = {
         frontmatter = PartOrChapterSchema,
@@ -268,7 +290,7 @@ local MasterSchema = {
     -- We can have parts and chapters at the root level.
     -- parts, chapters and content are mutually exclusive, but we don't enforce it here.
     -- We will check it later in the inputter
-    parts = ContentSchema,
+    parts = ContentInPartSchema,
     chapters = ContentSchema,
     -- New recommended way:
     -- content can have parts, chapters or a structured content (frontmatter, mainmatter, backmatter
@@ -427,16 +449,30 @@ local function doLevel (content, entries, shiftHeadings, metaopts)
       if entry.content then
         doLevel(content, entry.content, shiftHeadings + 1, metaopts)
       end
+      -- Top-level or part-level content, enforced by the schema
+      if entry.chapters then
+        doLevel(content, entry.chapters, shiftHeadings + 1, metaopts)
+      end
+      if entry.appendices then
+        content[#content+1] = createCommand("appendix")
+        doLevel(content, entry.appendices, shiftHeadings + 1, metaopts)
+      end
     elseif entry.caption then
       local command = Levels[shiftHeadings + 2] or SU.error("Invalid master document (too many nested levels)")
       content[#content+1] = createCommand(command, {}, entry.caption)
       if entry.content then
         doLevel(content, entry.content, shiftHeadings + 1, metaopts)
       end
+      -- Top-level or part-level content, enforced by the schema
+      if entry.chapters then
+        doLevel(content, entry.chapters, shiftHeadings + 1, metaopts)
+      end
+      if entry.appendices then
+        content[#content+1] = createCommand("appendix")
+        doLevel(content, entry.appendices, shiftHeadings + 1, metaopts)
+      end
     elseif entry.content then
       doLevel(content, entry.content, shiftHeadings + 1, metaopts)
-    else
-      SU.error("Invalid master document (invalid content section)")
     end
   end
 end
@@ -444,8 +480,14 @@ end
 local function doDivisionContent (content, entry, shiftHeadings, metaopts)
   if entry.parts then
     doLevel(content, entry.parts, shiftHeadings - 1, metaopts)
-  elseif entry.chapters then
-    doLevel(content, entry.chapters, shiftHeadings, metaopts)
+  else
+    if entry.chapters then
+      doLevel(content, entry.chapters, shiftHeadings, metaopts)
+    end
+    if entry.appendices then
+      content[#content+1] = createCommand("appendix")
+      doLevel(content, entry.appendices, shiftHeadings, metaopts)
+    end
   end
 end
 
