@@ -75,6 +75,9 @@ local tocNumberStyles = {
   {},
   {},
 }
+
+local _toc_used = false
+
 function package:_init (options)
   base._init(self, options)
   SILE.scratch.tableofcontents = SILE.scratch.tableofcontents or {}
@@ -105,7 +108,7 @@ function package.writeToc (_)
   tocfile:write("return " .. tocdata)
   tocfile:close()
 
-  if not pl.tablex.deepcompare(SILE.scratch.tableofcontents, SILE.scratch._tableofcontents) then
+  if _toc_used and not pl.tablex.deepcompare(SILE.scratch.tableofcontents, SILE.scratch._tableofcontents) then
     io.stderr:write("\n! Warning: table of contents has changed, please rerun SILE to update it.")
   end
 end
@@ -127,7 +130,7 @@ end
 
 function package:registerCommands ()
 
-  -- Warning for users of the legacy tableofcontents
+  -- Warning for users of the legacy (SILE core) tableofcontents
   self:registerCommand("tableofcontents:title", function (_, _)
     SU.error("The resilient.tableofcontents package does not use the tableofcontents:title command.")
   end)
@@ -147,6 +150,8 @@ function package:registerCommands ()
       SILE.call("tableofcontents:notocmessage")
       return
     end
+
+    _toc_used = true
 
     -- Temporarilly kill footnotes and labels (fragile)
     local oldFt = SILE.Commands["footnote"]
