@@ -279,21 +279,34 @@ function package:registerCommands ()
     SILE.call("font", opts, content)
   end, "Applies a font, with additional support for relative sizes.")
 
+  local function propertyValueIfNotNull (prop)
+    if tostring(prop) == "yaml.null" then
+      -- Don't crash on null values (a special table with tinyyaml).
+      -- And be friendly with them (they cancel style inheritance).
+      return nil
+    end
+    if type(prop) == "table" then
+      SU.error("Unexpected table value for property")
+    end
+    return prop
+  end
   -- Very naive cascading...
   local function characterStyle (style, content, options)
     options = options or {}
     if style.properties then
-      if style.properties.position and style.properties.position ~= "normal" then
-        local positionCommand = SILE.scratch.styles.positions[style.properties.position]
+      local positionValue = propertyValueIfNotNull(style.properties.position)
+      if positionValue and positionValue ~= "normal" then
+        local positionCommand = SILE.scratch.styles.positions[positionValue]
         if not positionCommand then
-          SU.error("Invalid style position '"..style.properties.position.."'")
+          SU.error("Invalid style position '"..positionValue.."'")
         end
         content = createCommand(positionCommand, {}, content)
       end
-      if style.properties.case and style.properties.case ~= "normal" then
-        local caseCommand = SILE.scratch.styles.cases[style.properties.case]
+      local caseValue = propertyValueIfNotNull(style.properties.case)
+      if caseValue and caseValue ~= "normal" then
+        local caseCommand = SILE.scratch.styles.cases[caseValue]
         if not caseCommand then
-          SU.error("Invalid style case '"..style.properties.case.."'")
+          SU.error("Invalid style case '" .. caseValue .. "'")
         end
         content = createCommand(caseCommand, {}, content)
       end
@@ -471,7 +484,7 @@ function package:registerCommands ()
         vglue = cloneStyleSkip(vglue, name)
         -- Not sure here whether it should be an explicit glue or not,
         -- but it seems so to me...
-        SILE.typesetter:pushVglue(vglue)
+        SILE.typesetter:pushExplicitVglue(vglue)
       end
       if novbreak then SILE.call("novbreak") end
     end
