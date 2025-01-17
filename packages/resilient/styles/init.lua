@@ -89,7 +89,8 @@ end
 
 function package:readStyles ()
   local yaml = require("resilient-tinyyaml")
-  local fname = SILE.masterFilename .. '-styles.yml'
+  local basename = pl.path.splitext(SILE.input.filenames[1])
+  local fname = basename .. '-styles.yml'
   local styfile, _ = io.open(fname)
   if not styfile then
     SILE.scratch.styles.loaded = {}
@@ -137,7 +138,8 @@ function package.writeStyles () -- NOTE: Not called as a package method (invoked
   end
 
   local stydata = tableToYaml(SILE.scratch.styles.specs)
-  local fname = SILE.masterFilename .. '-styles.yml'
+  local basename = pl.path.splitext(SILE.input.filenames[1])
+  local fname = basename .. '-styles.yml'
   SU.debug("resilient.styles", "Writing style file", fname, ":", count, "new style(s)")
   local styfile, err = io.open(fname, "w")
   if not styfile then return SU.error(err) end
