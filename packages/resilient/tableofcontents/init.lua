@@ -177,38 +177,6 @@ function package:registerCommands ()
     SILE.Commands["label"] = oldLbl
   end, "Output the table of contents.")
 
-  -- Flatten a node list into just its string representation.
-  -- (Similar to SU.ast.contentToString(), but allows passing typeset
-  -- objects to functions that need plain strings).
-  local function nodesToText (nodes)
-    local spc = SILE.types.measurement("0.8spc"):tonumber() -- approx. see below.
-    local string = ""
-    for i = 1, #nodes do
-      local node = nodes[i]
-      if node.is_nnode or node.is_unshaped then
-        string = string .. node:toText()
-      elseif node.is_glue or node.is_kern then
-        -- What we want to avoid is "small" glues or kerns to be expanded as
-        -- full spaces. Comparing to a "decent" ratio of a space is fragile and
-        -- empirical: the content could contain font changes, so the comparison
-        -- is wrong in the general case. It's still better than nothing.
-        -- (That's what the debug text outputter does to, by the way).
-        if node.width:tonumber() > spc then
-          string = string .. " "
-        end
-      elseif not (node.is_zerohbox or node.is_migrating) then
-        -- Here, typically, the main case is an hbox.
-        -- Even if extracting its content could be possible in regular cases
-        -- (e.g. \raise), we cannot take a general decision, as it is a versatile
-        -- object (e.g. \rebox) and its outputYourself could moreover have been
-        -- redefine to do fancy things. Better warn and skip.
-        SU.warn("Some content could not be converted to text: " .. node)
-      end
-    end
-    -- Trim leading and trailing spaces, and simplify internal spaces.
-    return string:match("^%s*(.-)%s*$"):gsub("%s+", " ")
-  end
-
   local dc = 1
   self:registerCommand("tocentry", function (options, content)
     local dest
@@ -216,20 +184,15 @@ function package:registerCommands ()
       dest = "dest" .. dc
       SILE.call("pdf:destination", { name = dest })
       if SU.boolean(options.bookmark, true) then
-        SILE.typesetter:pushState()
         -- Temporarilly kill footnotes and labels (fragile)
         local oldFt = SILE.Commands["footnote"]
         SILE.Commands["footnote"] = function () end
         local oldLbl = SILE.Commands["label"]
         SILE.Commands["label"] = function () end
-
-        SILE.process(content)
+        local title = SILE.typesetter:contentToText(content)
 
         SILE.Commands["footnote"] = oldFt
         SILE.Commands["label"] = oldLbl
-
-        local title = nodesToText(SILE.typesetter.state.nodes)
-        SILE.typesetter:popState()
 
         SILE.call("pdf:bookmark", {
           title = title,
