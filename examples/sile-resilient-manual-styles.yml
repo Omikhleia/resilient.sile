@@ -297,6 +297,12 @@ figure-caption-ref-number:
       before:
         text: "fig. "
 
+folio-backmatter:
+  origin: "resilient.book"
+  style:
+    numbering:
+      display: "arabic"
+
 folio-base:
   origin: "resilient.book"
   style:
@@ -311,6 +317,18 @@ folio-even:
       align: "left"
       before:
         indent: false
+
+folio-frontmatter:
+  origin: "resilient.book"
+  style:
+    numbering:
+      display: "roman"
+
+folio-mainmatter:
+  origin: "resilient.book"
+  style:
+    numbering:
+      display: "arabic"
 
 folio-odd:
   inherit: "folio-base"
@@ -678,6 +696,38 @@ prosody:
       align: "poetry"
       before:
         skip: "smallskip"
+
+sectioning-appendix:
+  inherit: "sectioning-chapter"
+  origin: "resilient.book"
+  style:
+    sectioning:
+      numberstyle:
+        header: "sectioning-appendix-head-number"
+        main: "sectioning-appendix-main-number"
+        reference: "sectioning-appendix-ref-number"
+
+sectioning-appendix-head-number:
+  inherit: "sectioning-chapter-head-number"
+  origin: "resilient.book"
+  style:
+
+sectioning-appendix-main-number:
+  inherit: "sectioning-chapter-main-number"
+  origin: "resilient.book"
+  style:
+    numbering:
+      before:
+        text: "Appendix "
+      display: "ALPHA"
+
+sectioning-appendix-ref-number:
+  inherit: "sectioning-chapter-ref-number"
+  origin: "resilient.book"
+  style:
+    numbering:
+      before:
+        text: "app. "
 
 sectioning-base:
   origin: "resilient.book"

@@ -20,10 +20,17 @@ SILE.scratch.book.headers = {
   none = true
 }
 
+local DIVISIONNAME = {
+  "frontmatter",
+  "mainmatter",
+  "backmatter"
+}
+
 -- CLASS DEFINITION
 
 function class:_init (options)
   base._init(self, options)
+  self.resilientState = {}
 
   self:loadPackage("resilient.sectioning")
   self:loadPackage("masters")
@@ -86,6 +93,7 @@ function class:_init (options)
   -- Package "folio" is loaded by the plain class.
   self:registerCommand("foliostyle", function (_, content)
     local styleName = SILE.documentState.documentClass:oddPage() and "folio-odd" or "folio-even"
+    local division = self.resilientState.division or 2
     SILE.call("style:apply:paragraph", { name = styleName }, {
       -- Ensure proper baseline alignment with a strut rule.
       -- The baseline placement depends on the line output algorithm, and we cannot
@@ -94,7 +102,10 @@ function class:_init (options)
       -- aligned folios, but the 1 is smaller than the 6 and 7, the former ascends above,
       -- and the latter descends below the baseline).
       createCommand("strut", { method = "rule"}),
-      subContent(content)
+      createCommand("style:apply:number", {
+        name = "folio-" .. DIVISIONNAME[division],
+        text = SU.ast.contentToString(content),
+      })
     })
   end)
 
@@ -202,6 +213,18 @@ end
 function class:registerStyles ()
   base.registerStyles(self)
 
+  -- Front, main, back matter
+  local divisionFolio = {
+    frontmatter = "roman",
+  }
+  for _, name in ipairs(DIVISIONNAME) do
+    self:registerStyle("folio-" .. name, {}, {
+      numbering = {
+        display = divisionFolio[name] or "arabic"
+      }
+    })
+  end
+
   -- Sectioning styles
   self:registerStyle("sectioning-base", {}, {
     paragraph = { before = { indent = false },
@@ -283,6 +306,14 @@ function class:registerStyles ()
                       reference = "sectioning-other-number",
                     } },
   })
+  self:registerStyle("sectioning-appendix", { inherit = "sectioning-chapter" }, {
+    sectioning = { numberstyle= {
+                      main = "sectioning-appendix-main-number",
+                      header = "sectioning-appendix-head-number",
+                      reference = "sectioning-appendix-ref-number",
+                    },
+                  },
+  })
 
   self:registerStyle("sectioning-part-base-number", {}, {
     numbering = { display = "ROMAN" }
@@ -299,6 +330,7 @@ function class:registerStyles ()
   self:registerStyle("sectioning-part-ref-number", { inherit = "sectioning-part-base-number" }, {
     numbering = { before = { text ="part " } },
   })
+
   self:registerStyle("sectioning-chapter-base-number", {}, {
   })
   self:registerStyle("sectioning-chapter-main-number", { inherit = "sectioning-chapter-base-number" }, {
@@ -312,6 +344,17 @@ function class:registerStyles ()
   })
   self:registerStyle("sectioning-chapter-ref-number", { inherit = "sectioning-chapter-base-number" }, {
     numbering = { before = { text ="chap. " } },
+  })
+
+  self:registerStyle("sectioning-appendix-main-number", { inherit = "sectioning-chapter-main-number" }, {
+    numbering = { before = { text = "Appendix "},
+                  display = "ALPHA",
+                },
+  })
+  self:registerStyle("sectioning-appendix-head-number", { inherit = "sectioning-chapter-head-number" }, {
+  })
+  self:registerStyle("sectioning-appendix-ref-number", { inherit = "sectioning-chapter-ref-number" }, {
+    numbering = { before = { text ="app. " } },
   })
 
   self:registerStyle("sectioning-other-number", {}, {
@@ -562,6 +605,42 @@ function class:registerCommands ()
     end
   end, "Text to appear on the top odd pages.")
 
+  -- front/main/back matter
+
+  self:registerCommand("internal:division", function (options, _)
+    local division = SU.required(options, "division", "internal:division")
+    -- Always start on an odd page, so as to be consistent with the folio numbering
+    -- in case it is reset.
+    SILE.call("open-on-odd-page")
+    self.resilientState.division = division
+    -- Previous section titles (in technical mode) or chapter title (in novel mode)
+    -- is no longer valid (and in none mode, it's not valid anyway).
+    SILE.scratch.headers.odd = nil
+    if self.headers == "technical" then
+      -- In novel mode, the book title is in the even header, and is still valid
+      -- So we don't reset it.
+      -- But in technical mode, even headers contain the current chapter title,
+      -- invalid upon a new part.
+      SILE.scratch.headers.even = nil
+    end
+    -- Reset folio counter if needed (i.e. on display format change)
+    local current = self:getCounter("folio")
+    local folioSty = self:resolveStyle("folio-" .. DIVISIONNAME[division])
+    local display = folioSty.numbering and folioSty.numbering.display or "arabic"
+    if current.display ~= display then
+      SILE.call("set-counter", { id = "folio", display = display, value = 1 })
+    end
+  end)
+
+  for div, name in ipairs(DIVISIONNAME) do
+    self:registerCommand(name, function (_, content)
+      if self.resilientState.division and self.resilientState.division >= div then
+        SU.error("\\" .. name .. " is not valid after a " .. DIVISIONNAME[self.resilientState.division])
+      end
+      SILE.call("internal:division", { division = div }, content)
+    end, "Switch to " .. DIVISIONNAME[div] .. " division.")
+  end
+
   -- Sectioning hooks and commands
 
   self:registerCommand("sectioning:part:hook", function (options, _)
@@ -614,13 +693,34 @@ function class:registerCommands ()
     end
   end, "Applies section hooks (footers and headers, etc.)")
 
+  self:registerCommand("appendix", function (_, _)
+    if self.resilientState.appendix then
+      SU.error("Already in the \\appendix subdivision")
+    end
+    if self.resilientState.division and self.resilientState.division < 2 then
+      SU.error("\\appendix is not valid in " .. DIVISIONNAME[self.resilientState.division])
+    end
+    self.resilientState.appendix = true
+    SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
+  end, "Switch to appendix subdivision.")
+
   self:registerCommand("part", function (options, content)
+    if self.resilientState.division and self.resilientState.division ~= 2 then
+      -- By definition, parts are unnumbered in all divisions except the mainmatter
+      options.numbering = false
+    end
     options.style = "sectioning-part"
+    -- Allow appendices again in a new part
+    self.resilientState.appendix = false
     SILE.call("sectioning", options, content)
   end, "Begin a new part.")
 
   self:registerCommand("chapter", function (options, content)
-    options.style = "sectioning-chapter"
+    if not self.resilientState.appendix and self.resilientState.division and self.resilientState.division ~= 2 then
+      -- By definition, chapters are unnumbered in all divisions except the mainmatter
+      options.numbering = false
+    end
+    options.style = self.resilientState.appendix and "sectioning-appendix" or "sectioning-chapter"
     SILE.call("sectioning", options, content)
   end, "Begin a new chapter.")
 
@@ -823,8 +923,7 @@ function class:registerCommands ()
     -- Kind of a hack dues to restrictions with frame parsers.
     layout:setPaperHack(SILE.documentState.paperSize[1], SILE.documentState.paperSize[2])
 
-    SILE.call("supereject")
-    SILE.typesetter:leaveHmode()
+    SILE.call("open-on-any-page")
 
     local oddFrameset, evenFrameset = layout:frameset()
     self:defineMaster({

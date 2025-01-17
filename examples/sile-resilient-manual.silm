@@ -9,9 +9,9 @@ metadata:
     - book
   authors: Didier Willis
   publisher: Omikhleia
-  pubdate: 2024-10-12
+  pubdate: 2025-01-15
   url: https://github.com/Omikhleia/resilient.sile
-  copyright: © 2021–2024, Didier Willis.
+  copyright: © 2021–2025, Didier Willis.
   legal: |
     This material may be distributed only subject to the terms and conditions
     set forth in the  Creative Commons Attribution, Share-Alike License,
@@ -43,42 +43,47 @@ sile:
   packages:
     - autodoc-resilient # REQUIRED FOR RESILIENT, do not use regular autodoc
     - lorem
-parts:
-  - content:
-      - manual-front.sil
-  - file: manual-parts/part-intro.dj
-    content:
-      - manual-intro/howto.dj
-  - file: manual-parts/part-masterdoc.dj
-    content:
-      - manual-masterdoc/masterdoc.dj
-      - manual-masterdoc/bookmatters.dj
-      - manual-masterdoc/bibliographies.dj
-  - file: manual-parts/part-layouts.dj
-    content:
-      - manual-layouts/layouts.sil
-  - file: manual-parts/part-styling.dj
-    content:
-      - manual-styling/basics/concepts.md
-      - manual-styling/basics/definitions.md
-      - manual-styling/basics/character.md
-      - manual-styling/basics/lists.md
-      - manual-styling/basics/paragraph.md
-      - manual-styling/basics/toc.md
-      - manual-styling/basics/sectioning.md
-      - manual-styling/advanced/intro.md
-      - manual-styling/advanced/folio.md
-      - manual-styling/advanced/footnotes.md
-      - manual-styling/advanced/toclevels.md
-      - manual-styling/advanced/liststyles.md
-      - manual-styling/advanced/eqno.md
-      - manual-styling/advanced/dropcap.md
-      - manual-styling/advanced/other.md
-      # unfinished
-      # - manual-styling/captioned.md
-  - file: manual-parts/part-packages.dj
-    content:
-      - manual-packages/packages.sil
-  - file: manual-parts/part-classes.dj
-    content:
-      - manual-classes/classes.sil
+content:
+  frontmatter:
+    parts:
+      - content:
+          - manual-front.sil
+  mainmatter:
+    parts:
+      - file: manual-parts/part-intro.dj
+        content:
+          - manual-intro/howto.dj
+      - file: manual-parts/part-masterdoc.dj
+        content:
+          - manual-masterdoc/masterdoc.dj
+          - manual-masterdoc/bookmatters.dj
+          - manual-masterdoc/bookdivisions.dj
+          - manual-masterdoc/bibliographies.dj
+      - file: manual-parts/part-layouts.dj
+        content:
+          - manual-layouts/layouts.sil
+      - file: manual-parts/part-styling.dj
+        content:
+          - manual-styling/basics/concepts.md
+          - manual-styling/basics/definitions.md
+          - manual-styling/basics/character.md
+          - manual-styling/basics/lists.md
+          - manual-styling/basics/paragraph.md
+          - manual-styling/basics/toc.md
+          - manual-styling/basics/sectioning.md
+          - manual-styling/advanced/intro.md
+          - manual-styling/advanced/folio.md
+          - manual-styling/advanced/footnotes.md
+          - manual-styling/advanced/toclevels.md
+          - manual-styling/advanced/liststyles.md
+          - manual-styling/advanced/eqno.md
+          - manual-styling/advanced/dropcap.md
+          - manual-styling/advanced/other.md
+          # unfinished
+          # - manual-styling/captioned.md
+      - file: manual-parts/part-packages.dj
+        content:
+          - manual-packages/packages.sil
+      - file: manual-parts/part-classes.dj
+        content:
+          - manual-classes/classes.sil

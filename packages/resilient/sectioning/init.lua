@@ -36,6 +36,21 @@ local function hasContent()
   return hasNonGlueContent
 end
 
+local function nameIfNotNull (name)
+  -- Nothig to fancy but there's a special case for the null value in YAML
+  -- style definitions.
+  if not name then
+    return nil
+  end
+  if type(name) == "string" then
+    return name
+  end
+  if tostring(name) == "yaml.null" then
+    return nil
+  end
+  SU.error("Invalid style name, expected a string or YAML null")
+end
+
 function package:registerCommands ()
 
   local resolveSectionStyleDef = function (name)
@@ -99,7 +114,8 @@ function package:registerCommands ()
     -- shouldn't trigger a goodbreak in-between).
 
     -- Process the section (title) content
-    local numSty = secStyle.numberstyle.main and self:resolveStyle(secStyle.numberstyle.main)
+    local numStyName = secStyle.numberstyle.main and nameIfNotNull(secStyle.numberstyle.main)
+    local numSty = numStyName and self:resolveStyle(numStyName)
     local numDisplay = numSty and numSty.numbering and numSty.numbering.display or "arabic"
 
     -- Counter for numbered sections
@@ -124,8 +140,11 @@ function package:registerCommands ()
       hookOptions.counter = secStyle.counter.id
       hookOptions.level = secStyle.counter.level
       hookOptions.before = true -- HACK SEE BELOW
-      local numsty = sty.sectioning and sty.sectioning.numberstyle
-          and sty.sectioning.numberstyle.header
+      local numsty = sty.sectioning
+          and sty.sectioning.numberstyle
+          -- Only user header number if main number style is defined
+          and nameIfNotNull(sty.sectioning.numberstyle.main)
+          and nameIfNotNull(sty.sectioning.numberstyle.header)
       if numbering and numsty then
         titleHookContent = {
           createCommand("style:apply:number", { name = numsty, text = number }),
@@ -176,9 +195,9 @@ function package:registerCommands ()
 
     -- Show section number (if numbering is true AND a main style is defined)
     if numbering then
-      if secStyle.numberstyle.main then
+      if numStyName then
         titleContent[#titleContent + 1] =
-          createCommand("style:apply:number", { name = secStyle.numberstyle.main, text = number })
+          createCommand("style:apply:number", { name = numStyName, text = number })
         if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
           titleContent[#titleContent + 1] =
             createCommand("hardbreak")

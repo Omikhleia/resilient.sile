@@ -75,6 +75,8 @@ numbering in the table of contents is handled with a different mechanism,
 as a part of the ToC styles. Whether there is a need to reconcile these
 solutions might be considered in a future revision.]
 Note that if a given context is absent, the section number will not be displayed.
+This might be sufficient to disable inherited numbering in some contexts, but
+in these cases, you can just set the `main` number style to `null` (without quotes).
 
 For the "main" number style, some sections may expect the number to be on its
 own standalone line rather than just before the section title.—Chapters and parts,
