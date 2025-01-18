@@ -1,7 +1,9 @@
 --
 -- Re-implementation of the tableofcontents package.
+-- Following the resilient styling paradigm.
 -- Hooks are removed and replaced by styles, allowing for a fully customizable TOC
--- 2021-2023, Didier Willis
+--
+-- 2021-2023, 2025 Didier Willis
 -- License: MIT
 --
 local base = require("packages.resilient.base")
@@ -11,6 +13,58 @@ local createCommand, createStructuredCommand, subContent
 
 local package = pl.class(base)
 package._name = "resilient.tableofcontents"
+
+local _toc_used = false
+
+function package:_init (options)
+  base._init(self, options)
+  SILE.scratch.tableofcontents = SILE.scratch.tableofcontents or {}
+  SILE.scratch._tableofcontents = SILE.scratch._tableofcontents or {}
+  self.class:loadPackage("infonode")
+  self.class:loadPackage("leaders")
+  if not SILE.scratch.tableofcontents then
+    SILE.scratch.tableofcontents = {}
+  end
+  self.class:registerHook("endpage", self.moveTocNodes)
+  self.class:registerHook("finish", self.writeToc)
+end
+
+function package:moveTocNodes ()
+  local node = SILE.scratch.info.thispage.toc
+  if node then
+    for i = 1, #node do
+      node[i].pageno = self.packages.counters:formatCounter(SILE.scratch.counters.folio)
+      table.insert(SILE.scratch.tableofcontents, node[i])
+    end
+  end
+end
+
+function package.writeToc (_)
+  local tocdata = pl.pretty.write(SILE.scratch.tableofcontents)
+  local tocfile, err = io.open(SILE.masterFilename .. '.toc', "w")
+  if not tocfile then return SU.error(err) end
+  tocfile:write("return " .. tocdata)
+  tocfile:close()
+
+  if _toc_used and not pl.tablex.deepcompare(SILE.scratch.tableofcontents, SILE.scratch._tableofcontents) then
+    io.stderr:write("\n! Warning: table of contents has changed, please rerun SILE to update it.")
+  end
+end
+
+function package.readToc (_)
+  if SILE.scratch._tableofcontents and #SILE.scratch._tableofcontents > 0 then
+    -- already loaded
+    return SILE.scratch._tableofcontents
+  end
+  local tocfile, _ = io.open(SILE.masterFilename .. '.toc')
+  if not tocfile then
+    return false -- No TOC yet
+  end
+  local doc = tocfile:read("*all")
+  local toc = assert(load(doc))()
+  SILE.scratch._tableofcontents = toc
+  return SILE.scratch._tableofcontents
+end
 
 local tocStyles = {
   -- level0 ~ part
@@ -75,58 +129,6 @@ local tocNumberStyles = {
   {},
   {},
 }
-
-local _toc_used = false
-
-function package:_init (options)
-  base._init(self, options)
-  SILE.scratch.tableofcontents = SILE.scratch.tableofcontents or {}
-  SILE.scratch._tableofcontents = SILE.scratch._tableofcontents or {}
-  self.class:loadPackage("infonode")
-  self.class:loadPackage("leaders")
-  if not SILE.scratch.tableofcontents then
-    SILE.scratch.tableofcontents = {}
-  end
-  self.class:registerHook("endpage", self.moveTocNodes)
-  self.class:registerHook("finish", self.writeToc)
-end
-
-function package:moveTocNodes ()
-  local node = SILE.scratch.info.thispage.toc
-  if node then
-    for i = 1, #node do
-      node[i].pageno = self.packages.counters:formatCounter(SILE.scratch.counters.folio)
-      table.insert(SILE.scratch.tableofcontents, node[i])
-    end
-  end
-end
-
-function package.writeToc (_)
-  local tocdata = pl.pretty.write(SILE.scratch.tableofcontents)
-  local tocfile, err = io.open(SILE.masterFilename .. '.toc', "w")
-  if not tocfile then return SU.error(err) end
-  tocfile:write("return " .. tocdata)
-  tocfile:close()
-
-  if _toc_used and not pl.tablex.deepcompare(SILE.scratch.tableofcontents, SILE.scratch._tableofcontents) then
-    io.stderr:write("\n! Warning: table of contents has changed, please rerun SILE to update it.")
-  end
-end
-
-function package.readToc (_)
-  if SILE.scratch._tableofcontents and #SILE.scratch._tableofcontents > 0 then
-    -- already loaded
-    return SILE.scratch._tableofcontents
-  end
-  local tocfile, _ = io.open(SILE.masterFilename .. '.toc')
-  if not tocfile then
-    return false -- No TOC yet
-  end
-  local doc = tocfile:read("*all")
-  local toc = assert(load(doc))()
-  SILE.scratch._tableofcontents = toc
-  return SILE.scratch._tableofcontents
-end
 
 function package:registerCommands ()
 
