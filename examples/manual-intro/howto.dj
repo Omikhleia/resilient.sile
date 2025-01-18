@@ -2,24 +2,25 @@
 {.none .pagebreak}
 ---
 
-![The resilient ecosystem at a glance (simplified).](./examples/resilient-ecosystem.dot){width="99%fw"}
+![The _re·sil·ient_ ecosystem at a glance (simplified).](./examples/resilient-ecosystem.dot){width="99%fw"}
 
-{.unnumbered}
 # How to use this manual
 
-```=sile
-\begin[rule=0.4pt]{epigraph}
-In a well-made book, where designer, compositor and printer have all done their jobs,
-no matter how many thousands of lines and pages, the letters are alive.
-They dance in their seats. Sometimes they rise and dance in the margins and aisles.
-\source{Robert Bringhurst,\break\em{The Elements of Typographic Style}.}
-\end{epigraph}
-```
+{rule="0.4pt"}
+> In a well-made book, where designer, compositor and printer have all done their jobs, no matter how many thousands of lines and pages, the letters are alive.
+> They dance in their seats. Sometimes they rise and dance in the margins and aisles.
+^ Robert Bringhurst,\
+  _The Elements of Typographic Style._
 
-Your are ready to typeset some work---ideally, the _perfect book_ of your
-dreams---and towards that aim, you consider using the present collection
-of classes and packages.
+Your are ready to typeset some work---ideally, the _perfect book_ of your dreams---and towards that aim, you consider using the present collection of classes and packages.
 That's a very good start! Let us guide you through the process.
+
+{.unnumbered}
+## Installing the _re·sil·ient_ modules
+
+Wait, you have not installed the SILE software or the _re·sil·ient_ modules yet?
+
+![](./manicule.svg){height="0.60em"} See chapter [](#installation) just further down.
 
 {.unnumbered}
 ## Picking a mark-up language
@@ -28,7 +29,7 @@ Obviously, you first need to pick a mark-up language for your content.
 If you are reading this document, you probably already browsed through the SILE Manual and consider using its SIL language.
 
 You might do so, indeed---but please note that Markdown and Djot are acceptable options too.
-If you properly installed the resilient collection, then the *[markdown.sile](https://github.com/Omikhleia/markdown.sile)* module is installed too.
+If you properly installed the _re·sil·ient_ collection, then the *[markdown.sile](https://github.com/Omikhleia/markdown.sile)* module is installed too.
 When used with this collection, it's leveraged with additional capabilities.
 
 On the other hand, if you are not already experienced with the SIL language and your content is reasonably simple, this author would recommend to seriously consider Markdown or Djot (with even a preference for Djot when possible).
@@ -67,7 +68,8 @@ You may want now to customize the document styles according to your needs.
 {.unnumbered}
 ## Going further
 
-In composing your book, you may need some of the cool packages provided here.
+In composing your book, you may need more lowe-level details regarding some of the cool components provided by the _re·sil·ient_ collection.
+These sections are not for the faint of heart, but they are there for you when you need them.
 
 ![](./manicule.svg){height="0.60em"} Read part [](#resilient-packages){.section}.
 

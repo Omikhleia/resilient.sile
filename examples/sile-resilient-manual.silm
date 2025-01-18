@@ -58,6 +58,7 @@ content:
       - file: manual-parts/part-intro.dj
         content:
           - manual-intro/howto.dj
+          - manual-intro/installation.dj
       - file: manual-parts/part-masterdoc.dj
         content:
           - manual-masterdoc/masterdoc.dj

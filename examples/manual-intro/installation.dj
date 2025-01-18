@@ -1,0 +1,63 @@
+{#installation}
+# Installing the _re·sil·ient_ modules
+
+Usually, a guide of this kind would immediately start with some "Getting Started" section, with a step-by-step guide to install the software.
+This author is well aware of that fact.
+But you only need to read this chapter if you never installed _re·sil·ient_ before, and will never read it again once you have done so.
+So, it's not that bad to have it here only, after some introductory material, is it?
+
+## Standard installation
+
+This module collection requires SILE v0.15 or upper.
+See the [SILE website](https://sile-typesetter.org/) for installation instructions.
+Installation relies on the *luarocks* package manager.
+See its own installation instructions on the [LuaRocks website](https://luarocks.org/).
+Then, to install the latest official version:
+
+{custom-style=CodeBlock}
+:::
+    ```bash
+luarocks install resilient.sile
+```
+:::
+
+Refer to the SILE manual for more detailed 3rd-party package installation information and configuration options.
+In particular, depending on the SILE distribution you use, you may want need to explicitly target the version of Lua that SILE was built with.
+
+Other than that, the installation should be straightforward, and _re·sil·ient_ then comes with all the necessary dependencies automatically.
+
+{#recommended-additional-software}
+## Recommended additional software
+
+This module also notably installs, as dependencies, the following collections (so you don't have to install them separately):
+
+ - the [*embedders.sile*](https://github.com/Omikhleia/embedders.sile) collection, a general framework for embedding images from textual representations, performing their on-the-fly conversion,
+ - the [*printoptions.sile*](https://github.com/Omikhleia/embedders.sile) collection, a general framework for rasterizing vector images and rescaling raster images.
+
+However, these require additional software to be installed on your host system, to invoke the necessary conversion commands.
+Depending on the features you plan to use, you may need to ensure the following software is installed.
+All of these are optional if you don't plan to use the corresponding features.
+
+ - Dependencies for *embedders.sile* are only required if you plan to include some specific types of text-based images in your documents.
+
+    - *lilypond* for music notation, if you plan to include music scores in your documents.
+    - *graphviz* for DOT graph rendering, if you plan to include graphs in your documents.
+    - *ghostscript* for PDF image conversion.
+
+ - Dependencies for *printoptions.sile* are only required if you plan to go to print with your documents, and your printer has specific requirements or expectations.[^printer-expectations]
+
+    - **inkscape** for SVG image conversion, if you plan to rasterize vector images in your documents.
+    - **graphicsmagick** for image conversion, if you plan to minimize the size of your raster images.
+
+As with anything that relies on invoking external programs on your host system, please be aware of potential security concerns.
+Be cautious with the source of the elements you include in your documents!
+
+{custom-style=admon}
+:::
+Thank you for your attention, gentle reader.
+We wish you a very pleasant journey through the rest of this manual.
+Don't hesitate to provide feedback and help us pushing this collection forward.
+:::
+
+[^printer-expectations]: Typically, this author regularly uses the print services of [Lulu.com](https://www.lulu.com/), which has specific requirements for the images in the PDF files you submit.
+(This author is not affiliated with Lulu.com in any way, and this mention is not an endorsement of their services.)
