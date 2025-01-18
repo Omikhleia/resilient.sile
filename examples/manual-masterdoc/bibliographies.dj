@@ -36,7 +36,7 @@ Refer to _The SILE Book_ for more information on how to do this.
 
 ## Printing the bibliography
 
-The **resilient.book** class registers a Djot symbol, `_BIBLIOGRAPHY_`, which you can use in a standalone paragraph to print the bibliography.[^bibliography-symbol]
+The *resilient.book* class registers a Djot symbol, `_BIBLIOGRAPHY_`, which you can use in a standalone paragraph to print the bibliography.[^bibliography-symbol]
 Attributes are passed through to the underlying implementation.
 For example, to print all the bibliography including uncited references, you can use:
 

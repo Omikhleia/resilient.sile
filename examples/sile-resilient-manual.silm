@@ -69,23 +69,23 @@ content:
           - manual-layouts/layouts.sil
       - file: manual-parts/part-styling.dj
         content:
-          - manual-styling/basics/concepts.md
-          - manual-styling/basics/definitions.md
-          - manual-styling/basics/character.md
-          - manual-styling/basics/lists.md
-          - manual-styling/basics/paragraph.md
-          - manual-styling/basics/toc.md
-          - manual-styling/basics/sectioning.md
-          - manual-styling/advanced/intro.md
-          - manual-styling/advanced/folio.md
-          - manual-styling/advanced/footnotes.md
-          - manual-styling/advanced/toclevels.md
-          - manual-styling/advanced/liststyles.md
-          - manual-styling/advanced/eqno.md
-          - manual-styling/advanced/dropcap.md
-          - manual-styling/advanced/other.md
-          # unfinished
-          # - manual-styling/captioned.md
+          - manual-styling/basics/concepts.dj
+          - manual-styling/basics/definitions.dj
+          - manual-styling/basics/character.dj
+          - manual-styling/basics/lists.dj
+          - manual-styling/basics/paragraph.dj
+          - manual-styling/basics/toc.dj
+          - manual-styling/basics/sectioning.dj
+          - manual-styling/advanced/intro.dj
+          - manual-styling/advanced/folio.dj
+          - manual-styling/advanced/footnotes.dj
+          - manual-styling/advanced/toclevels.dj
+          - manual-styling/advanced/liststyles.dj
+          - manual-styling/advanced/eqno.dj
+          - manual-styling/advanced/dropcap.dj
+          - manual-styling/advanced/other.dj
+          # Not written yet...
+          # - manual-styling/advanced/captioned.dj
       - file: manual-parts/part-packages.dj
         content:
           - manual-packages/packages.sil

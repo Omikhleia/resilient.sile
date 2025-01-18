@@ -1,6 +1,6 @@
 ## Styling lists
 
-The **resilient.lists** package, as noted in its documentation, uses
+The *resilient.lists* package, as noted in its documentation, uses
 different sets of styles for the `itemize` and the `enumerate`
 environments.
 

@@ -30,8 +30,7 @@ With these first assumptions in mind, let’s summarize the requirements:
    to page headers, and so on.—The list of possibilities could be long here and very dependent on the kind of structure one considers, and it would be boresome to invent a
    syntax covering all potential needs, so some sort of “hook” has at least to be provided
    (more on that later).
--  The main numbering, when used, may need some text strings prepended or appended to it,
-   (e.g. "Chapter 1.")
+ - The main numbering, when used, may need some text strings prepended or appended to it (e.g. "Chapter 1."),
  - When added to page headers (or in similar contexts), as per the supporting class
    design, one may want the section number to appear or not, and to be possibly
    formatted in a different way than in the ToC or in the main text flow.
@@ -68,15 +67,12 @@ inheritance mechanism provided by the styles also allows one to reuse existing
 base specifications. In this author’s opinion, it is quite flexible and clear.
 The two last options, however, may require a clarification.
 
-The `numberstyle` specification defines which number style should be used for
-the section number, depending on the context where it appears (main text flow,
-running headers and cross-references).^[In this version, the
-numbering in the table of contents is handled with a different mechanism,
-as a part of the ToC styles. Whether there is a need to reconcile these
-solutions might be considered in a future revision.]
+The `numberstyle` specification defines which number style should be used for the section number, depending on the context where it appears (main text flow, running headers and cross-references).[^toc-numbering-incertain]
 Note that if a given context is absent, the section number will not be displayed.
-This might be sufficient to disable inherited numbering in some contexts, but
-in these cases, you can just leave the `main` number style present but empty.
+This might be sufficient to disable inherited numbering in some contexts, but in these cases, you can just leave the `main` number style present but empty.
+
+[^toc-numbering-incertain]: In this version, the numbering in the table of contents is handled with a different mechanism, as a part of the ToC styles.
+Whether there is a need to reconcile these solutions might be considered in a future revision.
 
 For the "main" number style, some sections may expect the number to be on its
 own standalone line rather than just before the section title.—Chapters and parts,

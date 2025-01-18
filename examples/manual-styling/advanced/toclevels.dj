@@ -9,9 +9,9 @@ consider:
  - How page references are formatted.
 
 [^toc-fancy]: This section applies to the "standard" table of contents,
-as produced with the `\tableofcontents` command from the **resilient.tableofcontents**
+as produced with the `\tableofcontents` command from the *resilient.tableofcontents*
 package.
-Specific implementations such as **fancytoc** may use their own
+Specific implementations such as *fancytoc* may use their own
 styling rules.
 
 ### Global setup

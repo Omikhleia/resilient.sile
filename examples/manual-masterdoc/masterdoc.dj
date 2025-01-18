@@ -155,7 +155,7 @@ chapters:
 ```
 
 We earlier mentioned the `parts` keywords.
-With document classes supporting parts, such as **resilient.book**, it allows using them, starting at that level.[^masterdoc-astute]
+With document classes supporting parts, such as *resilient.book*, it allows using them, starting at that level.[^masterdoc-astute]
 
 [^masterdoc-nesting]: In particular, you may include a master document in another.
 In that case, though, only the declared extra packages and the content files are used.

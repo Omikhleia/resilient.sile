@@ -1,7 +1,7 @@
 ## Styling initial capitals
 
 Initial capitals (also known as drop caps) are a typographic feature where the first letter of a paragraph is enlarged and styled differently from the rest of the text.
-The **resilient.book** class defines two commands for this purpose: `initial-joined` and `initial-unjoined`.
+The *resilient.book* class defines two commands for this purpose: `initial-joined` and `initial-unjoined`.
 The former should be used when the initial capital is part of the first word of the paragraph, and the latter when it is a separate character.
 
 In Markdown or Djot, you may use one or the other directly as a style (although they are rather pseudo-styles, strictly speaking).
