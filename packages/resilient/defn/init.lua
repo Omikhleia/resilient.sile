@@ -1,6 +1,8 @@
 --
--- Definition environment for SILE
+-- Definition environment for SILE,
 -- Very minimal implementation for Djot/Markdown needs, with styling support.
+-- Following the resilient styling paradigm.
+--
 -- 2023, 2025 Didier Willis
 -- License: MIT
 --

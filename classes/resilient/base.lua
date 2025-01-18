@@ -1,7 +1,12 @@
 --
--- Base resilient class
+-- Base resilient class for SILE.
+-- Following the resilient styling paradigm.
+--
 -- 2023, 2025 Didier Willis
 -- License: MIT
+--
+-- It provides a base class for document classes that want to use styles,
+-- and a few convenience methods hide the internals.
 --
 require("silex")
 
@@ -49,9 +54,6 @@ function class:hasStyle (name)
   return self.styles:hasStyle(name)
 end
 
--- For overriding in subclass
-function class.registerStyles (_) end
-
 function class:declareOptions ()
   parent.declareOptions(self)
 
@@ -65,12 +67,14 @@ end
 
 function class:registerRawHandlers ()
   parent.registerRawHandlers(self)
-
 end
 
 function class:registerCommands ()
   parent.registerCommands(self)
-
 end
+
+-- For overriding in any document subclass, as a convenient hook
+-- where to register all styles.
+function class.registerStyles (_) end
 
 return class

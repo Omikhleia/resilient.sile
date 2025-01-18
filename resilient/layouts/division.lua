@@ -1,5 +1,6 @@
 --
 -- Division-based layouts
+--
 -- 2022-2023, Didier Willis
 -- License: MIT
 --

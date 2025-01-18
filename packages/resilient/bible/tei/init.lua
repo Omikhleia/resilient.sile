@@ -1,6 +1,8 @@
 --
 -- TEI bible format with critical apparatus as used for the Gothic Bible
--- from wulfila.be (TEI Gothica)
+-- from wulfila.be (TEI Gothica).
+-- Following the resilient styling paradigm.
+--
 -- 2022, 2023, Didier Willis
 -- License: MIT
 --

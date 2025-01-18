@@ -1,3 +1,10 @@
+--
+-- Re-implementation of the verbatim package for SILE
+-- Following the resilient styling paradigm.
+--
+-- 2023,-2025, Didier Willis
+-- License: MIT
+--
 local base = require("packages.resilient.base")
 
 local package = pl.class(base)
@@ -31,12 +38,9 @@ function package:registerCommands ()
     SILE.typesetter:leaveHmode()
     SILE.settings:temporarily(function()
       SILE.settings:set("typesetter.parseppattern", "\n")
-      SILE.settings:set("typesetter.obeyspaces", true) -- Dubious
-      -- IMPLEMENTATION NOTE
-      -- Contrary to SILE's original implementation, we don't set the
-      -- document.baselineskip to zero, this does not seem to be a sane thing.
-      -- Moreover we handle the right and left skip nesting, and use a true
-      -- left alignment (= infinite right stretchability rather than some 10000pt).
+      SILE.settings:set("typesetter.obeyspaces", true) -- FIXME Dubious setting
+      -- We handle the fixed part of right and left skip to support nesting.
+      -- We use use a true left alignment (= infinite right stretchability).
       SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width.length))
       SILE.settings:set("document.rskip", SILE.types.node.hfillglue(rskip.width.length))
       SILE.settings:set("document.parindent", SILE.types.node.glue())
@@ -75,7 +79,6 @@ function package:registerStyles ()
     }
   })
 end
-
 
 package.documentation = [[
 \begin{document}

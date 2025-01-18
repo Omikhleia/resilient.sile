@@ -1,5 +1,12 @@
 --
--- Book matter support (mostly for master documents)
+-- Book matter support (front and back covers, half-title, title pages,
+-- endpapers, etc.) for SILE.
+-- Following the resilient styling paradigm.
+--
+-- This package is for internal use only.
+-- It is used (mostly) by the "master document".
+-- API is subject to change.
+--
 -- 2023, Didier Willis
 -- License: MIT
 --

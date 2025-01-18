@@ -1,6 +1,8 @@
 --
--- Generic sectioning command and styles for SILE
--- An extension of the "styles" package and the sectioning paradigm
+-- Generic sectioning command and styles for SILE.
+-- Following the resilient styling paradigm.
+-- It is nn extension of the "styles" package and the sectioning paradigm.
+--
 -- 2021-2023, Didier Willis
 -- License: MIT
 --
@@ -18,7 +20,7 @@ function package:_init (options)
   self.class:loadPackage("counters")
 end
 
-local function hasContent()
+local function hasContentInCurrentPage()
   -- Important, flushes nodes to output queue.
   SILE.typesetter:leaveHmode()
   -- The frame breaking logic is a bit messy:
@@ -239,7 +241,7 @@ function package:registerCommands ()
     end
 
     SILE.typesetter:leaveHmode() -- Important, flushes nodes to output queue.
-    if hasContent() then
+    if hasContentInCurrentPage() then
       -- We are not at the top of a page, eject the current content.
       SILE.call("supereject")
     end
@@ -275,7 +277,7 @@ function package:registerCommands ()
 
   self:registerCommand("open-on-any-page", function (_, _)
     SILE.typesetter:leaveHmode() -- Important, flushes nodes to output queue.
-    if hasContent() then
+    if hasContentInCurrentPage() then
       -- We are not at the top of a page, eject the current content.
       SILE.call("supereject")
     end

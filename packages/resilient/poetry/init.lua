@@ -1,5 +1,7 @@
 --
--- A poetry package for SILE
+-- A poetry package for SILE.
+-- Following the resilient styling paradigm.
+--
 -- 2021, 2023 Didier Willis
 -- License: MIT
 --

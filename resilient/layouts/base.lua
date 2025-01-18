@@ -1,5 +1,6 @@
 --
 -- Base layout class (a.k.a. default/none)
+--
 -- 2022-2023, Didier Willis
 -- License: MIT
 --

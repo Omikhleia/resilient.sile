@@ -1,5 +1,7 @@
 --
--- An epigraph package for SILE
+-- An epigraph package for SILE.
+-- Following the resilient styling paradigm.
+--
 -- 2021-2023, Didier Willis
 -- License: MIT
 --

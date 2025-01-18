@@ -1,8 +1,11 @@
 --
--- Enumerations and bullet lists for SILE
+-- Enumerations and bullet lists for SILE.
+-- Following the resilient styling paradigm.
+
 -- This a replacement to the "lists" package introduced in SILE,
--- with (expectedly) the same user API but with additional
--- features and styling methods.
+-- with (expectedly) the same user API but with additiona features and styling
+-- methods.
+--
 -- 2021-2023, Didier Willis
 -- License: MIT
 --
