@@ -43,6 +43,11 @@ sile:
   packages:
     - autodoc-resilient # REQUIRED FOR RESILIENT, do not use regular autodoc
     - lorem
+bibliography:
+  style: chicago-author-date
+  language: en-US
+  files:
+    - typography.bib
 content:
   frontmatter:
     parts:
@@ -87,3 +92,8 @@ content:
       - file: manual-parts/part-classes.dj
         content:
           - manual-classes/classes.sil
+  backmatter:
+    parts:
+      - caption: Appendices
+        appendices:
+          - manual-biblio.dj

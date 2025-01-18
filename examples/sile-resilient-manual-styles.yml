@@ -717,8 +717,6 @@ sectioning-appendix-main-number:
   origin: "resilient.book"
   style:
     numbering:
-      before:
-        text: "Appendix "
       display: "ALPHA"
 
 sectioning-appendix-ref-number:
