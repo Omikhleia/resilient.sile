@@ -484,7 +484,7 @@ function package:registerCommands ()
         vglue = cloneStyleSkip(vglue, name)
         -- Not sure here whether it should be an explicit glue or not,
         -- but it seems so to me...
-        SILE.typesetter:pushExplicitVglue(vglue)
+        SILE.typesetter:pushVglue(vglue)
       end
       if novbreak then SILE.call("novbreak") end
     end
