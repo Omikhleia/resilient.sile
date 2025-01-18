@@ -1,6 +1,9 @@
 --
--- Re-implementation of the footnotes package
+-- Re-implementation of the footnotes package for SILE.
+-- Following the resilient styling paradigm.
+--
 -- 2021-2023, Didier Willis
+-- License: MIT
 --
 local base = require("packages.resilient.base")
 

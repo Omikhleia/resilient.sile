@@ -1,5 +1,6 @@
 --
 -- Common utilities for RESILIENT
+--
 -- 2023 Didier Willis
 -- License: MIT
 --
@@ -11,7 +12,7 @@ local function interwordSpace()
 end
 
 -- Cast a kern length (e.g. in styles), also supporting the special "iwsp"
--- pseudo unit.
+-- pseudo unit for interword space.
 local function castKern(kern)
   if type(kern) == "string" then
     local value, rest = kern:match("^(%d*)iwsp[ ]*(.*)$")

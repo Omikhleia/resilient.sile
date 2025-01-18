@@ -1,5 +1,6 @@
 --
 -- Jan Tschichold's canonical page layout.
+--
 -- 2022-2023, Didier Willis
 -- License: MIT
 --

@@ -1,5 +1,7 @@
 --
 -- A minimalist SILE class for a "resumé" (CV)
+-- Following the resilient styling paradigm.
+--
 -- 2021-2023, Didier Willis
 -- License: MIT
 --

@@ -1,5 +1,6 @@
 --
--- Division-based layout with wide margin for annotations
+-- Division-based layout with wide margin for annotations.
+--
 -- 2022-2023, Didier Willis
 -- License: MIT
 --

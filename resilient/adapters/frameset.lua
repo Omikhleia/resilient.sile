@@ -1,6 +1,7 @@
 --
 -- Lightweight frameset parser/solver.
 -- Aimed at resolving a master frameset so as to render it graphically, etc.
+--
 -- 2023, Didier Willis
 -- License: MIT
 --

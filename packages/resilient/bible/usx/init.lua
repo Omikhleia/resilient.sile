@@ -1,5 +1,7 @@
 --
--- USX (XML bible format) support for SILE
+-- USX (XML bible format) support for SILE.
+-- Following the resilient styling paradigm.
+--
 -- 2023, Didier Willis
 -- License: MIT
 --

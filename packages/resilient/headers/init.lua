@@ -1,9 +1,8 @@
 --
--- headers package for book-like classes
--- Core logic for activating/deactivating headers
--- and handling their output.
--- 2021-2022, Didier Willis
+-- headers package for book-like classes for SILE.
+-- Core logic for activating/deactivating headers- and handling their output.
 --
+-- 2021-2022, Didier Willis
 -- License: MIT
 --
 local base = require("packages.base")

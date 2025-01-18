@@ -1,5 +1,6 @@
 --
 -- French "Canon des Ateliers" page layout.
+--
 -- 2022-2023, Didier Willis
 -- License: MIT
 --

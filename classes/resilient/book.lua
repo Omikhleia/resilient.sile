@@ -1,5 +1,7 @@
 --
--- A new advanced book class for SILE
+-- A new advanced book class for SILE.
+-- Following the resilient styling paradigm, and providing a more features.
+--
 -- 2021-2025, Didier Willis
 -- License: MIT
 --

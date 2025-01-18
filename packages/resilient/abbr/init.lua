@@ -1,5 +1,6 @@
 --
--- Some common shorthands and abbreviations
+-- Some common shorthands and abbreviations for SILE.
+--
 -- 2021-2023, Didier Willis
 -- License: MIT
 --

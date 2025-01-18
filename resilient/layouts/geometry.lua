@@ -1,5 +1,6 @@
 --
 -- Geometry page layout (explicit dimensions).
+--
 -- 2023, Didier Willis
 -- License: MIT
 --
