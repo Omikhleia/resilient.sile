@@ -41,7 +41,7 @@ The aim of the resilient master document is to provide a default set of conventi
 - At the end of the book, some _end-papers_ occur.
   On the recto one may find the title, the publisher, sometimes the ISBN is barcode form, and possibly other important mentions --- In some countries, the legal deposit is required to be printed there, etc. This page is also known as an _impressum,_ and its verso is (generally) left blank.
 
-![A resilient book structure](images/book-anatomy.svg){width="65%lw"}
+![A resilient book structure](images/book-anatomy.svg){width="65%"}
 
 ## Customizing the title and endpaper pages
 

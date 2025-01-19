@@ -25,6 +25,11 @@ digraph omikhleia {
 
     textsubsuper [shape=component,style=filled,fillcolor=aliceblue]
   }
+  subgraph cluster_qrcode {
+    label = "qrcode.sile";
+
+    qrcode [shape=component,style=filled,fillcolor=mintcream]
+  }
 
   subgraph cluster_labelrefs {
     label = "labelrefs.sile";
@@ -40,10 +45,8 @@ digraph omikhleia {
 
       cbase [shape=component,style=filled,fillcolor=snow,label="resilient.base"]
       book [shape=component,style=filled,fillcolor=mintcream,label="resilient.book"]
-      resume [shape=component,style=filled,fillcolor=mintcream,label="resilient.resume"]
 
       book -> cbase
-      resume -> cbase
     }
     subgraph cluster_resilient_pkg {
       label = "packages";
@@ -56,41 +59,45 @@ digraph omikhleia {
 
       sectioning [shape=component,style=filled,fillcolor=seashell,label="resilient.sectioning"]
       styles [shape=component,style=filled,fillcolor=seashell,label="resilient.styles"]
+      bookmatters [shape=component,style=filled,fillcolor=seashell,label="resilient.bookmatters"]
 
       lists [shape=component,style=filled,fillcolor=aliceblue,label="resilient.lists"]
 
       poetry [shape=component,style=filled,fillcolor=mintcream,label="resilient.poetry"]
       epigraph [shape=component,style=filled,fillcolor=mintcream,label="resilient.epigraph"]
       abbr [shape=component,style=filled,fillcolor=mintcream,label="resilient.abbr"]
+      defn [shape=component,style=filled,fillcolor=mintcream,label="resilient.defn"]
+      verbatim [shape=component,style=filled,fillcolor=mintcream,label="resilient.verbatim"]
+      liners [shape=component,style=filled,fillcolor=mintcream,label="resilient.liners"]
 
       cbase -> styles
       pbase -> styles
       styles -> textsubsuper
+      bookmatters -> qrcode
 
       book -> tableofcontents
       book -> footnotes
       book -> headers
       book -> sectioning
       book -> labelrefs
-      book -> struts
-
-      resume -> lists
-      resume -> headers
-      resume -> ptable
-      resume -> labelrefs
+      book -> lists
 
       epigraph -> pbase
       footnotes -> pbase
       lists -> pbase
       poetry -> pbase
       sectioning -> pbase
-      tableofcontents ->pbase
+      tableofcontents -> pbase
+      defn -> pbase
+      verbatim -> pbase
+      liners -> pbase
     }
     subgraph cluster_resilient_ins {
       label = "inputters";
 
-      silm [shape=component,style=filled,fillcolor=lemonchiffon,label="inputters.silm"]
+      silm [shape=component,style=filled,fillcolor=lemonchiffon,label="silm"]
       silm -> book [style=dashed]
+      silm -> bookmatters
     }
 
   }
@@ -104,9 +111,9 @@ digraph omikhleia {
   subgraph cluster_markdown {
     label = "markdown.sile";
 
-    markdown [shape=component,style=filled,fillcolor=aliceblue]
-    djot [shape=component,style=filled,fillcolor=mintcream]
-    pandocast [shape=component,style=filled,fillcolor=mintcream]
+    markdown [shape=component,style=filled,fillcolor=lemonchiffon]
+    djot [shape=component,style=filled,fillcolor=lemonchiffon]
+    pandocast [shape=component,style=filled,fillcolor=lemonchiffon]
     markcmd [shape=component,style=filled,fillcolor=aliceblue,label="markdown.commands"]
 
     markdown -> markcmd
@@ -114,15 +121,10 @@ digraph omikhleia {
     pandocast -> markcmd
 
     book -> markdown
+    book -> djot
     markcmd -> ptable
     markcmd -> embedders
     markcmd -> smartquotes
-  }
-
-  subgraph cluster_printoptions {
-    label = "printoptions.sile";
-
-    printoptions [shape=component,style=filled,fillcolor=mintcream]
   }
 
   subgraph cluster_fancytoc {
@@ -145,9 +147,10 @@ digraph omikhleia {
     barcodes [shape=component,style=filled,fillcolor=mintcream,label="barcodes.ean13"]
   }
 
-  subgraph cluster_qrcode {
-    label = "qrcode.sile";
+subgraph cluster_printoptions {
+    label = "printoptions.sile";
 
-    qrcode [shape=component,style=filled,fillcolor=mintcream]
+    printoptions [shape=component,style=filled,fillcolor=mintcream]
+    silm -> barcodes
   }
 }
