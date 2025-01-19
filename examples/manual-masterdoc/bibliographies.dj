@@ -50,8 +50,10 @@ This allows you to start fresh for subsequent uses (e.g., in a different chapter
 
 ## Citing references
 
-This is not covered here.
-Refer to the _Markdown and Djot to PDF with SILE_ user guide, or to _The SILE Book_ for more information on how to cite references depending on the format you are using to author your content.
+The most basic form of citation, in documents authored in Djot or Markdown, is `[@key]`, where `key` is the citation key in your bibliography file.
+
+There are more advanced forms of citation with locators, such as `[@key, page 26]` to include a page number.
+For a more detailed explanation regarding how to cite references and the supported bibliography formats, refer to the _Markdown and Djot to PDF with SILE_ user guide [@willis:sile-markdown-djot], or to _The SILE Book_ [@cozens:sile] depending on the format you are using to author your content.
 
 
 [^bibliography-symbol]: Obviously, this needs to be used in a Djot content file.
