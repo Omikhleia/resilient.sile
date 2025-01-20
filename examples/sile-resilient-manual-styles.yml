@@ -159,6 +159,22 @@ defn-term:
       before:
         skip: "smallskip"
 
+defn-term-Simple:
+  inherit: "defn-term"
+  style:
+    font:
+      weight:
+    paragraph:
+      align: "noparindent"
+
+defn-desc-Simple:
+  inherit: "defn-term"
+  style:
+    font:
+      weight:
+    paragraph:
+      align: "noparindent"
+
 dropcap:
   origin: "resilient.book"
   style:
