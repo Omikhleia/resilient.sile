@@ -52,7 +52,7 @@ content:
   frontmatter:
     parts:
       - content:
-          - manual-front.sil
+          - manual-front.dj
   mainmatter:
     parts:
       - file: manual-parts/part-intro.dj
@@ -90,12 +90,13 @@ content:
           # - manual-styling/advanced/captioned.dj
       - file: manual-parts/part-packages.dj
         content:
-          - manual-packages/packages.sil
+          - manual-packages/packages.dj
       - file: manual-parts/part-classes.dj
         content:
-          - manual-classes/classes.sil
+          - manual-classes/classes.dj
   backmatter:
     parts:
       - caption: Appendices
         appendices:
-          - manual-biblio.dj
+          - manual-appendices/biblio.dj
+          - manual-appendices/resume-class.dj

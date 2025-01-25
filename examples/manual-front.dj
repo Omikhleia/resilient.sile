@@ -1,6 +1,8 @@
-\begin{document}
+``` =sile
+% Some initial and dirt hacks...
 \footnote:rule
-\define[command=admon]{% This is a quick but bad implementation. We ought to have used a style.
+% This is a quick but bad implementation. We ought to have used properly defined styles.
+\define[command=admon]{%
 \novbreak
 \smallskip%
 \novbreak
@@ -12,21 +14,22 @@ padding=2%fw, bordercolor=#59b24c, fillcolor=230, shadowcolor=#96A8C7, shadow=fa
 % Colors aren't settings so they propagate to the parbox, whatever settings logic it has.
 \color[color=100]{\parbox[width=96%lw]{\set[parameter=document.parindent, value=0]\font[size=9pt]{\process}\par}}%
 }}%
-\medskip}
+\medskip}%
+\define[command=ShadowFramed]{%
+\framebox[padding=0, shadow=true, shadowcolor=220]{\process}}
+```
 
-%
-% There we go for the content.
-%
-\chapter[numbering=false, toc=false]{Contents}
-\noheaders
+{.unnumbered .notoc}
+# Contents
 
-\tableofcontents
+:_TOC_:
 
-\section[numbering=false, toc=false]{Figures}
+{.unnumbered .notoc}
+## Figures
 
-\listoffigures
+:_LISTOFFIGURES_:
 
-\section[numbering=false, toc=false]{Tables}
+{.unnumbered .notoc}
+## Tables
 
-\listoftables
-\end{document}
+:_LISTOFTABLES_:

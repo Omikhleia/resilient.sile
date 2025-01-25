@@ -147,6 +147,14 @@ defn-desc:
       before:
         vbreak: false
 
+defn-desc-Simple:
+  inherit: "defn-term"
+  style:
+    font:
+      weight:
+    paragraph:
+      align: "noparindent"
+
 defn-term:
   inherit: "defn-base"
   origin: "resilient.defn"
@@ -160,14 +168,6 @@ defn-term:
         skip: "smallskip"
 
 defn-term-Simple:
-  inherit: "defn-term"
-  style:
-    font:
-      weight:
-    paragraph:
-      align: "noparindent"
-
-defn-desc-Simple:
   inherit: "defn-term"
   style:
     font:

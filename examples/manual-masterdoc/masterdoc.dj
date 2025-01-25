@@ -169,12 +169,12 @@ Using the *resilient.book* class, the following options are available:
 {variant="Simple"}
 : `papersize`
 
-  The paper size to use, as a known paper size (e.g. `letter`, `a4`) or custom dimensions (e.g. `6in x 9in`).
+  The paper size to use, as a known paper size (`letter`, `a4`, etc.) or custom dimensions (e.g. `6in x 9in`).
   Default is `a4`.
 
 : `layout`
 
-  The default (global) page layout (see part [](#page-layout)).
+  The global page layout (see part [](#page-layout)).
   Default is `division`.
 
 : `offset`
@@ -317,32 +317,34 @@ In that case, though, only the declared extra packages and the content files are
 
 ## Abusing the master document format
 
-The master document format is quite flexible and can be used in various ways.
-But after all, it is just a "semantic" description of the book, and what you do in the actual content files is up to you.
-An implication is that it is fairly easy to abuse.
+The master document format is quite flexible and adaptable to various use cases.
 
-For instance, you could use lower-level constructs (in SIL or Lua, or via raw code blocks in Djot or Markdown), and break all reasonable expectations.
-Likewise, nothing prevents you from wrongly using the header levels in your content files.
+However, it's primarily a "high-level" description of a book's structure, leaving the specifics of the content files entirely up to you.
+For better or worse, it's fairly easy to abuse.
 
-But even without going that far, the format is easy to abuse.
-Let's consider the following example, which actually _does_ have some interest.
+You can use low-level commands in SIL or Lua, and break all reasonable expectations.
+But even without going that far, let's consider the following example.
 
 ```yaml
 content:
   parts:
     - content:
-        - intro.dj
+        - introduction.dj
     - caption: Part 2
       content:
         - chapter1.dj
-        ...
 ```
 
-The first chapter is in an anonymous part.
-So its headers are shifted, as seen above, right?
+The introduction is in an anonymous part.
+Its headers are therefore offset, as explained above, aren't they?
 And you end up with a chapter preceeding the first part.
-It might be quite handy at times, but the "true" way to do it would be a front matter division.
-We will see that in a moment, but documenting such a trick here was still worth it.
+This is sometimes very practical, but the "true" way to do it would be a front matter division.
+We will see that in a moment, but mentioning such a trick is still worth it. It may have its uses in certain cases.
+
+Similarly, if a chapter-level file in your master document doesn't begin with a level 1 title, it will be included as is,
+and semantically, it belongs to the _previous_ part or chapter.
+In other words, you can divide your content any way you like, and do some fancy things with it.
+The master document format is only a tool and a guide, not a straitjacket.
 
 > "I have spoken.
 > This is the way."
