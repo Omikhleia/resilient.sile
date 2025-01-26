@@ -68,7 +68,8 @@ content:
           - manual-masterdoc/bibliographies.dj
       - file: manual-parts/part-layouts.dj
         content:
-          - manual-layouts/layouts.sil
+          - manual-layouts/layouts-general.dj
+          - manual-layouts/layouts-predefined.dj
       - file: manual-parts/part-styling.dj
         content:
           - manual-styling/basics/concepts.dj
