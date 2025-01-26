@@ -207,14 +207,14 @@ Using the *resilient.book* class, the following options are available:
 ### Configuration settings
 
 The `settings` can be used to globally set some SILE parameters.
-A few usual suggestions are listed below for convenience, but please refer to the SILE documentation for standard parameters and parts
+A few usual suggestions are listed below for convenience, but please refer to _The SILE Book_ for standard parameters and parts
 [](#resilient-packages)--[](#resilient-classes) in this manual for resilient-specific parameters.
 
 {variant="Simple"}
 : `textsubsuper.fake` (boolean)
 
-  Whether to use fake superscript and subscript glyphs when the font does not provide them.
-  It highly depends on the font used and the quality of its superscript and subscript glyphs, so you will have to test it.
+  Whether to use fake superscript and subscript glyphs (raised and scaled) or native ones, when available.
+  It highly depends on the font and the quality of its superscript and subscript glyphs, so you will have to test it.
 
 : `typesetter.italicCorrection` (boolean)
 
@@ -225,9 +225,7 @@ A few usual suggestions are listed below for convenience, but please refer to th
 
 The `packages` object lists extra packages that SILE must use.
 It can be used to load add-on packages needed by your content but not already provided by the document class and its supporting packages.
-
-Since the **resilient.book** document class already loads most of its supporting packages, you should only list the extra packages you need for specific content.
-As far as resilient packages are concerned, a few notable suggestions are:
+As far as the resilient collection is concerned, a few notable suggestions are listed below.
 
  - **resilient.poetry** for poetry typesetting.
  - **printoptions** for advanced print options & tools for professional printers.
@@ -255,24 +253,27 @@ content:
 This is actually a convenience short form for the fuller syntax.
 
 ```yaml
-chapters:
-  - file: chap1.md
-  - file: chap2.dj
+content:
+  chapters:
+    - file: chap1.md
+    - file: chap2.dj
 ```
 
 In this structured form, other fields are accepted, for enforcing the input format (which can be useful if the extension is non-standard) and the options passed to the input handler.
+Refer to the documentation of that handler to know which options are available.
 
 ```yaml
-chapters:
-  - file: chap1.txt
-    format: markdown
-    options:
-      smart: false # disable smart typography support in Markdown
+content
+  chapters:
+    - file: chap1.txt
+      format: markdown
+      options:
+        smart: false # disable smart typography support
 ```
 
 There is another structured form which just takes a "caption" string.
-To be honest, it's mostly provided as a quick convenience placeholder.
-This author mostly uses it when drafting a book, to quickly sketch the structure before adding the actual content.
+It's mostly provided as a quick convenience placeholder.
+This author uses it when drafting a book, to quickly sketch its structure before adding the actual content.
 
 ```yaml
 chapters:
@@ -284,22 +285,22 @@ All structured forms accept a `content` entry, which is again a list of files to
 With Djot, Markdown or other formats supporting this feature,[^masterdoc-sil-nesting] the headings in these files are then _shifted_.
 
 ```yaml
-chapters:
-  - file: chap1.dj # Level 1 headings = chapters, etc.
-    content:
-      - file: sect.dj # Level 1 headings = sections, etc.
+content:
+  chapters:
+    - file: chap1.dj # Level 1 headings = chapters, etc.
+      content:
+        - file: sect.dj # Level 1 headings = sections, etc.
 ```
 
 So let's now consider a more complex structure, with several "parts."
-With document classes supporting parts, such as *resilient.book*, it allows using them, starting at that level.
+With document classes supporting parts, it allows using them, starting at that level.
 
 ```yaml
 content:
   parts:
-    - part1.dj
+    - file: part1.dj
       content:
         - chap1.dj
-   ...
 ```
 
 Each document file, here, begins with a level 1 heading.

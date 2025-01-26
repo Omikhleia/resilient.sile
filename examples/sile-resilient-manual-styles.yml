@@ -148,7 +148,7 @@ defn-desc:
         vbreak: false
 
 defn-desc-Simple:
-  inherit: "defn-term"
+  inherit: "defn-desc"
   style:
     font:
       weight:
