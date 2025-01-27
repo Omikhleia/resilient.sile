@@ -1,4 +1,4 @@
-# The resilient book class
+# Deep dive into the resilient book class
 
 The design of the `resilient.book` class was started as an attempt at gradually tuning the default book class from SILE to this author’s needs and taste.
 It eventually evolved into a full redesign on different grounds.
@@ -8,15 +8,16 @@ This very document uses it, so you can see it in real action.
 
 In addition to the class options provided by SILE, the class also supports the following options:
 
-: layout
+{variant=Simple}
+: `layout`
 
   Specifies the default (global) page layout. See part [](#page-layout).
 
-: offset
+: `offset`
 
   Specifies the binding offset. See part [](#page-layout).
 
-: headers
+: `headers`
 
   Specifies how running headers are used:
 
@@ -24,7 +25,7 @@ In addition to the class options provided by SILE, the class also supports the f
   - `technical` (default): Chapter and section titles go in the even and odd running headers, respectively.
   - `novel`: Chapter titles go in the odd running headers, and the title of the book, if set, goes in the even running headers.[^book-title]
   
-: resolution
+: `resolution`
 
   Specifies the global resolution in DPI (dots per inch).
   Some add-on packages may use it in order to compute the size of generated images, etc.
@@ -35,7 +36,7 @@ In addition to the class options provided by SILE, the class also supports the f
 
 ## Standard sectioning commands
 
-The class supports the following sectioning commands, from the highest division level to the lowest: `\autodoc:command{\part}`, `\autodoc:command{\chapter}`, `\autodoc:command{\section}`, `\autodoc:command{\subsection}`, `\autodoc:command{\subsubsection}`.
+The class supports the following standard sectioning commands, from the highest division level to the lowest: `\autodoc:command{\part}`{=sile}, `\autodoc:command{\chapter}`{=sile}, `\autodoc:command{\section}`{=sile}, `\autodoc:command{\subsection}`{=sile}, `\autodoc:command{\subsubsection}`{=sile}.
 
 All sectioning commands obey styles (relying on the **resilient.styles** and **resilient.sectioning** packages), which notably imply that they have a lot of customization possibilities.
 In the following pages, the described behaviors apply to the default configuration and styling, out-of-the-box.

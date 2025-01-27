@@ -61,13 +61,40 @@ function class:_init (options)
   self:loadPackage("markdown")
   self:loadPackage("djot")
   -- Once Djot is loaded, we can register custom pre-defined symbols
-  self.packages["markdown.commands"]:registerSymbol("_BIBLIOGRAPHY_", true, function (opts)
+  local mdc = self.packages["markdown.commands"]
+  mdc:registerSymbol("_BIBLIOGRAPHY_", true, function (opts)
     if not self.packages.bibtex then
       SU.warn("Bibliography support is not available")
       return {}
     end
     return {
       createCommand("printbibliography", opts)
+    }
+  end)
+  -- Our Djot/Markdown support already provides a _TOC_ symbol.
+  -- Here we can also provide _LISTOFFIGURES_, _LISTOFTABLES_, _LISTOFLISTINGS_.
+  -- And for the sake of consistency, we can also provide _TABLEOFCONTENTS_.
+  -- It is not exactly the same as _TOC_, which does additional things when used
+  -- outside resilient, with fallback to to SILE's default implementation, but it
+  -- is doesn't hurt to provide it here.
+  local extras = { "listoffigures", "listoftables", "listoflistings", "tableofcontents" }
+  for _, sym in ipairs(extras) do
+    mdc:registerSymbol("_" .. sym:upper() .. "_", true, function (opts)
+      return {
+        createCommand(sym, opts)
+      }
+    end)
+  end
+  -- Our Djot/Markdown support provides an undocumented _FANCYTOC_ symbol.
+  -- The reason why it is undocumented is that module fancytoc.sile is not a
+  -- dependency of markdown.sile.
+  -- On the other hand, resilient.sile has all needed dependencies.
+  -- So eventually we'll remove the _FANCYTOC_ symbol from markdown.sile.
+  -- No issue with re-registering it here, and we'll be ready for that.
+  mdc:registerSymbol("_FANCYTOC_", true, function (opts)
+    return {
+      createCommand("use", { module = "packages.fancytoc" }),
+      createCommand("fancytableofcontents", opts),
     }
   end)
 

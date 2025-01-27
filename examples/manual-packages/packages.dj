@@ -132,12 +132,14 @@ This package is part of the *labelrefs.sile* collection.
 \package-documentation{labelrefs}
 ```
 
+{#packages-tableofcontents}
 ## Enhanced table of contents
 
 ``` =sile
 \package-documentation{resilient.tableofcontents}
 ```
 
+{#packages-fancytoc}
 ## Fancy alternative table of contents
 
 {custom-style=admon}

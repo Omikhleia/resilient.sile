@@ -89,12 +89,13 @@ content:
           - manual-styling/advanced/other.dj
           # Not written yet...
           # - manual-styling/advanced/captioned.dj
+      - file: manual-parts/part-classes.dj
+        content:
+          - manual-classes/audience.dj
+          - manual-classes/book.dj
       - file: manual-parts/part-packages.dj
         content:
           - manual-packages/packages.dj
-      - file: manual-parts/part-classes.dj
-        content:
-          - manual-classes/classes.dj
   backmatter:
     parts:
       - caption: Appendices
