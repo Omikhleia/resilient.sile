@@ -1,5 +1,14 @@
 # Choosing a page layout
 
+The layout of a book is a crucial aspect of its design.
+It is not only about the size of the paper, but also about the proportions of the text block, the margins, and the headers and footers.
+You do not want, surely, to guess the adequate proportions by yourself, do you?
+
+Neither do you want to spend hours trying to figure out how to set up a good page layout.
+This is where _re·sil·ient_ comes to the rescue...
+
+![A "regular" book layout---Where blocks go?](images/book-layout.svg){width="70%"}
+
 ## The layout class option
 
 Paper sizes for printed works varied a lot across time.
