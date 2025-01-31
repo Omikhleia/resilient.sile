@@ -1,0 +1,32 @@
+{.none .pagebreak}
+---
+
+![Making a _re·sil·ient_ book.](./images/book-workflow.svg){width="99%"}
+
+# What is _re·sil·ient_?
+
+{rule="0.4pt"}
+> Type and typography---what you do and how you do it---are both science and art.
+^ James Felici,\
+_The Complete Manual of Typography._
+
+The _re·sil·ient_ module for the SILE digital typesetting system is a comprehensive collection of advanced components and tools designed to streamline the production of high-quality books and documents.
+
+Its core philosophy is to enable typesetting an entire book---"from front cover to back cover"---using text files mostly written in lightweight markup languages such as Djot or Markdown, enhanced with powerful syntax extensions.
+
+At the heart of _re·sil·ient_ is a robust “book” document class that offers a wealth of features, including a wide array of page layouts, full support for cross-references, advanced figure and table environments with captions, and other essential book elements, and highly configurable components, such as the table of contents, headers, footers, footnotes, and sectioning environments.
+
+Complementing the document class is an innovative styling paradigm.
+It provides a consistent, unified approach to managing style decisions across your project, abstracting complexity while maintaining flexibility.
+
+The _re·sil·ient_ collection also simplifies the process of organizing and compiling large projects with its master document capabilities.
+These allow you to combine multiple chapters into a cohesive book and to structure your content with remarkable flexibility.
+
+From cover design to page layout, fine typography to polished output, _re·sil·ient_ embodies the philosophy of making the creation of beautiful books as intuitive and efficient as possible.
+
+Whether you are an experienced typesetter, a seasoned SILE user, or just a newcomer, this module equips you with the tools to achieve professional results with ease.
+
+{.none .pagebreak}
+---
+
+![The _re·sil·ient_ ecosystem at a glance (simplified).](./examples/resilient-ecosystem.dot){width="99%fw"}

@@ -21,7 +21,7 @@ sile -u inputters.silm mybook.silm
 ```
 
 The format consists in a simple description of the book properties and content, expressed in [YAML](https://en.wikipedia.org/wiki/YAML), a lightweight human-readable data-representation language.
-Here is an example, showing most of the elements.
+Here is an example, showing most of the basic elements.
 
 ```yaml
 masterfile: 1.0
@@ -68,75 +68,212 @@ The `masterfile` entry is a number corresponding to a version, for compatibility
 
 ## The metadata section
 
+[^:icon-pdf-metadata:]: ^:U+25C6:^
+
+[^:icon-running-headers:]: ^:U+25CB:^
+
+[^:icon-back-cover:]: ^:U+25CF:^
+
 The `metadata` object contains several general document properties.
+All these properties are optional, but some are used in specific contexts when available:
 
- - The `title`, `authors`, `subject` and `keywords` will automatically be used as PDF metadata.
+ - Properties marked :icon-pdf-metadata: are automatically used as PDF metadata.
 
- - As denoted by the plural, `authors`, `translators` and `keywords` may consist in a list of strings, but they also accept a single string.
+ - Properties marked :icon-running-headers: may be used in running headers (depending on the document class and its options, see further below).
 
- - The `title` may be used in running headers (possibly, depending on the document class and its options).
+ - Properties marked :icon-back-cover: are used on the back cover, if enabled.
 
-All properties are passed as metadata made available to the content files.
+{variant="Simple"}
+: `title` :icon-pdf-metadata: :icon-running-headers: 
+
+  The title of your book (string).
+
+: `subtitle`
+
+  The subtitle of your book (string).
+
+: `subject` :icon-pdf-metadata:
+
+  The subject of the book (string).
+
+: `keywords` :icon-pdf-metadata:
+
+  Keywords for the book (string or array of strings).
+
+: `authors` :icon-pdf-metadata:
+
+  The author(s) of the book (string or array of strings).
+
+: `translators`
+
+  The translator(s) of the book (string or array of strings).
+
+: `publisher`
+
+  The publisher of the book (string).
+
+: `pubdate`
+
+  The publication date of the book (date, such as `2023-07-14`).
+
+: `isbn` :icon-back-cover:
+
+  The ISBN of the book (string).
+
+: `url`
+
+  The URL of the book (string) when applicable.
+
+: `copyright`
+
+  The copyright notice of the book (string).
+
+: `legal`
+
+  The legal notice of the book (string).
+
+All properties are made available to the content files.
 In the current implementation, this is only effective with Djot documents, wherein the medatada are exposed as Djot symbols (e.g. `:title:`, `:authors:`, and so on).
-For convenience, for authors and translators, the symbols `:author:` and `:translator:`{.nobreak} are also exposed, and contain the first entry.
+For convenience, the singular forms `:author:` and `:translator:` are also exposed, and contain the first entry.
+The publication date is also expanded in Djot as `:pubdate-year:`, `:pubdate-month:`, and `:pubdate-day:` to access the components separately.
+Book matters (cover, title page, etc.), covered in a further chapter, may also use these metadata.
 
 ## The font section
 
-The `font` object defines the _default_ font, as a font `family` and a `size`.
+The `font` object defines the default main font to use in the book.
 
- - The `family` is either a font name (as a string) or an array of font names.
-   In the latter case, the first font is used as default font and the others are declared as "font fallbacks", would some characters be unavailable.
- - The `size`, as expected, is the default font size, usually expressed in points.
+{variant="Simple"}
+: `family`
+
+  The main font family to use, as a string or an array of strings.
+  In the latter case, the first font is used as default font and the others are declared as "font fallbacks", would some characters be unavailable.
+
+: `size`
+
+  The default font size, usually expressed in points (e.g. `12pt`).
 
 ## The SILE configuration section
 
-The `sile` object provides intructions for processing the master document with SILE.
+The `sile` object provides intructions for processing the master document with, guess what, the SILE typesetting engine.
 
- - The `options` are to be understood as document class options.
-  (As such, they can notably be overridden from the command line when invoking SILE.)
+### Configuration options
 
-   - If you don't specify a `class` then *resilient.book* is assumed.
+The `options` are to be understood as document class options. (As such, they can notably be overridden from the command line when invoking SILE.)
+The optional `class` key specifies the document class to use.
 
-   - Other supported options are `papersize`, and, with the resilient book class, `layout`, `offset`, `headers` and `resolution`.
+It defaults to `resilient.book`.
+Usually you will not need to set it, as the default choice is already a good one, and there is no guarantee that other classes will support the same level of features.
+The other options depend on that document class.
+Using the *resilient.book* class, the following options are available:
 
-- The `settings` can be used to globally set some SILE parameters.
+{variant="Simple"}
+: `papersize`
 
-- The `packages` object lists extra packages that SILE must use.
-  It can be used to load add-on packages needed by your content but not already provided by the document class and its supporting packages.
+  The paper size to use, as a known paper size (`letter`, `a4`, etc.) or custom dimensions (e.g. `6in x 9in`).
+  Default is `a4`.
 
+: `layout`
+
+  The global page layout (see part [](#page-layout)).
+  Default is `division`.
+
+: `offset`
+
+  The binding offset (see part [](#page-layout)).
+
+: `headers`
+
+  What goes in the running headers depends on this option.
+  The accepted values are listed below.
+
+  {variant="Simple"}
+  : `none`
+
+    No running headers.
+
+  : `technical` (default)
+
+    Chapter and section titles go in the even and odd running headers, respectively.
+
+  : `novel`
+
+     Chapter titles go in the odd running headers, and the title of the book, if set, goes in the even running headers.
+
+: `resolution`
+
+  The global resolution in DPI (dots per inch).
+  Some add-on packages may use it in order to compute the size of generated images, transform external images, etc.
+
+### Configuration settings
+
+The `settings` can be used to globally set some SILE parameters.
+A few usual suggestions are listed below for convenience, but please refer to _The SILE Book_ for standard parameters and parts
+[](#resilient-packages)--[](#resilient-classes) in this manual for resilient-specific parameters.
+
+{variant="Simple"}
+: `textsubsuper.fake` (boolean)
+
+  Whether to use fake superscript and subscript glyphs (raised and scaled) or native ones, when available.
+  It highly depends on the font and the quality of its superscript and subscript glyphs, so you will have to test it.
+
+: `typesetter.italicCorrection` (boolean)
+
+  Whether to apply an italic correction heuristic when text switches between italic and upright.
+  The recommended value is `true`, but you may want to keep it disabled with certain choices of fonts.
+
+### Extra packages
+
+The `packages` object lists extra packages that SILE must use.
+It can be used to load add-on packages needed by your content but not already provided by the document class and its supporting packages.
+As far as the resilient collection is concerned, a few notable suggestions are listed below.
+
+ - **resilient.poetry** for poetry typesetting.
+ - **printoptions** for advanced print options & tools for professional printers.
+  
 {#masterdoc-content-basic}
 ## Up to the content
 
-Last but not least, the `chapters` array (or `parts`, see further below) lists the files to include in the work.
-In its simplest form, it consists in an ordered list of file names.
+Last but not least, after the important but mundane sections, it is time to organize the actual content of your book.
+
+![From files to chapters and parts.](images/book-parts-chapters.svg){width="65%"}
+
+For the sake of simplicity, let's consider you have a bunch of files in Djot or Markdown, each representing a chapter---that, is files all starting with a level 1 heading.
+We'll consider more complex structures later.
+
+In the simplest case, chapters consists in an ordered list of file names.
 These files may be of any type supported by SILE, the document class or loaded packages.[^masterdoc-nesting]
 
 ```yaml
-chapters:
-  - chap1.md
-  - chap2.dj
+content:
+  chapters:
+    - chap1.md
+    - chap2.dj
 ```
 
 This is actually a convenience short form for the fuller syntax.
 
 ```yaml
-chapters:
-  - file: chap1.md
-  - file: chap2.dj
+content:
+  chapters:
+    - file: chap1.md
+    - file: chap2.dj
 ```
 
 In this structured form, other fields are accepted, for enforcing the input format (which can be useful if the extension is non-standard) and the options passed to the input handler.
+Refer to the documentation of that handler to know which options are available.
 
 ```yaml
-chapters:
-  - file: chap1.txt
-    format: markdown
-    options:
-      smart: false # disable smart typography support in Markdown
+content
+  chapters:
+    - file: chap1.txt
+      format: markdown
+      options:
+        smart: false # disable smart typography support
 ```
 
 There is another structured form which just takes a "caption" string.
-To be honest, it's mostly provided as a quick convenience placeholder.
+It's mostly provided as a quick convenience placeholder.
+This author uses it when drafting a book, to quickly sketch its structure before adding the actual content.
 
 ```yaml
 chapters:
@@ -148,18 +285,68 @@ All structured forms accept a `content` entry, which is again a list of files to
 With Djot, Markdown or other formats supporting this feature,[^masterdoc-sil-nesting] the headings in these files are then _shifted_.
 
 ```yaml
-chapters:
-  - file: chap1.dj # Level 1 headings = chapters, etc.
-    content:
-      - file: sect.dj # Level 1 headings = sections, etc.
+content:
+  chapters:
+    - file: chap1.dj # Level 1 headings = chapters, etc.
+      content:
+        - file: sect.dj # Level 1 headings = sections, etc.
 ```
 
-We earlier mentioned the `parts` keywords.
-With document classes supporting parts, such as **resilient.book**, it allows using them, starting at that level.[^masterdoc-astute]
+So let's now consider a more complex structure, with several "parts."
+With document classes supporting parts, it allows using them, starting at that level.
+
+```yaml
+content:
+  parts:
+    - file: part1.dj
+      content:
+        - chap1.dj
+```
+
+Each document file, here, begins with a level 1 heading.
+But the book now starts with a part, and the chapters are included in it, with their headings shifted accordingly.
+Would you want to split your sections in several files, as if they were independent (also starting with a level 1 heading), you can nest them in the same way, and they will be included, appropriately shifted, in the chapters.
+And so on for deeper levels.
+
+In the next chapters, we will see even more complex structures, with front, main and back matters, appendices, and more.
+But for now, you have all the basics to start assembling your book.
 
 [^masterdoc-nesting]: In particular, you may include a master document in another.
 In that case, though, only the declared extra packages and the content files are used.
 
 [^masterdoc-sil-nesting]: Not available for SIL documents.
 
-[^masterdoc-astute]: Astute readers will realize that the `chapters` structure is just a convenience facility.
+## Abusing the master document format
+
+The master document format is quite flexible and adaptable to various use cases.
+
+However, it's primarily a "high-level" description of a book's structure, leaving the specifics of the content files entirely up to you.
+For better or worse, it's fairly easy to abuse.
+
+You can use low-level commands in SIL or Lua, and break all reasonable expectations.
+But even without going that far, let's consider the following example.
+
+```yaml
+content:
+  parts:
+    - content:
+        - introduction.dj
+    - caption: Part 2
+      content:
+        - chapter1.dj
+```
+
+The introduction is in an anonymous part.
+Its headers are therefore offset, as explained above, aren't they?
+And you end up with a chapter preceeding the first part.
+This is sometimes very practical, but the "true" way to do it would be a front matter division.
+We will see that in a moment, but mentioning such a trick is still worth it. It may have its uses in certain cases.
+
+Similarly, if a chapter-level file in your master document doesn't begin with a level 1 title, it will be included as is,
+and semantically, it belongs to the _previous_ part or chapter.
+In other words, you can divide your content any way you like, and do some fancy things with it.
+The master document format is only a tool and a guide, not a straitjacket.
+
+> "I have spoken.
+> This is the way."
+^ _The Mandalorian_ (Series).

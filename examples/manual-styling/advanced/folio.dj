@@ -1,6 +1,6 @@
 ## Styling page numbers
 
-In two-side documents, such as the **resilient.book** class, dedicated paragraph styles
+In two-side documents, such as the *resilient.book* class, dedicated paragraph styles
 are used for odd and even pages.
 The _default_ definitions just take care the alignment, and defer other
 styling decisions to a common parent style.

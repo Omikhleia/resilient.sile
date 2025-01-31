@@ -1,0 +1,35 @@
+``` =sile
+% Some initial and dirt hacks...
+\footnote:rule
+% This is a quick but bad implementation. We ought to have used properly defined styles.
+\define[command=admon]{%
+\novbreak
+\smallskip%
+\novbreak
+\set[parameter=document.parindent, value=0]{%
+\roughbox[enlarge=true, singlestroke=true, preserve=true,
+padding=2%fw, bordercolor=#59b24c, fillcolor=230, shadowcolor=#96A8C7, shadow=false]{%
+% Beware, wrap color around the parbox so it stays in horizontal mode
+% In the parbox it could lead to a blank line (we'd need to fix this...)
+% Colors aren't settings so they propagate to the parbox, whatever settings logic it has.
+\color[color=100]{\parbox[width=96%lw]{\set[parameter=document.parindent, value=0]\font[size=9pt]{\process}\par}}%
+}}%
+\medskip}%
+\define[command=ShadowFramed]{%
+\framebox[padding=0, shadow=true, shadowcolor=220]{\process}}
+```
+
+{.unnumbered .notoc}
+# Contents
+
+:_TOC_:
+
+{.unnumbered .notoc}
+## Figures
+
+:_LISTOFFIGURES_:
+
+{.unnumbered .notoc}
+## Tables
+
+:_LISTOFTABLES_:

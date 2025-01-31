@@ -1,0 +1,78 @@
+# Choosing a page layout
+
+The layout of a book is a crucial aspect of its design.
+It is not only about the size of the paper, but also about the proportions of the text block, the margins, and the headers and footers.
+You do not want, surely, to guess the adequate proportions by yourself, do you?
+
+Neither do you want to spend hours trying to figure out how to set up a good page layout.
+This is where _re·sil·ient_ comes to the rescue...
+
+![A "regular" book layout---Where blocks go?](images/book-layout.svg){width="70%"}
+
+## The layout class option
+
+Paper sizes for printed works varied a lot across time.
+Frequent ratios nowadays are 1:√2 (such as the ISO paper sizes, e.g. A5, 14.8 × 21 cm) or 2:3 (such as US trade, 6 × 9 in), though there are still plenty of other page formats in use (e.g. French pocket books often come in 10 × 17 cm or 10 × 18 cm format.)
+
+The relation between the page size and the main text block also varied a lot, depending on the aesthetic tastes of authors and designers.
+
+The resilient document classes provide a `layout=⟨string⟩` class option for selecting some fairly usual page layouts.
+They are shown further below for comparison, applied to the US trade and A5 formats, though their historical use may have favored a different paper size.
+
+## Thriving for harmony
+
+The secret law of page harmony relies on using elegant proportions.
+When designing your _perfect book,_ just after having decided on a paper size, you will want to pick a great page layout.
+
+SILE already offers several ways for designing your own page masters.
+However, the syntax is not particularly easy, and users might not know what it takes to use good values for print-quality books.
+
+The rationale for providing predefined layouts in the resilient collection is to address that point, with a curated choice of classic page layouts, available off-the-shelf.
+
+## On headers and footers
+
+It has to be noted that these common layouts rarely detailed where headers or folios were to be placed.
+Most typography books are silent on the topic, or stay rather vague, stating obvious generalities—such as the headers and footers having to be, bear with me, "close to the text block."
+
+This author, therefore, decided to be a typographer on his own, regarding that matter, and used a golden ratio to place the header and footer areas in their margin space.
+
+## On the binding offset or gutter
+
+The “gutter” is a typographical term referring to an _additional_ margin added to interior pages to compensate for the part of the page made unusable by the binding process.
+Unfortunately, it cannot really be automated, as it usually depends on many internal and external factors—notably, the number of pages, the thickness of the selected paper, and the printer’s binding process.
+
+The resilient document classes provide the `offset=⟨dimen⟩` class option.
+When used, it shifts the text block by the given amount.[^layout-offset]
+
+Books of less than 60 pages do not normally need to include such a gutter, but with a higher page count, you may have to consider using it, appropriately tuned with an _ad hoc_ value.
+Be aware, however, that outer margins will be reduced by the same amount.
+If you intend to use them for annotations, be very careful here.
+
+:::
+``` =sile
+% Quite a huge offset here in the example to make it visible.
+\showlayout[layout=ateliers demiluxe,
+  papersize=6in x 9in] \raise[height=0.5in]{→} \showlayout[layout=ateliers demiluxe, papersize=6in x 9in, offset=0.20in]
+```
+:::
+^ Shifting a layout with a binding offset.
+
+The offset is usually specified in fixed inches or millimeters, as it doesn’t depend on the paper size.
+It is near to impossible to make a general recommendation here, without knowing more details regarding the type of book and the binding process.[^layout-binding]
+As a rule of thumb, a good practice is usually to check that the inner margins including the offset are not getting much bigger than the outer margins.
+Otherwise, it might imply you picked an inappropriate page layout in the first place.
+Above 60 pages, you might thus start with an offset of `0.125in` and adjust by test and trial. Between 150 and 400 pages, you might need to reach `0.25in`, or more…
+
+[^layout-offset]: Please note that it applies to page masters derived from a resilient layout.
+If you designed your own page templates with SILE’s low-level constructs, you are fully responsible for taking a binding offset into account there.
+
+[^layout-binding]: Some printing services even offer coil binding.
+Those coils are going to eat a whole lot of the inner margin!
+
+{.pagebreak .none}
+---
+
+{custom-style=center}
+:::
+![](images/layout-fuzzy.svg){width="80%"}
+:::

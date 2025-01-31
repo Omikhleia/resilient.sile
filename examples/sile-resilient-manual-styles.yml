@@ -147,6 +147,14 @@ defn-desc:
       before:
         vbreak: false
 
+defn-desc-Simple:
+  inherit: "defn-desc"
+  style:
+    font:
+      weight:
+    paragraph:
+      align: "noparindent"
+
 defn-term:
   inherit: "defn-base"
   origin: "resilient.defn"
@@ -158,6 +166,14 @@ defn-term:
         vbreak: false
       before:
         skip: "smallskip"
+
+defn-term-Simple:
+  inherit: "defn-term"
+  style:
+    font:
+      weight:
+    paragraph:
+      align: "noparindent"
 
 dropcap:
   origin: "resilient.book"
@@ -717,8 +733,6 @@ sectioning-appendix-main-number:
   origin: "resilient.book"
   style:
     numbering:
-      before:
-        text: "Appendix "
       display: "ALPHA"
 
 sectioning-appendix-ref-number:

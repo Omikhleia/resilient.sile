@@ -1,0 +1,46 @@
+# A naive _curriculum vitae_ class
+
+The *resilient.resume* class provides a minimalist (read, naive) way to make a modern-looking _résumé_ (CV) with SILE.
+It's a side project of the _re·sil·ient_ collection, born as an experiment to see how the styling paradigm of the collection behaves in a different context.
+It might have some rough edges, but it's a good starting point which could be improved upon.[^resume-improvements]
+
+ - Fonts
+
+    - You should select, early in your document, the main font to be used.
+      This class ideally works best with a font family that has: a thin style, an italic style, a light-weight (300) bold italic, a bold (600) regular. Lato, for instance, is such a font.
+    - Dingbat symbols rely on the Symbola font. You can change it by redefining the `resume-dingbats` style.
+
+  - Colors should not be abused in a CV, so this class proposes only three different colors.
+
+    - Two tints of gray for your first and last name, job title and headline.
+
+    - A nice tint of blue (#4080bf) for various sectioning and display elements. You can change it by redefining the `resume-color` style.[^resume-names]
+
+  - Page layout
+
+    - The first page does not have a header, but on subsequent pages the header repeats your full name.
+      The rationale is that your name shall be visible on each page, as the HR people get hundreds of CVs and
+      can easily get lost in them.
+    - The footer is shown side-by-side with the page folio, and contains your contact information. As for
+      the header, the rationale is that your contacts should be repeated. You wouldn’t want not to be
+      contacted just because the HR people lost the initial page, right?
+    - The folio includes the number of pages in your CV. As said, they
+      get to see hundreds of CV. Be nice ensuring they have no ordering issue when handling a printed
+      copy to managers, and do not miss any page.
+
+
+The commands are pretty simple and straightforward in this first version, so you can refer
+to the sample CV included in our example repository.
+
+:::
+[![](examples/resume-sample.pdf){width="48%" page=1}]{custom-style="ShadowFramed"}
+[![](examples/resume-sample.pdf){width="48%" page=2}]{custom-style="ShadowFramed"}
+:::
+^ A sample CV for a famous detective.
+
+
+[^resume-improvements]: This author has not checked extensively how other CV tools work.
+Maybe there is soome JSON or YAML formats commonly used, and it could be interesting to support them, and extend the class with more capabilities.
+Readers are encouraged to contribute to the effort.
+
+[^resume-names]: Likewise, your first and last names correspond to the `resume-firstname` and `resume-lastname` styles respectively.

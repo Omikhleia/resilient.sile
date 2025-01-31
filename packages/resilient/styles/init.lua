@@ -265,10 +265,36 @@ function package.freezeStyles (_)
   SU.debug("resilient.styles", "Freezing styles")
 end
 
+-- FIXME refactor these two functions
+-- It works, but it's messy and we could certainly handle it when resolving the style
+-- and applyng inheritance, rather at the last moment.
+local function propertyValueIfNotNull (prop)
+  if tostring(prop) == "yaml.null" then
+    -- Don't crash on null values (a special table with tinyyaml).
+    -- And be friendly with them (they cancel style inheritance).
+    return nil
+  end
+  if type(prop) == "table" then
+    SU.error("Unexpected table value for property")
+  end
+  return prop
+end
+local function shallowNonNullOptions (options)
+  -- When passing options to SILE commands, we want to avoid passing null
+  -- values from YAML style files.
+  local copy = {}
+  for k, v in pairs(options) do
+    if propertyValueIfNotNull(v) then
+      copy[k] = v
+    end
+  end
+  return copy
+end
+
 function package:registerCommands ()
   self:registerCommand("style:font", function (options, content)
     local size = tonumber(options.size)
-    local opts = pl.tablex.copy(options) -- shallow copy
+    local opts = shallowNonNullOptions(options)
     if size then
       SU.warn("Attempt using a font style with old relative font size '"..options.size..[['
   This feature will be deprecated when the new styling paradigm is completed.
@@ -279,17 +305,6 @@ function package:registerCommands ()
     SILE.call("font", opts, content)
   end, "Applies a font, with additional support for relative sizes.")
 
-  local function propertyValueIfNotNull (prop)
-    if tostring(prop) == "yaml.null" then
-      -- Don't crash on null values (a special table with tinyyaml).
-      -- And be friendly with them (they cancel style inheritance).
-      return nil
-    end
-    if type(prop) == "table" then
-      SU.error("Unexpected table value for property")
-    end
-    return prop
-  end
   -- Very naive cascading...
   local function characterStyle (style, content, options)
     options = options or {}
@@ -312,16 +327,18 @@ function package:registerCommands ()
       end
     end
     if style.decoration then
-      if style.decoration.line then
-        local lineCommand = SILE.scratch.styles.decorations[style.decoration.line]
+      local lineValue = propertyValueIfNotNull(style.decoration.line)
+      if lineValue then
+        local lineCommand = SILE.scratch.styles.decorations[lineValue]
         if not lineCommand then
-          SU.error("Invalid style decoration line '"..style.decoration.line.."'")
+          SU.error("Invalid style decoration line '" .. lineValue .. "'")
         end
-        content = createCommand(lineCommand, style.decoration, content)
+        content = createCommand(lineCommand, shallowNonNullOptions(style.decoration), content)
       end
     end
-    if style.color then
-      content = createCommand("color", { color = style.color }, content)
+    local colorValue = propertyValueIfNotNull(style.color)
+    if colorValue then
+      content = createCommand("color", { color = colorValue }, content)
     end
     if style.font and SU.boolean(options.font, true) then
       content = createCommand("style:font", style.font, content)
@@ -360,7 +377,7 @@ function package:registerCommands ()
   end
 
   local styleForAlignment = function (style, content, breakafter)
-    if style.paragraph and style.paragraph.align then
+    if style.paragraph and style.paragraph.align then -- FIXME: Code smell, re-tested below
       if style.paragraph.align then
         local alignCommand = SILE.scratch.styles.alignments[style.paragraph.align]
         if not alignCommand then
@@ -484,7 +501,7 @@ function package:registerCommands ()
         vglue = cloneStyleSkip(vglue, name)
         -- Not sure here whether it should be an explicit glue or not,
         -- but it seems so to me...
-        SILE.typesetter:pushExplicitVglue(vglue)
+        SILE.typesetter:pushVglue(vglue)
       end
       if novbreak then SILE.call("novbreak") end
     end

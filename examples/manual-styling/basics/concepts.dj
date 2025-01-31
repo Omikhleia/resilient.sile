@@ -53,7 +53,8 @@ and different vertical skips here or there?
 The styling paradigm offers a powerful generic abstraction towards that
 goal.
 
-### An opinionated note on alternatives {.unnumbered .notoc}
+{.unnumbered .notoc}
+### An opinionated note on alternatives
 
 If you ever used (La)TeX, one possible way is to provide "hooks" that the user
 can change. At places, SILE follows that approach too---either via commands that

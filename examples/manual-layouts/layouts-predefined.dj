@@ -1,0 +1,190 @@
+# Off-the-shelf page layouts
+
+## French layouts or “Canon des ateliers”
+
+This canon normally applies a 4/10, 5/10, 6/10, 7/10 progression rule to distribute the white space around the text block (“règle du 10/12^e^”).
+
+In the standard definition, the 4/10 and 6/10 ratios are used for the inner and outer margins; and the 5/10 and 7/10 ratios for the top and bottom margins, but using the same base space value (i.e. taken from the horizontal direction).
+
+A variant (“règle du 10^e^”) uses only the 4/10 and 6/10 ratios, but vertically applies to the text block height the same proportion rules as in the horizontal direction.
+
+There are other variants, such as one using the values of the inner and outer margins for the top and bottom margins, leading to pretty dense pages.
+
+Thus, we have to support several ways of computing and distributing the margins.
+Is it complex enough? Wait, the canon has no less than three different proportion rules for the text block.[^layout-ateliers]
+
+[^layout-ateliers]: This author, being French, will only note that we apparently like to make things more complex than they ought to be.
+
+For regular material (“imprimé courant”), the width of the text block takes 3/4 of the page width.
+So we have the standard `ateliers regular` (= `ateliers`) using the 10/12^e^ rule, and `ateliers regular 10e` for the 10^e^ rule variant.
+
+:::
+``` =sile
+\showlayout[layout=ateliers,
+    papersize=6in x 9in] \showlayout[layout=ateliers,
+    papersize=a5]\quad\showlayout[layout=ateliers regular 10e,
+    papersize=6in x 9in] \showlayout[layout=ateliers regular 10e, papersize=a5]
+```
+:::
+^ Canon des ateliers — regular.
+
+In the demi-luxe variant, the width of the text block takes 2/3 of the page.
+Here again, we show the standard `ateliers demiluxe` and the `ateliers demiluxe 10e` variant.
+
+:::
+``` =sile
+\showlayout[layout=ateliers demiluxe,
+    papersize=6in x 9in] \showlayout[layout=ateliers demiluxe,
+    papersize=a5]\quad\showlayout[layout=ateliers demiluxe 10e,
+    papersize=6in x 9in] \showlayout[layout=ateliers demiluxe 10e, papersize=a5]
+```
+:::
+^ Canon des ateliers — demiluxe.
+
+In the “de luxe” variant, the width of the text block takes 5/8 of the page.
+As you would have guessed, these are the standard `ateliers deluxe` and its `ateliers deluxe 10e` variant.
+
+:::
+``` =sile
+\showlayout[layout=ateliers deluxe,
+    papersize=6in x 9in] \showlayout[layout=ateliers deluxe,
+    papersize=a5]\quad\showlayout[layout=ateliers deluxe 10e,
+    papersize=6in x 9in] \showlayout[layout=ateliers deluxe 10e, papersize=a5]
+```
+:::
+^ Canon des ateliers — deluxe.
+
+## Ratio-based layouts
+
+Ratio-based methods are also known as the Van de Graaf canon, after the latter rediscovered and documented them in the 1940s.
+They are also sometimes referred to as the “secret canon” used in many medieval manuscripts and incunabula.
+
+The proposed historical layouts are `honnecourt` and `vencentinus`.
+
+In the 13^th^ century, the architect Villard de Honnecourt came up with what he considered a “harmonious” and pleasing design (esp.
+for 2:3 pages), using a 1/9 ratio and a text block area in the same proportions as the page, with a matching diagonal.
+
+:::
+``` =sile
+\showlayout[layout=honnecourt, papersize=6in x 9in] \showlayout[layout=honnecourt, papersize=a5]
+```
+:::
+^ Honnecourt’s historical layout.
+
+In the 15^th^ century, Marcus Vencentinus used a similar method, but with a 1/6 ratio, for a prayer book.
+It has a wide outer margin and footer area, leaving enough place for annotations and marginal comments.
+
+:::
+``` =sile
+\showlayout[layout=vencentinus, papersize=6in x 9in] \showlayout[layout=vencentinus, papersize=a5]
+```
+:::
+^ Vencentinus’ historical layout.
+
+The rather quite large footer area in such layouts is based on the idea that books are held by the lower margin.
+
+These methods are based on regular divisions of the page, mere arithmetical operations which may be generalized for any page dimention _W_ × _H_, with a ratio _N_ and a constant _v_.
+In the Honnecourt and Vencentinus’ canons, _v_=2, but other values are possible.
+
+In a method he described on the French _Typographie_ mailing list in 2002, Olivier Randier suggested that the _H/W_ ratio
+was usually giving excellent results for most standard page sizes, including the ISO ones.
+Following these “modern” findings, this class provides the fairly compact `division 12` (1/12 ratio), `division 9` (1/9 ratio, alias `division` as it is the most usual and pleasant layout), and `division 6` (1/6 ratio).
+
+:::
+``` =sile
+\showlayout[layout=division 12,
+    papersize=6in x 9in] \showlayout[layout=division 12,
+    papersize=a5]\quad\showlayout[layout=division 9,
+    papersize=6in x 9in] \showlayout[layout=division 9, papersize=a5]
+
+\smallskip
+\showlayout[layout=division 6,
+    papersize=6in x 9in] \showlayout[layout=division 6, papersize=a5]
+```
+:::
+^ Divisions by 12, 9, 6 — modern layouts.
+
+Some of these layouts do not leave much available room for marginal notes.
+The layout syntax supports other values than the standard ones, as `division ⟨N⟩` (based on the _H/W_ page ratio for the _v_ constant), or `division ⟨N⟩ ⟨v⟩`.
+
+## The golden canon of Tschichold
+
+Jan Tschichold (1902--1974) considered a "golden canon of page construction", where the text block is placed onto the page in such a way as its diagonal coincides with the page relevant diagonal, and the circle inscribed within the text block is tangent to the page sides.
+It is provided here as `canonical`.
+
+:::
+``` =sile
+\showlayout[layout=canonical, papersize=6in x 9in] \showlayout[layout=canonical, papersize=a5]
+```
+:::
+^ Jan Tschichold's canonical layout.
+
+## Non-standard layouts
+
+{.notoc}
+### A layout with wide margins
+
+Most of the common layouts presented above do not have both a dense text block and wide enough outer margins for annotations.
+The experimental proposal below, dubbed `marginal`, is partly ratio-based (`marginal ⟨N⟩`, with 8 as default, i.e. a 1/8 ratio for inner margins), with some hard-coded choices and a dose of golden ratio in the mix.
+The formula is somewhat empirical, but this author finds it decently looking for a critical text apparatus with an important amount of maginal notes.
+
+:::
+``` =sile
+\showlayout[layout=marginal, papersize=6in x 9in] \showlayout[layout=marginal, papersize=a5]
+```
+:::
+^ A “marginal” page layout.
+
+As can be seen, the header frame also goes past the text block, englobing the margin area.
+
+{.notoc}
+### A poor man’s centered layout
+
+In passing, the `none` layout uses margins of 1/6^th^ of the page dimensions.
+It just exists because it’s the base component for other layouts.
+
+:::
+``` =sile
+\showlayout[layout=none, papersize=6in x 9in] \showlayout[layout=none, papersize=a5]
+```
+:::
+^ This is not really a layout.
+
+{.notoc}
+### An explicit page layout
+
+Some users may think they know better and want to define their own page layout.
+This author thinks it is a bad idea, but it’s your choice, after all.
+The `geometry` layout allows explicitly setting the page margins, as either a pair of dimensions (`geometry ⟨vert⟩ ⟨horiz⟩`) or as a quadruplet of dimensions (`geometry ⟨head⟩ ⟨inner⟩ ⟨foot⟩ ⟨outer⟩`).
+
+:::
+``` =sile
+\showlayout[layout=geometry 0.75in 1in 0.75in 2in, papersize=6in x 9in]
+```
+:::
+^ Be my guests — arbitrary margins.
+
+## Summary table
+
+| Layout option                   | Description                                          |
+|:--------------------------------|:-----------------------------------------------------|
+| `ateliers` = `ateliers regular` | Ateliers, “courant en 10/12^e^”                      |
+| `ateliers regular 10e`          | Ateliers, “courant en 10^e^”                         |
+| `ateliers demiluxe`             | Ateliers, “demi-luxe en 10/12^e^”                    |
+| `ateliers demiluxe 10e`         | Ateliers, “demi-luxe en 10^e^”                       |
+| `ateliers deluxe`               | Ateliers, “de luxe en 10/12^e^”                      |
+| `ateliers deluxe 10e`           | Ateliers, “de luxe en 10^e^”                         |
+| `honnecourt` = `division 9 2`   | Honnecourt’s historical layout                       |
+| `vencentinus` = `division 6 2`  | Vencentinus’ historical layout                       |
+| `division 12`                   | Division by 12, _H/W_ ratio                          |
+| `division` = `division 9`       | Division by 9, _H/W_ ratio                           |
+| `division 6`                    | Division by 6, _H/W_ ratio                           |
+| `division N`                    | Division by _N_, _H/W_ ratio                         |
+| `division N v`                  | Division by _N_, _v_ ratio                           |
+| `canonical`                     | Tschichold’s golden canon                            |
+| `marginal` = `marginal 8`       | Wide outer margin, other at 1/8^th^                  |
+| `marginal N`                    | Wide outer margin, other at 1/_N_ ^th^               |
+| `none`                          | Centered with margins at 1/6^th^                     |
+| `geometry V H`                  | Vertical margin, horizontal margin                   |
+| `geometry H I F O`              | Head margin, inner margin, foot margin, outer margin |
+^ Off-the-shelf layouts at a glance.

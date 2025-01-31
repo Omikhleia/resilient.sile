@@ -1,0 +1,205 @@
+# Deep dive into the resilient book class
+
+The design of the `resilient.book` class was started as an attempt at gradually tuning the default book class from SILE to this author’s needs and taste.
+It eventually evolved into a full redesign on different grounds.
+This very document uses it, so you can see it in real action.
+
+## Class options
+
+In addition to the class options provided by SILE, the class also supports the following options:
+
+{variant=Simple}
+: `layout`
+
+  Specifies the default (global) page layout. See part [](#page-layout).
+
+: `offset`
+
+  Specifies the binding offset. See part [](#page-layout).
+
+: `headers`
+
+  Specifies how running headers are used:
+
+  - `none`: No running headers.
+  - `technical` (default): Chapter and section titles go in the even and odd running headers, respectively.
+  - `novel`: Chapter titles go in the odd running headers, and the title of the book, if set, goes in the even running headers.[^book-title]
+  
+: `resolution`
+
+  Specifies the global resolution in DPI (dots per inch).
+  Some add-on packages may use it in order to compute the size of generated images, etc.
+
+
+
+[^book-title]: The low-level command to set the book title is `\autodoc:command{\book-title{<text>}}`{=sile}
+
+## Standard sectioning commands
+
+The class supports the following standard sectioning commands, from the highest division level to the lowest: `\autodoc:command{\part}`{=sile}, `\autodoc:command{\chapter}`{=sile}, `\autodoc:command{\section}`{=sile}, `\autodoc:command{\subsection}`{=sile}, `\autodoc:command{\subsubsection}`{=sile}.
+
+All sectioning commands obey styles (relying on the **resilient.styles** and **resilient.sectioning** packages), which notably imply that they have a lot of customization possibilities.
+In the following pages, the described behaviors apply to the default configuration and styling, out-of-the-box.
+
+All the sections accepts the `\autodoc:parameter{numbering=false}`{=sile} option, if you want them unnumbered, and the `\autodoc:parameter{toc=false}`{=sile} option, if you do not want them to appear in the table of contents.
+When they do, they correspond to “level 0” (parts) up to “level 4” (subsubsections).
+
+Remember a good advice—“Writers that think they need more than five levels should instead consider restructuring their document in a manner that does not require this level of nested sectioning. Increased section granularity can actually begin to detract from document clarity.”
+
+| Style                                            | Description  |
+|:-------------------------------------------------|:-------------|
+| `sectioning-base`                                | (Paragraph style inherited by all sectioning commands.) |
+| `sectioning-⟨section type⟩`                      | (Sectioning) style applied to that sectioning command. |
+^ Styles used for sectioning commands.
+
+By default, parts disable page numbering and running headers on their page.
+Chapters have page numbering enabled on their first page and make sure no header shown is shown on that page.
+Both start on an odd page[^odd-page], and the previous even page, if inserted blank, is shown without page number and header.
+Parts and chapters reset the footnote counter.
+Depending on the `headers` class option (see above), chapter and section titles go in running headers, unless customized otherwise.
+
+[^odd-page]: Again, as almost everything depending on styles, this can be customized.
+
+Notably, the class also defines a few commands currenty used as hooks in some of the above sectioning styles.
+
+| Command                                          | Description  |
+|:-------------------------------------------------|:-------------|
+| `\sectioning:part:hook`                          | Clears all page headers, disable the folios globally, resets the footnote counter and the chapter counter. |
+| `\sectioning:chapter:hook`                       | Clears the header on the current page, re-enables folios, resets the footnote counter and adds the chapter title to the even running headers (see further below). |
+| `\sectioning:section:hook`                       | Adds the section title to the odd running headers (see further below), with its counter preprended to it. |
+^ Predefined command hooks used by sectioning commands.
+
+## Captioned environments
+
+The class provides three environnments, `\autodoc:environment{figure}`{=sile}, `\autodoc:environment{table}`{=sile}, and `\autodoc:environment{listing}`{=sile}, for captioned figures, tables, and listings, respectively.
+They can contain arbitrary contents and a `\autodoc:command[check=false]{\caption{<text>}}`{=sile} element.
+The latter, when present, is extracted and displayed below the contents.
+By default, the figure and table environments show their contents centered, with a numbered caption.
+The listing environment does not center its content, but otherwise behaves the same.
+Each of them has its own distinct counter.
+The figure environment is (normally) intended to be used around an illustration.
+
+| Style                                            | Description  |
+|:-------------------------------------------------|:-------------|
+| `figure`                                         | Style applied to the figure content (not including the caption). |
+| `figure-caption`                                 | (Sectioning) style applied to the figure caption. |
+^ Styles used for figures.
+
+The table environment is (normally) intended to be used around… tables, you would have guessed it.
+
+| Style                                            | Description  |
+|:-------------------------------------------------|:-------------|
+| `table`                                          | Style applied to the table content (not including the caption). |
+| `table-caption`                                  | (Sectioning) style applied to the table caption. |
+^ Styles used for tables.
+
+The listing environment is (normally) intended to be used around blocks of code, or similar.
+Note that the commmand does not switch to verbatim mode, it is up to you to do so if needed.
+
+| Style                                            | Description  |
+|:-------------------------------------------------|:-------------|
+| `listing`                                        | Style applied to the listing content (not including the caption). |
+| `listing-caption`                                | (Sectioning) style applied to the listing caption. |
+^ Styles used for listings.
+
+The caption styles are actually sectioning styles, and the captions are inserted into the table of contents at level 5, 6 and 7 respectively.
+It implies that one has the possibility to have them shown in the TOC, if passing a sufficient `\autodoc:parameter{depth}`{=sile} value to the `\autodoc:command{\tableofcontents}`{=sile} command.
+While some authors may appreciate that, other, most likely, prefer having them in separate lists.
+The following convenience commands are provided to that effect.
+
+| Command                                          | Description  |
+|:-------------------------------------------------|:-------------|
+| `\autodoc:command{\listoffigures}`{=sile}        | Outputs the list of figures. |
+| `\autodoc:command{\listoftables}`{=sile}         | Outputs the list of tables. |
+| `\autodoc:command{\listoflistings}`{=sile}       | Outputs the list of listings. |
+^ Commands for lists of figures and tables.
+
+But basically, they are just simple calls to `\autodoc:command{\tableofcontents}`{=sile} with the appropriate options to start at the corresponding TOC level and display only that level.
+The only noteworthy advantage is that they check the styles in order to find out which level is concerned, so they may apply even if TOC levels are customized differently.
+
+As a final but important note, despite their name, the figure and table environments are not “floating” objects in the sense that this concept has in LaTeX.
+In other terms, they are always inserted where declared in the page, without attempt to possibly move their material to some other position or a later page.
+
+## Headers & Footers
+
+Page numbers (folios) and running headers are by default flushed left or right depending on the page they are on, rather than centered.
+This is defined via paragraph styles, so it can actually be customized at convenience.
+The default styles also include an inheritance to a common “base” style (suitable for selecting the font size, etc.).
+Nothing mandates it, but if you want to redefine these styles, we recommend keeping an appropriate style hierarchy, rather than stacking all definitions in a single style.
+Well-thought, it can simplify the task for other later customizations.
+
+| Style                                            | Description  |
+|:-------------------------------------------------|:-------------|
+| `folio-base`                                     | (Style inherited by the other folio styles.) |
+| `header-base`                                    | (Style inherited by the other header styles.) |
+| `folio-even`                                     | (Paragraph) style applied to the folio on even pages. |
+| `folio-odd`                                      | (Paragraph) style applied to the folio on odd pages. |
+| `header-even`                                    | (Paragraph) style applied to the header on even pages. |
+| `header-odd`                                     | (Paragraph) style applied to the header on odd pages. |
+^ Styles used for folios and headers.
+
+The class also defines two commands for manipulating the page headers.
+
+| Command                                          | Description  |
+|:-------------------------------------------------|:-------------|
+| `\autodoc:command{\even-running-header{<content>}}`{=sile} | Registers the content to be used in even running headers. |
+| `\autodoc:command{\odd-running-header{<content>}}`{=sile}  | Registers the content to be used in odd running headers. |
+| `\autodoc:command{\even-tracked-header{<content>}}`{=sile} | Registers the content to be used in even running headers, tracked. |
+| `\autodoc:command{\odd-tracked-header{<content>}}`{=sile}  | Registers the content to be used in odd running headers, tracked. |
+^ Commands for manipulating page headers.
+
+The “tracked” variants ensure the content is tracked per page (using “info nodes”), which is usually what you want for section headers.
+The other versions do not introduce info nodes, are intended to be used with direct content (such as a document title) or content already tracked elsewhere.
+
+Page headers rely on the functionality provided by the **resilient.headers** package,
+so the `\autodoc:command{\noheaders}`{=sile}, `\autodoc:command{\noheaderthispage}`{=sile} and `\autodoc:command{\headers}`{=sile} commands are available, as well as `\autodoc:command{\header:rule}`{=sile}.
+
+## Block-indented quotes
+
+The class provides the `\autodoc:environment{blockquote}`{=sile} environment to typeset simple block-indented paragraphs.
+Indented quotes can be nested.
+
+The environment relies on the same-named style for its styling and on the `\autodoc:setting{book.blockquote.margin}`{=sile} setting for its indentation (defaults to 2em).
+
+The environment also accepts a `\autodoc:parameter{variant}`{=sile} option, to switch to an alternate style, assumed to be named `blockquote-⟨variant⟩`.
+
+## Additional book divisions
+
+The class supports the standard `\autodoc:command{\frontmatter}`{=sile}, `\autodoc:command{\mainmatter}`{=sile} and `\autodoc:command{\backmatter}`{=sile} commands to switch between the different higher-level divisions of the document.
+Obviously, these commands can only occur once in the document, and in the order given above.
+They start a new page, and influence the style of folios.
+
+| Style                                            | Description  |
+|:-------------------------------------------------|:-------------|
+| `folio-frontmatter`                              | Numbering style applied to folios in the front matter. |
+| `folio-mainmatter`                               | Numbering style applied to folios in the main matter. |
+| `folio-backmatter`                               | Numbering style applied to folios in the back matter. |
+^ Styles used for folios in different document divisions.
+
+Books not using these divisions assume “main” matter by default.
+In the “front” and “back” matter divisions, parts and chapters are never numbered.
+Note that this is not a configurable style decision, but the very definition of these divisions.
+In the main matter, they are numbered by default, although this can be changed either on the sectioning command itself, or globally with adequate styles.
+
+The class also supports the `\autodoc:command{\appendix}`{=sile} command, which can only be invoke once, either in the main matter or in the back matter.
+After that, the chapter counter is reset and chapters now use appendix sectioning styles.
+By default, these styles derive from the chapter styles, with the numbering changed to uppercase letters, and the prefix text to “Appendix”.
+Note that appendices are numbered even in the back matter, by default, according to common practice.
+Again, this can be changed on the sectioning command itself, or globally with adequate styles.
+
+## Other features
+
+The footnotes are based on the **resilient.footnotes** package and therefore have the extra features proposed in this implementation, notably the `\autodoc:command{\footnote:rule}`{=sile} command and the possibility to specify an explicit `\autodoc:parameter{mark}`{=sile} on footnote calls.
+
+The table of contents relies on the **resilient.tableofcontents** package. One can therefore change many styling and appearance aspects to create a custom table of contents.
+
+Cross-references are supported via the **labelrefs** package, henceforth the `\autodoc:command{\label}`{=sile}, `\autodoc:command{\ref}`{=sile} and `\autodoc:command{\pageref}`{=sile} commands are available.
+
+A few layout-related commands are also provided.
+
+The `\autodoc:command{\layout[layout=<layout spec>]}`{=sile} command inserts a page break if needed, and changes the page layout from that point.
+An optional `\autodoc:parameter{offset=<dimen>}`{=sile} may be specified to also alter the binding offset.
+By default, the global offset (that is, as possibly defined via the corresponding class option) is used.
+
+Mostly intended for documentation, the `\autodoc:command{\showlayout[layout=<layout spec>, papersize=<paper spec>]}`{=sile} command outputs an image representing the selected page layout and paper size.
+Optional parameters are `\autodoc:parameter{offset=<dimen>}`{=sile} for the binding offset (0, that is no offset, by default), `\autodoc:parameter{ratio=<number>}`{=sile} for the image down-scaling (dividing the paper size by the specified amount, 6.5 by default), and `\autodoc:parameter{rough=<boolean>}`{=sile} (false by default).

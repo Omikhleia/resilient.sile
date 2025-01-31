@@ -29,6 +29,7 @@ there will be applied. The specification additionnaly provides:
  - The alignment of the paragraph block (center, left, right or justify---the
    latter is the default but may be useful to overwrite an inherited alignment).
  - Rules applying before the paragraph block:
+
     - The amount of vertical space before the content, as a variable length or a
       named skip (such as `bigskip`, `medskip`, `smallskip`).
     - Whether paragraph indentation is applied to the first paragraph (defaults
@@ -36,7 +37,9 @@ there will be applied. The specification additionnaly provides:
       for section titles not to be indented.
     - Whether a page break may occur before the block (defaults to
       `true`).
-  - Rules applying after the paragraph block
+
+ - Rules applying after the paragraph block
+
     - The amount of vertical space after the content, as a variable length or a
       named skip (such as `bigskip`, `medskip`, `smallskip`).
     - Whether paragraph indentation is applied to the next paragraph after the
@@ -51,7 +54,8 @@ there will be applied. The specification additionnaly provides:
 the first paragraph indentation after a section title. The French convention,
 however, is to always indent regular paragraphs, even after a section title.
 
-::: {custom-style="admon"}
+{custom-style="admon"}
+:::
 This version of the specification does not provide any way to configure
 the margins (left and right text block indents), internal skips, and other
 low-level paragraph formatting options (paragraph indent, etc.)[^styles-par-margins]
@@ -59,8 +63,8 @@ low-level paragraph formatting options (paragraph indent, etc.)[^styles-par-marg
 
 [^styles-par-margins]: This might be considered in a future revision, but note
 that it may also be addressed by defining extra alignment options.
-The **resilient.book** class, for instance, defines its own `block` alignment option
-(used in block quotes, see further); the **resilient.verbatim** packages defines and `obeylines` alignment, etc.
+The *resilient.book* class, for instance, defines its own `block` alignment option
+(used in block quotes, see further); the *resilient.verbatim* packages defines and `obeylines` alignment, etc.
 
 Please note that changing an existing character style into a paragraph style
 does not imply that the content is magically turned into paragraphs.
@@ -68,12 +72,13 @@ When classes or packages expect a character style at some point, only
 that part of the style definition is used. Classes and packages are responsible
 for applying the paragraph part too, depending on context.
 
-### Note on consecutive skips {.unnumbered}
+{.unnumbered}
+### Note on consecutive skips
 
 Consider a "block quote" paragraph style, where you would expect some vertical spaces
 both above and below a quotation---say, small skips---to make it more distinct
 from the surrounding text.
-The **resilient.book** class, for instance, provides the following default
+The *resilient.book* class, for instance, provides the following default
 style definition.
 
 ```yaml

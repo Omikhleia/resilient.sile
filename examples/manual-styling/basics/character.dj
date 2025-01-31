@@ -19,7 +19,7 @@ A regular character style obeys to the following specification
 The ⟨font specification⟩ is an object which can contain any of the usual elements, as
 used in the SILE `\font` command.
 
-The ⟨color specification⟩ follows the same syntax as defined in the SILE **color** package.
+The ⟨color specification⟩ follows the same syntax as defined in the SILE *color* package.
 
 As an example, the following style results in a blue italic superscript in the Libertinus
 Serif font.
@@ -35,12 +35,14 @@ my-custom-style-name:
       position: "super"
 ```
 
-#### Properties {.unnumbered}
+{.unnumbered}
+#### Properties
 
 The "properties" might be extended in a future revision; for now they support a position element, to specify a superscript or subscript formatting, and a text case element.
 The "normal" values may be used to override a parent style definition, when style inheritance is used.
 
-#### Decorations {.unnumbered}
+{.unnumbered}
+#### Decorations
 
 The ⟨decoration specification⟩ is an object which can contain any of the following elements.
 
@@ -70,7 +72,7 @@ It defaults to "solid" and "zizag" respectively.
 The "thickness" defaults to `0.5pt`.
 
 For instance, the `md-mark` style overrides the Markdown or Djot default rendering of the "highlight" syntax.
-Let's ==mark some text== for the sake of demonstration, with the following style definition:
+Let's {=mark some text=} for the sake of demonstration, with the following style definition:
 
 ```yaml
 md-mark:
@@ -116,7 +118,8 @@ Some packages, however, accept negative "before kern" values for specific
 use cases.
 See, for instance, the section devoted to footnote markers.
 
-#### Note on units {.unnumbered}
+{.unnumbered}
+#### Note on units
 
 As a rule of thumb, the "kern" widths can include stretch and shrink
 values (e.g. `10pt plus 2pt minus 1pt`). Be aware, however, that

@@ -23,10 +23,10 @@ dependencies = {
    "labelrefs.sile >= 0.1.0",
    "printoptions.sile >= 1.2.0",
    "piecharts.sile >= 0.3.0",
-   "ptable.sile >= 3.1.0",
+   "ptable.sile >= 3.1.1",
    "qrcode.sile >= 1.1.0",
    "textsubsuper.sile >= 1.2.0",
-   "markdown.sile >= 2.3.1",
+   "markdown.sile >= 2.3.2",
    "silex.sile >= 0.8.0, < 1.0",
 }
 build = {

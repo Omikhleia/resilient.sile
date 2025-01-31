@@ -1,0 +1,273 @@
+# Typography packages
+
+## Superscripts & subscripts
+
+{custom-style=admon}
+This package is part of the *textsubsuper.sile* collection.
+
+``` =sile
+\package-documentation{textsubsuper}
+```
+
+## Strut rules
+
+{custom-style=admon}
+This package is part of the *ptable.sile* collection.
+
+``` =sile
+\package-documentation{struts}
+```
+
+## Smart quotations marks
+
+{custom-style=admon}
+This package is part of the *smartquotes.sile* collection.
+
+``` =sile
+\package-documentation{smartquotes}
+```
+
+## Shorthands & abbreviations
+
+``` =sile
+\package-documentation{resilient.abbr}
+```
+
+# Boxes & Tables
+
+## Boxed paragraphs
+
+{custom-style=admon}
+This package is part of the *ptable.sile* collection.
+
+``` =sile
+\package-documentation{parbox}
+```
+
+## Flexible tables
+
+{custom-style=admon}
+This package is part of the *ptable.sile* collection.
+
+``` =sile
+\package-documentation{ptable}
+```
+
+## Fancy box frames
+
+{custom-style=admon}
+This package is part of the *ptable.sile* collection.
+
+``` =sile
+\package-documentation{framebox}
+```
+
+# Graphic-related packages
+
+## Printer’s ornaments & pendants
+
+{custom-style=admon}
+This package is part of the *couyards.sile* collection.
+
+``` =sile
+\package-documentation{couyards}
+```
+
+## EAN-13 barcodes for ISBN etc.
+
+{custom-style=admon}
+This package is part of the *barcodes.sile* collection.
+
+``` =sile
+\package-documentation{barcodes.ean13}
+```
+
+## QR codes
+
+{custom-style=admon}
+This package is part of the *qrcode.sile* collection.
+
+``` =sile
+\package-documentation{qrcode}
+```
+
+## Textual image formatters
+
+{custom-style=admon}
+This package is part of the *embedders.sile* collection.
+
+``` =sile
+\package-documentation{embedders}
+```
+
+### Graphs with the Graphviz DOT language
+
+``` =sile
+\embedder-documentation{dot}
+```
+
+### Musical scores with LilyPond
+
+``` =sile
+\embedder-documentation{lilypond}
+```
+
+## Pie charts
+
+{custom-style=admon}
+This package is part of the *piecharts.sile* collection.
+
+``` =sile
+\package-documentation{piecharts}
+```
+
+# Book parts and utilities
+
+## Cross-references
+
+{custom-style=admon}
+This package is part of the *labelrefs.sile* collection.
+
+``` =sile
+\package-documentation{labelrefs}
+```
+
+{#packages-tableofcontents}
+## Enhanced table of contents
+
+``` =sile
+\package-documentation{resilient.tableofcontents}
+```
+
+{#packages-fancytoc}
+## Fancy alternative table of contents
+
+{custom-style=admon}
+This package is part of the *fancytoc.sile* collection.
+
+``` =sile
+\package-documentation{fancytoc}
+```
+
+Here it is at work for the current document with default parameters.
+Since our book class supports parts at level 0, we get the parts
+and chapters.
+
+``` =sile
+\fancytableofcontents
+\bigskip
+```
+
+And here it is stating at level 1, i.e. chapters and sections.
+
+``` =sile
+\fancytableofcontents[start=1]
+```
+
+## Enhanced footnotes
+
+``` =sile
+\package-documentation{resilient.footnotes}
+```
+
+## Page headers revisited
+
+``` =sile
+\package-documentation{resilient.headers}
+```
+
+# Print-related packages
+
+## Printing options & tools for professional printers
+
+{custom-style=admon}
+This package is part of the *printoptions.sile* collection.
+
+``` =sile
+\package-documentation{printoptions}
+```
+
+# Specialized environments
+
+## Epigraphs
+
+``` =sile
+\package-documentation{resilient.epigraph}
+```
+
+## Enhanced bullet lists and enumerations
+
+``` =sile
+\package-documentation{resilient.lists}
+```
+
+## Poetry, verses & scansion
+
+``` =sile
+\package-documentation{resilient.poetry}
+```
+
+## Verbatim content
+
+``` =sile
+\package-documentation{resilient.verbatim}
+```
+
+## Definition items
+
+``` =sile
+\package-documentation{resilient.defn}
+```
+
+# Other input formats
+
+## Djot
+
+{custom-style=admon}
+This package is part of the *markdown.sile* collection.
+
+``` =sile
+\package-documentation{djot}
+```
+
+## Markdown
+
+{custom-style=admon}
+This package is part of the *markdown.sile* collection.
+
+``` =sile
+\package-documentation{markdown}
+```
+
+## Pandoc AST
+
+{custom-style=admon}
+This package is part of the *markdown.sile* collection.
+
+``` =sile
+\package-documentation{pandocast}
+```
+
+# Technical packages
+
+These packages are not intended to be used alone, but provide utilities
+for other packages. They are therefore mainly aimed at package and
+class writers.
+
+## Style specification support
+
+``` =sile
+\package-documentation{resilient.styles}
+```
+
+## Abstraction for sectioning commands
+
+``` =sile
+\package-documentation{resilient.sectioning}
+```
+
+## Helper multi-liners for character styles
+
+``` =sile
+\package-documentation{resilient.liners}
+```

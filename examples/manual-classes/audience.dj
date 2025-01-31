@@ -1,0 +1,65 @@
+{#resilient-classes-audience}
+# Target audience
+
+If you author your content in Djot or Markdown, most of the information you need to write your book is covered in the _Markdown and Djot to PDF with SILE_ user guide.
+There are just a few additional features specific to Djot, which are detailed below.
+
+On the other hand, if you are using the SIL language, you will need more in-depth information about the commands and constructs available in the _re·sil·ient_ classes.
+In most cases, this is the only scenario where the following chapters will be relevant to you.
+
+## Add-ons for Djot authors
+
+### Tables of Contents
+
+The *resilient.book* class provides several predefined Djot symbols for use in your documents.
+Each of these symbols must stand alone in its own paragraph.
+Attributes on the symbol are passed through, e.g. `:_TOC_:{depth=3}`.
+
+{variant=Simple}
+: `:_TOC_:` or `:_TABLEOFCONTENTS_:`
+
+  Insert a table of contents.
+
+  Supported attributes:
+
+   - `depth` (default 3) controls the depth of the content added to the table.
+   - `start` (default 0) controls at which level the table starts.
+   - `linking` (default true) controls whether the table entries are active links to the relevant sections.
+
+  ![](./manicule.svg){height="0.60em"} See section [](#packages-tableofcontents) in part [](#resilient-packages) for advanced information.
+
+: `:_FANCYTOC_:`
+
+  Insert a table of contents with a fancy style.
+
+  Supported attributes:
+
+   - `start` (default 0) controls at which level the table starts.
+
+  ![](./manicule.svg){height="0.60em"} See section [](#packages-fancytoc) in part [](#resilient-packages) for advanced information.
+
+: `:_LISTOFFIGURES_:`
+
+  Insert a list of figures.
+
+: `:_LISTOFTABLES_:`
+
+  Insert a list of tables.
+
+: `:_LISTOFLISTINGS_:`
+
+  Insert a list of listings.
+
+Note that these symbols do not automatically generate a heading or title.
+If a title is needed, you must add it manually using the appropriate heading level or styled element.
+
+### Bibliographies
+
+The *resilient.book* class also provides a predefined Djot symbol for inserting bibliographies (references).
+
+{variant=Simple}
+: `:_BIBLIOGRAPHY_:`
+
+  Insert a bibliography.
+
+  ![](./manicule.svg){height="0.60em"} See chapter [](#using-bibliographies) in part [](#master-document) for more information.
