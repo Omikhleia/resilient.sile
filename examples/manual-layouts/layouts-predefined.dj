@@ -121,6 +121,7 @@ It is provided here as `canonical`.
 
 ## Non-standard layouts
 
+{.notoc}
 ### A layout with wide margins
 
 Most of the common layouts presented above do not have both a dense text block and wide enough outer margins for annotations.
@@ -136,6 +137,7 @@ The formula is somewhat empirical, but this author finds it decently looking for
 
 As can be seen, the header frame also goes past the text block, englobing the margin area.
 
+{.notoc}
 ### A poor man’s centered layout
 
 In passing, the `none` layout uses margins of 1/6^th^ of the page dimensions.
@@ -148,6 +150,7 @@ It just exists because it’s the base component for other layouts.
 :::
 ^ This is not really a layout.
 
+{.notoc}
 ### An explicit page layout
 
 Some users may think they know better and want to define their own page layout.

@@ -1,0 +1,13 @@
+{#resilient-packages-audience}
+# Target audience
+
+This part goes even deeper into advanced topics than the previous one.
+The following chapters provide internal documentation for the packages included in the _re·sil·ient_ collection.
+
+Authors working in Djot or Markdown will rarely need this level of detail,  except when the _Markdown and Djot to PDF with SILE_ manual indicates that a construct passes its argument to the underlying implementation.
+In such cases, these chapters may be useful for understanding the capabilities of the underlying packages.
+
+For SIL users, however, this section offers valuable insights into the direct use of these packages.
+The SIL language is the focus here, with an assumption of deeper knowledge of SILE, meaning that casual readers may find this section less accessible than the rest of this manual.
+
+This is also of interest to developers exploring the internals of the _re·sil·ient_ components and seeking to extend or modify their functionality.

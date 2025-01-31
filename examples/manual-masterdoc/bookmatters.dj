@@ -41,7 +41,7 @@ The aim of the resilient master document is to provide a default set of conventi
 - At the end of the book, some _end-papers_ occur.
   On the recto one may find the title, the publisher, sometimes the ISBN is barcode form, and possibly other important mentions --- In some countries, the legal deposit is required to be printed there, etc. This page is also known as an _impressum,_ and its verso is (generally) left blank.
 
-![A resilient book structure](images/book-anatomy.svg){width="65%"}
+![A resilient book structure.](images/book-anatomy.svg){width="65%"}
 
 {#bookmatters:templates-customization}
 ## Customizing the title and endpaper pages
@@ -110,7 +110,7 @@ Yet, when going to print, you may need to have them removed.
 Once you have declared a back cover image, you will notice it automatically contains the ISBN of your book in an overlay at its bottom-right, if you defined it in your metadata.
 (If you didn't, this space is nevertheless reserved.)
 
-![Structure of the back cover](images/book-backcover.svg){width="65%"}
+![Structure of the back cover.](images/book-backcover.svg){width="65%"}
 
 The back cover can also contain additional content, such as a description of the book.
 Let's therefore go on with our possibilities.
@@ -169,7 +169,7 @@ book:
 In most cases, the text on the front cover of a book is part of the overall cover design, with its own typography and layout incorporated into the image.
 If this applies to you, no further steps are needed beyond the options previously discussed.
 
-![Structure of the front cover](images/book-frontcover.svg){width="65%"}
+![Structure of the front cover.](images/book-frontcover.svg){width="65%"}
 
 However, if you're in a situation where the cover design is not yet finalized or the image lacks text, you can use a templated overlay.
 The text will be automatically typeset in either white or black, based on the background color, to ensure optimal contrast.

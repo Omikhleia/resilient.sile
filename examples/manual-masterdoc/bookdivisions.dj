@@ -26,7 +26,7 @@ content:
 That is, your content is assumed to be part of the main matter by default.
 Some books, however, require a more complex structure, dividing content into front matter, main matter, and back matter.
 
-![Internal book divisions](images/book-divisions.svg){width="65%"}
+![Internal book divisions.](images/book-divisions.svg){width="65%"}
 
 In such books, the front matter might include a preface, dedication, and table of contents.
 The back matter is more variable, but for instance, it might include an index, bibliography, or glossary.

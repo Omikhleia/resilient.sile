@@ -235,7 +235,7 @@ As far as the resilient collection is concerned, a few notable suggestions are l
 
 Last but not least, after the important but mundane sections, it is time to organize the actual content of your book.
 
-![From files to chapters and parts](images/book-parts-chapters.svg){width="65%"}
+![From files to chapters and parts.](images/book-parts-chapters.svg){width="65%"}
 
 For the sake of simplicity, let's consider you have a bunch of files in Djot or Markdown, each representing a chapter---that, is files all starting with a level 1 heading.
 We'll consider more complex structures later.

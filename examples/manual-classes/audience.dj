@@ -1,5 +1,5 @@
-{.unnumbered}
-# Audience
+{#resilient-classes-audience}
+# Target audience
 
 If you author your content in Djot or Markdown, most of the information you need to write your book is covered in the _Markdown and Djot to PDF with SILE_ user guide.
 There are just a few additional features specific to Djot, which are detailed below.
@@ -7,7 +7,6 @@ There are just a few additional features specific to Djot, which are detailed be
 On the other hand, if you are using the SIL language, you will need more in-depth information about the commands and constructs available in the _re·sil·ient_ classes.
 In most cases, this is the only scenario where the following chapters will be relevant to you.
 
-{.unnumbered}
 ## Add-ons for Djot authors
 
 ### Tables of Contents

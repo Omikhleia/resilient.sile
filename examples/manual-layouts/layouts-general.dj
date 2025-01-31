@@ -68,3 +68,11 @@ If you designed your own page templates with SILE’s low-level constructs, you 
 
 [^layout-binding]: Some printing services even offer coil binding.
 Those coils are going to eat a whole lot of the inner margin!
+
+{.pagebreak .none}
+---
+
+{custom-style=center}
+:::
+![](images/layout-fuzzy.svg){width="80%"}
+:::

@@ -95,10 +95,11 @@ content:
           - manual-classes/book.dj
       - file: manual-parts/part-packages.dj
         content:
+          - manual-packages/audience.dj
           - manual-packages/packages.dj
   backmatter:
     parts:
-      - caption: Appendices
+      - file: manual-parts/part-appendices.dj
         appendices:
           - manual-appendices/biblio.dj
           - manual-appendices/resume-class.dj
