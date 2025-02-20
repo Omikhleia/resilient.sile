@@ -1,0 +1,597 @@
+{
+  "$id": "urn:example:omikhleia:resilient-masterfile:v1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "masterfile": {
+      "description": "The master file version number, e.g. 1.0",
+      "type": "number",
+      "minimum": 1.0,
+      "exclusiveMaximum": 2.0
+    },
+    "metadata": {
+      "$ref": "#/$defs/Metadata"
+    },
+    "font": {
+      "$ref": "#/$defs/Font"
+    },
+    "language": {
+      "description": "The main language of the document (BCP 47)",
+      "type": "string"
+    },
+    "sile": {
+      "$ref": "#/$defs/SileConfiguration"
+    },
+    "book": {
+      "$ref": "#/$defs/Book"
+    },
+    "bibliography": {
+      "$ref": "#/$defs/Bibliography"
+    },
+    "parts": {
+      "description": "The parxts of the book",
+      "$ref": "#/$defs/ContentInParts"
+    },
+    "chapters": {
+      "description": "The chapters of the book",
+      "$ref": "#/$defs/Content"
+    },
+    "content": {
+      "description": "The content of the book",
+      "$ref": "#/$defs/StructuredContent"
+    }
+  },
+  "$defs": {
+    "OptionsTypes": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number"
+        }
+      ]
+    },
+    "Options": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/OptionsTypes"
+      },
+      "properties": {}
+    },
+    "File": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "description": "The file to include",
+          "type": "string"
+        },
+        "format": {
+          "description": "The format of the file (when SILE cannot guess it)",
+          "type": "string"
+        },
+        "options": {
+          "description": "The options to pass to the file input handler",
+          "$ref": "#/$defs/Options"
+        }
+      }
+    },
+    "SingleFile": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/$defs/File"
+        }
+      ]
+    },
+    "ContentCaption": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "caption": {
+          "description": "The caption of the current content",
+          "type": "string"
+        },
+        "content": {
+          "description": "The content to include below the caption (headings shifted)",
+          "$ref": "#/$defs/Content"
+        }
+      },
+      "required": [
+        "caption"
+      ]
+    },
+    "ContentFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "description": "The file to include",
+          "type": "string"
+        },
+        "format": {
+          "description": "The format of the file (when SILE cannot guess it)",
+          "type": "string"
+        },
+        "options": {
+          "description": "The options to pass to the file input handler",
+          "$ref": "#/$defs/Options"
+        },
+        "content": {
+          "description": "The content to include below the file (headings shifted)",
+          "$ref": "#/$defs/Content"
+        }
+      }
+    },
+    "Content": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "$ref": "#/$defs/ContentCaption"
+          },
+          {
+            "$ref": "#/$defs/ContentFile"
+          }
+        ]
+      }
+    },
+    "InPartCaption": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "chapters": {
+          "description": "The chapters of the part (headings shifted)",
+          "$ref": "#/$defs/Content"
+        },
+        "appendices": {
+          "description": "The appendices of the part (headings shifted)",
+          "$ref": "#/$defs/Content"
+        }
+      }
+    },
+    "InPartFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "description": "The file to include",
+          "type": "string"
+        },
+        "format": {
+          "description": "The format of the file (when SILE cannot guess it)",
+          "type": "string"
+        },
+        "options": {
+          "description": "The options to pass to the file input handler",
+          "$ref": "#/$defs/Options"
+        },
+        "chapters": {
+          "description": "The chapters of the part (headings shifted)",
+          "$ref": "#/$defs/Content"
+        },
+        "appendices": {
+          "description": "The appendices of the part (headings shifted)",
+          "$ref": "#/$defs/Content"
+        }
+      }
+    },
+    "ContentInParts": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "$ref": "#/$defs/ContentCaption"
+          },
+          {
+            "$ref": "#/$defs/ContentFile"
+          },
+          {
+            "$ref": "#/$defs/InPartCaption"
+          },
+          {
+            "$ref": "#/$defs/InPartFile"
+          }
+        ]
+      }
+    },
+    "Book": {
+      "description": "The global book configuration (for book matters and covers)",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "description": "Whether the book matters and covers are enabled by default",
+          "type": "boolean"
+        },
+        "cover": {
+          "description": "The cover configuration",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "image": {
+              "description": "Path to the cover image (if used for both front and back covers)",
+              "type": "string"
+            },
+            "background": {
+              "description": "Cover background color (if used for both front and back covers, and shown when image(s) not provided)",
+              "$ref": "#/$defs/NamedOrRGBColor"
+            },
+            "front": {
+              "description": "The front cover configuration",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "image": {
+                  "description": "Path to the front cover image",
+                  "type": "string"
+                },
+                "background": {
+                  "description": "Front cover background color (shown if no image is provided)",
+                  "$ref": "#/$defs/NamedOrRGBColor"
+                },
+                "template": {
+                  "description": "Front cover template name to use (if any), e.g. cover",
+                  "type": "string"
+                }
+              }
+            },
+            "back": {
+              "description": "The back cover configuration",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "image": {
+                  "description": "Path to the back cover image",
+                  "type": "string"
+                },
+                "background": {
+                  "description": "Back cover background color (shown if no image is provided)",
+                  "$ref": "#/$defs/NamedOrRGBColor"
+                },
+                "content": {
+                  "description": "Back cover content",
+                  "$ref": "#/$defs/SingleFile"
+                },
+                "content-background": {
+                  "description": "Back cover content frame background color",
+                  "$ref": "#/$defs/NamedOrRGBColor"
+                }
+              }
+            }
+          }
+        },
+        "halftitle": {
+          "description": "The half-title pages configuration",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "recto": {
+              "description": "Template name for the recto page of the half-title",
+              "type": "string"
+            },
+            "verso": {
+              "description": "Template name for the verso page of the half-title",
+              "type": "string"
+            }
+          }
+        },
+        "title": {
+          "description": "The title pages configuration",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "recto": {
+              "description": "Template name for the recto page of the title",
+              "type": "string"
+            },
+            "verso": {
+              "description": "Template name for the verso page of the title",
+              "type": "string"
+            }
+          }
+        },
+        "endpaper": {
+          "description": "The endpaper pages configuration",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "recto": {
+              "description": "Template name for the recto page of the endpaper",
+              "type": "string"
+            },
+            "verso": {
+              "description": "Template name for the verso page of the endpaper",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "Bibliography": {
+      "description": "The global bibliography configuration",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "style": {
+          "description": "The bibliography style (Citation Style Language or CSL), ex. chicago-author-date",
+          "type": "string"
+        },
+        "language": {
+          "description": "The language of the bibliography as expected by CSL, ex. en-US, fr-FR",
+          "type": "string",
+          "pattern": "^[a-z]{2}-[A-Z]{2}$"
+        },
+        "files": {
+          "description": "The bibliography file(s) to use, as a string or an array of strings",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "title": {
+          "description": "The title of the book",
+          "type": "string"
+        },
+        "subtitle": {
+          "description": "The subtitle of the book",
+          "type": "string"
+        },
+        "subject": {
+          "description": "The subject of the book",
+          "type": "string"
+        },
+        "keywords": {
+          "description": "The keywords of the book",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "authors": {
+          "description": "The author(s) of the book (as a string or an array of strings)",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "translators": {
+          "description": "The translator(s) of the book (as a string or an array of strings)",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "publisher": {
+          "description": "The publisher of the book",
+          "type": "string"
+        },
+        "pubdate": {
+          "description": "The publication date of the book",
+          "type": "string",
+          "format": "date"
+        },
+        "isbn": {
+          "description": "The ISBN of the book (EAN-13)",
+          "type": "string"
+        },
+        "url": {
+          "description": "The URL of the book when applicable",
+          "type": "string"
+        },
+        "copyright": {
+          "description": "The copyright notice of the book",
+          "type": "string"
+        },
+        "legal": {
+          "description": "The legal notice of the book",
+          "type": "string"
+        }
+      }
+    },
+    "Font": {
+      "description": "The default main font to use in the book",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "family": {
+          "description": "The main font family to use, as a string or an array of strings (In the latter case, the first font is used as default font and the others are declared as font fallbacks, would some characters be unavailable)",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "size": {
+          "description": "The default font size to use, usually expressed in points (ex. 12pt)",
+          "type": "string"
+        }
+      }
+    },
+    "SileConfiguration": {
+      "description": "Instructions for processing the master document with SILE",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "options": {
+          "description": "Document class options to pass to SILE",
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "class": {
+              "description": "The document class to use, by default resilient.book",
+              "type": "string",
+              "default": "resilient.book"
+            },
+            "papersize": {
+              "description": "The paper size to use, as a known paper size (letter, a4, etc.) or custom dimensions (e.g. 6in x 9in)",
+              "type": "string",
+              "default": "a4"
+            },
+            "layout": {
+              "description": "(with a resilient class) The global page layout",
+              "type": "string"
+            },
+            "resolution": {
+              "description": "(with a resilient class) The expected global resolution in DPI (dots per inch)",
+              "type": "number"
+            },
+            "headers": {
+              "description": "(with a resilient class) What goes in the running headers depends on this option (none, technical, novel)",
+              "enum": [
+                "none",
+                "technical",
+                "novel"
+              ]
+            },
+            "offset": {
+              "description": "(with a resilient class) The binding offset to use in any unit supported by SILE, usually expressed in mm",
+              "type": "string"
+            }
+          }
+        },
+        "settings": {
+          "description": "Settings to pass to SILE (as a key-value pairs)",
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "textsubsuper.fake": {
+              "description": "Whether to use fake superscript and subscript glyphs (raised and scaled) or native ones, when available",
+              "type": "boolean"
+            },
+            "typesetter.italicCorrection": {
+              "description": "Whether to use the italic correction feature of the typesetter",
+              "type": "boolean"
+            }
+          }
+        },
+        "packages": {
+          "description": "List of extra packages that SILE must load",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PartProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parts": {
+          "description": "The parts",
+          "$ref": "#/$defs/ContentInParts"
+        }
+      }
+    },
+    "ChapterAppendices": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "chapters": {
+          "description": "The chapters",
+          "$ref": "#/$defs/Content"
+        },
+        "appendices": {
+          "description": "The appendices",
+          "$ref": "#/$defs/Content"
+        }
+      }
+    },
+    "PartOrChapter": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/PartProperties"
+        },
+        {
+          "$ref": "#/$defs/ChapterAppendices"
+        }
+      ]
+    },
+    "StructuredContent": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/PartProperties"
+        },
+        {
+          "$ref": "#/$defs/ChapterAppendices"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "frontmatter": {
+              "description": "The front matter of the book (contains parts or chapters)",
+              "$ref": "#/$defs/PartOrChapter"
+            },
+            "mainmatter": {
+              "description": "The main matter of the book (contains parts or chapters)",
+              "$ref": "#/$defs/PartOrChapter"
+            },
+            "backmatter": {
+              "description": "The back matter of the book (contains parts or chapters)",
+              "$ref": "#/$defs/PartOrChapter"
+            }
+          }
+        }
+      ]
+    },
+    "NamedOrRGBColor": {
+      "type": "string",
+      "pattern": "^(#[0-9A-Fa-f]{6}|[a-zA-Z]+)$"
+    }
+  }
+}
