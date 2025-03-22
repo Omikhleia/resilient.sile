@@ -398,7 +398,7 @@ function package:registerStyles ()
                  },
   })
   self:registerStyle("usx-para-s", {}, {
-    font = { weight = "700" },
+    font = { weight = 700 },
     color = "#74101c",
     paragraph = {
       after = {
