@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/masterfile.json
+# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/masterfile.json
 masterfile: 1.0
 metadata:
   title: The re·sil·ient collection of classes & packages for SILE
@@ -9,7 +11,7 @@ metadata:
     - book
   authors: Didier Willis
   publisher: Omikhleia
-  pubdate: 2025-01-31
+  pubdate: 2025-03-22
   url: https://github.com/Omikhleia/resilient.sile
   copyright: © 2021–2025, Didier Willis.
   legal: |
