@@ -33,7 +33,7 @@ Did we say complete? Well, we lied a bit. For Markdown and Djot input, there is 
 
 ## Installation
 
-These packages require SILE v0.15 or upper (recommended: SILE v0.15.8 or upper).
+These packages require SILE v0.15 or upper (recommended: SILE v0.15.10 or upper).
 
 Installation relies on the **luarocks** package manager.
 See its installation instructions on the [LuaRocks](https://luarocks.org/) website.
@@ -64,6 +64,7 @@ This collection also imports several modules also provided separately, would you
 - [Textual graphics embedders](https://github.com/Omikhleia/embedders.sile) (support for Graphviz, Lilypond, &c)
 - [Markdown](https://github.com/Omikhleia/markdown.sile) (support for Markdown, Djot etc.)
 - [Pie charts](https://github.com/Omikhleia/piecharts.sile) (support for pie charts)
+- [Code syntax highlighting](https://github.com/Omikhleia/highlighter.sile)
 
 When used with this collection, the Markdown packages and the fancy table of contents are leveraged with additional capabilities.
 

@@ -16,7 +16,7 @@ The resilient collection introduces a "master document" format which aims at sim
 
 Master documents usually have the `.silm` extension and can be processed as shown below.
 
-```shell
+```bash
 sile -u inputters.silm mybook.silm
 ```
 
@@ -263,7 +263,7 @@ In this structured form, other fields are accepted, for enforcing the input form
 Refer to the documentation of that handler to know which options are available.
 
 ```yaml
-content
+content:
   chapters:
     - file: chap1.txt
       format: markdown

@@ -16,7 +16,7 @@ Then, to install the latest official version:
 
 {custom-style=CodeBlock}
 :::
-    ```bash
+```bash
 luarocks install resilient.sile
 ```
 :::
