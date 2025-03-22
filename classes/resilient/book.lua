@@ -527,7 +527,7 @@ function class:registerStyles ()
   self:registerStyle("code", {}, {
     font = {
       family = "Hack",
-      size = "1.4ex"
+      adjust = "ex-height",
     }
   })
 

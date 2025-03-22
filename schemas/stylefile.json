@@ -253,6 +253,18 @@
             "null"
           ]
         },
+        "adjust": {
+          "description": "Adjustment of the font size",
+          "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^([0-9](\\.[0-9]+)?)?\\s*(ex-height|cap-height)$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+        },
         "weight": {
           "description": "Font weight",
           "type": [
