@@ -108,6 +108,15 @@ digraph omikhleia {
     smartquotes [shape=component,style=filled,fillcolor=aliceblue]
   }
 
+  subgraph cluster_highlighter {
+    label = "highlighter.sile";
+
+    highlighter [shape=component,style=filled,fillcolor=aliceblue]
+    scintillua [shape=component,style=filled,fillcolor=gainsboro,label="scintillua"]
+
+    highlighter -> scintillua
+  }
+
   subgraph cluster_markdown {
     label = "markdown.sile";
 
@@ -125,6 +134,7 @@ digraph omikhleia {
     markcmd -> ptable
     markcmd -> embedders
     markcmd -> smartquotes
+    markcmd -> highlighter
   }
 
   subgraph cluster_fancytoc {
