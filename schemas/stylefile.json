@@ -1,0 +1,403 @@
+{
+  "$id": "urn:example:omikhleia:resilient:stylefile",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "inherit": {
+        "description": "Name of the style to inherit from",
+        "type": "string"
+      },
+      "origin": {
+        "description": "DEPRECATED",
+        "type": "string"
+      },
+      "style": {
+        "description": "Style definition",
+        "$ref": "#/$defs/BaseStyle"
+      }
+    }
+  },
+  "properties": {},
+  "$defs": {
+    "BaseStyle": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "font": {
+              "description": "Font specification",
+              "$ref": "#/$defs/FontSpecification"
+            },
+            "color": {
+              "description": "Color specification",
+              "$ref": "#/$defs/ColorSpecification"
+            },
+            "properties": {
+              "description": "Character properties",
+              "additionalProperties": false,
+              "type": "object",
+              "properties": {
+                "position": {
+                  "description": "Position of the text",
+                  "type": "string",
+                  "enum": [
+                    "normal",
+                    "super",
+                    "sub"
+                  ]
+                },
+                "case": {
+                  "description": "Case of the text",
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "normal",
+                        "upper",
+                        "lower",
+                        "title"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "decoration": {
+              "description": "Decoration specification",
+              "$ref": "#/$defs/DecorationSpecification"
+            },
+            "numbering": {
+              "description": "Numbering properties",
+              "$ref": "#/$defs/NumberingProperties"
+            },
+            "paragraph": {
+              "description": "Paragraph properties",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "align": {
+                  "description": "Alignment of the paragraph",
+                  "type": "string"
+                },
+                "before": {
+                  "description": "Properties before the paragraph",
+                  "$ref": "#/$defs/ParagraphProperties"
+                },
+                "after": {
+                  "description": "Properties after the paragraph",
+                  "$ref": "#/$defs/ParagraphProperties"
+                }
+              }
+            },
+            "sectioning": {
+              "description": "Sectioning specification",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "counter": {
+                  "description": "Counter properties",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "description": "Counter ID",
+                      "type": "string"
+                    },
+                    "level": {
+                      "description": "Level of the section",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "settings": {
+                  "description": "Settings for the sectioning style",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "toclevel": {
+                      "description": "Level in the table of contents",
+                      "type": "integer"
+                    },
+                    "bookmark": {
+                      "description": "Whether to create a bookmark",
+                      "type": "boolean"
+                    },
+                    "open": {
+                      "description": "Whether to start on an odd page, on any page, or unset",
+                      "type": "string",
+                      "enum": [
+                        "unset",
+                        "any",
+                        "odd"
+                      ]
+                    },
+                    "goodbreak": {
+                      "description": "Whether a good break is considered good",
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "numberstyle": {
+                  "description": "Numbering style",
+                  "type": "object",
+                  "properties": {
+                    "main": {
+                      "description": "Main numbering style name",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "header": {
+                      "description": "Header numbering style name",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "reference": {
+                      "description": "Reference numbering style name",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                },
+                "hook": {
+                  "description": "Hook command",
+                  "type": "string"
+                }
+              }
+            },
+            "special": {
+              "description": "Special properties",
+              "$ref": "#/$defs/SpecialProperties"
+            },
+            "enumerate": {
+              "description": "Enumerate properties",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "symbol": {
+                  "description": "Symbol for the enumerate",
+                  "type": "string"
+                }
+              }
+            },
+            "itemize": {
+              "description": "Itemize properties",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "symbol": {
+                  "description": "Symbol for the itemize",
+                  "type": "string"
+                }
+              }
+            },
+            "toc": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "description": "Table of contents properties",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "pageno": {
+                      "description": "Whether to display the page number",
+                      "type": "boolean"
+                    },
+                    "dotfill": {
+                      "description": "Whether to fill with dots",
+                      "type": "boolean"
+                    },
+                    "numbered": {
+                      "description": "Whether the table of contents is numbered",
+                      "type": "boolean"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "FontSpecification": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "description": "Font family",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "size": {
+          "description": "Font size (in absolute or relative units)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "weight": {
+          "description": "Font weight",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "style": {
+          "description": "Font style",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "features": {
+          "description": "Font features",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "ColorSpecification": {
+      "type": "string",
+      "pattern": "^(#[0-9a-fA-F]{6}|[a-zA-Z]+)$"
+    },
+    "DecorationSpecification": {
+      "type": "object",
+      "properties": {
+        "line": {
+          "description": "Type of line decoration",
+          "type": "string",
+          "enum": [
+            "underline",
+            "strikethrough",
+            "redacted",
+            "mark"
+          ]
+        },
+        "color": {
+          "description": "Color of the decoration",
+          "$ref": "#/$defs/ColorSpecification"
+        },
+        "thickness": {
+          "description": "Thickness of the decoration line (for underline and strikethrough)",
+          "type": "number"
+        },
+        "rough": {
+          "description": "Whether to use a rough decoration",
+          "type": "boolean"
+        },
+        "fillstyle": {
+          "description": "Fill style for the rough decoration",
+          "type": "string",
+          "enum": [
+            "hachure",
+            "solid",
+            "zigzag",
+            "cross-hatch",
+            "dashed",
+            "zigzag-line"
+          ]
+        }
+      }
+    },
+    "NumberingProperties": {
+      "type": "object",
+      "properties": {
+        "display": {
+          "description": "Format of the numbering",
+          "type": "string"
+        },
+        "before": {
+          "description": "Properties before the numbering",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "description": "Text before the numbering",
+              "type": "string"
+            },
+            "kern": {
+              "description": "Kerning before the numbering",
+              "type": "string"
+            }
+          }
+        },
+        "after": {
+          "description": "Properties after the numbering",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "description": "Text after the numbering",
+              "type": "string"
+            },
+            "kern": {
+              "description": "Kerning after the numbering",
+              "type": "string"
+            }
+          }
+        },
+        "standalone": {
+          "description": "Whether the numbering is standalone (for sectioning styles only)",
+          "type": "boolean"
+        }
+      }
+    },
+    "SpecialProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lines": {
+          "description": "Number of drop cap lines",
+          "type": "integer"
+        }
+      }
+    },
+    "ParagraphProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "skip": {
+          "description": "Vertical glue space",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "indent": {
+          "description": "Whether to indent",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "vbreak": {
+          "description": "Whether page break is allowed",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

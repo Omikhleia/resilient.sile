@@ -1,6 +1,6 @@
 {
-  "$id": "urn:example:omikhleia:resilient-masterfile:v1.0.0",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:example:omikhleia:resilient:masterfile",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "additionalProperties": true,
   "properties": {
