@@ -141,6 +141,10 @@ function package.writeStyles () -- NOTE: Not called as a package method (invoked
   SU.debug("resilient.styles", "Writing style file", fname, ":", count, "new style(s)")
   local styfile, err = io.open(fname, "w")
   if not styfile then return SU.error(err) end
+  styfile:write([[
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
+# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
+]])
   styfile:write(stydata)
   styfile:close()
 end
@@ -192,17 +196,17 @@ SILE.scratch.styles = {
 }
 
 -- programmatically define a style
--- optional origin allows tracking e.g which package declared that style.
+-- optional origin allows tracking e.g which package declared that style and just used for debugging
 -- after styles are 'frozen', we can still define new styles but not override
 -- existing styles.
 function package.defineStyle (_, name, opts, styledef, origin)
   if SILE.scratch.styles.state.locked then
     if SILE.scratch.styles.specs[name] then
-      return SU.debug("resilient.styles", "Styles are now frozen: ignoring redefinition for", name)
+      return SU.debug("resilient.styles", "Styles are now frozen: ignoring redefinition for", name, "from", origin)
     end
-    SU.debug("resilient.styles", "Defining new style", name)
+    SU.debug("resilient.styles", "Defining new style", name, "from", origin)
   end
-  SILE.scratch.styles.specs[name] = { inherit = opts.inherit, style = styledef, origin = origin }
+  SILE.scratch.styles.specs[name] = { inherit = opts.inherit, style = styledef }
 end
 
 

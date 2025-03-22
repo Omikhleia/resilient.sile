@@ -5,13 +5,13 @@ But beyond the pun, this chapter addresses usual material that make a real book.
 An assumption here is that your book is using a resilient class, such as *resilient.book*.
 We will also suppose your master document only contains the elements briefly introduced in the previous chapter, and you processed it with:
 
-```shell
+```bash
 sile -u inputters.silm mybook.silm
 ```
 
 Then you got all your parts or chapters assembled, but you do know that they do not yet make a book, right? Well, try this, now:
 
-```shell
+```bash
 sile -u inputters.silm[bookmatter=true] mybook.silm
 ```
 
@@ -96,7 +96,7 @@ In the absence of an image, a `background` element can be used to set a color fo
 
 The covers can be disabled by passing the `cover=false` option to the master document handler:
 
-```shell
+```bash
 sile -u inputters.silm[cover=false] mybook.silm
 ```
 
@@ -193,6 +193,6 @@ It then take cares of invoking the relevant SILE packages and commands.
 
 If your paper size is 6 per 9 inches (US trade book), for instance, you can print it on A4 sheets and have cropmarks shown:
 
-```shell
+```bash
 sile -u inputters.silm[cropmarks=true] -O sheetsize=a4 mybook.silm
 ```

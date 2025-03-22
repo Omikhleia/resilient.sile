@@ -20,7 +20,9 @@ function package:registerCommands ()
     this warning and possibly report an issue, depending on your findings.
 ]])
     options.family = options.family or "Hack"
-    options.size = options.size or SILE.settings:get("font.size") - 3
+    if not options.size and not options.adjust then
+      options.adjust = "ex-height"
+    end
     SILE.call("font", options, content)
   end)
 

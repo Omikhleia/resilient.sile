@@ -1,6 +1,7 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
+# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
 
 blockquote:
-  origin: "resilient.book"
   style:
     font:
       size: "0.95em"
@@ -13,7 +14,6 @@ blockquote:
 
 bookmatter-author:
   inherit: "bookmatter-titlepage"
-  origin: "resilient.bookmatters"
   style:
     font:
       size: "16pt"
@@ -21,20 +21,17 @@ bookmatter-author:
       case: "upper"
 
 bookmatter-backcover:
-  origin: "resilient.bookmatters"
   style:
     font:
       size: "0.95em"
 
 bookmatter-copyright:
-  origin: "resilient.bookmatters"
   style:
     paragraph:
       align: "noparindent"
 
 bookmatter-cover-author:
   inherit: "bookmatter-coverpage"
-  origin: "resilient.bookmatters"
   style:
     font:
       size: "16pt"
@@ -43,12 +40,10 @@ bookmatter-cover-author:
 
 bookmatter-cover-publisher:
   inherit: "bookmatter-coverpage"
-  origin: "resilient.bookmatters"
   style:
 
 bookmatter-cover-subtitle:
   inherit: "bookmatter-coverpage"
-  origin: "resilient.bookmatters"
   style:
     font:
       size: "16pt"
@@ -58,7 +53,6 @@ bookmatter-cover-subtitle:
 
 bookmatter-cover-title:
   inherit: "bookmatter-coverpage"
-  origin: "resilient.bookmatters"
   style:
     font:
       size: "20pt"
@@ -69,11 +63,9 @@ bookmatter-cover-title:
         skip: "30%fh"
 
 bookmatter-coverpage:
-  origin: "resilient.bookmatters"
   style:
 
 bookmatter-halftitle:
-  origin: "resilient.bookmatters"
   style:
     font:
       size: "14pt"
@@ -87,7 +79,6 @@ bookmatter-halftitle:
       case: "upper"
 
 bookmatter-legal:
-  origin: "resilient.bookmatters"
   style:
     font:
       size: "0.8em"
@@ -97,12 +88,10 @@ bookmatter-legal:
 
 bookmatter-publisher:
   inherit: "bookmatter-titlepage"
-  origin: "resilient.bookmatters"
   style:
 
 bookmatter-subtitle:
   inherit: "bookmatter-titlepage"
-  origin: "resilient.bookmatters"
   style:
     font:
       size: "16pt"
@@ -112,7 +101,6 @@ bookmatter-subtitle:
 
 bookmatter-title:
   inherit: "bookmatter-titlepage"
-  origin: "resilient.bookmatters"
   style:
     font:
       size: "20pt"
@@ -123,23 +111,19 @@ bookmatter-title:
         skip: "30%fh"
 
 bookmatter-titlepage:
-  origin: "resilient.bookmatters"
   style:
 
 code:
-  origin: "resilient.book"
   style:
     font:
+      adjust: "ex-height"
       family: "Hack"
-      size: "1.4ex"
 
 defn-base:
-  origin: "resilient.defn"
   style:
 
 defn-desc:
   inherit: "defn-base"
-  origin: "resilient.defn"
   style:
     paragraph:
       after:
@@ -157,7 +141,6 @@ defn-desc-Simple:
 
 defn-term:
   inherit: "defn-base"
-  origin: "resilient.defn"
   style:
     font:
       weight: 700
@@ -176,7 +159,6 @@ defn-term-Simple:
       align: "noparindent"
 
 dropcap:
-  origin: "resilient.book"
   style:
     font:
       family: "Zallman Caps"
@@ -184,7 +166,6 @@ dropcap:
       lines: 2
 
 epigraph:
-  origin: "resilient.epigraph"
   style:
     font:
       size: "0.9em"
@@ -195,7 +176,6 @@ epigraph:
         skip: "medskip"
 
 epigraph-source:
-  origin: "resilient.epigraph"
   style:
     paragraph:
       align: "right"
@@ -205,7 +185,6 @@ epigraph-source:
 
 epigraph-source-norule:
   inherit: "epigraph-source"
-  origin: "resilient.epigraph"
   style:
     paragraph:
       before:
@@ -213,18 +192,15 @@ epigraph-source-norule:
 
 epigraph-source-rule:
   inherit: "epigraph-source"
-  origin: "resilient.epigraph"
   style:
 
 epigraph-text:
   inherit: "epigraph"
-  origin: "resilient.epigraph"
   style:
     paragraph:
       align: "justify"
 
 eqno:
-  origin: "resilient.book"
   style:
     numbering:
       after:
@@ -253,7 +229,6 @@ fancytoc-pageno:
       features: "+onum"
 
 figure:
-  origin: "resilient.book"
   style:
     paragraph:
       after:
@@ -264,7 +239,6 @@ figure:
         skip: "smallskip"
 
 figure-caption:
-  origin: "resilient.book"
   style:
     font:
       size: "0.95em"
@@ -289,12 +263,10 @@ figure-caption:
         toclevel: 5
 
 figure-caption-base-number:
-  origin: "resilient.book"
   style:
 
 figure-caption-main-number:
   inherit: "figure-caption-base-number"
-  origin: "resilient.book"
   style:
     font:
       features: "+smcp"
@@ -307,27 +279,23 @@ figure-caption-main-number:
 
 figure-caption-ref-number:
   inherit: "figure-caption-base-number"
-  origin: "resilient.book"
   style:
     numbering:
       before:
         text: "fig. "
 
 folio-backmatter:
-  origin: "resilient.book"
   style:
     numbering:
       display: "arabic"
 
 folio-base:
-  origin: "resilient.book"
   style:
     font:
       features: "+onum"
 
 folio-even:
   inherit: "folio-base"
-  origin: "resilient.book"
   style:
     paragraph:
       align: "left"
@@ -335,20 +303,17 @@ folio-even:
         indent: false
 
 folio-frontmatter:
-  origin: "resilient.book"
   style:
     numbering:
       display: "roman"
 
 folio-mainmatter:
-  origin: "resilient.book"
   style:
     numbering:
       display: "arabic"
 
 folio-odd:
   inherit: "folio-base"
-  origin: "resilient.book"
   style:
     paragraph:
       align: "right"
@@ -356,7 +321,6 @@ folio-odd:
         indent: false
 
 footnote:
-  origin: "resilient.footnotes"
   style:
     font:
       size: "0.8em"
@@ -364,7 +328,6 @@ footnote:
       display: "arabic"
 
 footnote-marker:
-  origin: "resilient.footnotes"
   style:
     numbering:
       after:
@@ -374,7 +337,6 @@ footnote-marker:
 
 footnote-marker-counter:
   inherit: "footnote-marker"
-  origin: "resilient.footnotes"
   style:
     numbering:
       after:
@@ -382,27 +344,22 @@ footnote-marker-counter:
 
 footnote-marker-symbol:
   inherit: "footnote-marker"
-  origin: "resilient.footnotes"
   style:
 
 footnote-reference:
-  origin: "resilient.footnotes"
   style:
     properties:
       position: "super"
 
 footnote-reference-counter:
   inherit: "footnote-reference"
-  origin: "resilient.footnotes"
   style:
 
 footnote-reference-symbol:
   inherit: "footnote-reference"
-  origin: "resilient.footnotes"
   style:
 
 header-base:
-  origin: "resilient.book"
   style:
     font:
       size: "0.9em"
@@ -414,20 +371,182 @@ header-base:
 
 header-even:
   inherit: "header-base"
-  origin: "resilient.book"
   style:
 
 header-odd:
   inherit: "header-base"
-  origin: "resilient.book"
   style:
     font:
       style: "italic"
     paragraph:
       align: "right"
 
+highlight-addition:
+  style:
+    color: "#7F6600"
+    decoration:
+      color: "#FFDE8A"
+      line: "mark"
+
+highlight-attribute:
+  style:
+    color: "#0000C0"
+
+highlight-bold:
+  style:
+    font:
+      weight: 400
+
+highlight-change:
+  style:
+    color: "#0000C0"
+    decoration:
+      color: "#B2D8FF"
+      line: "mark"
+
+highlight-class:
+  style:
+    color: "#C99000"
+
+highlight-command:
+  style:
+    color: "#7F0055"
+
+highlight-command.section:
+  style:
+    color: "#C99000"
+
+highlight-comment:
+  style:
+    color: "#8E908C"
+    font:
+      style: "italic"
+
+highlight-constant:
+  style:
+    color: "#116644"
+
+highlight-constant.builtin:
+  style:
+    color: "#F5871F"
+
+highlight-deletion:
+  style:
+    color: "#8B0000"
+    decoration:
+      color: "#F6B2B2"
+      line: "mark"
+      rough: true
+
+highlight-embedded:
+  style:
+    color: "#4271AE"
+
+highlight-environment:
+  style:
+    color: "#C99000"
+
+highlight-environment.math:
+  style:
+    color: "#116644"
+
+highlight-error:
+  style:
+    color: "#8B0000"
+
+highlight-function:
+  style:
+    color: "#4271AE"
+
+highlight-function.builtin:
+  style:
+    color: "#4271AE"
+
+highlight-function.method:
+  style:
+    color: "#4271AE"
+
+highlight-heading:
+  style:
+    color: "#2A00FF"
+
+highlight-identifier:
+  style:
+    color: "#3F009B"
+
+highlight-italic:
+  style:
+    font:
+      style: "italic"
+
+highlight-keyword:
+  style:
+    color: "#7F0055"
+
+highlight-label:
+  style:
+    color: "#2A00FF"
+
+highlight-link:
+  style:
+    decoration:
+      line: "underline"
+
+highlight-list:
+  style:
+    color: "#116644"
+
+highlight-number:
+  style:
+    color: "#116644"
+
+highlight-operator:
+  style:
+    color: "#3E999F"
+
+highlight-preprocessor:
+  style:
+    color: "#4D4D4C"
+
+highlight-property:
+  style:
+    color: "#0000C0"
+
+highlight-reference:
+  style:
+    decoration:
+      line: "underline"
+
+highlight-regex:
+  style:
+    color: "#0000C0"
+
+highlight-string:
+  style:
+    color: "#3F7F5F"
+
+highlight-tag:
+  style:
+    color: "#7F0055"
+
+highlight-type:
+  style:
+    color: "#C99000"
+
+highlight-underline:
+  style:
+    decoration:
+      line: "underline"
+
+highlight-variable:
+  style:
+    color: "#0000C0"
+
+highlight-variable.builtin:
+  style:
+    color: "#C82829"
+
 listing:
-  origin: "resilient.book"
   style:
     paragraph:
       after:
@@ -436,7 +555,6 @@ listing:
         indent: false
 
 listing-caption:
-  origin: "resilient.book"
   style:
     font:
       size: "0.95em"
@@ -461,12 +579,10 @@ listing-caption:
         toclevel: 7
 
 listing-caption-base-number:
-  origin: "resilient.book"
   style:
 
 listing-caption-main-number:
   inherit: "listing-caption-base-number"
-  origin: "resilient.book"
   style:
     font:
       features: "+smcp"
@@ -479,7 +595,6 @@ listing-caption-main-number:
 
 listing-caption-ref-number:
   inherit: "listing-caption-base-number"
-  origin: "resilient.book"
   style:
     numbering:
       before:
@@ -487,7 +602,6 @@ listing-caption-ref-number:
 
 lists-enumerate-alternate1:
   inherit: "lists-enumerate-base"
-  origin: "resilient.lists"
   style:
     numbering:
       after:
@@ -496,7 +610,6 @@ lists-enumerate-alternate1:
 
 lists-enumerate-alternate2:
   inherit: "lists-enumerate-base"
-  origin: "resilient.lists"
   style:
     numbering:
       after:
@@ -505,7 +618,6 @@ lists-enumerate-alternate2:
 
 lists-enumerate-alternate3:
   inherit: "lists-enumerate-base"
-  origin: "resilient.lists"
   style:
     numbering:
       after:
@@ -514,7 +626,6 @@ lists-enumerate-alternate3:
 
 lists-enumerate-alternate4:
   inherit: "lists-enumerate-base"
-  origin: "resilient.lists"
   style:
     font:
       style: "italic"
@@ -525,18 +636,15 @@ lists-enumerate-alternate4:
 
 lists-enumerate-alternate5:
   inherit: "lists-enumerate-base"
-  origin: "resilient.lists"
   style:
     enumerate:
       symbol: "U+2474"
 
 lists-enumerate-base:
-  origin: "resilient.lists"
   style:
 
 lists-enumerate1:
   inherit: "lists-enumerate-base"
-  origin: "resilient.lists"
   style:
     numbering:
       after:
@@ -545,7 +653,6 @@ lists-enumerate1:
 
 lists-enumerate2:
   inherit: "lists-enumerate-base"
-  origin: "resilient.lists"
   style:
     numbering:
       after:
@@ -554,7 +661,6 @@ lists-enumerate2:
 
 lists-enumerate3:
   inherit: "lists-enumerate-base"
-  origin: "resilient.lists"
   style:
     numbering:
       after:
@@ -563,7 +669,6 @@ lists-enumerate3:
 
 lists-enumerate4:
   inherit: "lists-enumerate-base"
-  origin: "resilient.lists"
   style:
     numbering:
       after:
@@ -572,7 +677,6 @@ lists-enumerate4:
 
 lists-enumerate5:
   inherit: "lists-enumerate-base"
-  origin: "resilient.lists"
   style:
     numbering:
       after:
@@ -583,88 +687,75 @@ lists-enumerate5:
 
 lists-itemize-alternate1:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "—"
 
 lists-itemize-alternate2:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "•"
 
 lists-itemize-alternate3:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "◦"
 
 lists-itemize-alternate4:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "–"
 
 lists-itemize-alternate5:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "•"
 
 lists-itemize-alternate6:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "◦"
 
 lists-itemize-base:
-  origin: "resilient.lists"
   style:
 
 lists-itemize1:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "•"
 
 lists-itemize2:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "◦"
 
 lists-itemize3:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "–"
 
 lists-itemize4:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "•"
 
 lists-itemize5:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "◦"
 
 lists-itemize6:
   inherit: "lists-itemize-base"
-  origin: "resilient.lists"
   style:
     itemize:
       symbol: "–"
@@ -677,7 +768,6 @@ md-mark:
       rough: true
 
 poetry:
-  origin: "resilient.poetry"
   style:
     font:
       size: "0.95em"
@@ -689,13 +779,11 @@ poetry:
         skip: "medskip"
 
 poetry-prosody:
-  origin: "resilient.poetry"
   style:
     font:
       style: "normal"
 
 poetry-verseno:
-  origin: "resilient.poetry"
   style:
     font:
       features: "+onum"
@@ -704,7 +792,6 @@ poetry-verseno:
       display: "arabic"
 
 prosody:
-  origin: "resilient.poetry"
   style:
     font:
       size: "0.95em"
@@ -715,7 +802,6 @@ prosody:
 
 sectioning-appendix:
   inherit: "sectioning-chapter"
-  origin: "resilient.book"
   style:
     sectioning:
       numberstyle:
@@ -725,26 +811,22 @@ sectioning-appendix:
 
 sectioning-appendix-head-number:
   inherit: "sectioning-chapter-head-number"
-  origin: "resilient.book"
   style:
 
 sectioning-appendix-main-number:
   inherit: "sectioning-chapter-main-number"
-  origin: "resilient.book"
   style:
     numbering:
       display: "ALPHA"
 
 sectioning-appendix-ref-number:
   inherit: "sectioning-chapter-ref-number"
-  origin: "resilient.book"
   style:
     numbering:
       before:
         text: "app. "
 
 sectioning-base:
-  origin: "resilient.book"
   style:
     paragraph:
       after:
@@ -754,7 +836,6 @@ sectioning-base:
 
 sectioning-chapter:
   inherit: "sectioning-base"
-  origin: "resilient.book"
   style:
     font:
       size: "1.4em"
@@ -776,12 +857,10 @@ sectioning-chapter:
         toclevel: 1
 
 sectioning-chapter-base-number:
-  origin: "resilient.book"
   style:
 
 sectioning-chapter-head-number:
   inherit: "sectioning-chapter-base-number"
-  origin: "resilient.book"
   style:
     numbering:
       after:
@@ -790,7 +869,6 @@ sectioning-chapter-head-number:
 
 sectioning-chapter-main-number:
   inherit: "sectioning-chapter-base-number"
-  origin: "resilient.book"
   style:
     color: "#66a0b3"
     font:
@@ -798,19 +876,16 @@ sectioning-chapter-main-number:
     numbering:
       after:
         kern: "3spc"
-      before:
       standalone: false
 
 sectioning-chapter-ref-number:
   inherit: "sectioning-chapter-base-number"
-  origin: "resilient.book"
   style:
     numbering:
       before:
         text: "chap. "
 
 sectioning-other-number:
-  origin: "resilient.book"
   style:
     numbering:
       after:
@@ -819,7 +894,6 @@ sectioning-other-number:
 
 sectioning-part:
   inherit: "sectioning-base"
-  origin: "resilient.book"
   style:
     font:
       size: "1.6em"
@@ -844,14 +918,12 @@ sectioning-part:
         toclevel: 0
 
 sectioning-part-base-number:
-  origin: "resilient.book"
   style:
     numbering:
       display: "ROMAN"
 
 sectioning-part-head-number:
   inherit: "sectioning-part-base-number"
-  origin: "resilient.book"
   style:
     numbering:
       after:
@@ -860,7 +932,6 @@ sectioning-part-head-number:
 
 sectioning-part-main-number:
   inherit: "sectioning-part-base-number"
-  origin: "resilient.book"
   style:
     font:
       features: "+smcp"
@@ -871,7 +942,6 @@ sectioning-part-main-number:
 
 sectioning-part-ref-number:
   inherit: "sectioning-part-base-number"
-  origin: "resilient.book"
   style:
     numbering:
       before:
@@ -879,7 +949,6 @@ sectioning-part-ref-number:
 
 sectioning-section:
   inherit: "sectioning-base"
-  origin: "resilient.book"
   style:
     font:
       size: "1.2em"
@@ -903,7 +972,6 @@ sectioning-section:
 
 sectioning-subsection:
   inherit: "sectioning-base"
-  origin: "resilient.book"
   style:
     font:
       size: "1.1em"
@@ -926,7 +994,6 @@ sectioning-subsection:
 
 sectioning-subsubsection:
   inherit: "sectioning-base"
-  origin: "resilient.book"
   style:
     font:
       weight: 700
@@ -946,7 +1013,6 @@ sectioning-subsubsection:
         toclevel: 4
 
 table:
-  origin: "resilient.book"
   style:
     paragraph:
       after:
@@ -956,7 +1022,6 @@ table:
         indent: false
 
 table-caption:
-  origin: "resilient.book"
   style:
     font:
       size: "0.95em"
@@ -980,12 +1045,10 @@ table-caption:
         toclevel: 6
 
 table-caption-base-number:
-  origin: "resilient.book"
   style:
 
 table-caption-main-number:
   inherit: "table-caption-base-number"
-  origin: "resilient.book"
   style:
     font:
       features: "+smcp"
@@ -998,23 +1061,19 @@ table-caption-main-number:
 
 table-caption-ref-number:
   inherit: "table-caption-base-number"
-  origin: "resilient.book"
   style:
     numbering:
       before:
         text: "table "
 
 toc:
-  origin: "resilient.tableofcontents"
   style:
 
 toc-level-base:
-  origin: "resilient.tableofcontents"
   style:
 
 toc-level0:
   inherit: "toc-level-base"
-  origin: "resilient.tableofcontents"
   style:
     font:
       size: "1.15em"
@@ -1032,7 +1091,6 @@ toc-level0:
 
 toc-level1:
   inherit: "toc-level-base"
-  origin: "resilient.tableofcontents"
   style:
     font:
       size: "1.1em"
@@ -1047,7 +1105,6 @@ toc-level1:
 
 toc-level2:
   inherit: "toc-level-base"
-  origin: "resilient.tableofcontents"
   style:
     font:
       size: "1em"
@@ -1060,7 +1117,6 @@ toc-level2:
 
 toc-level3:
   inherit: "toc-level-base"
-  origin: "resilient.tableofcontents"
   style:
     paragraph:
       after:
@@ -1072,7 +1128,6 @@ toc-level3:
 
 toc-level4:
   inherit: "toc-level-base"
-  origin: "resilient.tableofcontents"
   style:
     paragraph:
       after:
@@ -1084,7 +1139,6 @@ toc-level4:
 
 toc-level5:
   inherit: "toc-level-base"
-  origin: "resilient.tableofcontents"
   style:
     paragraph:
       after:
@@ -1096,7 +1150,6 @@ toc-level5:
 
 toc-level6:
   inherit: "toc-level-base"
-  origin: "resilient.tableofcontents"
   style:
     paragraph:
       after:
@@ -1108,7 +1161,6 @@ toc-level6:
 
 toc-level7:
   inherit: "toc-level-base"
-  origin: "resilient.tableofcontents"
   style:
     paragraph:
       before:
@@ -1118,7 +1170,6 @@ toc-level7:
 
 toc-level8:
   inherit: "toc-level-base"
-  origin: "resilient.tableofcontents"
   style:
     paragraph:
       before:
@@ -1128,7 +1179,6 @@ toc-level8:
 
 toc-level9:
   inherit: "toc-level-base"
-  origin: "resilient.tableofcontents"
   style:
     paragraph:
       before:
@@ -1137,7 +1187,6 @@ toc-level9:
       pageno: false
 
 toc-number-base:
-  origin: "resilient.tableofcontents"
   style:
     numbering:
       after:
@@ -1146,32 +1195,26 @@ toc-number-base:
 
 toc-number-level0:
   inherit: "toc-number-base"
-  origin: "resilient.tableofcontents"
   style:
 
 toc-number-level1:
   inherit: "toc-number-base"
-  origin: "resilient.tableofcontents"
   style:
 
 toc-number-level2:
   inherit: "toc-number-base"
-  origin: "resilient.tableofcontents"
   style:
 
 toc-number-level3:
   inherit: "toc-number-base"
-  origin: "resilient.tableofcontents"
   style:
 
 toc-number-level4:
   inherit: "toc-number-base"
-  origin: "resilient.tableofcontents"
   style:
 
 toc-number-level5:
   inherit: "toc-number-base"
-  origin: "resilient.tableofcontents"
   style:
     font:
       features: "+smcp"
@@ -1184,7 +1227,6 @@ toc-number-level5:
 
 toc-number-level6:
   inherit: "toc-number-base"
-  origin: "resilient.tableofcontents"
   style:
     font:
       features: "+smcp"
@@ -1197,31 +1239,25 @@ toc-number-level6:
 
 toc-number-level7:
   inherit: "toc-number-base"
-  origin: "resilient.tableofcontents"
   style:
 
 toc-number-level8:
   inherit: "toc-number-base"
-  origin: "resilient.tableofcontents"
   style:
 
 toc-number-level9:
   inherit: "toc-number-base"
-  origin: "resilient.tableofcontents"
   style:
 
 toc-pageno:
-  origin: "resilient.tableofcontents"
   style:
 
 url:
   inherit: "code"
-  origin: "resilient.book"
   style:
 
 verbatim:
   inherit: "code"
-  origin: "resilient.verbatim"
   style:
     paragraph:
       after:

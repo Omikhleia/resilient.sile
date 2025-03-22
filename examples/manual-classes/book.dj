@@ -194,6 +194,7 @@ The footnotes are based on the **resilient.footnotes** package and therefore hav
 The table of contents relies on the **resilient.tableofcontents** package. One can therefore change many styling and appearance aspects to create a custom table of contents.
 
 Cross-references are supported via the **labelrefs** package, henceforth the `\autodoc:command{\label}`{=sile}, `\autodoc:command{\ref}`{=sile} and `\autodoc:command{\pageref}`{=sile} commands are available.
+All sectioning commands accept the `marker` option to introduce a label at the appropriate place (e.g., the section title) in a convenient way.
 
 A few layout-related commands are also provided.
 

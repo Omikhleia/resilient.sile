@@ -207,16 +207,25 @@ This package is part of the *printoptions.sile* collection.
 \package-documentation{resilient.poetry}
 ```
 
+## Definition items
+
+``` =sile
+\package-documentation{resilient.defn}
+```
+
 ## Verbatim content
 
 ``` =sile
 \package-documentation{resilient.verbatim}
 ```
 
-## Definition items
+## Syntax-highlighted code blocks
+
+{custom-style=admon}
+This package is part of the *highlighter.sile* collection.
 
 ``` =sile
-\package-documentation{resilient.defn}
+\package-documentation{highlighter}
 ```
 
 # Other input formats
