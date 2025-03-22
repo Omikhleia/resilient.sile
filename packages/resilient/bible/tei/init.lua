@@ -783,7 +783,7 @@ function package:registerCommands ()
       SILE.call("noindent")
       SILE.call("save-book-title", {}, { book.abbr })
       SILE.call("color", { color = "#74101c" }, function () -- CHECK FIXME WAS 58101c
-        SILE.call("font", { size = 14, weight = 7000 } , { title })
+        SILE.call("font", { size = 14, weight = 700 } , { title })
         SILE.call("novbreak")
         SILE.call("par")
         SILE.call("novbreak")
