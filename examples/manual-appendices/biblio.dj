@@ -1,14 +1,7 @@
 # Selected bibliography
 
 ```=sile
-% For now, we use SIL language, and hack several things.
-% Eventually we'll get to a higher level of abstraction.
-%
-\use[module=packages.bibtex]
-\begin[size=10pt]{font}
-\set[parameter=document.parskip, value=4pt]
-\set[parameter=linebreak.emergencyStretch,value=1em]
-\set[parameter=linebreak.tolerance,value=2000]
+% Customize the bibliography link hook
 \lua{
 local class = SILE.documentState.documentClass
 class:registerCommand("bibLink", function (options, content)
@@ -19,11 +12,6 @@ class:registerCommand("bibLink", function (options, content)
   })
 end)
 }
-\set[parameter=document.lskip,value=3em]
-\set[parameter=document.parindent,value=-3em]
-\set[parameter=current.parindent,value=-3em]
-
-\printbibliography[cited=false]
-
-\end{font}
 ```
+
+:_BIBLIOGRAPHY_:{cited=false}
