@@ -129,9 +129,8 @@ end
 
 -- layout graph drawing adapter
 
-local graphics = require("packages.framebox.graphics.renderer")
-local PathRenderer = graphics.PathRenderer
-local RoughPainter = graphics.RoughPainter
+local PathRenderer = require("grail.renderer")
+local RoughPainter = require("grail.painters.rough")
 
 local function buildFrameRect (painter, frame, wratio, hratio, options)
   options = options or {}
@@ -140,11 +139,18 @@ local function buildFrameRect (painter, frame, wratio, hratio, options)
     frame:top():tonumber() * hratio,
     frame:width():tonumber() * wratio,
     frame:height():tonumber() * hratio, {
-      fill = options.fillcolor and SILE.types.color(options.fillcolor) or "none",
+      fill = options.fillcolor and SILE.types.color(options.fillcolor) or "none", -- FIXME
+      -- Actually the rough option does not work here, and will crash on the "none" fill:
+      -- Fill discrepancy between rough and non-rough painter, see https://github.com/Omikhleia/grail/issues/1
       stroke = options.strokecolor and SILE.types.color(options.strokecolor),
-      preserveVertices = SU.boolean(options.preserve, true),
-      disableMultiStroke = SU.boolean(options.singlestroke, true),
-      strokeWidth = SU.cast("measurement", options.stroke or "0.3pt"):tonumber()
+      preserveVertices = true,
+      disableMultiStroke = true,
+      strokeWidth = SU.cast("measurement", options.stroke or "0.3pt"):tonumber(),
+      -- Default hachure gets problematic on very thin areas (e.g. headers/footers, binding gutter)
+      -- as close parallel lines made sketchy by the rough painter may cross each other
+      -- and create a mess for filling the area.
+      -- So let's go for a solid fill to be safer.
+      fillStyle = "solid"
   })
   return path
 end
