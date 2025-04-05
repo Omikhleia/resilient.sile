@@ -15,9 +15,8 @@ local base = require("packages.base")
 local package = pl.class(base)
 package._name = "resilient.liners"
 
-local graphics = require("packages.framebox.graphics.renderer")
-local PathRenderer = graphics.PathRenderer
-local RoughPainter = graphics.RoughPainter
+local PathRenderer = require("grail.renderer")
+local RoughPainter = require("grail.painters.rough")
 
 local function getUnderlineParameters ()
   local ot = require("core.opentype-parser")
