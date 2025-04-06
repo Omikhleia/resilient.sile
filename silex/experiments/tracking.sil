@@ -1,0 +1,189 @@
+\begin[papersize=a7, class=resilient.book, layout=geometry 5mm 5mm]{document}
+\use[module=packages.lorem]
+\use[module=packages.struts]
+\use[module=packages.frametricks]
+\font[family=Cormorant Infant, size=12pt]
+
+\define[command=testtitle]{\strut\font[family=Libertinus Serif, size=8pt]{\process\novbreak}}
+
+% Hack to visualize the space glues and their stretch/shrink values in the output
+\lua{
+local oldMakeSpaceNode = SILE.shaper.makeSpaceNode
+SILE.shaper.xmakeSpaceNode = function (_, options, item)
+   local glue = oldMakeSpaceNode(_, options, item)
+   local oldOutput = glue.outputYourself
+   glue.outputYourself = function (me, typesetter, line)
+      local width = me.width
+      local x = typesetter.frame.state.cursorX
+      local y = typesetter.frame.state.cursorY
+      local h = line.height
+      SILE.outputter:pushColor(SILE.types.color("red"))
+      SILE.outputter:drawRule(x, y - 2, width.length - width.shrink, 2)
+      SILE.outputter:drawRule(x, y - h, width.length + width.stretch, 2)
+      SILE.outputter:popColor()
+      oldOutput(me, typesetter, line)
+      local nx = typesetter.frame.state.cursorX
+      SILE.outputter:pushColor(SILE.types.color("blue"))
+      SILE.outputter:drawRule(x, y - h, 0.4, h)
+      SILE.outputter:drawRule(nx, y - h, 0.4, h)
+      SILE.outputter:popColor()
+      SILE.outputter:pushColor(SILE.types.color("green"))
+      SILE.outputter:drawRule(x, y - h/2, nx-x, 0.4)
+      SILE.outputter:popColor()
+   end
+   return glue
+end
+}
+
+% Disable hyphenation for this test, using the "unknown" language
+\language[main=und]
+% SILE sets tolerance to 500, let's revert to TeX's default of 200 here.
+\set[parameter=linebreak.tolerance, value=200]
+% The test below (with no hyphenation) is very pathological, so let's
+% set the tracking stuff to something a bit too much.
+\set[parameter=typesetter.trackingMinCompressionRatio, value=0.90]% Default is 0.97
+\set[parameter=typesetter.trackingMaxExpansionRatio, value=1.2]% Default is 1.03
+
+% ------------- T1a
+\testtitle{\strong{Emergency 0}}
+
+% resilient.book sets emergencyStretch to 1em by default, so let's disable it to see the difference.
+\set[parameter=linebreak.emergencyStretch, value=0pt]
+\set[parameter=typesetter.dynamicLineTracking, value=false]
+
+lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut
+labore et dolore magna ali uyam erat sed diam voluptua at vero eos et accusam et justo duo dolores et
+ea rebum stet clita kasd gubergren no sea takimata sanctus est
+
+There are difficult cases for any pathological case, and the effects vary a lot.
+
+\showframe[id=content]
+
+% ------------- T1b
+\eject
+\testtitle{\strong{Emergency 0 + tracking 3\%/20\%}}
+
+\set[parameter=linebreak.emergencyStretch, value=0pt]
+\set[parameter=typesetter.dynamicLineTracking, value=true]
+
+lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut
+labore et dolore magna ali uyam erat sed diam voluptua at vero eos et accusam et justo duo dolores et
+ea rebum stet clita kasd gubergren no sea takimata sanctus est
+
+There are difficult cases for any pathological case, and the effects vary a lot.
+
+\showframe[id=content]
+
+% ------------- T2a
+\eject
+\testtitle{\strong{Emergency 0.5em}}
+\set[parameter=linebreak.emergencyStretch, value=0.5em]
+\set[parameter=typesetter.dynamicLineTracking, value=false]
+
+lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut
+labore et dolore magna ali uyam erat sed diam voluptua at vero eos et accusam et justo duo dolores et
+ea rebum stet clita kasd gubergren no sea takimata sanctus est
+
+There are difficult cases for any pathological case, and the effects vary a lot.
+
+\showframe[id=content]
+
+% ------------- T2b
+\eject
+\testtitle{\strong{Emergency 0.5em + tracking 3\%/20\%}}
+\set[parameter=linebreak.emergencyStretch, value=0.5em]
+\set[parameter=typesetter.dynamicLineTracking, value=true]
+
+lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut
+labore et dolore magna ali uyam erat sed diam voluptua at vero eos et accusam et justo duo dolores et
+ea rebum stet clita kasd gubergren no sea takimata sanctus est
+
+There are difficult cases for any pathological case, and the effects vary a lot.
+
+\showframe[id=content]
+
+% ------------- T3a
+\eject
+\testtitle{\strong{Emergency 1em}}
+\set[parameter=linebreak.emergencyStretch, value=1em]
+\set[parameter=typesetter.dynamicLineTracking, value=false]
+
+lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut
+labore et dolore magna ali uyam erat sed diam voluptua at vero eos et accusam et justo duo dolores et
+ea rebum stet clita kasd gubergren no sea takimata sanctus est
+
+There are difficult cases for any pathological case, and the effects vary a lot.
+
+\showframe[id=content]
+
+% ------------- T3b
+\eject
+\testtitle{\strong{Emergency 1em + tracking 3\%/20\%}}
+\set[parameter=linebreak.emergencyStretch, value=1em]
+\set[parameter=typesetter.dynamicLineTracking, value=true]
+
+lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut
+labore et dolore magna ali uyam erat sed diam voluptua at vero eos et accusam et justo duo dolores et
+ea rebum stet clita kasd gubergren no sea takimata sanctus est
+
+There are difficult cases for any pathological case, and the effects vary a lot.
+
+\showframe[id=content]
+
+% ------------- T4a
+\eject
+\testtitle{\strong{Emergency 2em}}
+\set[parameter=linebreak.emergencyStretch, value=2em]
+\set[parameter=typesetter.dynamicLineTracking, value=false]
+
+lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut
+labore et dolore magna ali uyam erat sed diam voluptua at vero eos et accusam et justo duo dolores et
+ea rebum stet clita kasd gubergren no sea takimata sanctus est
+
+There are difficult cases for any pathological case, and the effects vary a lot.
+
+\showframe[id=content]
+
+% ------------- T4b
+\eject
+\testtitle{\strong{Emergency 2em + tracking 3\%/20\%}}
+\set[parameter=linebreak.emergencyStretch, value=2em]
+\set[parameter=typesetter.dynamicLineTracking, value=true]
+
+lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut
+labore et dolore magna ali uyam erat sed diam voluptua at vero eos et accusam et justo duo dolores et
+ea rebum stet clita kasd gubergren no sea takimata sanctus est
+
+There are difficult cases for any pathological case, and the effects vary a lot.
+
+\showframe[id=content]
+
+% ------------- T5a
+\eject
+\testtitle{\strong{Emergency 3em}}
+\set[parameter=linebreak.emergencyStretch, value=3em]
+\set[parameter=typesetter.dynamicLineTracking, value=false]
+
+lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut
+labore et dolore magna ali uyam erat sed diam voluptua at vero eos et accusam et justo duo dolores et
+ea rebum stet clita kasd gubergren no sea takimata sanctus est
+
+There are difficult cases for any pathological case, and the effects vary a lot.
+
+\showframe[id=content]
+
+% ------------- T5b
+\eject
+\testtitle{\strong{Emergency 3em + tracking 3\%/20\%}}
+\set[parameter=linebreak.emergencyStretch, value=3em]
+\set[parameter=typesetter.dynamicLineTracking, value=true]
+
+lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut
+labore et dolore magna ali uyam erat sed diam voluptua at vero eos et accusam et justo duo dolores et
+ea rebum stet clita kasd gubergren no sea takimata sanctus est
+
+There are difficult cases for any pathological case, and the effects vary a lot.
+
+\showframe[id=content]
+
+\end{document}

@@ -235,6 +235,29 @@ function typesetter.declareSettings (_)
       default = true,
       help = "When true, em-dash starting a paragraph is considered as a speaker change in a dialogue",
    })
+
+   SILE.settings:declare({
+      parameter = "typesetter.trackingMinCompressionRatio",
+      type = "number",
+      -- Robert Bringhurst suggests about 3% (maximal) expansion or contraction of intercharacter spacing
+      default = 0.97,
+      help = "Maximal compression ratio for tracking (letter spacing) compression)",
+   })
+
+   SILE.settings:declare({
+      parameter = "typesetter.trackingMaxExpansionRatio",
+      type = "number",
+      -- Robert Bringhurst suggests about 3% (maximal) expansion or contraction of intercharacter spacing
+      default = 1.03,
+      help = "Maximal expansion ratio for tracking (letter spacing) expansion)",
+   })
+
+   SILE.settings:declare({
+      parameter = "typesetter.dynamicLineTracking",
+      type = "boolean",
+      default = false,
+      help = "SILENT TRACKING EXPERIMENT",
+   })
 end
 
 function typesetter:initState ()
@@ -1516,8 +1539,168 @@ function typesetter.computeLineRatio (_, breakwidth, slice)
 
    local _left = breakwidth:tonumber() - naturalTotals:tonumber()
    local ratio = _left / naturalTotals[_left < 0 and "shrink" or "stretch"]:tonumber()
-   ratio = math.max(ratio, -1)
+
+   -- FIXME: We should not do this here, but parbox (ptable.sile) calls computeLineRatio
+   -- and we may have to reconsider our approach.
+   -- luacheck: push ignore
+   if ratio < -1 then
+      slice, ratio = typesetter:_handleOverfullLine(slice, naturalTotals, ratio)
+   elseif ratio > 1 then
+      slice, ratio = typesetter:_handleUnderfullLine(slice, naturalTotals, _left, ratio)
+   end
+   -- luacheck: pop
    return ratio, naturalTotals
+end
+
+--- Called on overfull lines (i.e. lines with a line ratio < -1).
+-- Without tracking compression, we just cap the ratio to -1:
+-- It is always forbidden to shrink the line below the allowed minimum constraint.
+-- With tracking compression, we try to compress the line by applying
+-- a tracking ratio to all nodes in the line.
+-- @tparam table slice Flat nodes from current line
+-- @tparam table naturalTotals Natural totals for the line
+-- @tparam number ratio Line ratio (assumed < -1 if we are here)
+-- @treturn table Updated slice
+-- @treturn number Updated line ratio
+function typesetter:_handleOverfullLine (slice, naturalTotals, ratio)
+   -- FIXME OPTIMIZE
+   -- For efficiency, We should have computed nnodeWidth this calculating naturalTotals,
+   -- But let's not break the API for now.
+   -- We could also pass the tracking ratio from the upper line breaking context, to avoid accessing
+   -- the settings again and again on each overfull line.
+   if SILE.settings:get("typesetter.dynamicLineTracking") then
+      local trackingMinCompressionRatio = SILE.settings:get("typesetter.trackingMinCompressionRatio")
+      local nnodeWidth = SILE.types.length()
+      for i = 1, #slice do
+         local node = slice[i]
+         if node.is_nnode then
+            nnodeWidth:___add(node.width)
+         end
+         -- FIXME: Discretionary need special handling (esp. replacement)
+      end
+      local maxShrinking = naturalTotals.shrink
+      local missingCompressionWidth = maxShrinking * (1 + ratio)
+      local neededCompressionRation = 1 + missingCompressionWidth:tonumber() / nnodeWidth:tonumber()
+      if neededCompressionRation < trackingMinCompressionRatio then
+         SU.warn(
+            "Overfull line: tracking compression ratio "
+            .. neededCompressionRation
+            .. " cannot compensate the line ratio ("
+            .. ratio
+            .. ")"
+         )
+         neededCompressionRation = trackingMinCompressionRatio
+      end
+      for i = 1, #slice do
+         local node = slice[i]
+         -- FIXME: Discretionary need special handling (esp. replacement)
+         if node.is_nnode then
+            local opts = node.options
+            -- FIXME OPTIMIZE
+            -- Since the options do no change here:
+            -- We could avoid the full reshaping (invoking the shaper engine etc.) and just set the widths inside the nnode
+            -- directly at all appropriate structures (top, inner items, etc.).
+            -- That requires too much knowledge of the internals of the nnode, though.
+            -- For now let's just do it the simple way.
+            SILE.settings:temporarily(function ()
+               SILE.settings:set("shaper.tracking", neededCompressionRation)
+               local n = SILE.types.node.unshaped({ text = node.text, options = opts }):shape()
+               slice[i] = n[1] -- Since options do not change, we expect only one node, the same with the factor applied
+            end)
+         end
+      end
+   else
+      SU.warn("Overfull line (ratio " .. ratio .. ")")
+   end
+   -- Always cap the line ratio to -1:
+   -- Do not allow shrinking below the allowed minimum constraint.
+   return slice, -1
+end
+
+--- Called on underfull lines (i.e. lines with a line ratio > 1).
+-- Without tracking expansion, we warn but let the ratio go above the constraints
+-- With tracking expansion, we try to expand the line by applying
+-- a tracking ratio to all nodes in the line.
+-- @tparam table slice Flat nodes from current line
+-- @tparam table naturalTotals Natural totals for the line
+-- @tparam number left Left space to fill
+-- @tparam number ratio Line ratio (assumed > 1 if we are here)
+-- @treturn table Updated slice
+-- @treturn number Updated line ratio
+function typesetter:_handleUnderfullLine (slice, naturalTotals, left, ratio)
+   -- FIXME OPTIMIZE
+   -- For efficiency, We should have computed nnodeWidth this calculating naturalTotals,
+   -- But let's not break the API for now.
+   -- We could also pass the tracking ratio from the upper line breaking context, to avoid accessing
+   -- the settings again and again on each overfull line.
+   if SILE.settings:get("typesetter.dynamicLineTracking") then
+      local trackingMaxExpansionRatio = SILE.settings:get("typesetter.trackingMaxExpansionRatio")
+      local nnodeWidth = SILE.types.length()
+      for i = 1, #slice do
+         local node = slice[i]
+         if node.is_nnode then
+            nnodeWidth:___add(node.width)
+         end
+         -- FIXME: Discretionary need special handling (esp. replacement)
+      end
+      local maxStretching = naturalTotals.stretch
+      local missingExpansionWidth = maxStretching * (ratio - 1)
+      local neededExpansionRatio = 1 + missingExpansionWidth:tonumber() / nnodeWidth:tonumber()
+      if neededExpansionRatio > trackingMaxExpansionRatio then
+         SU.warn(
+            "Underfull line: tracking expansion ratio "
+            .. neededExpansionRatio
+            .. " cannot compensate the line ratio ("
+            .. ratio
+            .. ")"
+         )
+         neededExpansionRatio = trackingMaxExpansionRatio
+      end
+      -- Here is a bit different from the overfull line:
+      -- As we expand letter spacing, ligatures have to go away.
+      -- So we cannot avoid reshaping the whole line, and the number of nnodes may change.
+      -- BUT the way we do it (via unshaped) is totally broken, whe shouldn't do this,
+      -- not only is this shaper.tracking option undocumented but underlyin createNnodes
+      -- is a mess re-invoking the nodeMaker stuff too.
+      -- And we'll also expand/shrink the last character of each node, which is not
+      -- what we want.
+      -- It's really hard to work with totally broken and undocumented code.
+      local newSlice = {}
+      local nnodeWidth2 = SILE.types.length()
+      for i = 1, #slice do
+         local node = slice[i]
+         -- FIXME: Discretionary need special handling (esp. replacement)
+         if node.is_nnode then
+            local newOpts = pl.tablex.copy(node.options)
+            newOpts.features = "-liga -dlig -hlig" -- FIXME should not be hardcoded?
+            SILE.settings:temporarily(function ()
+               SILE.settings:set("shaper.tracking", neededExpansionRatio)
+               -- SILE.settings:set("document.letterspaceglue", SILE.types.node.glue(
+               --    SILE.types.length("1pt") * (neededExpansionRatio - 1)))
+               local n = SILE.types.node.unshaped({ text = node.text, options = newOpts }):shape()
+               -- With ligatures removed, we may have more nodes than before
+               for j = 1, #n do
+                  nnodeWidth2:___add(n[j].width)
+               end
+               pl.tablex.insertvalues(newSlice, n)
+            end)
+         else
+            table.insert(newSlice, node)
+         end
+      end
+      -- We need to recompute the line ratio, since we have changed the number of nodes
+      left = left - nnodeWidth2:tonumber() + nnodeWidth:tonumber()
+      ratio = left / naturalTotals.stretch:tonumber()
+      -- slice = newSlice-
+      -- FIXME DIRTY
+      -- Current code did in-place evaluations, so we need to deep copy the slice
+      for i = 1, #newSlice do
+         slice[i] = newSlice[i]
+      end
+   else
+      SU.warn("Underfull line (ratio " .. ratio .. ")")
+   end
+   return slice, ratio
 end
 
 function typesetter:chuck () -- emergency shipout everything
