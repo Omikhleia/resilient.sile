@@ -33,7 +33,7 @@ Did we say complete? Well, we lied a bit. For Markdown and Djot input, there is 
 
 ## Installation
 
-These packages require SILE v0.15 or upper (recommended: SILE v0.15.10 or upper).
+These packages require SILE v0.15.10.
 
 Installation relies on the **luarocks** package manager.
 See its installation instructions on the [LuaRocks](https://luarocks.org/) website.
@@ -46,7 +46,7 @@ luarocks install resilient.sile
 
 Refer to the SILE manual for more detailed 3rd-party package installation information and configuration options.
 
-Note that while this module was originally designed for SILE v0.14, we are no longer testing it against this version, and support for it may be dropped in the near future.
+Note that while this module was originally designed for SILE v0.14, we are no longer supporting that version.
 
 ## See also
 
@@ -79,7 +79,11 @@ The name is a pun on “SILE” (as, after all, the initial target was always on
 
 ## License
 
-All code is under the MIT License.
+Please note carefully the license terms of the code and documentation in this repository.
+
+Some code is under the MIT License.
+
+Some code is under the GNU General Public License v3.0, notably everything in the “silex” folder.
 
 The documentation is under CC-BY-SA 2.0.
 
