@@ -10,13 +10,14 @@
 --
 require("silex")
 
-local parent = require("classes.plain")
-local class = pl.class(parent)
+local base = require("classes.silex")
+local class = pl.class(base)
 class._name = "resilient.base"
 class.styles = nil
 
 function class:_init (options)
-  parent._init(self, options)
+  SILE.typesetters.default = require("typesetters.silex")
+  base._init(self, options)
 
   self:loadPackage("resilient.styles")
   self.styles = self.packages["resilient.styles"]
@@ -39,7 +40,7 @@ being available, as the resilient version use styles instead.
 Please consider using resilient-compatible packages when available!
 ]])
   end
-  return parent.loadPackage(self, packname, options)
+  return base.loadPackage(self, packname, options)
 end
 
 function class:registerStyle (name, opts, styledef)
@@ -55,7 +56,7 @@ function class:hasStyle (name)
 end
 
 function class:declareOptions ()
-  parent.declareOptions(self)
+  base.declareOptions(self)
 
   self:declareOption("resolution", function(_, value)
     if value then
@@ -66,11 +67,11 @@ function class:declareOptions ()
 end
 
 function class:registerRawHandlers ()
-  parent.registerRawHandlers(self)
+  base.registerRawHandlers(self)
 end
 
 function class:registerCommands ()
-  parent.registerCommands(self)
+  base.registerCommands(self)
 end
 
 -- For overriding in any document subclass, as a convenient hook
