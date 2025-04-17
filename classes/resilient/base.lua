@@ -66,16 +66,8 @@ function class:declareOptions ()
   end)
 end
 
-function class:registerRawHandlers ()
-  base.registerRawHandlers(self)
-end
-
-function class:registerCommands ()
-  base.registerCommands(self)
-end
-
 -- For overriding in any document subclass, as a convenient hook
 -- where to register all styles.
-function class.registerStyles (_) end
+function class:registerStyles () end
 
 return class
