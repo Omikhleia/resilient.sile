@@ -11,7 +11,7 @@ local base = require("classes.resilient.base")
 local class = pl.class(base)
 class._name = "resilient.resume"
 
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createCommand, createStructuredCommand, subContent,
       extractFromTree, findInTree
         = ast.createCommand, ast.createStructuredCommand, ast.subContent,

@@ -9,7 +9,7 @@ local package = pl.class(base)
 package._name = "resilient.styles"
 
 local utils = require("resilient.utils")
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createCommand, subContent
         = ast.createCommand, ast.subContent
 

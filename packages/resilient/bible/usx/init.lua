@@ -7,7 +7,7 @@
 --
 -- EXPERIMENTAL POSSIBLY INCOMPLETE
 --
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createCommand,
       processAsStructure, trimSubContent
         = ast.createCommand,

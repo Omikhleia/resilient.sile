@@ -9,7 +9,7 @@
 -- HIGHLY EXPERIMENTAL
 --
 local luautf8 = require("lua-utf8")
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createCommand,
       processAsStructure, trimSubContent,
       findInTree

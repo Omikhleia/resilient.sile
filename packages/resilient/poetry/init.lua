@@ -5,7 +5,7 @@
 -- 2021, 2023 Didier Willis
 -- License: MIT
 --
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createStructuredCommand = ast.createStructuredCommand
 local LOG10 = math.log(10)
 

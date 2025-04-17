@@ -10,7 +10,7 @@ local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.epigraph"
 
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createStructuredCommand, subContent, extractFromTree
         = ast.createStructuredCommand, ast.subContent, ast.extractFromTree
 

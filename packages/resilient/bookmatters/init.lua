@@ -10,7 +10,7 @@
 -- 2023, Didier Willis
 -- License: MIT
 --
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createCommand = ast.createCommand
 local layoutParser = require("resilient.layoutparser")
 local loadkit = require("loadkit")

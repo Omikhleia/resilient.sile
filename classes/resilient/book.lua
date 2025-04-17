@@ -9,7 +9,7 @@ local base = require("classes.resilient.base")
 local class = pl.class(base)
 class._name = "resilient.book"
 
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createCommand, subContent, extractFromTree
         = ast.createCommand, ast.subContent, ast.extractFromTree
 

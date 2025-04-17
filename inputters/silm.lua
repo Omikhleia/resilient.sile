@@ -3,7 +3,7 @@
 -- @copyright License: MIT (c) 2023, 2025 Omikhleia, Didier Willis
 -- @module inputters.silm
 --
-local ast = require("silex.ast")
+local ast = SILE.utilites.ast
 local createCommand, createStructuredCommand = ast.createCommand, ast.createStructuredCommand
 
 SILE.registerCommand("has:book-title-support", function (_, content)
