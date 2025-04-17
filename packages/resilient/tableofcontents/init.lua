@@ -7,7 +7,7 @@
 -- License: MIT
 --
 local base = require("packages.resilient.base")
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createCommand, createStructuredCommand, subContent
         = ast.createCommand, ast.createStructuredCommand, ast.subContent
 

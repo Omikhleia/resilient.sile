@@ -10,7 +10,7 @@
 -- with a rather OPINIONATED change. See HACKS comments below,
 -- and the "silex.sile" module.
 --
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createCommand, subContent = ast.createCommand, ast.subContent
 
 local base = require("packages.base")

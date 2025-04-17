@@ -8,7 +8,7 @@
 --
 local base = require("packages.resilient.base")
 
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local createCommand, subContent
         = ast.createCommand, ast.subContent
 

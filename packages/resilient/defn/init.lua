@@ -6,7 +6,7 @@
 -- 2023, 2025 Didier Willis
 -- License: MIT
 --
-local ast = require("silex.ast")
+local ast = SILE.utilities.ast
 local extractFromTree = ast.extractFromTree
 
 local base = require("packages.resilient.base")
