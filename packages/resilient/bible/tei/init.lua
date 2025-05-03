@@ -3,19 +3,31 @@
 -- from wulfila.be (TEI Gothica).
 -- Following the resilient styling paradigm.
 --
--- 2022, 2023, Didier Willis
--- License: MIT
---
 -- HIGHLY EXPERIMENTAL
 --
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2022-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+--
 local luautf8 = require("lua-utf8")
-local ast = require("silex.ast")
 local createCommand,
       processAsStructure, trimSubContent,
       findInTree
-        = ast.createCommand,
-          ast.processAsStructure, ast.trimSubContent,
-          ast.findInTree
+        = SU.ast.createCommand,
+          SU.ast.processAsStructure, SU.ast.trimSubContent,
+          SU.ast.findInTree
 local loadkit = require("loadkit")
 local loader = loadkit.make_loader("png")
 
@@ -34,7 +46,7 @@ function package:_init (_)
   end)
 end
 
-function package.outputCollatedNotes (_)
+function package:outputCollatedNotes ()
   SILE.typesetNaturally(SILE.getFrame("margins"), function ()
     local refs = SILE.scratch.info.thispage.witnesses
     if not refs then return end

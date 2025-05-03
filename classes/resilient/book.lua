@@ -2,16 +2,28 @@
 -- A new advanced book class for SILE.
 -- Following the resilient styling paradigm, and providing a more features.
 --
--- 2021-2025, Didier Willis
--- License: MIT
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2021-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("classes.resilient.base")
 local class = pl.class(base)
 class._name = "resilient.book"
 
-local ast = require("silex.ast")
 local createCommand, subContent, extractFromTree
-        = ast.createCommand, ast.subContent, ast.extractFromTree
+        = SU.ast.createCommand, SU.ast.subContent, SU.ast.removeFromTree
 
 local layoutParser = require("resilient.layoutparser")
 

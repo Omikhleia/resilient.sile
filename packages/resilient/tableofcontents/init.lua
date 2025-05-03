@@ -3,13 +3,25 @@
 -- Following the resilient styling paradigm.
 -- Hooks are removed and replaced by styles, allowing for a fully customizable TOC
 --
--- 2021-2023, 2025 Didier Willis
--- License: MIT
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2021-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("packages.resilient.base")
-local ast = require("silex.ast")
 local createCommand, createStructuredCommand, subContent
-        = ast.createCommand, ast.createStructuredCommand, ast.subContent
+        = SU.ast.createCommand, SU.ast.createStructuredCommand, SU.ast.subContent
 
 local package = pl.class(base)
 package._name = "resilient.tableofcontents"
@@ -20,8 +32,8 @@ function package:_init (options)
   base._init(self, options)
   SILE.scratch.tableofcontents = SILE.scratch.tableofcontents or {}
   SILE.scratch._tableofcontents = SILE.scratch._tableofcontents or {}
-  self.class:loadPackage("infonode")
-  self.class:loadPackage("leaders")
+  self:loadPackage("infonode")
+  self:loadPackage("leaders")
   if not SILE.scratch.tableofcontents then
     SILE.scratch.tableofcontents = {}
   end
@@ -39,7 +51,7 @@ function package:moveTocNodes ()
   end
 end
 
-function package.writeToc (_)
+function package:writeToc ()
   local tocdata = pl.pretty.write(SILE.scratch.tableofcontents)
   local tocfile, err = io.open(SILE.masterFilename .. '.toc', "w")
   if not tocfile then return SU.error(err) end
@@ -51,7 +63,7 @@ function package.writeToc (_)
   end
 end
 
-function package.readToc (_)
+function package:readToc ()
   if SILE.scratch._tableofcontents and #SILE.scratch._tableofcontents > 0 then
     -- already loaded
     return SILE.scratch._tableofcontents

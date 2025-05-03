@@ -1,7 +1,21 @@
 --
 -- A style package for SILE
--- License: MIT
--- 2021-2025, Didier Willis
+--
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2021-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("packages.base")
 
@@ -9,16 +23,15 @@ local package = pl.class(base)
 package._name = "resilient.styles"
 
 local utils = require("resilient.utils")
-local ast = require("silex.ast")
 local createCommand, subContent
-        = ast.createCommand, ast.subContent
+        = SU.ast.createCommand, SU.ast.subContent
 
 function package:_init (options)
   base._init(self, options)
 
-  self.class:loadPackage("textsubsuper")
-  self.class:loadPackage("textcase")
-  self.class:loadPackage("resilient.liners")
+  self:loadPackage("textsubsuper")
+  self:loadPackage("textcase")
+  self:loadPackage("resilient.liners")
 
   self.class:registerHook("finish", self.writeStyles)
 
@@ -199,7 +212,7 @@ SILE.scratch.styles = {
 -- optional origin allows tracking e.g which package declared that style and just used for debugging
 -- after styles are 'frozen', we can still define new styles but not override
 -- existing styles.
-function package.defineStyle (_, name, opts, styledef, origin)
+function package:defineStyle (name, opts, styledef, origin)
   if SILE.scratch.styles.state.locked then
     if SILE.scratch.styles.specs[name] then
       return SU.debug("resilient.styles", "Styles are now frozen: ignoring redefinition for", name, "from", origin)
@@ -263,7 +276,7 @@ local function readOnly (t)
   return proxy
 end
 
-function package.freezeStyles (_)
+function package:freezeStyles ()
   SILE.scratch.styles.state.locked = true
   SILE.scratch.styles.state = readOnly(SILE.scratch.styles.state)
   SU.debug("resilient.styles", "Freezing styles")

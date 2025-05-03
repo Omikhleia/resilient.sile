@@ -1,9 +1,6 @@
 --
 -- Division-based layouts
 --
--- 2022-2023, Didier Willis
--- License: MIT
---
 -- Sources:
 -- Alain HURTGIG, http://www.alain.les-hurtig.org/varia/empagement.html
 -- Jan TSCHICHOLD, Livre et typographie, Éditions Allia, Paris, 1994.
@@ -11,6 +8,22 @@
 --   Division by 9: Method proposed by Villard de Honnecourt (13th century).
 -- Olivier RANDIER's general method: Olivier RANDIER, Mail to the Typographie
 -- mailing-list, April 8, 2002.
+--
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2022-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("resilient.layouts.base")
 local division = pl.class(base)
