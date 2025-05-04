@@ -21,6 +21,8 @@
 local base = require("classes.resilient.base")
 local class = pl.class(base)
 class._name = "resilient.book"
+class.firstContentFrame = "content" -- We'll define framesets later
+                                    -- but this remains true.
 
 local layoutParser = require("resilient.layoutparser")
 
@@ -43,7 +45,20 @@ function class:_init (options)
   base._init(self, options)
   self.resilientState = {}
 
+  -- Basic low-level packages
+
+  self:loadPackage("struts")
+
+  -- Book-related packages
+
+  self:loadPackage("resilient.tableofcontents")
+  self:loadPackage("labelrefs") -- Warning: must be loaded after resilient.tableofcontents
+                                -- and before any other packages that would load it too.
   self:loadPackage("resilient.sectioning")
+
+  -- Page-related packages
+
+  self:loadPackage("folio")
   self:loadPackage("masters")
   self:defineMaster({
     id = "right",
@@ -56,16 +71,13 @@ function class:_init (options)
     frames = self.evenFrameset
   })
   self:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" })
-  self:loadPackage("resilient.tableofcontents")
-  if not SILE.scratch.headers then SILE.scratch.headers = {} end
   self:loadPackage("resilient.footnotes", {
     insertInto = "footnotes",
     stealFrom = { "content" }
   })
-
-  self:loadPackage("labelrefs")
-  self:loadPackage("struts")
   self:loadPackage("resilient.headers")
+
+  -- Advanced formating packages
 
   self:loadPackage("markdown")
   self:loadPackage("djot")
@@ -108,27 +120,24 @@ function class:_init (options)
   end)
 
   -- Override document.parindent default to this author's taste
-  SILE.settings:set("document.parindent", "1.25em")
+  SILE.settings:set("document.parindent", "1.25em", true)
   -- Override with saner defaults:
   -- Slightly prefer underfull lines over ugly overfull content
   -- I used a more drastic value before, but realize it can have bad effects
   -- too, so for a default value let's be cautious. It's still better then 0
   -- in my opinion for the general usage.
-  SILE.settings:set("linebreak.emergencyStretch", "1em")
+  SILE.settings:set("linebreak.emergencyStretch", "1em", true)
   -- This should never have been 1.2 by default:
   -- https://github.com/sile-typesetter/sile/issues/1371
-  SILE.settings:set("shaper.spaceenlargementfactor", 1)
+  -- Fixed in recent versions of SILE, but nothing prevents us to set it here
+  -- as well.
+  SILE.settings:set("shaper.spaceenlargementfactor", 1, true)
 
   -- Command override from loaded packages.
   -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
-  -- as packages are not loaded yet.
-  -- ASSUMPTION: The corresponding packages are already loaded.
-  -- (Also, we must be sure that reloading them will not reset the hook...
-  -- but our base class cancels the multiple instanciation from SILE 0.14,
-  -- so we should be safe here)
+  -- as packages are not loaded yet at that time.
 
   -- Override the standard foliostyle hook to rely on styles
-  -- Package "folio" is loaded by the plain class.
   self:registerCommand("foliostyle", function (_, content)
     local styleName = SILE.documentState.documentClass:oddPage() and "folio-odd" or "folio-even"
     local division = self.resilientState.division or 2
@@ -148,14 +157,14 @@ function class:_init (options)
   end)
 
   -- Override the standard urlstyle hook to rely on styles
-  -- Package "url" is loaded by the markdown package.
+  -- N.B. Package "url" is loaded by the markdown package.
   self:registerCommand("urlstyle", function (_, content)
     SILE.call("style:apply", { name = "url" }, content)
   end)
 
   -- Override the standard math:numberingstyle hook to rely on styles,
   -- and also to subscribe for cross-references.
-  -- Package "math" is loaded by the markdown package.
+  -- N.B. Package "math" is loaded by the markdown package.
   self:registerCommand("math:numberingstyle", function (opts, _)
     local text
     local stylename = "eqno"
@@ -976,8 +985,6 @@ function class:registerCommands ()
     })
     self:switchMaster(self:oddPage() and "right" or "left")
   end, "Set the page layout")
-
-  -- Override inherited plain class commands with style-aware variants
 
   self:registerCommand('code', function(_, content)
     SILE.call('style:apply', { name = 'code' }, content)

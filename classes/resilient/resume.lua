@@ -35,6 +35,7 @@ SILE.scratch.resilient.resume = SILE.scratch.resilient.resume or {}
 --    vertical dimensions are based on the same pw specification.
 -- 3. The footer and folio are place side-by-side to gain a bit of space.
 --
+class.firstContentFrame = "content"
 class.defaultFrameset = {
   content = {
     left = "left(page) + 10%pw",
@@ -93,10 +94,14 @@ class.nextFrameset = {
 function class:_init (options)
   base._init(self, options)
 
+  -- Basic low-level packages
+
   self:loadPackage("color")
-  self:loadPackage("rules") -- for section rules
   self:loadPackage("image") -- for the user picture
+  self:loadPackage("rules") -- for section rules
+  self:loadPackage("labelrefs") -- cross-reference, used leter to get the n/N page numbering
   self:loadPackage("ptable") -- for tables
+  self:loadPackage("rules") -- for section rules
   self:loadPackage("resilient.lists") -- for bullet lists
   -- Hack the default itemize styles to apply our resume-color
   -- IMPLEMENTATION NOTES
@@ -109,6 +114,9 @@ function class:_init (options)
   --    added whatever the saved styled file says.
   SILE.scratch.styles.specs["lists-itemize-base"].inherit = "resume-color"
 
+  -- Page-related packages
+
+  self:loadPackage("folio")
   self:loadPackage("masters")
   self:defineMaster({
       id = "first",
@@ -120,12 +128,27 @@ function class:_init (options)
       firstContentFrame = self.firstContentFrame,
       frames = self.nextFrameset
     })
-  if not SILE.scratch.headers then SILE.scratch.headers = {} end
-  self:loadPackage("labelrefs") -- cross-reference, used to get the n/N page numbering
-  self:loadPackage("resilient.headers") -- header facility
+  self:loadPackage("resilient.headers")
 
-  -- override foliostyle
+  -- Override default document.parindent, we do not want it for the resume
+  SILE.settings:set("document.parindent", SILE.types.node.glue(), true)
+  -- Override with saner defaults:
+  -- Slightly prefer underfull lines over ugly overfull content
+  -- I used a more drastic value before, but realize it can have bad effects
+  -- too, so for a default value let's be cautious. It's still better then 0
+  -- in my opinion for the general usage.
+  SILE.settings:set("linebreak.emergencyStretch", "1em", true)
+  -- This should never have been 1.2 by default:
+  -- https://github.com/sile-typesetter/sile/issues/1371
+  -- Fixed in recent versions of SILE, but nothing prevents us to set it here
+  -- as well.
+  SILE.settings:set("shaper.spaceenlargementfactor", 1, true)
+
+  -- Overrides for loaded packages.
   -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
+  -- as packages are not loaded yet at that time.
+
+  -- Override the standard foliostyle hook to add a n/N page number
   self:registerCommand("foliostyle", function (_, content)
     SILE.call("hbox", {}, {}) -- for vfill to be effective
     SILE.call("vfill")
@@ -136,17 +159,15 @@ function class:_init (options)
     })
     SILE.call("eject") -- for vfill to be effective
   end)
-
-  -- override default document.parindent, we do not want it.
-  SILE.settings:set("document.parindent", SILE.types.node.glue())
 end
 
 function class:newPage ()
+  -- FIXME
   -- In 0.12.5
   --   if SILE.scratch.counters.folio.value > 1 then
   --     self.switchMaster("next")
   --   end
-  --   return plain.newPage(self)
+  --   return base.newPage(self)
   -- In 0.13/0.14, this became a shit of unclear weirdness
   -- See https://github.com/sile-typesetter/sile/issues/1544
   -- Ditching the folio numbering check as the folio is not even incremented yet (?!)

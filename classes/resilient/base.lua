@@ -23,7 +23,7 @@
 --
 require("silex")
 
-local parent = require("classes.plain")
+local parent = require("classes.base")
 local class = pl.class(parent)
 class._name = "resilient.base"
 class.styles = nil
@@ -31,9 +31,29 @@ class.styles = nil
 function class:_init (options)
   parent._init(self, options)
 
+  -- We do not use SILE's plain class, so do here the minimal compatibility
+  self:loadPackage("resilient.plain")
+  self:loadPackage("bidi")
+
+  -- An make us style-aware
   self:loadPackage("resilient.styles")
   self.styles = self.packages["resilient.styles"]
   self:registerStyles()
+end
+
+function class:declareOptions () -- Also from SILE's plain class
+  self:declareOption("direction", function (_, value)
+    if value then
+        SILE.documentState.direction = value
+        SILE.settings:set("font.direction", value, true)
+        for _, frame in pairs(self.defaultFrameset) do
+          if not frame.direction then
+              frame.direction = value
+          end
+        end
+    end
+    return SILE.documentState.direction
+  end)
 end
 
 local resilientAwareVariant = {
