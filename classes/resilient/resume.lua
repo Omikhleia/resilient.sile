@@ -23,11 +23,6 @@ local base = require("classes.resilient.base")
 local class = pl.class(base)
 class._name = "resilient.resume"
 
-local createCommand, createStructuredCommand, subContent,
-      extractFromTree, findInTree
-        = SU.ast.createCommand, SU.ast.createStructuredCommand, SU.ast.subContent,
-          SU.ast.removeFromTree, SU.ast.findInTree
-
 SILE.scratch.resilient = SILE.scratch.resilient or {}
 SILE.scratch.resilient.resume = SILE.scratch.resilient.resume or {}
 
@@ -137,7 +132,7 @@ function class:_init (options)
     SILE.call("raggedleft", {}, {
      content,
       "/",
-      createCommand("pageref", { marker = "resilient.resume:end" })
+      SU.ast.createCommand("pageref", { marker = "resilient.resume:end" })
     })
     SILE.call("eject") -- for vfill to be effective
   end)
@@ -248,22 +243,22 @@ end
 -- RESUME PROCESSING
 
 local function doEntry (rows, _, content)
-  local topic = extractFromTree(content, "topic")
-  local description = extractFromTree(content, "description")
-  local titleRow = createStructuredCommand("row", {}, {
-    createStructuredCommand("cell", { valign = "top", padding = "4pt 4pt 0 4pt" }, {
+  local topic = SU.ast.removeFromTree(content, "topic")
+  local description = SU.ast.removeFromTree(content, "description")
+  local titleRow = SU.ast.createStructuredCommand("row", {}, {
+    SU.ast.createStructuredCommand("cell", { valign = "top", padding = "4pt 4pt 0 4pt" }, {
       -- We are typesetting in a different style but want proper alignment
       -- With the other style, so strut tweaking:
-      createStructuredCommand("style:apply:paragraph", { name = "resume-topic" }, {
-        createStructuredCommand("style:apply", { name = "resume-description" }, {
-          createCommand("strut"),
+      SU.ast.createStructuredCommand("style:apply:paragraph", { name = "resume-topic" }, {
+        SU.ast.createStructuredCommand("style:apply", { name = "resume-description" }, {
+          SU.ast.createCommand("strut"),
         }),
         -- Then go ahead.
-        subContent(topic)
+        SU.ast.subContent(topic)
       })
     }),
-    createStructuredCommand("cell", { valign = "top", span = 2, padding = "4pt 4pt 0.33cm 0" }, {
-      createStructuredCommand("style:apply", { name = "resume-description" }, description)
+    SU.ast.createStructuredCommand("cell", { valign = "top", span = 2, padding = "4pt 4pt 0.33cm 0" }, {
+      SU.ast.createStructuredCommand("style:apply", { name = "resume-description" }, description)
     })
   })
   for i = 0, #content do
@@ -275,15 +270,15 @@ local function doEntry (rows, _, content)
 end
 
 local doSection = function (rows, _, content)
-  local title = extractFromTree(content, "title")
-  local titleRow = createStructuredCommand("row", {}, {
-    createStructuredCommand("cell", { valign = "bottom", padding = "4pt 4pt 0 4pt" }, {
-      createStructuredCommand("style:apply", { name = "resume-section" }, {
-        createCommand("hrule", { width = "100%fw", height= "1ex" })
+  local title = SU.ast.removeFromTree(content, "title")
+  local titleRow = SU.ast.createStructuredCommand("row", {}, {
+    SU.ast.createStructuredCommand("cell", { valign = "bottom", padding = "4pt 4pt 0 4pt" }, {
+      SU.ast.createStructuredCommand("style:apply", { name = "resume-section" }, {
+        SU.ast.createCommand("hrule", { width = "100%fw", height= "1ex" })
       })
     }),
-    createStructuredCommand("cell", { span = 2, padding = "4pt 4pt 0.33cm 0" }, {
-      createStructuredCommand("style:apply", { name = "resume-section" }, title)
+    SU.ast.createStructuredCommand("cell", { span = 2, padding = "4pt 4pt 0.33cm 0" }, {
+      SU.ast.createStructuredCommand("style:apply", { name = "resume-section" }, title)
     })
   })
   table.insert(rows, titleRow)
@@ -307,53 +302,53 @@ function class:registerCommands ()
   end, "Text to appear at the bottom of the page")
 
   self:registerCommand("resume", function (_  , content)
-    local firstname = extractFromTree(content, "firstname") or SU.error("firstname is mandatory")
-    local lastname = extractFromTree(content, "lastname") or SU.error("lastname is mandatory")
-    local picture = extractFromTree(content, "picture") or SU.error("picture is mandatory")
-    local contact = extractFromTree(content, "contact") or SU.error("contact is mandatory")
-    local jobtitle = extractFromTree(content, "jobtitle") or SU.error("jobtitle is mandatory")
-    local headline = extractFromTree(content, "headline") -- can be omitted
+    local firstname = SU.ast.removeFromTree(content, "firstname") or SU.error("firstname is mandatory")
+    local lastname = SU.ast.removeFromTree(content, "lastname") or SU.error("lastname is mandatory")
+    local picture = SU.ast.removeFromTree(content, "picture") or SU.error("picture is mandatory")
+    local contact = SU.ast.removeFromTree(content, "contact") or SU.error("contact is mandatory")
+    local jobtitle = SU.ast.removeFromTree(content, "jobtitle") or SU.error("jobtitle is mandatory")
+    local headline = SU.ast.removeFromTree(content, "headline") -- can be omitted
 
     SILE.call("cv-footer", {}, { contact })
     SILE.call("cv-header", {}, {
-      createStructuredCommand("style:apply:paragraph", { name = "resume-header" }, {
-        createStructuredCommand("style:apply", { name = "resume-firstname" }, { subContent(firstname) }),
+      SU.ast.createStructuredCommand("style:apply:paragraph", { name = "resume-header" }, {
+        SU.ast.createStructuredCommand("style:apply", { name = "resume-firstname" }, { SU.ast.subContent(firstname) }),
         " ",
-        createStructuredCommand("style:apply", { name = "resume-lastname" }, { subContent(lastname) })
+        SU.ast.createStructuredCommand("style:apply", { name = "resume-lastname" }, { SU.ast.subContent(lastname) })
       })
     })
 
     local rows = {}
 
-    local fullnameAndPictureRow = createStructuredCommand("row", {}, {
-      createStructuredCommand("cell", { border = "0 1pt 0 0", padding = "4pt 4pt 0 4pt", valign = "bottom" }, { function ()
+    local fullnameAndPictureRow = SU.ast.createStructuredCommand("row", {}, {
+      SU.ast.createStructuredCommand("cell", { border = "0 1pt 0 0", padding = "4pt 4pt 0 4pt", valign = "bottom" }, { function ()
           local w = SILE.types.measurement("100%fw"):absolute() - 7.2 -- padding and border
           SILE.call("parbox", { width = w, border = "0.6pt", padding = "3pt" }, function ()
             SILE.call("img", { width = "100%fw", src = picture.options.src })
           end)
         end
       }),
-      createStructuredCommand("cell", { span = 2, border = "0 1pt 0 0", padding = "4pt 2pt 4pt 0",  valign = "bottom" }, {
-        createStructuredCommand("style:apply:paragraph", { name = "resume-fullname" }, {
-          createStructuredCommand("style:apply", { name = "resume-firstname" }, { subContent(firstname) }),
+      SU.ast.createStructuredCommand("cell", { span = 2, border = "0 1pt 0 0", padding = "4pt 2pt 4pt 0",  valign = "bottom" }, {
+        SU.ast.createStructuredCommand("style:apply:paragraph", { name = "resume-fullname" }, {
+          SU.ast.createStructuredCommand("style:apply", { name = "resume-firstname" }, { SU.ast.subContent(firstname) }),
           " ",
-          createStructuredCommand("style:apply", { name = "resume-lastname" }, { subContent(lastname) })
+          SU.ast.createStructuredCommand("style:apply", { name = "resume-lastname" }, { SU.ast.subContent(lastname) })
          })
       })
     })
     table.insert(rows, fullnameAndPictureRow)
 
-    local jobtitleRow = createStructuredCommand("row", {}, {
-      createStructuredCommand("cell", { span = 3 }, {
-        createStructuredCommand("style:apply:paragraph", { name = "resume-jobtitle" }, jobtitle)
+    local jobtitleRow = SU.ast.createStructuredCommand("row", {}, {
+      SU.ast.createStructuredCommand("cell", { span = 3 }, {
+        SU.ast.createStructuredCommand("style:apply:paragraph", { name = "resume-jobtitle" }, jobtitle)
       })
     })
     table.insert(rows, jobtitleRow)
 
     -- NOTE: if headline is absent, no problem. We still insert a row, just for
     -- vertical spacing.
-    local headlineRow = createStructuredCommand("row", {}, {
-      createStructuredCommand("cell", { span = 3 }, { function ()
+    local headlineRow = SU.ast.createStructuredCommand("row", {}, {
+      SU.ast.createStructuredCommand("cell", { span = 3 }, { function ()
           SILE.call("center", {}, function ()
             SILE.call("parbox", { width = "80%fw" }, function()
               SILE.call("style:apply:paragraph", { name = "resume-headline" }, headline)
@@ -399,7 +394,7 @@ function class:registerCommands ()
     local rank = {}
     for i = 1, scale do
       rank[#rank + 1] = i <= value and charFromUnicode("U+25CF") or charFromUnicode("U+25CB")
-      rank[#rank + 1] = createCommand("kern", { width = "0.1em" })
+      rank[#rank + 1] = SU.ast.createCommand("kern", { width = "0.1em" })
     end
     SILE.call("style:apply", { name = "resume-dingbats" }, rank)
   end)
@@ -416,18 +411,18 @@ function class:registerCommands ()
   end)
 
   self:registerCommand("contact", function (_, content)
-    local street = findInTree(content, "street") or SU.error("street is mandatory")
-    local city = findInTree(content, "city") or SU.error("city is mandatory")
-    local phone = findInTree(content, "phone") or SU.error("phone is mandatory")
-    local email = findInTree(content, "email") or SU.error("email is mandatory")
+    local street = SU.ast.findInTree(content, "street") or SU.error("street is mandatory")
+    local city = SU.ast.findInTree(content, "city") or SU.error("city is mandatory")
+    local phone = SU.ast.findInTree(content, "phone") or SU.error("phone is mandatory")
+    local email = SU.ast.findInTree(content, "email") or SU.error("email is mandatory")
 
     SILE.call("style:apply:paragraph", { name = "resume-contact" }, {
-      createStructuredCommand("cv-icon-text", { symbol="U+1F4CD" }, { subContent(street) }),
-      createCommand("cv-bullet"),
-      subContent(city),
-      createCommand("par"),
+      SU.ast.createStructuredCommand("cv-icon-text", { symbol="U+1F4CD" }, { SU.ast.subContent(street) }),
+      SU.ast.createCommand("cv-bullet"),
+      SU.ast.subContent(city),
+      SU.ast.createCommand("par"),
       phone,
-      createCommand("cv-bullet"),
+      SU.ast.createCommand("cv-bullet"),
       email
     })
   end)

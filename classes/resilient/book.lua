@@ -22,9 +22,6 @@ local base = require("classes.resilient.base")
 local class = pl.class(base)
 class._name = "resilient.book"
 
-local createCommand, subContent, extractFromTree
-        = SU.ast.createCommand, SU.ast.subContent, SU.ast.removeFromTree
-
 local layoutParser = require("resilient.layoutparser")
 
 SILE.scratch.book = SILE.scratch.book or {}
@@ -80,7 +77,7 @@ function class:_init (options)
       return {}
     end
     return {
-      createCommand("printbibliography", opts)
+      SU.ast.createCommand("printbibliography", opts)
     }
   end)
   -- Our Djot/Markdown support already provides a _TOC_ symbol.
@@ -93,7 +90,7 @@ function class:_init (options)
   for _, sym in ipairs(extras) do
     mdc:registerSymbol("_" .. sym:upper() .. "_", true, function (opts)
       return {
-        createCommand(sym, opts)
+        SU.ast.createCommand(sym, opts)
       }
     end)
   end
@@ -105,8 +102,8 @@ function class:_init (options)
   -- No issue with re-registering it here, and we'll be ready for that.
   mdc:registerSymbol("_FANCYTOC_", true, function (opts)
     return {
-      createCommand("use", { module = "packages.fancytoc" }),
-      createCommand("fancytableofcontents", opts),
+      SU.ast.createCommand("use", { module = "packages.fancytoc" }),
+      SU.ast.createCommand("fancytableofcontents", opts),
     }
   end)
 
@@ -142,8 +139,8 @@ function class:_init (options)
       -- Typically, if folios use "old-style" numbers, 16 and 17 facing pages shall have
       -- aligned folios, but the 1 is smaller than the 6 and 7, the former ascends above,
       -- and the latter descends below the baseline).
-      createCommand("strut", { method = "rule"}),
-      createCommand("style:apply:number", {
+      SU.ast.createCommand("strut", { method = "rule"}),
+      SU.ast.createCommand("style:apply:number", {
         name = "folio-" .. DIVISIONNAME[division],
         text = SU.ast.contentToString(content),
       })
@@ -605,8 +602,8 @@ function class:registerCommands ()
   self:registerCommand("even-tracked-header", function (_, content)
     local headerContent = function ()
       SILE.call("style:apply:paragraph", { name = "header-even" }, {
-        createCommand("strut", { method = "rule"}),
-        subContent(content)
+        SU.ast.createCommand("strut", { method = "rule"}),
+        SU.ast.subContent(content)
       })
     end
     SILE.call("info", {
@@ -618,8 +615,8 @@ function class:registerCommands ()
   self:registerCommand("odd-tracked-header", function (_, content)
     local headerContent = function ()
       SILE.call("style:apply:paragraph", { name = "header-odd" }, {
-        createCommand("strut", { method = "rule"}),
-        subContent(content)
+        SU.ast.createCommand("strut", { method = "rule"}),
+        SU.ast.subContent(content)
       })
     end
     SILE.call("info", {
@@ -631,8 +628,8 @@ function class:registerCommands ()
   self:registerCommand("even-running-header", function (_, content)
     SILE.scratch.headers.even = function ()
       SILE.call("style:apply:paragraph", { name = "header-even" }, {
-        createCommand("strut", { method = "rule"}),
-        subContent(content)
+        SU.ast.createCommand("strut", { method = "rule"}),
+        SU.ast.subContent(content)
       })
     end
   end, "Text to appear on the top of even pages.")
@@ -640,8 +637,8 @@ function class:registerCommands ()
   self:registerCommand("odd-running-header", function (_, content)
     SILE.scratch.headers.odd = function ()
       SILE.call("style:apply:paragraph", { name = "header-odd" }, {
-        createCommand("strut", { method = "rule"}),
-        subContent(content)
+        SU.ast.createCommand("strut", { method = "rule"}),
+        SU.ast.subContent(content)
       })
     end
   end, "Text to appear on the top odd pages.")
@@ -817,7 +814,7 @@ function class:registerCommands ()
 
   self:registerCommand("captioned-figure", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in figure environment") end
-    local caption = extractFromTree(content, "caption")
+    local caption = SU.ast.removeFromTree(content, "caption")
 
     options.style = "figure-caption"
     SILE.call("style:apply:paragraph", { name = "figure" }, content)
@@ -832,7 +829,7 @@ function class:registerCommands ()
 
   self:registerCommand("captioned-table", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in table environment") end
-    local caption = extractFromTree(content, "caption")
+    local caption = SU.ast.removeFromTree(content, "caption")
 
     options.style = "table-caption"
     SILE.call("style:apply:paragraph", { name = "table" }, content)
@@ -847,7 +844,7 @@ function class:registerCommands ()
 
   self:registerCommand("captioned-listing", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in listing environment") end
-    local caption = extractFromTree(content, "caption")
+    local caption = SU.ast.removeFromTree(content, "caption")
 
     options.style = "listing-caption"
     SILE.call("style:apply:paragraph", { name = "listing" }, content)

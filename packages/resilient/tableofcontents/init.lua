@@ -20,9 +20,6 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("packages.resilient.base")
-local createCommand, createStructuredCommand, subContent
-        = SU.ast.createCommand, SU.ast.createStructuredCommand, SU.ast.subContent
-
 local package = pl.class(base)
 package._name = "resilient.tableofcontents"
 
@@ -177,12 +174,12 @@ function package:registerCommands ()
     for i = 1, #toc do
       local item = toc[i]
       if item.level >= start and item.level <= start + depth then
-        tocItems[#tocItems + 1] = createCommand("tableofcontents:item", {
+        tocItems[#tocItems + 1] = SU.ast.createCommand("tableofcontents:item", {
           level = item.level,
           pageno = item.pageno,
           number = item.number,
           link = linking and item.link
-        }, subContent(item.label))
+        }, SU.ast.subContent(item.label))
       end
     end
     SILE.call("style:apply:paragraph", { name = "toc" }, tocItems)
@@ -219,7 +216,7 @@ function package:registerCommands ()
     SILE.call("info", {
       category = "toc",
       value = {
-        label = subContent(SU.ast.stripContentPos(content)),
+        label = SU.ast.subContent(SU.ast.stripContentPos(content)),
         level = (options.level or 1),
         number = options.number,
         link = dest
@@ -230,7 +227,7 @@ function package:registerCommands ()
   local linkWrapper = function (dest, content)
     if dest and SILE.Commands["pdf:link"] then
       return {
-        createStructuredCommand("pdf:link", { dest = dest }, content)
+        SU.ast.createStructuredCommand("pdf:link", { dest = dest }, content)
       }
     end
     return content
@@ -254,15 +251,15 @@ function package:registerCommands ()
       SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
       local itemContent = {}
       if options.number then
-        itemContent[#itemContent + 1] = createCommand("tableofcontents:levelnumber", {
+        itemContent[#itemContent + 1] = SU.ast.createCommand("tableofcontents:levelnumber", {
           level = level,
           text = options.number
         })
       end
-      itemContent[#itemContent + 1] = subContent(content)
-      itemContent[#itemContent + 1] = createCommand(hasFiller and "dotfill" or "hfill")
+      itemContent[#itemContent + 1] = SU.ast.subContent(content)
+      itemContent[#itemContent + 1] = SU.ast.createCommand(hasFiller and "dotfill" or "hfill")
       if hasPageno then
-        itemContent[#itemContent + 1] = createCommand("style:apply", {
+        itemContent[#itemContent + 1] = SU.ast.createCommand("style:apply", {
           name = "toc-pageno"
         }, {options.pageno})
       end

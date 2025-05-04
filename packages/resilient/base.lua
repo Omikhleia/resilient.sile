@@ -22,7 +22,6 @@
 --
 require("silex")
 local base = require("packages.base")
-
 local package = pl.class(base)
 package._name = "resilient.base"
 package.styles = nil

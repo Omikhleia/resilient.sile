@@ -22,17 +22,10 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local luautf8 = require("lua-utf8")
-local createCommand,
-      processAsStructure, trimSubContent,
-      findInTree
-        = SU.ast.createCommand,
-          SU.ast.processAsStructure, SU.ast.trimSubContent,
-          SU.ast.findInTree
 local loadkit = require("loadkit")
 local loader = loadkit.make_loader("png")
 
 local base = require("packages.resilient.base")
-
 local package = pl.class(base)
 package._name = "resilient.bible.tei"
 
@@ -223,7 +216,7 @@ local function postprocessReadings(content)
       j = j + 1
     end
   end
-  processAsStructure(content)
+  SU.ast.processAsStructure(content)
 end
 
 -- Recursively walks through a content tree to find the first non-empty string
@@ -509,7 +502,7 @@ local function weightStructure(content)
     -- Only one choice, easy.
     local picked = readings[1]
     picked.options._selected_primary_ = true
-    processAsStructure({ picked })
+    SU.ast.processAsStructure({ picked })
   elseif #readings == 2 then
     -- Two choices:
     -- Walk through the readings and annotate them
@@ -701,11 +694,11 @@ function package:registerCommands ()
   -- TEI TAGS - SUBSET AS USED IN THE GOTHIC BIBLE ("GOTICA") FROM WULFILA.BE
 
   self:registerCommand("TEI.2", function (_, content)
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
   end)
 
   self:registerCommand("text", function (_, content)
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
   end)
 
   self:registerCommand("teiHeader", function (_, _)
@@ -713,7 +706,7 @@ function package:registerCommands ()
   end)
 
   self:registerCommand("front", function (_, content)
-    local div = findInTree(content, "div") or {}
+    local div = SU.ast.findInTree(content, "div") or {}
     for i = 1, #div do
       if type(div[i]) == "table" then
         if div[i].command == "div" and div[i].options.id == "books" then
@@ -722,11 +715,11 @@ function package:registerCommands ()
           --   <list>
           --     <item corresp="B1"><expan abbr="Mt">Matthew</expan></item>
           -- ...
-          local list = findInTree(div[i], "list") or {}
+          local list = SU.ast.findInTree(div[i], "list") or {}
           for _, item in ipairs(list) do
             if type(item) == "table" and item.command == "item" then
               local corresp = item.options.corresp
-              local expan = findInTree(item, "expan")
+              local expan = SU.ast.findInTree(item, "expan")
               local abbr = expan.options.abbr
               local full = expan[1]
               books[corresp] = { abbr = abbr, title = full }
@@ -745,7 +738,7 @@ function package:registerCommands ()
 
       SILE.settings:set("linebreak.emergencyStretch", SILE.types.measurement("1em"))
 
-      processAsStructure(content)
+      SU.ast.processAsStructure(content)
     end)
   end)
 
@@ -756,11 +749,11 @@ function package:registerCommands ()
     SILE.call("folios")
     -- Register our own headers
     SILE.call("running-headers", {}, {
-      createCommand("font", { family = "Ulfilas" }), {
-        createCommand("range-reference")
+      SU.ast.createCommand("font", { family = "Ulfilas" }), {
+        SU.ast.createCommand("range-reference")
       }
     })
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
   end)
 
   -- Typical structure in the TEI XML Gotica body:
@@ -800,7 +793,7 @@ function package:registerCommands ()
         SILE.call("par")
         SILE.call("novbreak")
       end)
-      processAsStructure(content)
+      SU.ast.processAsStructure(content)
     elseif options.type == "chapter" or options.type == "leaf" then
       caseNeeded = true -- EXPLAIN FIXME
       SILE.call("smallskip")
@@ -811,7 +804,7 @@ function package:registerCommands ()
           SILE.typesetter:typeset(options.n)
           SILE.call("kern", { width = "0.1em" })
       end)
-      processAsStructure(content)
+      SU.ast.processAsStructure(content)
       SILE.call("par")
     else
       SU.error("Unexpected division type "..tostring(options.type)) -- SHALL NOT OCCUR
@@ -849,7 +842,7 @@ function package:registerCommands ()
       end)
       SILE.call("kern", { width = "1spc" })
     end
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
   end)
 
   self:registerCommand("rdg", function (options, content)
@@ -861,7 +854,7 @@ function package:registerCommands ()
           SILE.call("font", { family = "Symbola" }, { " ⸆" }) -- FIXME EXPLAIN + Absent from Libertinus
         end)
       end
-      processAsStructure(content)
+      SU.ast.processAsStructure(content)
     end
     -- if not selected, skipped
   end)
@@ -870,14 +863,14 @@ function package:registerCommands ()
     if options._pos_  and options._pos_  > 1 then
       SILE.typesetter:typeset(" ")
     end
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
   end)
 
 
   self:registerCommand("seg", function (options, content)
     -- First trim trailing spaces from (potentially structured) content:
     -- We want to handle spacing on our own...
-    local trimmed = trimSubContent(content)
+    local trimmed = SU.ast.trimSubContent(content)
     if options.type == "diff" then -- Variations
       -- Variations <seg type="diff"> are structured, containing other <seg>
       -- We do not mark the variations, just process the content...
@@ -892,19 +885,19 @@ function package:registerCommands ()
       if options.subtype == "5" then
         -- Supplemental content vs. other mss.
         SILE.call("color", { color = "#4682B4" }, { "⸄" }) -- U+2E04
-        processAsStructure(trimmed)
+        SU.ast.processAsStructure(trimmed)
         SILE.call("color", { color = "#4682B4" }, { "⸅" }) -- U+2E05
       elseif options.subtype == "6" then
         -- Supplemental content vs. lacuna/gap in other mss.
         -- Don't mark these
-        processAsStructure(trimmed)
+        SU.ast.processAsStructure(trimmed)
       elseif options.subtype == "7" then
         -- Supplemental punctuation vs. other mss.
         -- Don't mark these
-        processAsStructure(trimmed)
+        SU.ast.processAsStructure(trimmed)
       else
         SILE.call("color", { color = "#4682B4" }, { "⸂" }) -- U+2E02
-        processAsStructure(trimmed)
+        SU.ast.processAsStructure(trimmed)
         SILE.call("color", { color = "#4682B4" }, { "⸃" }) -- U+2E03
         if options._link_ then
           SILE.call("increment-counter", { id = "variant" })
@@ -929,7 +922,7 @@ function package:registerCommands ()
             end)
             SILE.call("font", { family = "Ulfilas", features = "+liga" }, function ()
               insideLinkingNote = true
-              processAsStructure(options._link_)
+              SU.ast.processAsStructure(options._link_)
               insideLinkingNote = false
             end)
           end)
@@ -1077,9 +1070,9 @@ function package:registerCommands ()
       end)
       SILE.call("font", { family = "Ulfilas", features = "+liga" }, function ()
         if isStructure(content) then
-          processAsStructure(content)
+          SU.ast.processAsStructure(content)
         else
-          SILE.process(trimSubContent(content))
+          SILE.process(SU.ast.trimSubContent(content))
         end
       end)
     end)
@@ -1095,9 +1088,9 @@ function package:registerCommands ()
       SILE.call("font", { family = "Libertinus Serif" }, { "⸉" })
     end)
     if isStructure(content) then
-      processAsStructure(content)
+      SU.ast.processAsStructure(content)
     else
-      SILE.process(trimSubContent(content))
+      SILE.process(SU.ast.trimSubContent(content))
     end
     SILE.call("color", { color = "#4682B4" }, function ()
       SILE.call("font", { family = "Libertinus Serif" }, { "⸊" })
@@ -1132,7 +1125,7 @@ function package:registerCommands ()
           -- FIXME tracking opener/closer witness is broken
           SILE.call("save-chapter-number", {}, {})
           -- SILE.call("save-verse-number", {}, { "*" })
-          processAsStructure(content)
+          SU.ast.processAsStructure(content)
         end)
       end)
     end)
@@ -1150,7 +1143,7 @@ function package:registerCommands ()
           -- FIXME tracking opener/closer witness is broken
           SILE.call("save-chapter-number", {}, {})
           -- SILE.call("save-verse-number", {}, { "*" })
-          processAsStructure(content)
+          SU.ast.processAsStructure(content)
         end)
       end)
     end)
@@ -1169,7 +1162,7 @@ function package:registerCommands ()
       SILE.typesetter:typeset(" ")
     end
     SILE.typesetter:typeset("„")
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
     SILE.typesetter:typeset("“")
   end)
 
@@ -1178,7 +1171,7 @@ function package:registerCommands ()
       SILE.typesetter:typeset(" ")
     end
     SILE.typesetter:typeset("„")
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
     SILE.typesetter:typeset("“")
   end)
 

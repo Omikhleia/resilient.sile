@@ -23,13 +23,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
-local createCommand = SU.ast.createCommand
 local layoutParser = require("resilient.layoutparser")
 local loadkit = require("loadkit")
 local templateLoader = loadkit.make_loader("djt")
 
 local base = require("packages.resilient.base")
-
 local package = pl.class(base)
 package._name = "resilient.bookmatters"
 
@@ -106,7 +104,7 @@ local function contrastColor(color)
   if not color.r then
     -- Not going to bother with other color schemes for now...
     SU.error([[Background color for back cover must be in RGB.
-Feel free to propose a PR do the maintainer if you want it otherwise]])
+Feel free to propose a PR to the maintainer if you want it otherwise]])
   end
   return weightedColorDistanceIn3D(color) < 130 and "white" or "black"
 end
@@ -210,7 +208,7 @@ function package:registerCommands ()
       SILE.call("skip", { height = offset })
       SILE.call("kern", { width = SILE.types.node.hfillglue() })
       SILE.call("framebox", { fillcolor = "white", padding = pad1, borderwidth = 0 }, {
-        createCommand("ean13", { code = metadata["meta:isbn"] }),
+        SU.ast.createCommand("ean13", { code = metadata["meta:isbn"] }),
       })
       SILE.call("kern", { width = offset })
     end

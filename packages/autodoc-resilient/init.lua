@@ -22,10 +22,7 @@
 -- so that it works with the 'resilient' module,
 -- with a rather OPINIONATED change. See HACKS comments below.
 --
-local createCommand, subContent = SU.ast.createCommand, SU.ast.subContent
-
 local base = require("packages.base")
-
 local package = pl.class(base)
 package._name = "autodoc-resilient"
 
@@ -41,7 +38,7 @@ local theme = {
 local colorWrapper = function (ctype, content)
   local color = SILE.scratch.autodoc.theme[ctype]
   if color and SILE.settings:get("autodoc.highlighting") and SILE.Commands["color"] then
-    return { createCommand("color", { color = color }, subContent(content)) }
+    return { SU.ast.createCommand("color", { color = color }, SU.ast.subContent(content)) }
   else
     return content
   end
@@ -74,7 +71,7 @@ local function astToDisplay (options, content)
         seenCommandWithoutArg = false
       end
       if tree:sub(1, 1) == "<" and tree:sub(-1) == ">" then
-        result[#result+1] = createCommand("autodoc:internal:bracketed", {}, tree:sub(2, -2))
+        result[#result+1] = SU.ast.createCommand("autodoc:internal:bracketed", {}, tree:sub(2, -2))
       else
         result[#result+1] = tree
       end
@@ -84,7 +81,7 @@ local function astToDisplay (options, content)
         SU.error("Unexpected command '"..tree.command.."'")
       end
       result[#result+1] = "\\"
-      result[#result+1] = createCommand("autodoc:code:style", { type = "command" }, tree.command)
+      result[#result+1] = SU.ast.createCommand("autodoc:code:style", { type = "command" }, tree.command)
       local sortedOpts = {}
       for k, _ in pairs(tree.options) do table.insert(sortedOpts, k) end
       table.sort(sortedOpts, optionSorter)
@@ -92,17 +89,17 @@ local function astToDisplay (options, content)
         result[#result+1] = "["
         for iOpt, option in ipairs(sortedOpts) do
           result[#result+1] = {
-            createCommand("autodoc:code:style", { type = "parameter" }, option),
+            SU.ast.createCommand("autodoc:code:style", { type = "parameter" }, option),
             "=",
-            createCommand("penalty", { penalty = 100 }), -- Quite decent to break here if need be.
-            createCommand("autodoc:value", {}, tree.options[option]),
+            SU.ast.createCommand("penalty", { penalty = 100 }), -- Quite decent to break here if need be.
+            SU.ast.createCommand("autodoc:value", {}, tree.options[option]),
             (iOpt == #sortedOpts) and "]" or ", "
           }
         end
       end
       if (#tree >= 1) then
         result[#result+1] = {
-          createCommand("penalty", { penalty = 200 }), -- Less than optimal break.
+          SU.ast.createCommand("penalty", { penalty = 200 }), -- Less than optimal break.
           "{",
           astToDisplay(options, tree),
           "}"
@@ -246,7 +243,7 @@ function package:registerCommands ()
   self:registerCommand("autodoc:internal:bracketed", function (_, content)
     SILE.typesetter:typeset("⟨")
     SILE.call("autodoc:code:style", { type = "bracketed" }, {
-      createCommand("em", {}, subContent(content))
+      SU.ast.createCommand("em", {}, SU.ast.subContent(content))
     })
     SILE.call("kern", { width = "0.1em" }) -- fake italic correction.
     SILE.typesetter:typeset("⟩")
@@ -288,11 +285,11 @@ function package:registerCommands ()
     end
     if #parts < 1 or #parts > 2 then SU.error("Unexpected parameter '"..param.."'") end
     SILE.call("autodoc:code:style", { type = "ast" }, {
-      createCommand("autodoc:code:style", { type = "parameter" }, parts[1]),
+      SU.ast.createCommand("autodoc:code:style", { type = "parameter" }, parts[1]),
       (#parts == 2) and {
         "=",
-        createCommand("penalty", { penalty = 100 }, nil), -- Quite decent to break here if need be.
-        createCommand("autodoc:value", {}, parts[2])
+        SU.ast.createCommand("penalty", { penalty = 100 }, nil), -- Quite decent to break here if need be.
+        SU.ast.createCommand("autodoc:value", {}, parts[2])
       } or nil
     })
   end, "Outputs a nicely presented parameter, possibly with a value.")

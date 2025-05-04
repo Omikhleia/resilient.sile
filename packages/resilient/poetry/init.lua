@@ -18,11 +18,9 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
-local createStructuredCommand = SU.ast.createStructuredCommand
 local LOG10 = math.log(10)
 
 local base = require("packages.resilient.base")
-
 local package = pl.class(base)
 package._name = "resilient.poetry"
 
@@ -255,7 +253,7 @@ function package:registerCommands ()
     local prosody = SU.boolean(options.prosody, false)
     local style = prosody and "prosody" or "poetry"
     SILE.call("style:apply:paragraph", { name = style }, {
-      createStructuredCommand("resilient.poetry:poetry", options, content)
+      SU.ast.createStructuredCommand("resilient.poetry:poetry", options, content)
     })
   end, "A styled poetry environment")
 

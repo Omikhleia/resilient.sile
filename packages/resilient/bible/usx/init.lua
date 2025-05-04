@@ -20,11 +20,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
-local createCommand,
-      processAsStructure, trimSubContent
-        = SU.ast.createCommand,
-          SU.ast.processAsStructure, SU.ast.trimSubContent
-
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.bible.usx"
@@ -273,14 +268,14 @@ function package:registerCommands()
 
   self:registerCommand("usx", function(_, content)
     SILE.call("running-headers", {}, {
-      createCommand("range-reference")
+      SU.ast.createCommand("range-reference")
     })
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
   end)
 
   self:registerCommand("book", function(options, content)
     SILE.call("save-book-title", {}, { options.code })
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
   end)
 
   self:registerCommand("chapter", function(options, _)
@@ -320,7 +315,7 @@ function package:registerCommands()
     -- END HACK
 
     SILE.call("style:apply:paragraph", { discardable = true, name = "usx-para-" .. options.style },
-      trimSubContent(hackedContent)
+      SU.ast.trimSubContent(hackedContent)
     )
   end)
 
@@ -384,7 +379,7 @@ function package:registerCommands()
       ref = ref
     }, function()
       SILE.call("style:apply:number", { name = "usx-noteno-innote", text = count })
-      processAsStructure(content)
+      SU.ast.processAsStructure(content)
     end)
   end)
 

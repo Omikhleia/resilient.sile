@@ -18,13 +18,10 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("packages.base")
-
 local package = pl.class(base)
 package._name = "resilient.styles"
 
 local utils = require("resilient.utils")
-local createCommand, subContent
-        = SU.ast.createCommand, SU.ast.subContent
 
 function package:_init (options)
   base._init(self, options)
@@ -332,7 +329,7 @@ function package:registerCommands ()
         if not positionCommand then
           SU.error("Invalid style position '"..positionValue.."'")
         end
-        content = createCommand(positionCommand, {}, content)
+        content = SU.ast.createCommand(positionCommand, {}, content)
       end
       local caseValue = propertyValueIfNotNull(style.properties.case)
       if caseValue and caseValue ~= "normal" then
@@ -340,7 +337,7 @@ function package:registerCommands ()
         if not caseCommand then
           SU.error("Invalid style case '" .. caseValue .. "'")
         end
-        content = createCommand(caseCommand, {}, content)
+        content = SU.ast.createCommand(caseCommand, {}, content)
       end
     end
     if style.decoration then
@@ -350,15 +347,15 @@ function package:registerCommands ()
         if not lineCommand then
           SU.error("Invalid style decoration line '" .. lineValue .. "'")
         end
-        content = createCommand(lineCommand, shallowNonNullOptions(style.decoration), content)
+        content = SU.ast.createCommand(lineCommand, shallowNonNullOptions(style.decoration), content)
       end
     end
     local colorValue = propertyValueIfNotNull(style.color)
     if colorValue then
-      content = createCommand("color", { color = colorValue }, content)
+      content = SU.ast.createCommand("color", { color = colorValue }, content)
     end
     if style.font and SU.boolean(options.font, true) then
-      content = createCommand("style:font", style.font, content)
+      content = SU.ast.createCommand("style:font", style.font, content)
     end
     return content
   end
@@ -371,7 +368,7 @@ function package:registerCommands ()
     if type(content) == "table" then
       if content.command or content.id then
         -- We want to skip the calling content key values (id, command, etc.)
-        return subContent(content)
+        return SU.ast.subContent(content)
       end
       return content
     end
@@ -388,7 +385,7 @@ function package:registerCommands ()
 
   local characterStyleFontOnly = function (style, content)
     if style.font then
-      content = createCommand("style:font", style.font, content)
+      content = SU.ast.createCommand("style:font", style.font, content)
     end
     return content
   end
@@ -406,9 +403,9 @@ function package:registerCommands ()
         -- correct even on the last paragraph. But the color introduces hboxes so
         -- must be applied last, no to cause havoc with the noindent/indent and
         -- centering etc. environments
-        local recontent = createCommand(alignCommand, {}, {
+        local recontent = SU.ast.createCommand(alignCommand, {}, {
           characterStyleNoFont(style, content),
-          not breakafter and createCommand("novbreak") or nil
+          not breakafter and SU.ast.createCommand("novbreak") or nil
         })
         if style.font then
           recontent = characterStyleFontOnly(style, recontent)

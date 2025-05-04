@@ -19,7 +19,6 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("packages.resilient.base")
-
 local package = pl.class(base)
 package._name = "resilient.verbatim"
 

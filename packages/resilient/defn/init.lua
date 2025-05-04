@@ -19,10 +19,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
-local extractFromTree = SU.ast.removeFromTree
-
-local base = require("packages.resilient.base")
-
 local trimLeft = function (str)
   return str:gsub("^%s*", "")
 end
@@ -35,6 +31,7 @@ local trim = function (str)
   return trimRight(trimLeft(str))
 end
 
+local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.defn"
 
@@ -84,8 +81,8 @@ function package:registerCommands ()
   end, "Definition block (internal)")
 
   self:registerCommand("defn", function (options, content)
-    local term = extractFromTree(content, "term")
-    local desc = extractFromTree(content, "desc")
+    local term = SU.ast.removeFromTree(content, "term")
+    local desc = SU.ast.removeFromTree(content, "desc")
     if not term then
       SU.error("Missing term in definition")
     end

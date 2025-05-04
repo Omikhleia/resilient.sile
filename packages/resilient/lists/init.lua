@@ -52,7 +52,6 @@
 -- second technique.
 --
 local base = require("packages.resilient.base")
-
 local package = pl.class(base)
 package._name = "resilient.lists"
 
