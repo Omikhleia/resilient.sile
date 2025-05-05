@@ -106,15 +106,9 @@ function class:_init (options)
       }
     end)
   end
-  -- Our Djot/Markdown support provides an undocumented _FANCYTOC_ symbol.
-  -- The reason why it is undocumented is that module fancytoc.sile is not a
-  -- dependency of markdown.sile.
-  -- On the other hand, resilient.sile has all needed dependencies.
-  -- So eventually we'll remove the _FANCYTOC_ symbol from markdown.sile.
-  -- No issue with re-registering it here, and we'll be ready for that.
   mdc:registerSymbol("_FANCYTOC_", true, function (opts)
     return {
-      SU.ast.createCommand("use", { module = "packages.fancytoc" }),
+      SU.ast.createCommand("use", { module = "packages.resilient.fancytoc" }),
       SU.ast.createCommand("fancytableofcontents", opts),
     }
   end)

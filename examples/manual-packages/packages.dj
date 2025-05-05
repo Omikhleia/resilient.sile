@@ -142,11 +142,8 @@ This package is part of the *labelrefs.sile* collection.
 {#packages-fancytoc}
 ## Fancy alternative table of contents
 
-{custom-style=admon}
-This package is part of the *fancytoc.sile* collection.
-
 ``` =sile
-\package-documentation{fancytoc}
+\package-documentation{resilient.fancytoc}
 ```
 
 Here it is at work for the current document with default parameters.

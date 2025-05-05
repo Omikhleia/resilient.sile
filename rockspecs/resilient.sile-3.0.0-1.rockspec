@@ -19,7 +19,6 @@ dependencies = {
    "barcodes.sile >= 2.0.0",
    "couyards.sile >= 1.0.0",
    "embedders.sile >= 1.0.0",
-   "fancytoc.sile >= 1.1.0",
    "labelrefs.sile >= 0.1.0",
    "printoptions.sile >= 1.2.0",
    "piecharts.sile >= 2.0.0",
@@ -52,6 +51,7 @@ build = {
     ["sile.packages.resilient.verbatim"]        = "packages/resilient/verbatim/init.lua",
     ["sile.packages.resilient.defn"]            = "packages/resilient/defn/init.lua",
     ["sile.packages.resilient.liners"]          = "packages/resilient/liners/init.lua",
+    ["sile.packages.resilient.fancytoc"]        = "packages/resilient/fancytoc/init.lua",
 
     ["sile.packages.resilient.bible.usx"]       = "packages/resilient/bible/usx/init.lua",
     ["sile.packages.resilient.bible.tei"]       = "packages/resilient/bible/tei/init.lua",
