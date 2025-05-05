@@ -26,15 +26,17 @@ dependencies = {
    "qrcode.sile >= 2.0.0",
    "textsubsuper.sile >= 2.0.0",
    "markdown.sile >= 2.4.0",
-   "silex.sile >= 0.9.0, < 1.0",
 }
 build = {
   type = "builtin",
   modules = {
-    ["sile.classes.resilient.base"]    = "classes/resilient/base.lua",
+    ["sile.classes.resilient.override"]  = "classes/resilient/override.lua",
+    ["sile.classes.resilient.base"]      = "classes/resilient/base.lua",
 
-    ["sile.classes.resilient.book"]    = "classes/resilient/book.lua",
-    ["sile.classes.resilient.resume"]  = "classes/resilient/resume.lua",
+    ["sile.classes.resilient.book"]      = "classes/resilient/book.lua",
+    ["sile.classes.resilient.resume"]    = "classes/resilient/resume.lua",
+
+    ["sile.typesetters.silent"]          = "typesetters/silent.lua",
 
     ["sile.packages.resilient.base"]            = "packages/resilient/base.lua",
 

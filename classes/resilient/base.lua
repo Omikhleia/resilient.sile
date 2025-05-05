@@ -21,9 +21,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
-require("silex")
-
-local parent = require("classes.base")
+local parent = require("classes.resilient.override")
 local class = pl.class(parent)
 class._name = "resilient.base"
 class.styles = nil
@@ -31,46 +29,28 @@ class.styles = nil
 function class:_init (options)
   parent._init(self, options)
 
-  -- We do not use SILE's plain class, so do here the minimal compatibility
-  self:loadPackage("resilient.plain")
-  self:loadPackage("bidi")
-
-  -- An make us style-aware
   self:loadPackage("resilient.styles")
   self.styles = self.packages["resilient.styles"]
   self:registerStyles()
 end
 
-function class:declareOptions () -- Also from SILE's plain class
-  self:declareOption("direction", function (_, value)
-    if value then
-        SILE.documentState.direction = value
-        SILE.settings:set("font.direction", value, true)
-        for _, frame in pairs(self.defaultFrameset) do
-          if not frame.direction then
-              frame.direction = value
-          end
-        end
-    end
-    return SILE.documentState.direction
-  end)
-end
-
-local resilientAwareVariant = {
+local styleAwareVariant = {
   lists = "resilient.lists",
   verbatim = "resilient.verbatim",
+  tableofcontents = "resilient.tableofcontents",
+  footnotes = "resilient.footnotes",
 }
 
 function class:loadPackage (packname, options)
-  if resilientAwareVariant[packname] then
-    packname = resilientAwareVariant[packname]
-    SU.warn("Loading the resilient variant of package '" .. packname .. "'"
-    .. [[
+  if styleAwareVariant[packname] then
+    SU.debug("resilient", "Loading the resilient variant of package", packname, "=", styleAwareVariant[packname],
+    [[
 
 This should be compatible, but there might be differences such as hooks not
 being available, as the resilient version use styles instead.
-Please consider using resilient-compatible packages when available!
+Please consider using resilient-compatible style-aware packages when available!
 ]])
+  packname = styleAwareVariant[packname]
   end
   return parent.loadPackage(self, packname, options)
 end
@@ -85,25 +65,6 @@ end
 
 function class:hasStyle (name)
   return self.styles:hasStyle(name)
-end
-
-function class:declareOptions ()
-  parent.declareOptions(self)
-
-  self:declareOption("resolution", function (_, value)
-    if value then
-      self.resolution = SU.cast("integer", value)
-    end
-    return self.resolution
-  end)
-end
-
-function class:registerRawHandlers ()
-  parent.registerRawHandlers(self)
-end
-
-function class:registerCommands ()
-  parent.registerCommands(self)
 end
 
 -- For overriding in any document subclass, as a convenient hook
