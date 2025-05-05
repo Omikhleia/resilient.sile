@@ -34,6 +34,13 @@ function class:_init (options)
   self:registerStyles()
 end
 
+-- Some core or 3rd-party packages may load a non-style-aware variant of
+-- another package, and this would cause issues with the commands being
+-- redefined to the non-style-aware variant.
+-- E.g. in SILE 0.15.12, the "url" package loads the "verbatim" package
+-- (despite not using it, and this was later fixed).
+-- Let's assume we are compatible with those packages (though we cannot
+-- guarantee it), and always silently load the resilient variant instead.
 local styleAwareVariant = {
   lists = "resilient.lists",
   verbatim = "resilient.verbatim",
@@ -41,7 +48,7 @@ local styleAwareVariant = {
   footnotes = "resilient.footnotes",
 }
 
-function class:loadPackage (packname, options)
+function class:loadPackage (packname, options, reload)
   if styleAwareVariant[packname] then
     SU.debug("resilient", "Loading the resilient variant of package", packname, "=", styleAwareVariant[packname],
     [[
@@ -50,9 +57,10 @@ This should be compatible, but there might be differences such as hooks not
 being available, as the resilient version use styles instead.
 Please consider using resilient-compatible style-aware packages when available!
 ]])
-  packname = styleAwareVariant[packname]
+  SU.warn("Loading the resilient variant of package " .. packname .. " = " .. styleAwareVariant[packname])
+    packname = styleAwareVariant[packname]
   end
-  return parent.loadPackage(self, packname, options)
+  return parent.loadPackage(self, packname, options, reload)
 end
 
 function class:registerStyle (name, opts, styledef)
