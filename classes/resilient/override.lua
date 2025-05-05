@@ -29,72 +29,9 @@ pcall(function () local _ = SILE.inputters.markdown end)
 pcall(function () local _ = SILE.inputters.djot end)
 pcall(function () local _ = SILE.inputters.pandocast end)
 
--- CANCELLATION OF MULTIPLE PACKAGE INSTANCIATION
--- Packages such as resilient.style are stateful and freeze the styles at some point
--- in their workflow.
--- The multiple package instantiation model was introduced in SILE 0.13-0.14.
--- I struggled too many times with this issue in August 2022 (initial effort porting
--- my 0.12.5 packages to 0.14.x) and afterwards.
--- See SILE issue 1531 for some details.
--- I could never make any sense of this half-baked "feature", which introduces
--- unintended side-effects and problems impossible to decently address,
--- making the life of package and class developers real harder.
--- Some of the issues were supposed to be fixed in SILE 0.15, but removing the hacks
--- below still breaks (at least) package resilient.style...
-
-SILE.use = function (module, options)
-   local pack
-   if type(module) == "string" then
-      pack = require(module)
-   elseif type(module) == "table" then
-      pack = module
-   end
-   local name = pack._name
-   local class = SILE.documentState.documentClass -- luacheck: ignore
-   if not pack.type then
-      SU.error("Modules must declare their type")
-   elseif pack.type == "class" then
-      SILE.classes[name] = pack
-      if class then
-         SU.error("Cannot load a class after one is already instantiated")
-      end
-      SILE.scratch.class_from_uses = pack
-   elseif pack.type == "inputter" then
-      SILE.inputters[name] = pack
-      SILE.inputter = pack(options)
-   elseif pack.type == "outputter" then
-      SILE.outputters[name] = pack
-      SILE.outputter = pack(options)
-   elseif pack.type == "shaper" then
-      SILE.shapers[name] = pack
-      SILE.shaper = pack(options)
-   elseif pack.type == "typesetter" then
-      SILE.typesetters[name] = pack
-      SILE.typesetter = pack(options)
-   elseif pack.type == "pagebuilder" then
-      SILE.pagebuilders[name] = pack
-      SILE.pagebuilder = pack(options)
-   elseif pack.type == "package" then
-      SILE.packages[name] = pack
-      if class then
-         -- BEGIN SILEX/RESILIENT CANCEL MULTIPLE PACKAGE INSTANCIATION
-         if class.packages[name] then
-            return SU.debug("resilient.override", "\\use fork ignoring already loaded package:", name)
-         end
-         -- END SILEX/RESILIENT CANCEL MULTIPLE PACKAGE INSTANCIATION
-         class.packages[name] = pack(options)
-      else
-         table.insert(SILE.input.preambles, {
-            pack = pack,
-            options = options
-         })
-      end
-   end
-end
-
 -- BASE CLASS OVERLOAD
 -- We do a few things here:
--- - We replace SILE's default typesetter with the SILEnt typesetter
+-- - We replace SILE's default typesetter with our SILEnt typesetter
 -- - Our classes do not use SILE's plain class, but implement minimal compatibility
 -- - We cancel multiple package instanciation, as some packages are stateful (see above)
 
@@ -115,7 +52,7 @@ function class:_init (options)
 end
 
 function class:declareOptions ()
-   -- Also from SILE's plain class
+   -- Also from SILE's plain class (bidi-related)
    self:declareOption("direction", function (_, value)
       if value then
          SILE.documentState.direction = value
@@ -137,16 +74,44 @@ function class:declareOptions ()
    end)
 end
 
-function class:loadPackage (packname, options)
-   local pack = require(("packages.%s"):format(packname))
-   -- BEGIN SILEX/RESILIENT CANCEL MULTIPLE PACKAGE INSTANCIATION
-   -- I beg to disagree with SILE here.
-   if type(pack) == "table" and pack.type == "package" then -- new package
-      if self.packages[pack._name] then
-         return SU.debug("resilient.override", "Ignoring package already loaded in the class:", pack._name)
+function class:loadPackage (packname, options, _) -- last agument is the reload flag see below
+   local pack
+   if type(packname) == "table" then
+      pack, packname = packname, packname._name
+   elseif type(packname) == "nil" or packname == "nil" or pl.stringx.strip(packname) == "" then
+      SU.error(("Attempted to load package with an invalid packname '%s'"):format(packname))
+   else
+      pack = require(("packages.%s"):format(packname))
+      if pack._name ~= packname then
+         SU.error(("Loaded module name '%s' does not match requested name '%s'"):format(pack._name, packname))
       end
    end
-   base.loadPackage(self, packname, options)
+   SILE.packages[packname] = pack
+   if type(pack) == "table" and pack.type == "package" then -- current package api
+      if self.packages[packname] then
+         -- BEGIN SILEX/RESILIENT CANCEL MULTIPLE PACKAGE INSTANCIATION
+         -- Packages such as resilient.style are stateful and freeze the styles at some point
+         -- in their workflow.
+         -- The multiple package instantiation model was introduced in SILE 0.13-0.14.
+         -- I struggled too many times with this issue in August 2022 (initial effort porting
+         -- my 0.12.5 packages to 0.14.x) and afterwards.
+         -- See SILE issue 1531 for some details.
+         -- I could never make any sense of this "feature", which introduces unintended
+         -- side-effects and problems difficult to decently address.
+         -- Some of the issues were supposed to be fixed in SILE 0.15, but removing the hacks
+         -- below still breaks (at least) package resilient.style...
+         -- I guess we are supposed to use reload flag there, but we can't distinguish
+         -- between a new package instantiation and a non-forced reload, can we?
+         -- Oh well, I am still lost after all this time, let's go on canceling this
+         -- multiple package instanciation...
+         return SU.debug("resilient.override", "Ignoring package already loaded in the class:", pack._name)
+         -- END SILEX/RESILIENT CANCEL MULTIPLE PACKAGE INSTANCIATION
+      else
+         self.packages[packname] = pack(options)
+      end
+   else -- legacy package
+      self:initPackage(pack, options)
+   end
 end
 
 -- WARNING: not called as class method
