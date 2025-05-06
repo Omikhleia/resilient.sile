@@ -177,9 +177,6 @@ And here it is stating at level 1, i.e. chapters and sections.
 
 ## Printing options & tools for professional printers
 
-{custom-style=admon}
-This package is part of the *printoptions.sile* collection.
-
 ``` =sile
 \package-documentation{printoptions}
 ```

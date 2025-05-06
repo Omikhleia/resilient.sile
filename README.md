@@ -58,8 +58,6 @@ This collection also imports several modules also provided separately, would you
 - [Barcodes](https://github.com/Omikhleia/barcodes.sile) (for ISBNs, etc.)
 - [QR codes](https://github.com/Omikhleia/qrcode.sile)
 - [Couyards](https://github.com/Omikhleia/couyards.sile) (typographic ornaments)
-- [Printer options](https://github.com/Omikhleia/printoptions.sile) (image resolution tuning
-  and vector rasterization, would you want to use a professional printer or print-on-demand services)
 - [Textual graphics embedders](https://github.com/Omikhleia/embedders.sile) (support for Graphviz, Lilypond, &c)
 - [Markdown](https://github.com/Omikhleia/markdown.sile) (support for Markdown, Djot etc.)
 - [Pie charts](https://github.com/Omikhleia/piecharts.sile) (support for pie charts)

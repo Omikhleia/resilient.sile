@@ -227,8 +227,8 @@ The `packages` object lists extra packages that SILE must use.
 It can be used to load add-on packages needed by your content but not already provided by the document class and its supporting packages.
 As far as the resilient collection is concerned, a few notable suggestions are listed below.
 
- - **resilient.poetry** for poetry typesetting.
- - **printoptions** for advanced print options & tools for professional printers.
+ - *resilient.poetry* for poetry typesetting.
+ - *printoptions* for advanced print options & tools for professional printers.
   
 {#masterdoc-content-basic}
 ## Up to the content

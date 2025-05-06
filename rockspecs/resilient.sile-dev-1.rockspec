@@ -19,7 +19,6 @@ dependencies = {
    "couyards.sile",
    "embedders.sile",
    "labelrefs.sile",
-   "printoptions.sile",
    "piecharts.sile",
    "ptable.sile",
    "qrcode.sile",
@@ -57,11 +56,12 @@ build = {
     ["sile.packages.resilient.bible.usx"]       = "packages/resilient/bible/usx/init.lua",
     ["sile.packages.resilient.bible.tei"]       = "packages/resilient/bible/tei/init.lua",
 
-    ["sile.packages.autodoc-resilient"] = "packages/autodoc-resilient/init.lua",
+    ["sile.packages.autodoc-resilient"]    = "packages/autodoc-resilient/init.lua",
+    ["sile.packages.printoptions"]         = "packages/printoptions/init.lua",
 
     ["sile.resilient.utils"] = "resilient/utils.lua",
-    ["sile.resilient.layoutparser"] = "resilient/layoutparser.lua",
 
+    ["sile.resilient.layoutparser"]        = "resilient/layoutparser.lua",
     ["sile.resilient.layouts.base"]        = "resilient/layouts/base.lua",
 
     ["sile.resilient.layouts.canonical"]   = "resilient/layouts/canonical.lua",

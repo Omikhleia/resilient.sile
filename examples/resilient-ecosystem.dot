@@ -70,7 +70,8 @@ digraph omikhleia {
       verbatim [shape=component,style=filled,fillcolor=mintcream,label="resilient.verbatim"]
       liners [shape=component,style=filled,fillcolor=mintcream,label="resilient.liners"]
       fancytoc [shape=component,style=filled,fillcolor=mintcream, label="resilient.fancytoc"]
-
+      printoptions [shape=component,style=filled,fillcolor=mintcream]
+ 
       cbase -> styles
       pbase -> styles
       styles -> textsubsuper
@@ -150,12 +151,6 @@ digraph omikhleia {
     label = "barcodes.sile";
 
     barcodes [shape=component,style=filled,fillcolor=mintcream,label="barcodes.ean13"]
-  }
-
-subgraph cluster_printoptions {
-    label = "printoptions.sile";
-
-    printoptions [shape=component,style=filled,fillcolor=mintcream]
     silm -> barcodes
   }
 }

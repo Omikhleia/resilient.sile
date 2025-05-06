@@ -38,7 +38,7 @@ In addition to the class options provided by SILE, the class also supports the f
 
 The class supports the following standard sectioning commands, from the highest division level to the lowest: `\autodoc:command{\part}`{=sile}, `\autodoc:command{\chapter}`{=sile}, `\autodoc:command{\section}`{=sile}, `\autodoc:command{\subsection}`{=sile}, `\autodoc:command{\subsubsection}`{=sile}.
 
-All sectioning commands obey styles (relying on the **resilient.styles** and **resilient.sectioning** packages), which notably imply that they have a lot of customization possibilities.
+All sectioning commands obey styles (relying on the *resilient.styles* and *resilient.sectioning* packages), which notably imply that they have a lot of customization possibilities.
 In the following pages, the described behaviors apply to the default configuration and styling, out-of-the-box.
 
 All the sections accepts the `\autodoc:parameter{numbering=false}`{=sile} option, if you want them unnumbered, and the `\autodoc:parameter{toc=false}`{=sile} option, if you do not want them to appear in the table of contents.
@@ -151,7 +151,7 @@ The class also defines two commands for manipulating the page headers.
 The “tracked” variants ensure the content is tracked per page (using “info nodes”), which is usually what you want for section headers.
 The other versions do not introduce info nodes, are intended to be used with direct content (such as a document title) or content already tracked elsewhere.
 
-Page headers rely on the functionality provided by the **resilient.headers** package,
+Page headers rely on the functionality provided by the *resilient.headers* package,
 so the `\autodoc:command{\noheaders}`{=sile}, `\autodoc:command{\noheaderthispage}`{=sile} and `\autodoc:command{\headers}`{=sile} commands are available, as well as `\autodoc:command{\header:rule}`{=sile}.
 
 ## Block-indented quotes
@@ -189,11 +189,11 @@ Again, this can be changed on the sectioning command itself, or globally with ad
 
 ## Other features
 
-The footnotes are based on the **resilient.footnotes** package and therefore have the extra features proposed in this implementation, notably the `\autodoc:command{\footnote:rule}`{=sile} command and the possibility to specify an explicit `\autodoc:parameter{mark}`{=sile} on footnote calls.
+The footnotes are based on the *resilient.footnotes* package and therefore have the extra features proposed in this implementation, notably the `\autodoc:command{\footnote:rule}`{=sile} command and the possibility to specify an explicit `\autodoc:parameter{mark}`{=sile} on footnote calls.
 
-The table of contents relies on the **resilient.tableofcontents** package. One can therefore change many styling and appearance aspects to create a custom table of contents.
+The table of contents relies on the *resilient.tableofcontents* package. One can therefore change many styling and appearance aspects to create a custom table of contents.
 
-Cross-references are supported via the **labelrefs** package, henceforth the `\autodoc:command{\label}`{=sile}, `\autodoc:command{\ref}`{=sile} and `\autodoc:command{\pageref}`{=sile} commands are available.
+Cross-references are supported via the *labelrefs* package, henceforth the `\autodoc:command{\label}`{=sile}, `\autodoc:command{\ref}`{=sile} and `\autodoc:command{\pageref}`{=sile} commands are available.
 All sectioning commands accept the `marker` option to introduce a label at the appropriate place (e.g., the section title) in a convenient way.
 
 A few layout-related commands are also provided.
