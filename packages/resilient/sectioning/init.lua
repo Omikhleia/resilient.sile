@@ -3,21 +3,29 @@
 -- Following the resilient styling paradigm.
 -- It is nn extension of the "styles" package and the sectioning paradigm.
 --
--- 2021-2023, Didier Willis
--- License: MIT
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2021-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("packages.resilient.base")
-
-local ast = require("silex.ast")
-local createCommand, subContent
-        = ast.createCommand, ast.subContent
-
 local package = pl.class(base)
 package._name = "resilient.sectioning"
 
 function package:_init (options)
   base._init(self, options)
-  self.class:loadPackage("counters")
+  self:loadPackage("counters")
 end
 
 local function hasContentInCurrentPage()
@@ -149,11 +157,11 @@ function package:registerCommands ()
           and nameIfNotNull(sty.sectioning.numberstyle.header)
       if numbering and numsty then
         titleHookContent = {
-          createCommand("style:apply:number", { name = numsty, text = number }),
-          subContent(content)
+          SU.ast.createCommand("style:apply:number", { name = numsty, text = number }),
+          SU.ast.subContent(content)
         }
       else
-        titleHookContent = subContent(content)
+        titleHookContent = SU.ast.subContent(content)
       end
       -- HACK HOOK - BAD DESIGN WORKAROUND
       -- https://github.com/Omikhleia/resilient.sile/issues/43
@@ -190,24 +198,24 @@ function package:registerCommands ()
     if toclevel and toc then
       self:registerCommand("sectioning:hack:toc", function ()
         SILE.call("tocentry", { level = toclevel, number = number, bookmark = bookmark },
-          subContent(content))
+          SU.ast.subContent(content))
       end)
-      titleContent[#titleContent + 1] = createCommand("sectioning:hack:toc")
+      titleContent[#titleContent + 1] = SU.ast.createCommand("sectioning:hack:toc")
     end
 
     -- Show section number (if numbering is true AND a main style is defined)
     if numbering then
       if numStyName then
         titleContent[#titleContent + 1] =
-          createCommand("style:apply:number", { name = numStyName, text = number })
+          SU.ast.createCommand("style:apply:number", { name = numStyName, text = number })
         if SU.boolean(numSty.numbering and numSty.numbering.standalone, false) then
           titleContent[#titleContent + 1] =
-            createCommand("hardbreak")
+            SU.ast.createCommand("hardbreak")
         end
       end
     end
     -- Section (title) content
-    titleContent[#titleContent + 1] = subContent(content)
+    titleContent[#titleContent + 1] = SU.ast.subContent(content)
 
     -- Cross-reference label
     -- If the \label command is defined, assume a cross-reference package
@@ -215,7 +223,7 @@ function package:registerCommands ()
     -- than having to put it in the section title content, or just after the section
     -- (with the risk of impacting indent/noindent and novbreak decisions here)
     if marker and SILE.Commands["label"] then
-      titleContent[#titleContent + 1] = createCommand("label", { marker = marker })
+      titleContent[#titleContent + 1] = SU.ast.createCommand("label", { marker = marker })
     end
     -- Running headers
     -- See HACK HOOK above
@@ -223,7 +231,7 @@ function package:registerCommands ()
       -- As for labels, underlying info nodes will interact with indents/breaks, so we
       -- also try to get them in the title. But we do not want the main style to
       -- be applied to them, so we hid them in a short-term command...
-      titleContent[#titleContent + 1] = createCommand("sectioning:hack:hook")
+      titleContent[#titleContent + 1] = SU.ast.createCommand("sectioning:hack:hook")
     end
     SILE.call("style:apply:paragraph", { name = name }, titleContent)
   end, "Apply sectioning")

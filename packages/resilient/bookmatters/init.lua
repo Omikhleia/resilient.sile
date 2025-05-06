@@ -7,17 +7,27 @@
 -- It is used (mostly) by the "master document".
 -- API is subject to change.
 --
--- 2023, Didier Willis
--- License: MIT
+-- License: GPL-3.0-or-later
 --
-local ast = require("silex.ast")
-local createCommand = ast.createCommand
+-- Copyright (C) 2023-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+--
 local layoutParser = require("resilient.layoutparser")
 local loadkit = require("loadkit")
 local templateLoader = loadkit.make_loader("djt")
 
 local base = require("packages.resilient.base")
-
 local package = pl.class(base)
 package._name = "resilient.bookmatters"
 
@@ -94,7 +104,7 @@ local function contrastColor(color)
   if not color.r then
     -- Not going to bother with other color schemes for now...
     SU.error([[Background color for back cover must be in RGB.
-Feel free to propose a PR do the maintainer if you want it otherwise]])
+Feel free to propose a PR to the maintainer if you want it otherwise]])
   end
   return weightedColorDistanceIn3D(color) < 130 and "white" or "black"
 end
@@ -198,7 +208,7 @@ function package:registerCommands ()
       SILE.call("skip", { height = offset })
       SILE.call("kern", { width = SILE.types.node.hfillglue() })
       SILE.call("framebox", { fillcolor = "white", padding = pad1, borderwidth = 0 }, {
-        createCommand("ean13", { code = metadata["meta:isbn"] }),
+        SU.ast.createCommand("ean13", { code = metadata["meta:isbn"] }),
       })
       SILE.call("kern", { width = offset })
     end

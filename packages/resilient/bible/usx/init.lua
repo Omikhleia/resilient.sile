@@ -2,17 +2,24 @@
 -- USX (XML bible format) support for SILE.
 -- Following the resilient styling paradigm.
 --
--- 2023, Didier Willis
--- License: MIT
---
 -- EXPERIMENTAL POSSIBLY INCOMPLETE
 --
-local ast = require("silex.ast")
-local createCommand,
-      processAsStructure, trimSubContent
-        = ast.createCommand,
-          ast.processAsStructure, ast.trimSubContent
-
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2023-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+--
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.bible.usx"
@@ -26,7 +33,7 @@ function package:_init(_)
   end)
 end
 
-function package.outputCollatedNotes (_)
+function package:outputCollatedNotes ()
   SILE.typesetNaturally(SILE.getFrame("margins"), function ()
     SILE.settings:pushState()
     SILE.settings:toplevelState()
@@ -261,14 +268,14 @@ function package:registerCommands()
 
   self:registerCommand("usx", function(_, content)
     SILE.call("running-headers", {}, {
-      createCommand("range-reference")
+      SU.ast.createCommand("range-reference")
     })
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
   end)
 
   self:registerCommand("book", function(options, content)
     SILE.call("save-book-title", {}, { options.code })
-    processAsStructure(content)
+    SU.ast.processAsStructure(content)
   end)
 
   self:registerCommand("chapter", function(options, _)
@@ -308,7 +315,7 @@ function package:registerCommands()
     -- END HACK
 
     SILE.call("style:apply:paragraph", { discardable = true, name = "usx-para-" .. options.style },
-      trimSubContent(hackedContent)
+      SU.ast.trimSubContent(hackedContent)
     )
   end)
 
@@ -372,7 +379,7 @@ function package:registerCommands()
       ref = ref
     }, function()
       SILE.call("style:apply:number", { name = "usx-noteno-innote", text = count })
-      processAsStructure(content)
+      SU.ast.processAsStructure(content)
     end)
   end)
 

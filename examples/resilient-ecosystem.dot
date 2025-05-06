@@ -69,7 +69,9 @@ digraph omikhleia {
       defn [shape=component,style=filled,fillcolor=mintcream,label="resilient.defn"]
       verbatim [shape=component,style=filled,fillcolor=mintcream,label="resilient.verbatim"]
       liners [shape=component,style=filled,fillcolor=mintcream,label="resilient.liners"]
-
+      fancytoc [shape=component,style=filled,fillcolor=mintcream, label="resilient.fancytoc"]
+      printoptions [shape=component,style=filled,fillcolor=mintcream]
+ 
       cbase -> styles
       pbase -> styles
       styles -> textsubsuper
@@ -91,6 +93,7 @@ digraph omikhleia {
       defn -> pbase
       verbatim -> pbase
       liners -> pbase
+      fancytoc -> pbase
     }
     subgraph cluster_resilient_ins {
       label = "inputters";
@@ -137,13 +140,6 @@ digraph omikhleia {
     markcmd -> highlighter
   }
 
-  subgraph cluster_fancytoc {
-    label = "fancytoc.sile";
-
-    fancytoc [shape=component,style=filled,fillcolor=mintcream]
-    fancytoc -> styles
-  }
-
   subgraph cluster_couyards {
     label = "couyards.sile";
 
@@ -155,12 +151,6 @@ digraph omikhleia {
     label = "barcodes.sile";
 
     barcodes [shape=component,style=filled,fillcolor=mintcream,label="barcodes.ean13"]
-  }
-
-subgraph cluster_printoptions {
-    label = "printoptions.sile";
-
-    printoptions [shape=component,style=filled,fillcolor=mintcream]
     silm -> barcodes
   }
 }

@@ -1,8 +1,21 @@
 --
 -- Base layout class (a.k.a. default/none)
 --
--- 2022-2023, Didier Willis
--- License: MIT
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2022-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local layout = pl.class()
 
@@ -62,7 +75,7 @@ function layout:textblock (isOdd)
   }
 end
 
-function layout.content (_, _)
+function layout:content (_)
   return {
     left = "left(textblock)",
     right = "right(textblock)",
@@ -71,7 +84,7 @@ function layout.content (_, _)
   }
 end
 
-function layout.footnotes (_, _)
+function layout:footnotes (_)
   return {
     left = "left(textblock)",
     right = "right(textblock)",
@@ -109,7 +122,7 @@ function layout:header (_)
   }
 end
 
-function layout.margins (_, odd)
+function layout:margins (odd)
   return {
     left = odd and "right(textblock) + 2.5%pw" or "left(page) + 0.5in",
     right= odd and "right(page) - 0.5in" or "left(textblock) - 2.5%pw",

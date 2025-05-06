@@ -1,20 +1,28 @@
 --
 -- Documentation tooling for package designers.
--- (c) SILE for the original version
--- (c) 2023 Omikhleia for the "resilient" version override.
--- License: MIT
+--
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2023-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 -- CAVEAT:
 -- This is a modified version of the standard 'autodoc' package,
 -- so that it works with the 'resilient' module,
--- with a rather OPINIONATED change. See HACKS comments below,
--- and the "silex.sile" module.
+-- with a rather OPINIONATED change. See HACKS comments below.
 --
-local ast = require("silex.ast")
-local createCommand, subContent = ast.createCommand, ast.subContent
-
 local base = require("packages.base")
-
 local package = pl.class(base)
 package._name = "autodoc-resilient"
 
@@ -30,7 +38,7 @@ local theme = {
 local colorWrapper = function (ctype, content)
   local color = SILE.scratch.autodoc.theme[ctype]
   if color and SILE.settings:get("autodoc.highlighting") and SILE.Commands["color"] then
-    return { createCommand("color", { color = color }, subContent(content)) }
+    return { SU.ast.createCommand("color", { color = color }, SU.ast.subContent(content)) }
   else
     return content
   end
@@ -63,7 +71,7 @@ local function astToDisplay (options, content)
         seenCommandWithoutArg = false
       end
       if tree:sub(1, 1) == "<" and tree:sub(-1) == ">" then
-        result[#result+1] = createCommand("autodoc:internal:bracketed", {}, tree:sub(2, -2))
+        result[#result+1] = SU.ast.createCommand("autodoc:internal:bracketed", {}, tree:sub(2, -2))
       else
         result[#result+1] = tree
       end
@@ -73,7 +81,7 @@ local function astToDisplay (options, content)
         SU.error("Unexpected command '"..tree.command.."'")
       end
       result[#result+1] = "\\"
-      result[#result+1] = createCommand("autodoc:code:style", { type = "command" }, tree.command)
+      result[#result+1] = SU.ast.createCommand("autodoc:code:style", { type = "command" }, tree.command)
       local sortedOpts = {}
       for k, _ in pairs(tree.options) do table.insert(sortedOpts, k) end
       table.sort(sortedOpts, optionSorter)
@@ -81,17 +89,17 @@ local function astToDisplay (options, content)
         result[#result+1] = "["
         for iOpt, option in ipairs(sortedOpts) do
           result[#result+1] = {
-            createCommand("autodoc:code:style", { type = "parameter" }, option),
+            SU.ast.createCommand("autodoc:code:style", { type = "parameter" }, option),
             "=",
-            createCommand("penalty", { penalty = 100 }), -- Quite decent to break here if need be.
-            createCommand("autodoc:value", {}, tree.options[option]),
+            SU.ast.createCommand("penalty", { penalty = 100 }), -- Quite decent to break here if need be.
+            SU.ast.createCommand("autodoc:value", {}, tree.options[option]),
             (iOpt == #sortedOpts) and "]" or ", "
           }
         end
       end
       if (#tree >= 1) then
         result[#result+1] = {
-          createCommand("penalty", { penalty = 200 }), -- Less than optimal break.
+          SU.ast.createCommand("penalty", { penalty = 200 }), -- Less than optimal break.
           "{",
           astToDisplay(options, tree),
           "}"
@@ -125,7 +133,7 @@ function package:_init (options)
   end
 end
 
-function package.declareSettings (_)
+function package:declareSettings ()
   SILE.settings:declare({
     parameter = "autodoc.highlighting",
     default = false,
@@ -136,7 +144,7 @@ end
 
 function package:registerRawHandlers ()
 
-  self.class:registerRawHandler("autodoc:codeblock", function(options, content)
+  self:registerRawHandler("autodoc:codeblock", function(options, content)
     SILE.call("autodoc:codeblock", options, { content[1] }) -- Still issues with SU.ast.contentToString() witb raw content
   end)
 
@@ -235,7 +243,7 @@ function package:registerCommands ()
   self:registerCommand("autodoc:internal:bracketed", function (_, content)
     SILE.typesetter:typeset("⟨")
     SILE.call("autodoc:code:style", { type = "bracketed" }, {
-      createCommand("em", {}, subContent(content))
+      SU.ast.createCommand("em", {}, SU.ast.subContent(content))
     })
     SILE.call("kern", { width = "0.1em" }) -- fake italic correction.
     SILE.typesetter:typeset("⟩")
@@ -277,11 +285,11 @@ function package:registerCommands ()
     end
     if #parts < 1 or #parts > 2 then SU.error("Unexpected parameter '"..param.."'") end
     SILE.call("autodoc:code:style", { type = "ast" }, {
-      createCommand("autodoc:code:style", { type = "parameter" }, parts[1]),
+      SU.ast.createCommand("autodoc:code:style", { type = "parameter" }, parts[1]),
       (#parts == 2) and {
         "=",
-        createCommand("penalty", { penalty = 100 }, nil), -- Quite decent to break here if need be.
-        createCommand("autodoc:value", {}, parts[2])
+        SU.ast.createCommand("penalty", { penalty = 100 }, nil), -- Quite decent to break here if need be.
+        SU.ast.createCommand("autodoc:value", {}, parts[2])
       } or nil
     })
   end, "Outputs a nicely presented parameter, possibly with a value.")

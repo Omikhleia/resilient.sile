@@ -11,8 +11,7 @@ consider:
 [^toc-fancy]: This section applies to the "standard" table of contents,
 as produced with the `\tableofcontents` command from the *resilient.tableofcontents*
 package.
-Specific implementations such as *fancytoc* may use their own
-styling rules.
+Specific implementations such as *resilient.fancytoc* may use their own styling rules.
 
 ### Global setup
 

@@ -1,6 +1,6 @@
 # resilient.sile
 
-[![license](https://img.shields.io/github/license/Omikhleia/resilient.sile?label=License)](LICENSE)
+[![License](https://img.shields.io/github/license/Omikhleia/resilient.sile?label=License)](LICENSE)
 [![Luacheck](https://img.shields.io/github/actions/workflow/status/Omikhleia/resilient.sile/luacheck.yml?branch=main&label=Luacheck&logo=Lua)](https://github.com/Omikhleia/resilient.sile/actions?workflow=Luacheck)
 [![Luarocks](https://img.shields.io/luarocks/v/Omikhleia/resilient.sile?label=Luarocks&logo=Lua)](https://luarocks.org/modules/Omikhleia/resilient.sile)
 
@@ -33,7 +33,7 @@ Did we say complete? Well, we lied a bit. For Markdown and Djot input, there is 
 
 ## Installation
 
-These packages require SILE v0.15 or upper (recommended: SILE v0.15.10 or upper).
+These packages require SILE v0.15.12.
 
 Installation relies on the **luarocks** package manager.
 See its installation instructions on the [LuaRocks](https://luarocks.org/) website.
@@ -58,9 +58,6 @@ This collection also imports several modules also provided separately, would you
 - [Barcodes](https://github.com/Omikhleia/barcodes.sile) (for ISBNs, etc.)
 - [QR codes](https://github.com/Omikhleia/qrcode.sile)
 - [Couyards](https://github.com/Omikhleia/couyards.sile) (typographic ornaments)
-- [Printer options](https://github.com/Omikhleia/printoptions.sile) (image resolution tuning
-  and vector rasterization, would you want to use a professional printer or print-on-demand services)
-- [Fancy table of contents](https://github.com/Omikhleia/fancytoc.sile) (an alternative two-level table of contents with nice curly braces)
 - [Textual graphics embedders](https://github.com/Omikhleia/embedders.sile) (support for Graphviz, Lilypond, &c)
 - [Markdown](https://github.com/Omikhleia/markdown.sile) (support for Markdown, Djot etc.)
 - [Pie charts](https://github.com/Omikhleia/piecharts.sile) (support for pie charts)
@@ -79,7 +76,7 @@ The name is a pun on “SILE” (as, after all, the initial target was always on
 
 ## License
 
-All code is under the MIT License.
+The code in this repository is released under the GNU General Public License v3.0, (c) 2021-2025 Omikhleia.
 
 The documentation is under CC-BY-SA 2.0.
 

@@ -1,24 +1,34 @@
 --
 -- A style package for SILE
--- License: MIT
--- 2021-2025, Didier Willis
+--
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2021-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("packages.base")
-
 local package = pl.class(base)
 package._name = "resilient.styles"
 
 local utils = require("resilient.utils")
-local ast = require("silex.ast")
-local createCommand, subContent
-        = ast.createCommand, ast.subContent
 
 function package:_init (options)
   base._init(self, options)
 
-  self.class:loadPackage("textsubsuper")
-  self.class:loadPackage("textcase")
-  self.class:loadPackage("resilient.liners")
+  self:loadPackage("textsubsuper")
+  self:loadPackage("textcase")
+  self:loadPackage("resilient.liners")
 
   self.class:registerHook("finish", self.writeStyles)
 
@@ -199,7 +209,7 @@ SILE.scratch.styles = {
 -- optional origin allows tracking e.g which package declared that style and just used for debugging
 -- after styles are 'frozen', we can still define new styles but not override
 -- existing styles.
-function package.defineStyle (_, name, opts, styledef, origin)
+function package:defineStyle (name, opts, styledef, origin)
   if SILE.scratch.styles.state.locked then
     if SILE.scratch.styles.specs[name] then
       return SU.debug("resilient.styles", "Styles are now frozen: ignoring redefinition for", name, "from", origin)
@@ -263,7 +273,7 @@ local function readOnly (t)
   return proxy
 end
 
-function package.freezeStyles (_)
+function package:freezeStyles ()
   SILE.scratch.styles.state.locked = true
   SILE.scratch.styles.state = readOnly(SILE.scratch.styles.state)
   SU.debug("resilient.styles", "Freezing styles")
@@ -319,7 +329,7 @@ function package:registerCommands ()
         if not positionCommand then
           SU.error("Invalid style position '"..positionValue.."'")
         end
-        content = createCommand(positionCommand, {}, content)
+        content = SU.ast.createCommand(positionCommand, {}, content)
       end
       local caseValue = propertyValueIfNotNull(style.properties.case)
       if caseValue and caseValue ~= "normal" then
@@ -327,7 +337,7 @@ function package:registerCommands ()
         if not caseCommand then
           SU.error("Invalid style case '" .. caseValue .. "'")
         end
-        content = createCommand(caseCommand, {}, content)
+        content = SU.ast.createCommand(caseCommand, {}, content)
       end
     end
     if style.decoration then
@@ -337,15 +347,15 @@ function package:registerCommands ()
         if not lineCommand then
           SU.error("Invalid style decoration line '" .. lineValue .. "'")
         end
-        content = createCommand(lineCommand, shallowNonNullOptions(style.decoration), content)
+        content = SU.ast.createCommand(lineCommand, shallowNonNullOptions(style.decoration), content)
       end
     end
     local colorValue = propertyValueIfNotNull(style.color)
     if colorValue then
-      content = createCommand("color", { color = colorValue }, content)
+      content = SU.ast.createCommand("color", { color = colorValue }, content)
     end
     if style.font and SU.boolean(options.font, true) then
-      content = createCommand("style:font", style.font, content)
+      content = SU.ast.createCommand("style:font", style.font, content)
     end
     return content
   end
@@ -358,7 +368,7 @@ function package:registerCommands ()
     if type(content) == "table" then
       if content.command or content.id then
         -- We want to skip the calling content key values (id, command, etc.)
-        return subContent(content)
+        return SU.ast.subContent(content)
       end
       return content
     end
@@ -375,7 +385,7 @@ function package:registerCommands ()
 
   local characterStyleFontOnly = function (style, content)
     if style.font then
-      content = createCommand("style:font", style.font, content)
+      content = SU.ast.createCommand("style:font", style.font, content)
     end
     return content
   end
@@ -393,9 +403,9 @@ function package:registerCommands ()
         -- correct even on the last paragraph. But the color introduces hboxes so
         -- must be applied last, no to cause havoc with the noindent/indent and
         -- centering etc. environments
-        local recontent = createCommand(alignCommand, {}, {
+        local recontent = SU.ast.createCommand(alignCommand, {}, {
           characterStyleNoFont(style, content),
-          not breakafter and createCommand("novbreak") or nil
+          not breakafter and SU.ast.createCommand("novbreak") or nil
         })
         if style.font then
           recontent = characterStyleFontOnly(style, recontent)

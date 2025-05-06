@@ -2,17 +2,29 @@
 -- Re-implementation of the verbatim package for SILE
 -- Following the resilient styling paradigm.
 --
--- 2023,-2025, Didier Willis
--- License: MIT
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2023-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("packages.resilient.base")
-
 local package = pl.class(base)
 package._name = "resilient.verbatim"
 
 function package:registerCommands ()
 
-  -- Unchanged from the original implementation, as bad as it is.
+  -- Unchanged from the original implementation.
   self:registerCommand("verbatim:font", function (options, content)
     SU.warn([[The verbatim:font command is not expected to be used in the resilient context.
 

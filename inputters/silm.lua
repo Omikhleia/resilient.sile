@@ -1,11 +1,23 @@
 --- Some YAML master file inputter for SILE
 --
--- @copyright License: MIT (c) 2023, 2025 Omikhleia, Didier Willis
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2023-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+--
 -- @module inputters.silm
 --
-local ast = require("silex.ast")
-local createCommand, createStructuredCommand = ast.createCommand, ast.createStructuredCommand
-
 SILE.registerCommand("has:book-title-support", function (_, content)
   -- Fairly lame command detection
   if SILE.Commands["book-title"] then
@@ -382,7 +394,7 @@ local knownPdfMetadata = {
 local function insertPdfMetadata (content, metadata)
   for key, value in pairs(metadata) do
     if knownPdfMetadata[key] then
-      content[#content+1] = createCommand("pdf:metadata", {
+      content[#content+1] = SU.ast.createCommand("pdf:metadata", {
         key = knownPdfMetadata[key],
         value = type(value) == "table" and table.concat(value, "; ") or value
       })
@@ -438,14 +450,14 @@ local function doLevel (content, entries, shiftHeadings, metaopts)
       spec = pl.tablex.union(metaopts, {
         src = entry,
         shift_headings = shiftHeadings })
-      content[#content+1] = createCommand("include", spec)
+      content[#content+1] = SU.ast.createCommand("include", spec)
     elseif entry.file then
       local fullopts = entry.options and pl.tablex.union(entry.options, metaopts) or metaopts
       spec = pl.tablex.union(fullopts, {
         src = entry.file,
         format = entry.format,
         shift_headings = shiftHeadings })
-      content[#content+1] = createCommand("include", spec)
+      content[#content+1] = SU.ast.createCommand("include", spec)
       if entry.content then
         doLevel(content, entry.content, shiftHeadings + 1, metaopts)
       end
@@ -454,12 +466,12 @@ local function doLevel (content, entries, shiftHeadings, metaopts)
         doLevel(content, entry.chapters, shiftHeadings + 1, metaopts)
       end
       if entry.appendices then
-        content[#content+1] = createCommand("appendix")
+        content[#content+1] = SU.ast.createCommand("appendix")
         doLevel(content, entry.appendices, shiftHeadings + 1, metaopts)
       end
     elseif entry.caption then
       local command = Levels[shiftHeadings + 2] or SU.error("Invalid master document (too many nested levels)")
-      content[#content+1] = createCommand(command, {}, entry.caption)
+      content[#content+1] = SU.ast.createCommand(command, {}, entry.caption)
       if entry.content then
         doLevel(content, entry.content, shiftHeadings + 1, metaopts)
       end
@@ -468,7 +480,7 @@ local function doLevel (content, entries, shiftHeadings, metaopts)
         doLevel(content, entry.chapters, shiftHeadings + 1, metaopts)
       end
       if entry.appendices then
-        content[#content+1] = createCommand("appendix")
+        content[#content+1] = SU.ast.createCommand("appendix")
         doLevel(content, entry.appendices, shiftHeadings + 1, metaopts)
       end
     elseif entry.content then
@@ -485,7 +497,7 @@ local function doDivisionContent (content, entry, shiftHeadings, metaopts)
       doLevel(content, entry.chapters, shiftHeadings, metaopts)
     end
     if entry.appendices then
-      content[#content+1] = createCommand("appendix")
+      content[#content+1] = SU.ast.createCommand("appendix")
       doLevel(content, entry.appendices, shiftHeadings, metaopts)
     end
   end
@@ -493,15 +505,15 @@ end
 
 local function doDivision (content, entry, shiftHeadings, metaopts)
   if entry.frontmatter then
-    content[#content+1] = createCommand("frontmatter")
+    content[#content+1] = SU.ast.createCommand("frontmatter")
     doDivisionContent(content, entry.frontmatter, shiftHeadings, metaopts)
   end
   if entry.mainmatter then
-    content[#content+1] = createCommand("mainmatter")
+    content[#content+1] = SU.ast.createCommand("mainmatter")
     doDivisionContent(content, entry.mainmatter, shiftHeadings, metaopts)
   end
   if entry.backmatter then
-    content[#content+1] = createCommand("backmatter")
+    content[#content+1] = SU.ast.createCommand("backmatter")
     doDivisionContent(content, entry.backmatter, shiftHeadings, metaopts)
   end
 end
@@ -517,13 +529,13 @@ local function doBackCoverContent (entry, metaopts)
     content = {}
   elseif type(entry) == "string" then
     spec = pl.tablex.union(metaopts, { src = entry })
-    content = createCommand("include", spec)
+    content = SU.ast.createCommand("include", spec)
   elseif entry.file then
     local fullopts = entry.options and pl.tablex.union(entry.options, metaopts) or metaopts
     spec = pl.tablex.union(fullopts, {
       src = entry.file,
       format = entry.format })
-    content = createCommand("include", spec)
+    content = SU.ast.createCommand("include", spec)
   else
     SU.error("Invalid master document (invalid cover content)")
   end
@@ -575,20 +587,20 @@ function inputter:parse (doc)
     -- Document global settings
     if master.font then
       if type(master.font.family) == "table" then
-        content[#content+1] = createCommand("use", {
+        content[#content+1] = SU.ast.createCommand("use", {
           module = "packages.font-fallback"
         })
-        content[#content+1] = createCommand("font", {
+        content[#content+1] = SU.ast.createCommand("font", {
           family = master.font.family[1],
           size = master.font.size
         })
         for i = 2, #master.font.family do
-          content[#content+1] = createCommand("font:add-fallback", {
+          content[#content+1] = SU.ast.createCommand("font:add-fallback", {
             family = master.font.family[i],
           })
         end
       else
-        content[#content+1] = createCommand("font", {
+        content[#content+1] = SU.ast.createCommand("font", {
           family = master.font.family,
           size = master.font.size
         })
@@ -599,7 +611,7 @@ function inputter:parse (doc)
     -- the class (e.g. style overrides in the case of resilient classes)
     -- Not sure how to behave with legacy classes though...
     if master.language then
-      content[#content+1] = createCommand("language", {
+      content[#content+1] = SU.ast.createCommand("language", {
         main = master.language
       })
     end
@@ -614,7 +626,7 @@ function inputter:parse (doc)
 
   if packages then
     for _, pkg in ipairs(packages) do
-      content[#content+1] = createCommand("use", {
+      content[#content+1] = SU.ast.createCommand("use", {
         module = "packages." .. pkg
       })
     end
@@ -624,38 +636,38 @@ function inputter:parse (doc)
     local settings = sile.settings or {}
     if settings then
       for k, v in pairs(settings) do
-        content[#content+1] = createCommand("set", {
+        content[#content+1] = SU.ast.createCommand("set", {
           parameter = k,
           value = v
         })
       end
     end
     if SU.boolean(self.options.cropmarks, false) then
-      content[#content+1] = createCommand("use", {
+      content[#content+1] = SU.ast.createCommand("use", {
         module = "packages.cropmarks"
       })
-      content[#content+1] = createCommand("cropmarks:setup")
+      content[#content+1] = SU.ast.createCommand("cropmarks:setup")
     end
     if metadata.title then
-      content[#content+1] = createCommand("has:book-title-support", {}, { metadata.title })
+      content[#content+1] = SU.ast.createCommand("has:book-title-support", {}, { metadata.title })
     end
     if master.bibliography then
       local bibfiles = master.bibliography.files
       if type(bibfiles) == "string" then
         bibfiles = { bibfiles }
       end
-      content[#content+1] = createCommand("use", {
+      content[#content+1] = SU.ast.createCommand("use", {
         module = "packages.bibtex"
       })
       if #bibfiles > 0 then
         local lang = master.bibliography.language or master.language or "en-US"
         local style = master.bibliography.style or "chicago-author-date"
-        content[#content+1] = createCommand("bibliographystyle", {
+        content[#content+1] = SU.ast.createCommand("bibliographystyle", {
           style = style,
           lang = lang
         })
         for _, bibfile in ipairs(bibfiles) do
-          content[#content+1] = createCommand("loadbibliography", {
+          content[#content+1] = SU.ast.createCommand("loadbibliography", {
             file = bibfile
           })
         end
@@ -677,14 +689,14 @@ function inputter:parse (doc)
   local enabledCover = isRoot and SU.boolean(self.options.cover, bookmatter.enabled)
 
   if enabledBook or enabledCover then
-    content[#content+1] = createCommand("use", {
+    content[#content+1] = SU.ast.createCommand("use", {
       module = "packages.resilient.bookmatters"
     })
   end
 
   if enabledCover and bookmatter.cover then
     local cover = bookmatter.cover.front
-    content[#content+1] = createCommand("bookmatters:front-cover", {
+    content[#content+1] = SU.ast.createCommand("bookmatters:front-cover", {
       image = cover and cover.image or bookmatter.cover.image,
       background = cover and cover.background or bookmatter.cover.background,
       template = cover and cover.template,
@@ -693,12 +705,12 @@ function inputter:parse (doc)
   end
 
   if enabledBook then
-    content[#content+1] = createCommand("bookmatters:template", {
+    content[#content+1] = SU.ast.createCommand("bookmatters:template", {
       recto = bookmatter.halftitle.recto or "halftitle-recto",
       verso = bookmatter.halftitle.verso or "halftitle-verso",
       metadata = metadataOptions
     })
-    content[#content+1] =  createCommand("bookmatters:template", {
+    content[#content+1] =  SU.ast.createCommand("bookmatters:template", {
       recto = bookmatter.title.recto or "title-recto",
       verso = bookmatter.title.verso or "title-verso",
       metadata = metadataOptions
@@ -724,7 +736,7 @@ function inputter:parse (doc)
   end
 
   if enabledBook then
-    content[#content+1] = createCommand("bookmatters:template", {
+    content[#content+1] = SU.ast.createCommand("bookmatters:template", {
       recto = bookmatter.endpaper.recto or "endpaper-recto",
       verso = bookmatter.endpaper.verso or "endpaper-verso",
       metadata = metadataOptions
@@ -734,7 +746,7 @@ function inputter:parse (doc)
     local cover = bookmatter.cover.back
     local background = cover and cover.background or bookmatter.cover.background
     local coverContent = cover and cover.content or nil
-    content[#content+1] = createCommand("bookmatters:back-cover", {
+    content[#content+1] = SU.ast.createCommand("bookmatters:back-cover", {
       image = cover and cover.image or bookmatter.cover.image,
       background = background,
       bgcontent = cover and cover["content-background"] or background,
@@ -761,7 +773,7 @@ function inputter:parse (doc)
     } or {}
 
   local tree = {
-    createStructuredCommand("document", classopts, content),
+    SU.ast.createStructuredCommand("document", classopts, content),
   }
   return tree
 end

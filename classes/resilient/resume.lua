@@ -1,21 +1,27 @@
 --
 -- A minimalist SILE class for a "resumé" (CV)
 -- Following the resilient styling paradigm.
---
--- 2021-2023, Didier Willis
--- License: MIT
---
 -- This is indeed very minimalist :)
+--
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2021-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("classes.resilient.base")
 local class = pl.class(base)
 class._name = "resilient.resume"
-
-local ast = require("silex.ast")
-local createCommand, createStructuredCommand, subContent,
-      extractFromTree, findInTree
-        = ast.createCommand, ast.createStructuredCommand, ast.subContent,
-          ast.extractFromTree, ast.findInTree
 
 SILE.scratch.resilient = SILE.scratch.resilient or {}
 SILE.scratch.resilient.resume = SILE.scratch.resilient.resume or {}
@@ -29,6 +35,7 @@ SILE.scratch.resilient.resume = SILE.scratch.resilient.resume or {}
 --    vertical dimensions are based on the same pw specification.
 -- 3. The footer and folio are place side-by-side to gain a bit of space.
 --
+class.firstContentFrame = "content"
 class.defaultFrameset = {
   content = {
     left = "left(page) + 10%pw",
@@ -87,10 +94,14 @@ class.nextFrameset = {
 function class:_init (options)
   base._init(self, options)
 
+  -- Basic low-level packages
+
   self:loadPackage("color")
-  self:loadPackage("rules") -- for section rules
   self:loadPackage("image") -- for the user picture
+  self:loadPackage("rules") -- for section rules
+  self:loadPackage("labelrefs") -- cross-reference, used leter to get the n/N page numbering
   self:loadPackage("ptable") -- for tables
+  self:loadPackage("rules") -- for section rules
   self:loadPackage("resilient.lists") -- for bullet lists
   -- Hack the default itemize styles to apply our resume-color
   -- IMPLEMENTATION NOTES
@@ -103,6 +114,9 @@ function class:_init (options)
   --    added whatever the saved styled file says.
   SILE.scratch.styles.specs["lists-itemize-base"].inherit = "resume-color"
 
+  -- Page-related packages
+
+  self:loadPackage("folio")
   self:loadPackage("masters")
   self:defineMaster({
       id = "first",
@@ -114,33 +128,46 @@ function class:_init (options)
       firstContentFrame = self.firstContentFrame,
       frames = self.nextFrameset
     })
-  if not SILE.scratch.headers then SILE.scratch.headers = {} end
-  self:loadPackage("labelrefs") -- cross-reference, used to get the n/N page numbering
-  self:loadPackage("resilient.headers") -- header facility
+  self:loadPackage("resilient.headers")
 
-  -- override foliostyle
+  -- Override default document.parindent, we do not want it for the resume
+  SILE.settings:set("document.parindent", SILE.types.node.glue(), true)
+  -- Override with saner defaults:
+  -- Slightly prefer underfull lines over ugly overfull content
+  -- I used a more drastic value before, but realize it can have bad effects
+  -- too, so for a default value let's be cautious. It's still better then 0
+  -- in my opinion for the general usage.
+  SILE.settings:set("linebreak.emergencyStretch", "1em", true)
+  -- This should never have been 1.2 by default:
+  -- https://github.com/sile-typesetter/sile/issues/1371
+  -- Fixed in recent versions of SILE, but nothing prevents us to set it here
+  -- as well.
+  SILE.settings:set("shaper.spaceenlargementfactor", 1, true)
+
+  -- Overrides for loaded packages.
   -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
+  -- as packages are not loaded yet at that time.
+
+  -- Override the standard foliostyle hook to add a n/N page number
   self:registerCommand("foliostyle", function (_, content)
     SILE.call("hbox", {}, {}) -- for vfill to be effective
     SILE.call("vfill")
     SILE.call("raggedleft", {}, {
      content,
       "/",
-      createCommand("pageref", { marker = "resilient.resume:end" })
+      SU.ast.createCommand("pageref", { marker = "resilient.resume:end" })
     })
     SILE.call("eject") -- for vfill to be effective
   end)
-
-  -- override default document.parindent, we do not want it.
-  SILE.settings:set("document.parindent", SILE.types.node.glue())
 end
 
 function class:newPage ()
+  -- FIXME
   -- In 0.12.5
   --   if SILE.scratch.counters.folio.value > 1 then
   --     self.switchMaster("next")
   --   end
-  --   return plain.newPage(self)
+  --   return base.newPage(self)
   -- In 0.13/0.14, this became a shit of unclear weirdness
   -- See https://github.com/sile-typesetter/sile/issues/1544
   -- Ditching the folio numbering check as the folio is not even incremented yet (?!)
@@ -237,22 +264,22 @@ end
 -- RESUME PROCESSING
 
 local function doEntry (rows, _, content)
-  local topic = extractFromTree(content, "topic")
-  local description = extractFromTree(content, "description")
-  local titleRow = createStructuredCommand("row", {}, {
-    createStructuredCommand("cell", { valign = "top", padding = "4pt 4pt 0 4pt" }, {
+  local topic = SU.ast.removeFromTree(content, "topic")
+  local description = SU.ast.removeFromTree(content, "description")
+  local titleRow = SU.ast.createStructuredCommand("row", {}, {
+    SU.ast.createStructuredCommand("cell", { valign = "top", padding = "4pt 4pt 0 4pt" }, {
       -- We are typesetting in a different style but want proper alignment
       -- With the other style, so strut tweaking:
-      createStructuredCommand("style:apply:paragraph", { name = "resume-topic" }, {
-        createStructuredCommand("style:apply", { name = "resume-description" }, {
-          createCommand("strut"),
+      SU.ast.createStructuredCommand("style:apply:paragraph", { name = "resume-topic" }, {
+        SU.ast.createStructuredCommand("style:apply", { name = "resume-description" }, {
+          SU.ast.createCommand("strut"),
         }),
         -- Then go ahead.
-        subContent(topic)
+        SU.ast.subContent(topic)
       })
     }),
-    createStructuredCommand("cell", { valign = "top", span = 2, padding = "4pt 4pt 0.33cm 0" }, {
-      createStructuredCommand("style:apply", { name = "resume-description" }, description)
+    SU.ast.createStructuredCommand("cell", { valign = "top", span = 2, padding = "4pt 4pt 0.33cm 0" }, {
+      SU.ast.createStructuredCommand("style:apply", { name = "resume-description" }, description)
     })
   })
   for i = 0, #content do
@@ -264,15 +291,15 @@ local function doEntry (rows, _, content)
 end
 
 local doSection = function (rows, _, content)
-  local title = extractFromTree(content, "title")
-  local titleRow = createStructuredCommand("row", {}, {
-    createStructuredCommand("cell", { valign = "bottom", padding = "4pt 4pt 0 4pt" }, {
-      createStructuredCommand("style:apply", { name = "resume-section" }, {
-        createCommand("hrule", { width = "100%fw", height= "1ex" })
+  local title = SU.ast.removeFromTree(content, "title")
+  local titleRow = SU.ast.createStructuredCommand("row", {}, {
+    SU.ast.createStructuredCommand("cell", { valign = "bottom", padding = "4pt 4pt 0 4pt" }, {
+      SU.ast.createStructuredCommand("style:apply", { name = "resume-section" }, {
+        SU.ast.createCommand("hrule", { width = "100%fw", height= "1ex" })
       })
     }),
-    createStructuredCommand("cell", { span = 2, padding = "4pt 4pt 0.33cm 0" }, {
-      createStructuredCommand("style:apply", { name = "resume-section" }, title)
+    SU.ast.createStructuredCommand("cell", { span = 2, padding = "4pt 4pt 0.33cm 0" }, {
+      SU.ast.createStructuredCommand("style:apply", { name = "resume-section" }, title)
     })
   })
   table.insert(rows, titleRow)
@@ -296,53 +323,53 @@ function class:registerCommands ()
   end, "Text to appear at the bottom of the page")
 
   self:registerCommand("resume", function (_  , content)
-    local firstname = extractFromTree(content, "firstname") or SU.error("firstname is mandatory")
-    local lastname = extractFromTree(content, "lastname") or SU.error("lastname is mandatory")
-    local picture = extractFromTree(content, "picture") or SU.error("picture is mandatory")
-    local contact = extractFromTree(content, "contact") or SU.error("contact is mandatory")
-    local jobtitle = extractFromTree(content, "jobtitle") or SU.error("jobtitle is mandatory")
-    local headline = extractFromTree(content, "headline") -- can be omitted
+    local firstname = SU.ast.removeFromTree(content, "firstname") or SU.error("firstname is mandatory")
+    local lastname = SU.ast.removeFromTree(content, "lastname") or SU.error("lastname is mandatory")
+    local picture = SU.ast.removeFromTree(content, "picture") or SU.error("picture is mandatory")
+    local contact = SU.ast.removeFromTree(content, "contact") or SU.error("contact is mandatory")
+    local jobtitle = SU.ast.removeFromTree(content, "jobtitle") or SU.error("jobtitle is mandatory")
+    local headline = SU.ast.removeFromTree(content, "headline") -- can be omitted
 
     SILE.call("cv-footer", {}, { contact })
     SILE.call("cv-header", {}, {
-      createStructuredCommand("style:apply:paragraph", { name = "resume-header" }, {
-        createStructuredCommand("style:apply", { name = "resume-firstname" }, { subContent(firstname) }),
+      SU.ast.createStructuredCommand("style:apply:paragraph", { name = "resume-header" }, {
+        SU.ast.createStructuredCommand("style:apply", { name = "resume-firstname" }, { SU.ast.subContent(firstname) }),
         " ",
-        createStructuredCommand("style:apply", { name = "resume-lastname" }, { subContent(lastname) })
+        SU.ast.createStructuredCommand("style:apply", { name = "resume-lastname" }, { SU.ast.subContent(lastname) })
       })
     })
 
     local rows = {}
 
-    local fullnameAndPictureRow = createStructuredCommand("row", {}, {
-      createStructuredCommand("cell", { border = "0 1pt 0 0", padding = "4pt 4pt 0 4pt", valign = "bottom" }, { function ()
+    local fullnameAndPictureRow = SU.ast.createStructuredCommand("row", {}, {
+      SU.ast.createStructuredCommand("cell", { border = "0 1pt 0 0", padding = "4pt 4pt 0 4pt", valign = "bottom" }, { function ()
           local w = SILE.types.measurement("100%fw"):absolute() - 7.2 -- padding and border
           SILE.call("parbox", { width = w, border = "0.6pt", padding = "3pt" }, function ()
             SILE.call("img", { width = "100%fw", src = picture.options.src })
           end)
         end
       }),
-      createStructuredCommand("cell", { span = 2, border = "0 1pt 0 0", padding = "4pt 2pt 4pt 0",  valign = "bottom" }, {
-        createStructuredCommand("style:apply:paragraph", { name = "resume-fullname" }, {
-          createStructuredCommand("style:apply", { name = "resume-firstname" }, { subContent(firstname) }),
+      SU.ast.createStructuredCommand("cell", { span = 2, border = "0 1pt 0 0", padding = "4pt 2pt 4pt 0",  valign = "bottom" }, {
+        SU.ast.createStructuredCommand("style:apply:paragraph", { name = "resume-fullname" }, {
+          SU.ast.createStructuredCommand("style:apply", { name = "resume-firstname" }, { SU.ast.subContent(firstname) }),
           " ",
-          createStructuredCommand("style:apply", { name = "resume-lastname" }, { subContent(lastname) })
+          SU.ast.createStructuredCommand("style:apply", { name = "resume-lastname" }, { SU.ast.subContent(lastname) })
          })
       })
     })
     table.insert(rows, fullnameAndPictureRow)
 
-    local jobtitleRow = createStructuredCommand("row", {}, {
-      createStructuredCommand("cell", { span = 3 }, {
-        createStructuredCommand("style:apply:paragraph", { name = "resume-jobtitle" }, jobtitle)
+    local jobtitleRow = SU.ast.createStructuredCommand("row", {}, {
+      SU.ast.createStructuredCommand("cell", { span = 3 }, {
+        SU.ast.createStructuredCommand("style:apply:paragraph", { name = "resume-jobtitle" }, jobtitle)
       })
     })
     table.insert(rows, jobtitleRow)
 
     -- NOTE: if headline is absent, no problem. We still insert a row, just for
     -- vertical spacing.
-    local headlineRow = createStructuredCommand("row", {}, {
-      createStructuredCommand("cell", { span = 3 }, { function ()
+    local headlineRow = SU.ast.createStructuredCommand("row", {}, {
+      SU.ast.createStructuredCommand("cell", { span = 3 }, { function ()
           SILE.call("center", {}, function ()
             SILE.call("parbox", { width = "80%fw" }, function()
               SILE.call("style:apply:paragraph", { name = "resume-headline" }, headline)
@@ -388,7 +415,7 @@ function class:registerCommands ()
     local rank = {}
     for i = 1, scale do
       rank[#rank + 1] = i <= value and charFromUnicode("U+25CF") or charFromUnicode("U+25CB")
-      rank[#rank + 1] = createCommand("kern", { width = "0.1em" })
+      rank[#rank + 1] = SU.ast.createCommand("kern", { width = "0.1em" })
     end
     SILE.call("style:apply", { name = "resume-dingbats" }, rank)
   end)
@@ -405,18 +432,18 @@ function class:registerCommands ()
   end)
 
   self:registerCommand("contact", function (_, content)
-    local street = findInTree(content, "street") or SU.error("street is mandatory")
-    local city = findInTree(content, "city") or SU.error("city is mandatory")
-    local phone = findInTree(content, "phone") or SU.error("phone is mandatory")
-    local email = findInTree(content, "email") or SU.error("email is mandatory")
+    local street = SU.ast.findInTree(content, "street") or SU.error("street is mandatory")
+    local city = SU.ast.findInTree(content, "city") or SU.error("city is mandatory")
+    local phone = SU.ast.findInTree(content, "phone") or SU.error("phone is mandatory")
+    local email = SU.ast.findInTree(content, "email") or SU.error("email is mandatory")
 
     SILE.call("style:apply:paragraph", { name = "resume-contact" }, {
-      createStructuredCommand("cv-icon-text", { symbol="U+1F4CD" }, { subContent(street) }),
-      createCommand("cv-bullet"),
-      subContent(city),
-      createCommand("par"),
+      SU.ast.createStructuredCommand("cv-icon-text", { symbol="U+1F4CD" }, { SU.ast.subContent(street) }),
+      SU.ast.createCommand("cv-bullet"),
+      SU.ast.subContent(city),
+      SU.ast.createCommand("par"),
       phone,
-      createCommand("cv-bullet"),
+      SU.ast.createCommand("cv-bullet"),
       email
     })
   end)

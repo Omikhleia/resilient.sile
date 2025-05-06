@@ -3,14 +3,23 @@
 -- Following the resilient styling paradigm.
 -- Hooks are removed and replaced by styles, allowing for a fully customizable TOC
 --
--- 2021-2023, 2025 Didier Willis
--- License: MIT
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2021-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("packages.resilient.base")
-local ast = require("silex.ast")
-local createCommand, createStructuredCommand, subContent
-        = ast.createCommand, ast.createStructuredCommand, ast.subContent
-
 local package = pl.class(base)
 package._name = "resilient.tableofcontents"
 
@@ -20,8 +29,8 @@ function package:_init (options)
   base._init(self, options)
   SILE.scratch.tableofcontents = SILE.scratch.tableofcontents or {}
   SILE.scratch._tableofcontents = SILE.scratch._tableofcontents or {}
-  self.class:loadPackage("infonode")
-  self.class:loadPackage("leaders")
+  self:loadPackage("infonode")
+  self:loadPackage("leaders")
   if not SILE.scratch.tableofcontents then
     SILE.scratch.tableofcontents = {}
   end
@@ -39,7 +48,7 @@ function package:moveTocNodes ()
   end
 end
 
-function package.writeToc (_)
+function package:writeToc ()
   local tocdata = pl.pretty.write(SILE.scratch.tableofcontents)
   local tocfile, err = io.open(SILE.masterFilename .. '.toc', "w")
   if not tocfile then return SU.error(err) end
@@ -51,7 +60,7 @@ function package.writeToc (_)
   end
 end
 
-function package.readToc (_)
+function package:readToc ()
   if SILE.scratch._tableofcontents and #SILE.scratch._tableofcontents > 0 then
     -- already loaded
     return SILE.scratch._tableofcontents
@@ -165,12 +174,12 @@ function package:registerCommands ()
     for i = 1, #toc do
       local item = toc[i]
       if item.level >= start and item.level <= start + depth then
-        tocItems[#tocItems + 1] = createCommand("tableofcontents:item", {
+        tocItems[#tocItems + 1] = SU.ast.createCommand("tableofcontents:item", {
           level = item.level,
           pageno = item.pageno,
           number = item.number,
           link = linking and item.link
-        }, subContent(item.label))
+        }, SU.ast.subContent(item.label))
       end
     end
     SILE.call("style:apply:paragraph", { name = "toc" }, tocItems)
@@ -207,7 +216,7 @@ function package:registerCommands ()
     SILE.call("info", {
       category = "toc",
       value = {
-        label = subContent(SU.ast.stripContentPos(content)),
+        label = SU.ast.subContent(SU.ast.stripContentPos(content)),
         level = (options.level or 1),
         number = options.number,
         link = dest
@@ -218,7 +227,7 @@ function package:registerCommands ()
   local linkWrapper = function (dest, content)
     if dest and SILE.Commands["pdf:link"] then
       return {
-        createStructuredCommand("pdf:link", { dest = dest }, content)
+        SU.ast.createStructuredCommand("pdf:link", { dest = dest }, content)
       }
     end
     return content
@@ -242,15 +251,15 @@ function package:registerCommands ()
       SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
       local itemContent = {}
       if options.number then
-        itemContent[#itemContent + 1] = createCommand("tableofcontents:levelnumber", {
+        itemContent[#itemContent + 1] = SU.ast.createCommand("tableofcontents:levelnumber", {
           level = level,
           text = options.number
         })
       end
-      itemContent[#itemContent + 1] = subContent(content)
-      itemContent[#itemContent + 1] = createCommand(hasFiller and "dotfill" or "hfill")
+      itemContent[#itemContent + 1] = SU.ast.subContent(content)
+      itemContent[#itemContent + 1] = SU.ast.createCommand(hasFiller and "dotfill" or "hfill")
       if hasPageno then
-        itemContent[#itemContent + 1] = createCommand("style:apply", {
+        itemContent[#itemContent + 1] = SU.ast.createCommand("style:apply", {
           name = "toc-pageno"
         }, {options.pageno})
       end

@@ -6,8 +6,21 @@
 -- with (expectedly) the same user API but with additiona features and styling
 -- methods.
 --
--- 2021-2023, Didier Willis
--- License: MIT
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2021-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 -- NOTE: Though not described explicitly in the documentation, the package supports
 -- two nesting techniques:
@@ -39,7 +52,6 @@
 -- second technique.
 --
 local base = require("packages.resilient.base")
-
 local package = pl.class(base)
 package._name = "resilient.lists"
 
@@ -266,10 +278,10 @@ end
 
 function package:_init (options)
   base._init(self, options)
-  self.class:loadPackage("counters")
+  self:loadPackage("counters")
 end
 
-function package.declareSettings (_)
+function package:declareSettings ()
 
   SILE.settings:declare({
     parameter = "lists.current.enumerate.depth",

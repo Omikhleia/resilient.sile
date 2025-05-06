@@ -3,14 +3,22 @@
 -- Very minimal implementation for Djot/Markdown needs, with styling support.
 -- Following the resilient styling paradigm.
 --
--- 2023, 2025 Didier Willis
--- License: MIT
+-- License: GPL-3.0-or-later
 --
-local ast = require("silex.ast")
-local extractFromTree = ast.extractFromTree
-
-local base = require("packages.resilient.base")
-
+-- Copyright (C) 2023-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+--
 local trimLeft = function (str)
   return str:gsub("^%s*", "")
 end
@@ -23,6 +31,7 @@ local trim = function (str)
   return trimRight(trimLeft(str))
 end
 
+local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.defn"
 
@@ -30,7 +39,7 @@ function package:_init (options)
   base._init(self, options)
 end
 
-function package.declareSettings (_)
+function package:declareSettings ()
 
   SILE.settings:declare({
     parameter = "defn.variant",
@@ -72,8 +81,8 @@ function package:registerCommands ()
   end, "Definition block (internal)")
 
   self:registerCommand("defn", function (options, content)
-    local term = extractFromTree(content, "term")
-    local desc = extractFromTree(content, "desc")
+    local term = SU.ast.removeFromTree(content, "term")
+    local desc = SU.ast.removeFromTree(content, "desc")
     if not term then
       SU.error("Missing term in definition")
     end

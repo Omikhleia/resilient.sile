@@ -2,26 +2,34 @@
 -- An epigraph package for SILE.
 -- Following the resilient styling paradigm.
 --
--- 2021-2023, Didier Willis
--- License: MIT
+-- License: GPL-3.0-or-later
+--
+-- Copyright (C) 2021-2025 Didier Willis
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --
 local base = require("packages.resilient.base")
-
 local package = pl.class(base)
 package._name = "resilient.epigraph"
-
-local ast = require("silex.ast")
-local createStructuredCommand, subContent, extractFromTree
-        = ast.createStructuredCommand, ast.subContent, ast.extractFromTree
 
 function package:_init (options)
   base._init(self, options)
 
-  self.class:loadPackage("raiselower")
-  self.class:loadPackage("rules")
+  self:loadPackage("raiselower")
+  self:loadPackage("rules")
 end
 
-function package.declareSettings (_)
+function package:declareSettings ()
   SILE.settings:declare({
     parameter = "epigraph.width",
     type = "measurement",
@@ -60,7 +68,7 @@ function package:registerCommands ()
       local framew = SILE.typesetter.frame:width()
       local epigraphw = width:absolute()
       local skip = framew - epigraphw - margin
-      local source = extractFromTree(content, "source")
+      local source = SU.ast.removeFromTree(content, "source")
       SILE.typesetter:leaveHmode()
 
       local sty = self:resolveStyle("epigraph")
@@ -79,8 +87,8 @@ function package:registerCommands ()
 
       SILE.settings:set("document.parindent", parindent)
       SILE.call("style:apply:paragraph", { name = "epigraph-text" }, {
-        subContent(content),
-        createStructuredCommand("epigraph:internal:source", {
+        SU.ast.subContent(content),
+        SU.ast.createStructuredCommand("epigraph:internal:source", {
           width = epigraphw,
           rule = options.rule
         }, source),
