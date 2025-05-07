@@ -54,6 +54,8 @@ build = {
     ["sile.packages.resilient.liners"]          = "packages/resilient/liners/init.lua",
     ["sile.packages.resilient.fancytoc"]        = "packages/resilient/fancytoc/init.lua",
 
+    ["sile.packages.resilient.plain"]           = "packages/resilient/plain/init.lua",
+
     ["sile.packages.resilient.bible.usx"]       = "packages/resilient/bible/usx/init.lua",
     ["sile.packages.resilient.bible.tei"]       = "packages/resilient/bible/tei/init.lua",
 
