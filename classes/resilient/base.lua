@@ -57,7 +57,6 @@ This should be compatible, but there might be differences such as hooks not
 being available, as the resilient version use styles instead.
 Please consider using resilient-compatible style-aware packages when available!
 ]])
-  SU.warn("Loading the resilient variant of package " .. packname .. " = " .. styleAwareVariant[packname])
     packname = styleAwareVariant[packname]
   end
   return parent.loadPackage(self, packname, options, reload)
