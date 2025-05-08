@@ -10,21 +10,21 @@ We are excited to have you on board and look forward to your contributions. This
 
 ### License grants for submitted code
 
-By submitting code, you agree to license your contribution under the same license as the project (the GPL-3.0 license), or any other license that is compatible with the GPL-3.0 license. This means that your code will be available for others to use, modify, and distribute under the same terms as the _re·sil·ient_ project itself.
+When submitting code, you agree to license your contribution under the same license as the project (the MIT license).
+This means that your code will be available for others to use, modify, and distribute under the same terms as the _re·sil·ient_ project itself, and it may be upstreamed to the SILE Typesetter, which is a separate project with its own owners (currently distributed under the MIT license).
 
-You also agree that the owner(s) and maintainer(s)-in-chief of the _re·sil·ient_ project may relicense, at their sole discretion, any part of the code under the same license as the SILE Typesetter, as long as the latter remains open source, for the purpose of up-streaming patches and features to the SILE project, when they are deemed useful in its larger context. In other words, while _re·sil·ient_ is not dual-licensed, the owner(s) and maintainer(s)-in-chief of the project may choose to relicense your contribution without seeking your permission, for up-streaming purposes only. This is to ensure that the features introduced in _re·sil·ient_ can be made available to the SILE Typesetter project, which is a separate project with its own owners and distributed under a different license (currently the MIT license, uncompatible with the GPL-3.0 license).
-
-The _re·sil·ient_ project owes a lot to the SILE Typesetter project, and on a case-by-case basis, we may choose to relicense components that would be useful to it, and that are not already part of it. This is a way to give back to the SILE community and ensure that the features we develop can benefit a wider audience.
+The _re·sil·ient_ project owes a lot to the SILE Typesetter project, and we may want to propose improvements and components that were initially developed for the _re·sil·ient_ project, for inclusion up-stream to SILE, when they are deemed useful in its larger context.
+This is a way to give back to the SILE community and ensure that the features we develop can benefit a wider audience.
 
 ### License grants for submitted documentation
 
-By submitting documentation, you agree to license your contribution under the same license as the project (CC-BY-SA 2.0 or any other license that is compatible with the CC-BY-SA 2.0 license). This means that your documentation will be available for others to use, modify, and distribute under the same terms as the project documentation itself.
+When submitting documentation, you agree to license your contribution under the same license as the project (CC-BY-SA 2.0 or any other license that is compatible with the CC-BY-SA 2.0 license). This means that your documentation will be available for others to use, modify, and distribute under the same terms as the project documentation itself.
 
 By documentation, we mean any text, images, or other content that you submit to the project, including but not limited to README files, user guides, and other in-code documentation content.
 
 ### License grants for submitted templates
 
-By submitting templates (notably used for "book matters" such as cover pages, title and half-title pages, endpapers, etc.), you agree to license your contribution under CC0 Universal / Public Domain. This means that your templates will be available for others to use, modify, and distribute unumcumbered of constraints.
+When submitting templates (notably used for "book matters" such as cover pages, title and half-title pages, endpapers, etc.), you agree to license your contribution under CC0 Universal / Public Domain. This means that your templates will be available for others to use, modify, and distribute unumcumbered of constraints.
 
 The rationale for this is that such templates should be considered as data files, which will likely be copied and used with or without modification by authors and editors in their books, and that users should not be constrained by any license or copyright regarding the output of processing their original content with _re·sil·ient_ when using such templates.
 

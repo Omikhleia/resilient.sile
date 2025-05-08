@@ -12,18 +12,18 @@ description = {
     advanced classes and tools for easier print-quality book production.
   ]],
   homepage = "https://github.com/Omikhleia/resilient.sile",
-  license = "GPL-3.0",
+  license = "MIT",
 }
 dependencies = {
    "lua >= 5.1",
-   "barcodes.sile >= 2.0.0",
+   "barcodes.sile >= 2.1.0",
    "couyards.sile >= 1.0.0",
-   "embedders.sile >= 1.0.0",
+   "embedders.sile >= 1.1.0",
    "labelrefs.sile >= 0.1.0",
-   "piecharts.sile >= 2.0.0",
-   "ptable.sile >= 4.0.0",
-   "qrcode.sile >= 2.0.0",
-   "textsubsuper.sile >= 2.0.0",
+   "piecharts.sile >= 2.1.0",
+   "ptable.sile >= 4.1.0",
+   "qrcode.sile >= 2.1.0",
+   "textsubsuper.sile >= 2.1.0",
    "markdown.sile >= 2.4.0",
 }
 build = {

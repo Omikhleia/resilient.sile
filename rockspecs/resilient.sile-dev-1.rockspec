@@ -11,7 +11,7 @@ description = {
     advanced classes and tools for easier print-quality book production.
   ]],
   homepage = "https://github.com/Omikhleia/resilient.sile",
-  license = "GPL-3.0",
+  license = "MIT",
 }
 dependencies = {
    "lua >= 5.1",
