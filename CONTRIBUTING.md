@@ -18,9 +18,15 @@ The _re·sil·ient_ project owes a lot to the SILE Typesetter project, and on a 
 
 ### License grants for submitted documentation
 
-By submitting documentation, you agree to license your contribution under the same license as the project (CC-BY-SA 2.0 or any other license that is compatible with the CC-BY-SA 2.0 license). This means that your documentation will be available for others to use, modify, and distribute under the same terms as the project itself.
+By submitting documentation, you agree to license your contribution under the same license as the project (CC-BY-SA 2.0 or any other license that is compatible with the CC-BY-SA 2.0 license). This means that your documentation will be available for others to use, modify, and distribute under the same terms as the project documentation itself.
 
 By documentation, we mean any text, images, or other content that you submit to the project, including but not limited to README files, user guides, and other in-code documentation content.
+
+### License grants for submitted templates
+
+By submitting templates (notably used for "book matters" such as cover pages, title and half-title pages, endpapers, etc.), you agree to license your contribution under CC0 Universal / Public Domain. This means that your templates will be available for others to use, modify, and distribute unumcumbered of constraints.
+
+The rationale for this is that such templates should be considered as data files, which will likely be copied and used with or without modification by authors and editors in their books, and that users should not be constrained by any license or copyright regarding the output of processing their original content with _re·sil·ient_ when using such templates.
 
 ## Issues first, Pull Requests later
 
