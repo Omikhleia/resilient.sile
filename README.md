@@ -76,7 +76,7 @@ The name is a pun on “SILE” (as, after all, the initial target was always on
 
 ## License
 
-The code in this repository is released under the GNU General Public License v3.0, (c) 2021-2025 Omikhleia.
+The code in this repository is released under the MIT license, (c) 2021-2025 Omikhleia.
 
 The documentation is under CC-BY-SA 2.0.
 
