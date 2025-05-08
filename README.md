@@ -85,13 +85,12 @@ Please check their respective license or ask, in case of doubts, for details and
 
 The [templates for some book parts](./templates/README.md) are licensed under CC0 Universal / Public Domain, as well as some convenience [schemas](./schemas/README.md) for interoperability and ease of use.
 
-It should go without saying, but the above licenses apply to the source code of the program, and not to typeset documents produced with it.
-Documents typeset using this collection remain under the license and copyright of their respective authors, i.e. the authors of the input files.
+It should go without saying, but the above licenses apply to the source code and documentation of the program, and not to typeset documents produced with it.
+Documents composed using this solution remain subject to the terms and conditions set forth by respective copyright holders, i.e. the copyright holders of the original material (documents and assets)
+
 The outputs of the typesetting process encompass several generated files, besides the final PDF document (or other output format that SILE can produce).
 They include converted images, temporary files indexes and table of contents, etc.
 In particular, style definition files are also generated, with a content varying depending on the packages and classes used.
 Such generated files are also outside the scope of the source code license, and are not covered by it.
 
 Would you want to credit this collection in your works, you are free to do so, but it is not required in any way.
-
-In brief, documents typeset using this collection remain under the license and copyright of their respective authors, i.e. the authors of the input files.
