@@ -2,13 +2,13 @@
 -- Lightweight frameset parser/solver.
 -- Aimed at resolving a master frameset so as to render it graphically, etc.
 --
--- Logic mostly stolen from SILE's core, but the frames and frameParser there
--- rely on several side effects and global variables...
--- I extracted and refactored the minimal code for solving frame specifications
--- independently, so as to be able to resolve a full master layout and draw it.
---
 -- License: MIT
 -- Copyright (C) 2023-2025 Omikhleia / Didier Willis
+--
+-- The logic is mostly taken from SILE's core frame, MIT licensed (c) Simon Cozens / The SILE Organization.
+-- But the frames and frameParser there  rely on several side effects and global variables...
+-- I extracted and refactored the minimal code for solving frame specifications
+-- independently, so as to be able to resolve a full master layout and draw it.
 --
 local cassowary = require("cassowary")
 local lpeg = require("lpeg")
@@ -93,6 +93,12 @@ function framesetAdapter:initFrameParser()
   local measurement = SILE.parserBits.measurement / function (str)
     return SILE.types.measurement(str):tonumber()
   end
+  -- Based on the frame grammar from SILE.
+  -- I did not investigate the quality of the code, despite the fact that it seems weird
+  -- that additive rules are taking precedence over multiplicative ones, and that a
+  -- cassowary implementation would, if I am not mistaken, handle inequality constraints
+  -- and not just equality ones. In other words, I have some doubts about the correctness
+  -- of the whole frame thing, but I'll leave that to other people to check and clarify.
   local ws = SILE.parserBits.ws
   local dims = P"top" + P"left" + P"bottom" + P"right" + P"width" + P"height"
   local relation = C(dims) * ws * P"(" * ws * C(identifier) * ws * P")" / function (dim, id)

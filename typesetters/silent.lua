@@ -1,8 +1,9 @@
 --- New typesetter (default/base) class for SILE/RESILIENT
 --
--- WARNING: With sile·x modifications
--- FIXME: Brutal monkey patching of SILE's typesetter class
--- We'll eventually need to refactor this in a cleaner way.
+-- WARNING: With sile·x modifications, MIT licensed (c) Omikhkeia / Didier Willis.
+-- This code is adapted from SILE's core typesetter, MIT licensed (c) Simon Cozens, The SILE Organization.
+-- FIXME: It's thus still a "brutal" monkey patching of SILE's typesetter base class at the moment.
+-- We'll eventually need to refactor this in a cleaner way, using subclassing or whatever.
 --
 -- @module typesetters.base
 --
