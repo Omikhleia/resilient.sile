@@ -15,7 +15,7 @@
     \phone{+44 7890 123456}
     \email{sherlock.holmes@sile.org}
   \end{contact}
-  \picture[src=examples/sherlock.png]
+  \picture[src=sherlock.png]
 
   \jobtitle{Consultant Detective}
 
