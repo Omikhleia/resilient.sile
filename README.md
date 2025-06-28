@@ -46,7 +46,7 @@ luarocks install resilient.sile
 
 Refer to the SILE manual for more detailed 3rd-party package installation information and configuration options.
 
-Note that while this module was originally designed for SILE v0.14, we are no longer testing it against this version, and support for it may be dropped in the near future.
+For more detailed instructions and recommendations, see also the dedicated [README](./guides/README.md).
 
 ## See also
 
@@ -73,6 +73,8 @@ Besides all the changes from SILE v0.12 to v0.14, and its new package and class 
 
 It therefore comes under a new name (also used as a namespace here and there), **resilient**.
 The name is a pun on “SILE” (as, after all, the initial target was always on redoing a book class that would satisfy my requirements), but there is a bit more to it than that, which might become more visible when the collection expands.
+
+Note that while this module was originally designed for SILE v0.14, the collection now requires SILE v0.15.12.
 
 ## License
 
