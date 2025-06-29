@@ -2,10 +2,10 @@
 # Le conte perdu de Mercure
 
 {custom-style=Author}
-Alain [Lefèvre]{.smallcaps}[^author-note]
+Alain Lefèvre{.smallcaps}[^author-note-tuor-idril]
 
 {mark="†"}
-[^author-note]: Cet article est extrait de _Tolkien, le façonnement d'un monde,_ vol.\ 1, Le Dragon de Brume, 2011, p.\ 211--216 --- avec la permission de l'auteur.
+[^author-note-tuor-idril]: Cet article est extrait de _Tolkien, le façonnement d'un monde,_ vol.\ 1, Le Dragon de Brume, 2011, p.\ 211--216 --- avec la permission de l'auteur.
 
 [^:no:]: n^o^\ {.dummy}
 
@@ -15,7 +15,7 @@ Alain [Lefèvre]{.smallcaps}[^author-note]
 ^ _Fables d'Ésope,_ "La Lampe",\
   trad. Émile Chambry[^1]
 
-[^1]: Ésope, _Fables,_ trad. d'Émile Chambry, Les Belles Lettres, 1927, 5^e^ partie, 232 : "_[Μεθύων λύχνος ἐλαίῳ καὶ φέγγων ἐκαυχᾶτο ὡς ὑπὲρ ἥλιον πλέον λάμπει. Ἀνέμου δὲ πνοῆς συρισάσης, εὐθὺς ἐσβέσθη. Ἐκ δευτέρου δὲ ἅπτων τις εἶπεν αὐτῷ· Φαῖνει, λύχνε, καὶ σίγα· τῶν ἀστέρων τὸ φέγγος οὔποτε ἐκλείπει. Ὅτι οὐ δεῖ τινα ἐν ταῖς δόξαις καὶ τοῖς λαμπροῖς τοῦ βίου τυφοῦσθαι· ὅσα γὰρ ἂν κτήσηταί τις, ξένα τυγχάνει.]{lang=und custom-style=Greek}_" <<http://hodoi.fltr.ucl.ac.be/concordances/esope_201a250/texte.htm>{lang=und}\> --- Dans d'autres versions, la lampe est plus brillante que Vénus{.nobreak} : Perry{.nobreak}, Ben Edwin (traducteur), _[Fables: Babrius and Phaedrus,]{lang=en}_ Loeb Classical Library :no:436, 1965 : "_[Μεθύων ἐλαίῳ λύχνος ἐσπέρης ηὔχει πρὸς τοὺς παρόντας, ὡς Ἑωσφόρου κρείσσων, ἅπασι φέγγος ἐκπρεπέστατον λάμπει. ἀνέμου δὲ συρίσαντος εὐθὺς ἐσβέσθη πνοιῇ ῥαπισθείς. ἐκ δὲ δευτέρης ἅπτων εἶπέν τις αὐτῷ “φαῖνε, λύχνε, καὶ σίγα· τῶν ἀστέρων τὸ φέγγος οὐκ ἀποθνῄσκει.”]{lang=und custom-style=Greek}_" ; Gibbs, Laura, _[Aesop's]{.nobreak} Fables,_ Oxford University Press, 2002 : "_[There was a lamp drunk on his own oil who boasted one evening to everyone present that he was brighter than the Morning Star \[Eosphoros\] and that his splendour shone more conspicuously than anything  else in the world. A sudden puff of wind blew in the lamp's direction, and its breath extinguished his light. A man lit the lamp once again and said to him, “Shine, lamp, and be silent! The splendour of the stars is not ever extinguished.”]{lang=en}_"
+[^1]: Ésope, _Fables,_ trad. d'Émile Chambry, Les Belles Lettres, 1927, 5^e^ partie, 232 : "_[Μεθύων λύχνος ἐλαίῳ καὶ φέγγων ἐκαυχᾶτο ὡς ὑπὲρ ἥλιον πλέον λάμπει. Ἀνέμου δὲ πνοῆς συρισάσης, εὐθὺς ἐσβέσθη. Ἐκ δευτέρου δὲ ἅπτων τις εἶπεν αὐτῷ· Φαῖνει, λύχνε, καὶ σίγα· τῶν ἀστέρων τὸ φέγγος οὔποτε ἐκλείπει. Ὅτι οὐ δεῖ τινα ἐν ταῖς δόξαις καὶ τοῖς λαμπροῖς τοῦ βίου τυφοῦσθαι· ὅσα γὰρ ἂν κτήσηταί τις, ξένα τυγχάνει.]{lang=und custom-style=Greek}_" \<<http://hodoi.fltr.ucl.ac.be/concordances/esope_201a250/texte.htm>{lang=und}\> --- Dans d'autres versions, la lampe est plus brillante que Vénus{.nobreak} : Perry{.nobreak}, Ben Edwin (traducteur), _[Fables: Babrius and Phaedrus,]{lang=en}_ Loeb Classical Library :no:436, 1965 : "_[Μεθύων ἐλαίῳ λύχνος ἐσπέρης ηὔχει πρὸς τοὺς παρόντας, ὡς Ἑωσφόρου κρείσσων, ἅπασι φέγγος ἐκπρεπέστατον λάμπει. ἀνέμου δὲ συρίσαντος εὐθὺς ἐσβέσθη πνοιῇ ῥαπισθείς. ἐκ δὲ δευτέρης ἅπτων εἶπέν τις αὐτῷ “φαῖνε, λύχνε, καὶ σίγα· τῶν ἀστέρων τὸ φέγγος οὐκ ἀποθνῄσκει.”]{lang=und custom-style=Greek}_" ; Gibbs, Laura, _[Aesop's]{.nobreak} Fables,_ Oxford University Press, 2002 : "_[There was a lamp drunk on his own oil who boasted one evening to everyone present that he was brighter than the Morning Star \[Eosphoros\] and that his splendour shone more conspicuously than anything  else in the world. A sudden puff of wind blew in the lamp's direction, and its breath extinguished his light. A man lit the lamp once again and said to him, “Shine, lamp, and be silent! The splendour of the stars is not ever extinguished.”]{lang=en}_"
 
 
 [E]{custom-style=initial-joined}[xception faite de Vénus]{.smallcaps}, et évidemment de la Terre elle-même, les planètes n'occupent aucune place particulière dans la mythologie de la Terre du Milieu imaginée par Tolkien{.nobreak}.
@@ -26,7 +26,7 @@ Cependant, tout ceci pourrait n'avoir été qu'une tentative passagère d'identi
 
 [^2]: _Morgoth's Ring,_ p.\ 160 (repris dans _The Silmarillion,_ ch. 3, p.\ 55).
 
-[^3]: Voir commentaire de Christopher Tolkien dans _Morgoth's Ring,_ p.\ 434--436 ; voir aussi Quiñonez, Jorge & Ned Raggett, "[Nólë I Meneldilo: Lore of the Astronomer]{lang=en}", _Vinyar Tengwar_ :no:12, juil. 1990 (p.\ 5--15).
+[^3]: Voir commentaire de Christopher Tolkien dans _Morgoth's Ring,_ p.\ 434--436 ; voir aussi Quiñonez, Jorge & Ned Raggett, "[_Nólë I Meneldilo:_ Lore of the Astronomer]{lang=en}", _Vinyar Tengwar_ :no:12, juil. 1990 (p.\ 5--15).
 
 
 Absente de cette étrange liste, Vénus occupe une place autrement plus importante dans l'histoire de la Terre du Milieu : étoile du matin et étoile du soir, elle est associée[^4] à Eärendil qui sillonne le firmament sur sa nef Vingilot, accompagné de son épouse Elwing transformée en oiseau blanc.
@@ -69,8 +69,7 @@ Nous pouvons décider de croire, selon la tradition acceptée, que Tuor et Idril
 
 [^8]: Christopher Tolkien a omis quelques précisions qui figuraient dans le texte antérieur utilisé pour établir le passage du _Silmarillion_ juste cité _supra_ (peut-être parce que se pose alors le problème de la transmission du récit).
 Tuor demeurait à bord de son navire, parcourant les mers des terres elfiques ou séjournant dans les ports de Tol Eressëa.
-Il ne semble pas avoir séjourné sur Tol Eressëa (la mention est biffée) et encore moins avoir mis le pied à Valinor, cf. _The Shaping of Middle-earth_ p.\ 186 n. 3,
-trad. fr. _la Formation de la Terre du Milieu_ p.\ 176.
+Il ne semble pas avoir séjourné sur Tol Eressëa (la mention est biffée) et encore moins avoir mis le pied à Valinor, cf. _The Shaping of Middle-earth_ p.\ 186 n. 3, trad. fr. _la Formation de la Terre du Milieu_ p.\ 176.
 Le destin d'Idril n'est pas explicité. Enfin, pour le rattachement de Tuor à la race des Elfes comme relevant du fait de Dieu (Eru), voir aussi _Letters_ :no:153 p.\ 194, trad. fr. _Lettres_ p.\ 177.
 
 Dans les premières versions de ces légendes, Idril n'accompagnait pas Tuor mais disparaissait plus tard en mer[^9] et son destin restait alors
@@ -109,5 +108,5 @@ Il nous plaît néanmoins de voir ici le conte perdu de Mercure, telle qu'il aur
 > Nul spectacle ne peut être plus beau, plus digne d'admiration.
 ^ Cicéron, _De la nature des dieux,_ II, [xl]{.smallcaps}
 
-{.pendant type=6 width=default}
+{.pendant}
 ---

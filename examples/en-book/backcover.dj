@@ -1,0 +1,10 @@
+The main text is composed in EB Garamond, 12 point size; footnotes and epigraphs are in 9 to 11\ ½ point size.
+Greek text and headings are in Libertinus Serif; the dropped initial capital is in Zallman Caps.
+
+The page layout follows the (French) "Canon des Ateliers" in "demi-luxe" format, with margins in accordance with the [10/12]{custom-style=Fractional} rule.
+Headings and folios are spaced according to the golden ratio.
+
+The presentation of the footnotes is inspired by the principles described by typographer Jan Tschichold.
+
+The layout is designed using the experimental SILE 0.15.13 typesetting system, and is based on the _re·sil·ient_ collection of modules, version 3.0.0.
+This article is republished here to illustrate their capabilities, with kind permission from the author and publisher.

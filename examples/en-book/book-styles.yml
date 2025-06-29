@@ -333,9 +333,6 @@ footnote-marker-symbol:
 
 footnote-reference:
   style:
-    numbering:
-      before:
-        kern: "1thsp"
     properties:
       position: "super"
 
