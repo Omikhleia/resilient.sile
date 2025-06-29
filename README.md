@@ -22,7 +22,8 @@ Whether you a seasoned typist or a beginner, the _re·sil·ient_ collection aims
 
 ## Demonstration
 
-Do you want to see what you can do with this collection? In addition to the nice “User Guide” documentation (see just below), there’s a whole repository of books and show-cases: [Awesome SILE books](https://github.com/Omikhleia/awesome-sile-books).
+Do you want to see what you can do with this collection?
+In addition to the nice “User Guide” documentation (see just below), and some [examples](./examples/README.md) included in this repository, there’s also a whole repository of books and show-cases: [Awesome SILE books](https://github.com/Omikhleia/awesome-sile-books).
 
 ## Documentation
 

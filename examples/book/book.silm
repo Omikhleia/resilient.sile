@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/masterfile.json
+# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/masterfile.json
+masterfile: 1.0
+metadata:
+  title: Le conte perdu de Mercure
+  keywords:
+    - Tolkien
+    - Essai
+    - Astronomie
+  authors: Alain Lefèvre
+  publisher: Omikhleia
+  pubdate: 2025-06-29
+  url: https://github.com/Omikhleia/resilient.sile
+  copyright: © 2011, Le Dragon de Brume; 2025, Omikhleia, pour la présente édition.
+  legal: |
+    Le Code de la propriété intellectuelle interdit les copies ou reproductions
+    destinées à une utilisation collective.
+    Toute représentation ou reproduction intégrale ou partielle faite par
+    quelque procédé que ce soit, sans le consentement de l’auteur ou de ses
+    ayants cause, est illicite et constitue une contrefaçon sanctionnée par
+    les articles L.335-2 et suivants du Code de la propriété intellectuelle.
+font:
+  family: EB Garamond
+  size: 12pt
+language: fr
+book:
+  enabled: true
+  cover:
+    background: "#9ebd76"
+    front:
+      template: cover
+    back:
+      content: backcover.dj
+sile:
+  options:
+    papersize: 6in x 9in
+    layout: ateliers demiluxe
+    headers: novel
+    resolution: 300
+  settings:
+    textsubsuper.fake: false
+    document.baselineskip: 1.2em
+    document.lineskip: 0em
+    epigraph.width: 75%fw
+    typesetter.italicCorrection: true
+content:
+  chapters:
+    - lefevre-tuor-idril.dj
