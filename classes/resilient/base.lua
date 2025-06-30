@@ -24,8 +24,9 @@ end
 -- Some core or 3rd-party packages may load a non-style-aware variant of
 -- another package, and this would cause issues with the commands being
 -- redefined to the non-style-aware variant.
--- E.g. in SILE 0.15.12, the "url" package loads the "verbatim" package
--- (despite not using it, and this was later fixed).
+-- E.g. in SILE 0.15.12, the "url" package loaded the "verbatim" package
+-- (despite not using it, and this was later fixed in SILE 0.15.13, but
+-- you can get the idea).
 -- Let's assume we are compatible with those packages (though we cannot
 -- guarantee it), and always silently load the resilient variant instead.
 local styleAwareVariant = {

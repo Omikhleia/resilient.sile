@@ -30,7 +30,7 @@ Other than that, the installation should be straightforward, and _re·sil·ient_
 ## Recommended additional software
 
 This collection also notably includes the following components:
- 
+
  - the [*embedders.sile*](https://github.com/Omikhleia/embedders.sile) collection, a general framework for embedding images from textual representations, performing their on-the-fly conversion,
  - the *printoptions* package, a general framework for rasterizing vector images and rescaling raster images.
 

@@ -24,7 +24,7 @@ In addition to the class options provided by SILE, the class also supports the f
   - `none`: No running headers.
   - `technical` (default): Chapter and section titles go in the even and odd running headers, respectively.
   - `novel`: Chapter titles go in the odd running headers, and the title of the book, if set, goes in the even running headers.[^book-title]
-  
+
 : `resolution`
 
   Specifies the global resolution in DPI (dots per inch).

@@ -22,7 +22,7 @@ function marginal:header (odd)
   return {
     left = odd and "left(textblock)" or "left(margins)",
     right = odd and "right(margins)" or "right(textblock)",
-    top = "top(page) + (" .. self.head  .. ") / 1.618 - 8pt",
+    top = "top(page) + (" .. self.head .. ") / 1.618 - 8pt",
     bottom = "top(header) + 16pt"
   }
 end

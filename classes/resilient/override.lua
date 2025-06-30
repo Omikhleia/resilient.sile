@@ -22,7 +22,7 @@ require("resilient.bootstrap")
 -- We do a few things here:
 -- - We replace SILE's default typesetter with our SILEnt typesetter
 -- - Our classes do not use SILE's plain class, but implement minimal compatibility
--- - We cancel multiple package instanciation, as some packages are stateful (see above)
+-- - We cancel multiple package instanciation, as some of our packages are stateful
 
 local base = require("classes.base")
 local class = pl.class(base)
