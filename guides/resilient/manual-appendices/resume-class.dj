@@ -33,8 +33,8 @@ The commands are pretty simple and straightforward in this first version, so you
 to the sample CV included in our example repository.
 
 :::
-[![](examples/resume-sample.pdf){width="48%" page=1}]{custom-style="ShadowFramed"}
-[![](examples/resume-sample.pdf){width="48%" page=2}]{custom-style="ShadowFramed"}
+[![](resume-sample.pdf){width="48%" page=1}]{custom-style="ShadowFramed"}
+[![](resume-sample.pdf){width="48%" page=2}]{custom-style="ShadowFramed"}
 :::
 ^ A sample CV for a famous detective.
 

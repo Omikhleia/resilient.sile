@@ -26,7 +26,7 @@ Attributes on the symbol are passed through, e.g. `:_TOC_:{depth=3}`.
    - `start` (default 0) controls at which level the table starts.
    - `linking` (default true) controls whether the table entries are active links to the relevant sections.
 
-  ![](./manicule.svg){height="0.60em"} See section [](#packages-tableofcontents) in part [](#resilient-packages) for advanced information.
+  ![](manicule.svg){height="0.60em"} See section [](#packages-tableofcontents) in part [](#resilient-packages) for advanced information.
 
 : `:_FANCYTOC_:`
 
@@ -36,7 +36,7 @@ Attributes on the symbol are passed through, e.g. `:_TOC_:{depth=3}`.
 
    - `start` (default 0) controls at which level the table starts.
 
-  ![](./manicule.svg){height="0.60em"} See section [](#packages-fancytoc) in part [](#resilient-packages) for advanced information.
+  ![](manicule.svg){height="0.60em"} See section [](#packages-fancytoc) in part [](#resilient-packages) for advanced information.
 
 : `:_LISTOFFIGURES_:`
 
@@ -62,4 +62,4 @@ The *resilient.book* class also provides a predefined Djot symbol for inserting 
 
   Insert a bibliography.
 
-  ![](./manicule.svg){height="0.60em"} See chapter [](#using-bibliographies) in part [](#master-document) for more information.
+  ![](manicule.svg){height="0.60em"} See chapter [](#using-bibliographies) in part [](#master-document) for more information.

@@ -42,8 +42,8 @@ luac.out
 # SILE artifacts
 *.toc
 *.ref
-tests/*.pdf
-tests/*.debug
-examples/converted/*
-examples/embedded/*
+*.pdf
+*.debug
+**/converted/*
+**/embedded/*
 temp/*

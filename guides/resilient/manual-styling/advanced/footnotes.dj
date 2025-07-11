@@ -50,7 +50,7 @@ footnote-reference:
         kern: "1thsp"
 ```
 
-### Foonote content
+### Footnote content
 
 Jean-Pierre Lacroux: "Notes are typeset in a smaller size than the current text
 (ratio: about 2/3)." This is followed by a list of "usual" fixed sizes depending

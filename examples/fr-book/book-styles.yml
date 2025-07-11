@@ -1,0 +1,1222 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
+# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
+
+Author:
+  style:
+    paragraph:
+      after:
+        skip: "bigskip"
+      align: "left"
+      before:
+        indent: false
+
+Fractional:
+  style:
+    font:
+      features: "+frac"
+
+Greek:
+  style:
+    font:
+      family: "Libertinus Serif"
+      size: "0.95em"
+
+blockquote:
+  style:
+    font:
+      size: "0.9583em"
+    paragraph:
+      after:
+        skip: "smallskip"
+      align: "quotation"
+      before:
+        skip: "smallskip"
+
+bookmatter-author:
+  inherit: "bookmatter-titlepage"
+  style:
+    font:
+      size: "16pt"
+    properties:
+      case: "upper"
+
+bookmatter-backcover:
+  style:
+    font:
+      size: "0.95em"
+
+bookmatter-copyright:
+  style:
+    paragraph:
+      align: "noparindent"
+
+bookmatter-cover-author:
+  inherit: "bookmatter-coverpage"
+  style:
+    font:
+      size: "16pt"
+    properties:
+      case: "upper"
+
+bookmatter-cover-publisher:
+  inherit: "bookmatter-coverpage"
+  style:
+
+bookmatter-cover-subtitle:
+  inherit: "bookmatter-coverpage"
+  style:
+    font:
+      size: "16pt"
+    paragraph:
+      after:
+        skip: "5%fh"
+
+bookmatter-cover-title:
+  inherit: "bookmatter-coverpage"
+  style:
+    font:
+      size: "20pt"
+    paragraph:
+      after:
+        skip: "5%fh"
+      before:
+        skip: "30%fh"
+
+bookmatter-coverpage:
+  style:
+
+bookmatter-halftitle:
+  style:
+    font:
+      size: "14pt"
+    paragraph:
+      after:
+        skip: "5%fh"
+      align: "center"
+      before:
+        skip: "25%fh"
+    properties:
+      case: "upper"
+
+bookmatter-legal:
+  style:
+    font:
+      size: "0.8em"
+    paragraph:
+      before:
+        skip: "smallskip"
+
+bookmatter-publisher:
+  inherit: "bookmatter-titlepage"
+  style:
+
+bookmatter-subtitle:
+  inherit: "bookmatter-titlepage"
+  style:
+    font:
+      size: "16pt"
+    paragraph:
+      after:
+        skip: "5%fh"
+
+bookmatter-title:
+  inherit: "bookmatter-titlepage"
+  style:
+    font:
+      size: "20pt"
+    paragraph:
+      after:
+        skip: "5%fh"
+      before:
+        skip: "30%fh"
+
+bookmatter-titlepage:
+  style:
+
+code:
+  style:
+    font:
+      family: "Hack"
+      size: "1.4ex"
+
+defn-base:
+  style:
+
+defn-desc:
+  inherit: "defn-base"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        vbreak: false
+
+defn-term:
+  inherit: "defn-base"
+  style:
+    font:
+      weight: 700
+    paragraph:
+      after:
+        vbreak: false
+      before:
+        skip: "smallskip"
+
+dropcap:
+  style:
+    font:
+      family: "Zallman Caps"
+    special:
+      lines: 2
+
+epigraph:
+  style:
+    font:
+      size: "0.9em"
+    paragraph:
+      after:
+        skip: "bigskip"
+      before:
+        skip: "medskip"
+
+epigraph-source:
+  style:
+    paragraph:
+      align: "right"
+      before:
+        indent: false
+        vbreak: false
+
+epigraph-source-norule:
+  inherit: "epigraph-source"
+  style:
+    paragraph:
+      before:
+        skip: "smallskip"
+
+epigraph-source-rule:
+  inherit: "epigraph-source"
+  style:
+
+epigraph-text:
+  inherit: "epigraph"
+  style:
+    paragraph:
+      align: "justify"
+
+eqno:
+  style:
+    numbering:
+      after:
+        text: ")"
+      before:
+        text: "("
+      display: "arabic"
+
+figure:
+  style:
+    paragraph:
+      after:
+        vbreak: false
+      align: "center"
+      before:
+        indent: false
+        skip: "smallskip"
+
+figure-caption:
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        skip: "medskip"
+        vbreak: false
+    sectioning:
+      counter:
+        id: "figures"
+        level: 1
+      numberstyle:
+        main: "figure-caption-main-number"
+        reference: "figure-caption-ref-number"
+      settings:
+        bookmark: false
+        goodbreak: false
+        toclevel: 5
+
+figure-caption-base-number:
+  style:
+
+figure-caption-main-number:
+  inherit: "figure-caption-base-number"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+      before:
+        text: "Figure "
+
+figure-caption-ref-number:
+  inherit: "figure-caption-base-number"
+  style:
+    numbering:
+      before:
+        text: "fig. "
+
+folio-backmatter:
+  style:
+    numbering:
+      display: "arabic"
+
+folio-base:
+  style:
+    font:
+      features: "+onum"
+
+folio-even:
+  inherit: "folio-base"
+  style:
+    paragraph:
+      align: "left"
+      before:
+        indent: false
+
+folio-frontmatter:
+  style:
+    numbering:
+      display: "roman"
+
+folio-mainmatter:
+  style:
+    numbering:
+      display: "arabic"
+
+folio-odd:
+  inherit: "folio-base"
+  style:
+    paragraph:
+      align: "right"
+      before:
+        indent: false
+
+footnote:
+  style:
+    font:
+      size: "0.75em"
+    numbering:
+      display: "arabic"
+
+footnote-marker:
+  style:
+    numbering:
+      after:
+        kern: "iwsp"
+      before:
+        kern: "-3nspc"
+
+footnote-marker-counter:
+  inherit: "footnote-marker"
+  style:
+    numbering:
+      after:
+        text: "."
+
+footnote-marker-symbol:
+  inherit: "footnote-marker"
+  style:
+
+footnote-reference:
+  style:
+    numbering:
+      before:
+        kern: "1thsp"
+    properties:
+      position: "super"
+
+footnote-reference-counter:
+  inherit: "footnote-reference"
+  style:
+
+footnote-reference-symbol:
+  inherit: "footnote-reference"
+  style:
+
+header-base:
+  style:
+    font:
+      features: "+smcp"
+      size: "0.9em"
+    paragraph:
+      after:
+        indent: false
+      align: "center"
+      before:
+        indent: false
+
+header-even:
+  inherit: "header-base"
+  style:
+
+header-odd:
+  inherit: "header-base"
+  style:
+
+highlight-addition:
+  style:
+    color: "#7F6600"
+    decoration:
+      color: "#FFDE8A"
+      line: "mark"
+
+highlight-attribute:
+  style:
+    color: "#0000C0"
+
+highlight-bold:
+  style:
+    font:
+      weight: 400
+
+highlight-change:
+  style:
+    color: "#0000C0"
+    decoration:
+      color: "#B2D8FF"
+      line: "mark"
+
+highlight-class:
+  style:
+    color: "#C99000"
+
+highlight-command:
+  style:
+    color: "#7F0055"
+
+highlight-command.section:
+  style:
+    color: "#C99000"
+
+highlight-comment:
+  style:
+    color: "#8E908C"
+    font:
+      style: "italic"
+
+highlight-constant:
+  style:
+    color: "#116644"
+
+highlight-constant.builtin:
+  style:
+    color: "#F5871F"
+
+highlight-deletion:
+  style:
+    color: "#8B0000"
+    decoration:
+      color: "#F6B2B2"
+      line: "mark"
+
+highlight-embedded:
+  style:
+    color: "#4271AE"
+
+highlight-environment:
+  style:
+    color: "#C99000"
+
+highlight-environment.math:
+  style:
+    color: "#116644"
+
+highlight-error:
+  style:
+    color: "#8B0000"
+
+highlight-function:
+  style:
+    color: "#4271AE"
+
+highlight-function.builtin:
+  style:
+    color: "#4271AE"
+
+highlight-function.method:
+  style:
+    color: "#4271AE"
+
+highlight-heading:
+  style:
+    color: "#2A00FF"
+
+highlight-identifier:
+  style:
+    color: "#3F009B"
+
+highlight-italic:
+  style:
+    font:
+      style: "italic"
+
+highlight-keyword:
+  style:
+    color: "#7F0055"
+
+highlight-label:
+  style:
+    color: "#2A00FF"
+
+highlight-link:
+  style:
+    decoration:
+      line: "underline"
+
+highlight-list:
+  style:
+    color: "#116644"
+
+highlight-number:
+  style:
+    color: "#116644"
+
+highlight-operator:
+  style:
+    color: "#3E999F"
+
+highlight-preprocessor:
+  style:
+    color: "#4D4D4C"
+
+highlight-property:
+  style:
+    color: "#0000C0"
+
+highlight-reference:
+  style:
+    decoration:
+      line: "underline"
+
+highlight-regex:
+  style:
+    color: "#0000C0"
+
+highlight-string:
+  style:
+    color: "#3F7F5F"
+
+highlight-tag:
+  style:
+    color: "#7F0055"
+
+highlight-type:
+  style:
+    color: "#C99000"
+
+highlight-underline:
+  style:
+    decoration:
+      line: "underline"
+
+highlight-variable:
+  style:
+    color: "#0000C0"
+
+highlight-variable.builtin:
+  style:
+    color: "#C82829"
+
+listing:
+  style:
+    paragraph:
+      after:
+        vbreak: false
+      before:
+        indent: false
+        skip: "smallskip"
+
+listing-caption:
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        skip: "smallskip"
+        vbreak: false
+    sectioning:
+      counter:
+        id: "listings"
+        level: 1
+      numberstyle:
+        main: "listing-caption-main-number"
+        reference: "listing-caption-ref-number"
+      settings:
+        bookmark: false
+        goodbreak: false
+        toclevel: 7
+
+listing-caption-base-number:
+  style:
+
+listing-caption-main-number:
+  inherit: "listing-caption-base-number"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+      before:
+        text: "Listing "
+
+listing-caption-ref-number:
+  inherit: "listing-caption-base-number"
+  style:
+    numbering:
+      before:
+        text: "listing "
+
+lists-enumerate-alternate1:
+  inherit: "lists-enumerate-base"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "Alpha"
+
+lists-enumerate-alternate2:
+  inherit: "lists-enumerate-base"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "Roman"
+
+lists-enumerate-alternate3:
+  inherit: "lists-enumerate-base"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "roman"
+
+lists-enumerate-alternate4:
+  inherit: "lists-enumerate-base"
+  style:
+    font:
+      style: "italic"
+    numbering:
+      after:
+        text: "."
+      display: "alpha"
+
+lists-enumerate-alternate5:
+  inherit: "lists-enumerate-base"
+  style:
+    enumerate:
+      symbol: "U+2474"
+
+lists-enumerate-base:
+  style:
+
+lists-enumerate1:
+  inherit: "lists-enumerate-base"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "arabic"
+
+lists-enumerate2:
+  inherit: "lists-enumerate-base"
+  style:
+    numbering:
+      after:
+        text: "."
+      display: "roman"
+
+lists-enumerate3:
+  inherit: "lists-enumerate-base"
+  style:
+    numbering:
+      after:
+        text: ")"
+      display: "alpha"
+
+lists-enumerate4:
+  inherit: "lists-enumerate-base"
+  style:
+    numbering:
+      after:
+        text: ")"
+      display: "arabic"
+
+lists-enumerate5:
+  inherit: "lists-enumerate-base"
+  style:
+    numbering:
+      after:
+        text: "."
+      before:
+        text: "§"
+      display: "arabic"
+
+lists-itemize-alternate1:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "—"
+
+lists-itemize-alternate2:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize-alternate3:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize-alternate4:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "–"
+
+lists-itemize-alternate5:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize-alternate6:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize-base:
+  style:
+
+lists-itemize1:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize2:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize3:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "–"
+
+lists-itemize4:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "•"
+
+lists-itemize5:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "◦"
+
+lists-itemize6:
+  inherit: "lists-itemize-base"
+  style:
+    itemize:
+      symbol: "–"
+
+sectioning-appendix:
+  inherit: "sectioning-chapter"
+  style:
+    sectioning:
+      numberstyle:
+        header: "sectioning-appendix-head-number"
+        main: "sectioning-appendix-main-number"
+        reference: "sectioning-appendix-ref-number"
+
+sectioning-appendix-head-number:
+  inherit: "sectioning-chapter-head-number"
+  style:
+
+sectioning-appendix-main-number:
+  inherit: "sectioning-chapter-main-number"
+  style:
+    numbering:
+      before:
+        text: "Appendice "
+      display: "ALPHA"
+
+sectioning-appendix-ref-number:
+  inherit: "sectioning-chapter-ref-number"
+  style:
+    numbering:
+      before:
+        text: "app. "
+
+sectioning-base:
+  style:
+    font:
+      family: "Libertinus Serif"
+    paragraph:
+      after:
+        indent: false
+      before:
+        indent: false
+
+sectioning-chapter:
+  inherit: "sectioning-base"
+  style:
+    font:
+      size: "1.4em"
+      weight: 700
+    paragraph:
+      after:
+        skip: "bigskip"
+      align: "left"
+    sectioning:
+      counter:
+        id: "sections"
+        level: 1
+      hook: "sectioning:chapter:hook"
+      numberstyle:
+        header: "sectioning-chapter-head-number"
+        main: "sectioning-chapter-main-number"
+        reference: "sectioning-chapter-ref-number"
+      settings:
+        open: "odd"
+        toclevel: 1
+
+sectioning-chapter-base-number:
+  style:
+
+sectioning-chapter-head-number:
+  inherit: "sectioning-chapter-base-number"
+  style:
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+
+sectioning-chapter-main-number:
+  inherit: "sectioning-chapter-base-number"
+  style:
+    font:
+      size: "0.9em"
+    numbering:
+      after:
+        text: "."
+      before:
+        text: "Chapitre "
+      standalone: true
+
+sectioning-chapter-ref-number:
+  inherit: "sectioning-chapter-base-number"
+  style:
+    numbering:
+      before:
+        text: "chap. "
+
+sectioning-other-number:
+  style:
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+
+sectioning-part:
+  inherit: "sectioning-base"
+  style:
+    font:
+      size: "1.6em"
+      weight: 700
+    paragraph:
+      after:
+        skip: "bigskip"
+      align: "center"
+      before:
+        skip: "15%fh"
+    sectioning:
+      counter:
+        id: "parts"
+        level: 1
+      hook: "sectioning:part:hook"
+      numberstyle:
+        header: "sectioning-part-head-number"
+        main: "sectioning-part-main-number"
+        reference: "sectioning-part-ref-number"
+      settings:
+        open: "odd"
+        toclevel: 0
+
+sectioning-part-base-number:
+  style:
+    numbering:
+      display: "ROMAN"
+
+sectioning-part-head-number:
+  inherit: "sectioning-part-base-number"
+  style:
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+
+sectioning-part-main-number:
+  inherit: "sectioning-part-base-number"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      before:
+        text: "Partie "
+      standalone: true
+
+sectioning-part-ref-number:
+  inherit: "sectioning-part-base-number"
+  style:
+    numbering:
+      before:
+        text: "partie "
+
+sectioning-section:
+  inherit: "sectioning-base"
+  style:
+    font:
+      size: "1.2em"
+      weight: 700
+    paragraph:
+      after:
+        skip: "medskip"
+        vbreak: false
+      before:
+        skip: "bigskip"
+    sectioning:
+      counter:
+        id: "sections"
+        level: 2
+      hook: "sectioning:section:hook"
+      numberstyle:
+        header: "sectioning-other-number"
+        main: "sectioning-other-number"
+        reference: "sectioning-other-number"
+      settings:
+        toclevel: 2
+
+sectioning-subsection:
+  inherit: "sectioning-base"
+  style:
+    font:
+      size: "1.1em"
+      weight: 700
+    paragraph:
+      after:
+        skip: "smallskip"
+        vbreak: false
+      before:
+        skip: "medskip"
+    sectioning:
+      counter:
+        id: "sections"
+        level: 3
+      numberstyle:
+        header: "sectioning-other-number"
+        main: "sectioning-other-number"
+        reference: "sectioning-other-number"
+      settings:
+        toclevel: 3
+
+sectioning-subsubsection:
+  inherit: "sectioning-base"
+  style:
+    font:
+      weight: 700
+    paragraph:
+      after:
+        vbreak: false
+      before:
+        skip: "smallskip"
+    sectioning:
+      counter:
+        id: "sections"
+        level: 4
+      numberstyle:
+        header: "sectioning-other-number"
+        main: "sectioning-other-number"
+        reference: "sectioning-other-number"
+      settings:
+        toclevel: 4
+
+table:
+  style:
+    paragraph:
+      after:
+        vbreak: false
+      align: "center"
+      before:
+        indent: false
+
+table-caption:
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        vbreak: false
+    sectioning:
+      counter:
+        id: "table"
+        level: 1
+      numberstyle:
+        main: "table-caption-main-number"
+        reference: "table-caption-ref-number"
+      settings:
+        bookmark: false
+        goodbreak: false
+        toclevel: 6
+
+table-caption-base-number:
+  style:
+
+table-caption-main-number:
+  inherit: "table-caption-base-number"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "iwsp"
+        text: "."
+      before:
+        text: "Table "
+
+table-caption-ref-number:
+  inherit: "table-caption-base-number"
+  style:
+    numbering:
+      before:
+        text: "table "
+
+toc:
+  style:
+
+toc-level-base:
+  style:
+
+toc-level0:
+  inherit: "toc-level-base"
+  style:
+    font:
+      size: "1.15em"
+      weight: 700
+    paragraph:
+      after:
+        skip: "medskip"
+        vbreak: false
+      before:
+        indent: false
+        skip: "medskip"
+    toc:
+      numbered: true
+      pageno: false
+
+toc-level1:
+  inherit: "toc-level-base"
+  style:
+    font:
+      size: "1.1em"
+      weight: 700
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: false
+    toc:
+      dotfill: false
+
+toc-level2:
+  inherit: "toc-level-base"
+  style:
+    font:
+      size: "1em"
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: false
+    toc:
+
+toc-level3:
+  inherit: "toc-level-base"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: true
+    toc:
+      dotfill: false
+
+toc-level4:
+  inherit: "toc-level-base"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: true
+    toc:
+      pageno: false
+
+toc-level5:
+  inherit: "toc-level-base"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: false
+    toc:
+      numbered: true
+
+toc-level6:
+  inherit: "toc-level-base"
+  style:
+    paragraph:
+      after:
+        skip: "smallskip"
+      before:
+        indent: false
+    toc:
+      numbered: true
+
+toc-level7:
+  inherit: "toc-level-base"
+  style:
+    paragraph:
+      before:
+        indent: true
+    toc:
+      pageno: false
+
+toc-level8:
+  inherit: "toc-level-base"
+  style:
+    paragraph:
+      before:
+        indent: true
+    toc:
+      pageno: false
+
+toc-level9:
+  inherit: "toc-level-base"
+  style:
+    paragraph:
+      before:
+        indent: true
+    toc:
+      pageno: false
+
+toc-number-base:
+  style:
+    numbering:
+      after:
+        kern: "2thsp"
+        text: "."
+
+toc-number-level0:
+  inherit: "toc-number-base"
+  style:
+
+toc-number-level1:
+  inherit: "toc-number-base"
+  style:
+
+toc-number-level2:
+  inherit: "toc-number-base"
+  style:
+
+toc-number-level3:
+  inherit: "toc-number-base"
+  style:
+
+toc-number-level4:
+  inherit: "toc-number-base"
+  style:
+
+toc-number-level5:
+  inherit: "toc-number-base"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "2spc"
+        text: "."
+      before:
+        text: "Fig. "
+
+toc-number-level6:
+  inherit: "toc-number-base"
+  style:
+    font:
+      features: "+smcp"
+    numbering:
+      after:
+        kern: "2spc"
+        text: "."
+      before:
+        text: "Table "
+
+toc-number-level7:
+  inherit: "toc-number-base"
+  style:
+
+toc-number-level8:
+  inherit: "toc-number-base"
+  style:
+
+toc-number-level9:
+  inherit: "toc-number-base"
+  style:
+
+toc-pageno:
+  style:
+
+url:
+  style:
+    font:
+      language: "und"
+
+verbatim:
+  inherit: "code"
+  style:
+    paragraph:
+      align: "obeylines"
+      before:
+        skip: "smallskip"
+

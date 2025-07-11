@@ -9,18 +9,20 @@
 -- INPUTTERS
 -- This ensure our inputters are loaded, so one can \include files of the relevant format
 -- afterwards, without having to load the inputter first.
+-- In our setup notes, we recommended users to define an alias to run sile with the
+-- resilient bootstrap file loaded, e.g.:
+--   alias resilient='sile -e "require('"'"'resilient.bootstrap'"'"')"'
+-- So this should be already done, but we ensure it here anyway in case
+-- the user did not do so.
 
-SU.debug("resilient.override", "Loading extra inputters if available")
-pcall(function () local _ = SILE.inputters.silm end)
-pcall(function () local _ = SILE.inputters.markdown end)
-pcall(function () local _ = SILE.inputters.djot end)
-pcall(function () local _ = SILE.inputters.pandocast end)
+SU.debug("resilient.override", "Ensuring extra inputters are loaded")
+require("resilient.bootstrap")
 
 -- BASE CLASS OVERLOAD
 -- We do a few things here:
 -- - We replace SILE's default typesetter with our SILEnt typesetter
 -- - Our classes do not use SILE's plain class, but implement minimal compatibility
--- - We cancel multiple package instanciation, as some packages are stateful (see above)
+-- - We cancel multiple package instanciation, as some of our packages are stateful
 
 local base = require("classes.base")
 local class = pl.class(base)

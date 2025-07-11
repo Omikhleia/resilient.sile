@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/masterfile.json
+# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/masterfile.json
+masterfile: 1.0
+metadata:
+  title: The Lost Tale of Mercury
+  keywords:
+    - Tolkien
+    - Essay
+    - Astronomy
+  authors: Alain Lefèvre
+  publisher: Omikhleia
+  pubdate: 2025-06-29
+  url: https://github.com/Omikhleia/resilient.sile
+  copyright: © 2011, Le Dragon de Brume; 2025, Omikhleia, for the present edition.
+  legal: |
+    The French Intellectual Property Code prohibits copies or reproductions
+    intended for collective use.
+
+    Any representation or reproduction in whole or in part by any process
+    whatsoever, without the consent of the author or his successors in title,
+    is unlawful and constitutes an infringement punishable by articles L.335-2
+    et seq. of the French Intellectual Property Code.
+font:
+  family: EB Garamond
+  size: 12pt
+language: en
+book:
+  enabled: true
+  cover:
+    background: "#9ebd76"
+    front:
+      template: cover
+    back:
+      content: backcover.dj
+sile:
+  options:
+    papersize: 6in x 9in
+    layout: ateliers demiluxe
+    headers: novel
+    resolution: 300
+  settings:
+    textsubsuper.fake: false
+    document.baselineskip: 1.2em
+    document.lineskip: 0em
+    epigraph.width: 75%fw
+    typesetter.italicCorrection: true
+content:
+  chapters:
+    - lefevre-tuor-idril.dj

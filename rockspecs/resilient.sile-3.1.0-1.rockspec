@@ -1,8 +1,9 @@
 rockspec_format = "3.0"
 package = "resilient.sile"
-version = "dev-1"
+version = "3.1.0-1"
 source = {
   url = "git+https://github.com/Omikhleia/resilient.sile.git",
+  tag = "v3.1.0",
 }
 description = {
   summary = "Advanced book classes and tools for the SILE typesetting system.",
@@ -15,15 +16,15 @@ description = {
 }
 dependencies = {
    "lua >= 5.1",
-   "barcodes.sile",
-   "couyards.sile",
-   "embedders.sile",
-   "labelrefs.sile",
-   "piecharts.sile",
-   "ptable.sile",
-   "qrcode.sile",
-   "textsubsuper.sile",
-   "markdown.sile",
+   "barcodes.sile >= 2.1.0",
+   "couyards.sile >= 1.0.0",
+   "embedders.sile >= 1.1.0",
+   "labelrefs.sile >= 0.1.0",
+   "piecharts.sile >= 2.1.0",
+   "ptable.sile >= 4.1.0",
+   "qrcode.sile >= 2.1.0",
+   "textsubsuper.sile >= 2.1.0",
+   "markdown.sile >= 2.4.0",
 }
 build = {
   type = "builtin",
@@ -63,6 +64,7 @@ build = {
 
     ["sile.resilient.utils"]     = "resilient/utils.lua",
     ["sile.resilient.bootstrap"] = "resilient/bootstrap.lua",
+
 
     ["sile.resilient.layoutparser"]        = "resilient/layoutparser.lua",
     ["sile.resilient.layouts.base"]        = "resilient/layouts/base.lua",

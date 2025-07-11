@@ -27,7 +27,7 @@ Here is an example, showing most of the basic elements.
 masterfile: 1.0
 metadata:
   title: Excerpts from the Chronicles of Alstre
-  subtitle: Annotated tales from the works of the poet Celdre 
+  subtitle: Annotated tales from the works of the poet Celdre
   subject: Translation and commentary
   keywords:
     - Mythology
@@ -84,7 +84,7 @@ All these properties are optional, but some are used in specific contexts when a
  - Properties marked :icon-back-cover: are used on the back cover, if enabled.
 
 {variant="Simple"}
-: `title` :icon-pdf-metadata: :icon-running-headers: 
+: `title` :icon-pdf-metadata: :icon-running-headers:
 
   The title of your book (string).
 
@@ -229,7 +229,7 @@ As far as the resilient collection is concerned, a few notable suggestions are l
 
  - *resilient.poetry* for poetry typesetting.
  - *printoptions* for advanced print options & tools for professional printers.
-  
+
 {#masterdoc-content-basic}
 ## Up to the content
 
