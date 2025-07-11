@@ -10,7 +10,7 @@ It is also what you will need if you want build the User Guide by yourself. It o
 
 ## Installation
 
-We will lead you through the steps to configure a `resilient` alias command alias, simplifying the use of the _re·sil·ient_ collection.
+We will lead you through the steps to configure a `resilient`command alias, simplifying the use of the _re·sil·ient_ collection.
 
 You have two options:
 
@@ -48,7 +48,7 @@ You are on your own checking that you have the right versions of the dependencie
    luarocks install resilient.sile
    ```
 
-   Be sure to upgrade to the latest version (_minimaly_ to **3.0.0**).
+   Be sure to upgrade to the latest version (_minimaly_ to **3.1.0**).
 
  - Several fonts: Libertinus, EB Garamond, Zallman Caps, Lato, Hack, Symbola.
 
@@ -64,9 +64,9 @@ alias resilient='sile -e "require('"'"'resilient.bootstrap'"'"')"'
 
 This option, of course, requires you to have Docker installed on your system.
 
-Then, you can build and use Docker file to build an image containing SILE, Luarocks, the _re·sil·ient_ collection, other tools used by some of the modules, and a curated set of good fonts, etc.
+Then, you use Docker file to build an image containing SILE, Luarocks, the _re·sil·ient_ collection, other tools used by some of the modules, and a curated set of good fonts, etc.
 
-We recommend checking our [Awesome SILE books](https://github.com/Omikhleia/awesome-sile-books) repository for instructions on how to build such an image.
+We recommend checking our [Awesome SILE books](https://github.com/Omikhleia/awesome-sile-books) repository for instructions on how to build such an image, with all bells and whistles.
 
 Once the image is built, you can create an alias to simplify the use of the _re·sil·ient_ collection.
 
@@ -74,7 +74,7 @@ Once the image is built, you can create an alias to simplify the use of the _re�
 alias resilient='docker run -it --rm --volume "$(pwd):/data" --user "$(id -u):$(id -g)" silex -e "require('"'"'resilient.bootstrap'"'"')"'
 ```
 
-Were `silex` is the name of the Docker image you built. Adjust the command if you used a different name for the image.
+Where `silex` is the name of the Docker image you built. Adjust the command if you used a different name for the image.
 
 ## Building the User Guide
 
