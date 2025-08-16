@@ -18,6 +18,7 @@ local layoutParser = P{
            + V"canonical"
            + V"division" + V"honnecourt" + V"vencentinus"
            + V"ateliers"
+           + V"isophi"
            + V"marginal") * P(-1),
   none = P("none") / function ()
     local layout = require("resilient.layouts.base")
@@ -43,6 +44,14 @@ local layoutParser = P{
     ) / function(n, ratio)
     local layout = require("resilient.layouts.division")
     return layout({ n = n, ratio = ratio })
+  end,
+  isophi = P("isophi")
+    * (
+        (ws * number)
+        + lpeg.Cc(8)
+    ) / function(n)
+    local layout = require("resilient.layouts.isophi")
+    return layout({ n = n })
   end,
   marginal = P("marginal")
     * (

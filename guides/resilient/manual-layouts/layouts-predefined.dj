@@ -119,6 +119,35 @@ It is provided here as `canonical`.
 :::
 ^ Jan Tschichold's canonical layout.
 
+## Bringhurst’s improved layouts for ISO formats
+
+Compared to the usual formats of printed books, ISO formats (A4, A5, etc.) are perceived as large, with their 1:√2 ratio.
+Jan Tschichold did not think much of them, for their lack of dynamism.
+Robert Bringhurst proposed a method to create a more dynamic text block, with proportions close to the golden ratio (1.618), and margins in the 1:2 ratio.
+The inner and top margin are set to 1/9^th^ of the page width, and the outer and bottom margins to 2/9^th^ of the page width.
+This layout is provided as `isophi 9`.
+
+:::
+``` =sile
+\showlayout[layout=isophi 9, papersize=a5]
+```
+:::
+^ ISO-$`\phi` layout (1/9^th^ and 2/9^th^ margin ratios).
+
+Bringhurst also proposed a variant with wider inner and top margins, set to 1/8^th^ of the page width, and the outer and bottom margins to 15/72^th^ of the page width.
+It retains similar proportions for the text block.
+In addition, the ratio between the inner and outer margins, and the top and bottom margins, is 1.67, which is also closer to the golden ratio.
+This improved layout is provided as `isophi 8` or simply `isophi`.
+
+:::
+``` =sile
+\showlayout[layout=isophi, papersize=a5]
+```
+:::
+^ ISO-$`\phi` improved layout (1/8^th^ and 15/72^th^ margin ratios).
+
+By definition, these layouts were specifically designed for ISO formats, and are not suitable for other page sizes.
+
 ## Non-standard layouts
 
 {.notoc}
@@ -182,6 +211,8 @@ The `geometry` layout allows explicitly setting the page margins, as either a pa
 | `division N`                    | Division by _N_, _H/W_ ratio                         |
 | `division N v`                  | Division by _N_, _v_ ratio                           |
 | `canonical`                     | Tschichold’s golden canon                            |
+| `isophi` = `isophi 8`           | ISO-$`\phi`, 1/8^th^ and 15/72^th^ margins           |
+| `isophi 9`                      | ISO-$`\phi`, 1/9^th^ and 2/9^th^ margins             |
 | `marginal` = `marginal 8`       | Wide outer margin, other at 1/8^th^                  |
 | `marginal N`                    | Wide outer margin, other at 1/_N_ ^th^               |
 | `none`                          | Centered with margins at 1/6^th^                     |
