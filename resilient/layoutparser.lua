@@ -19,6 +19,7 @@ local layoutParser = P{
            + V"division" + V"honnecourt" + V"vencentinus"
            + V"ateliers"
            + V"isophi"
+           + V"bringhurst"
            + V"marginal") * P(-1),
   none = P("none") / function ()
     local layout = require("resilient.layouts.base")
@@ -28,11 +29,11 @@ local layoutParser = P{
     local layout = require("resilient.layouts.canonical")
     return layout()
   end,
-  honnecourt = P("honnecourt") / function()
+  honnecourt = P("honnecourt") / function ()
     local layout = require("resilient.layouts.division")
     return layout({ n = 9, ratio = 2 })
   end,
-  vencentinus = P("vencentinus") / function()
+  vencentinus = P("vencentinus") / function ()
     local layout = require("resilient.layouts.division")
     return layout({ n = 6, ratio = 2 })
   end,
@@ -41,7 +42,7 @@ local layoutParser = P{
       (ws * number * ws * number)
       + (ws * number)
       + (lpeg.Cc(9))
-    ) / function(n, ratio)
+    ) / function (n, ratio)
     local layout = require("resilient.layouts.division")
     return layout({ n = n, ratio = ratio })
   end,
@@ -49,16 +50,20 @@ local layoutParser = P{
     * (
         (ws * number)
         + lpeg.Cc(8)
-    ) / function(n)
+    ) / function (n)
     local layout = require("resilient.layouts.isophi")
     return layout({ n = n })
+  end,
+  bringhurst = P("bringhurst") / function ()
+    local layout = require("resilient.layouts.bringhurst")
+    return layout()
   end,
   marginal = P("marginal")
     * (
       (ws * number * ws * number)
       + (ws * number)
       + (lpeg.Cc(8))
-    ) / function(n, ratio)
+    ) / function (n, ratio)
     local layout = require("resilient.layouts.marginal")
     return layout({ n = n, ratio = ratio })
   end,
@@ -67,7 +72,7 @@ local layoutParser = P{
       (ws * C(V"quality") * ws * C(V"rule"))
       + (ws * C(V"quality"))
       + (lpeg.Cc("regular"))
-    ) / function(q, r)
+    ) / function (q, r)
     local layout = require("resilient.layouts.frenchcanon")
     return layout({ quality = q, rule = r })
   end,
@@ -77,7 +82,7 @@ local layoutParser = P{
   * (
     (ws * measurement * ws * measurement * ws * measurement * ws * measurement)
     + (ws * measurement * ws * measurement)
-  ) / function(head, inner, foot, outer)
+  ) / function (head, inner, foot, outer)
   local layout = require("resilient.layouts.geometry")
   return layout({ head = head, foot = foot or head, inner = inner, outer = outer or inner })
 end,
