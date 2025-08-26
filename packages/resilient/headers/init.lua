@@ -61,18 +61,12 @@ function package:outputHeader (headerContent, frame)
           SILE.settings:set("document.lskip", SILE.types.node.glue())
           SILE.settings:set("document.rskip", SILE.types.node.glue())
 
-          -- Temporarilly kill footnotes and labels (fragile)
-          local oldFt = SILE.Commands["footnote"]
-          SILE.Commands["footnote"] = function() end
-          local oldLbl = SILE.Commands["label"]
-          SILE.Commands["label"] = function () end
-
-          SILE.process(headerContent)
+          -- Process the header content in a context where fragile commands are ignored.
+          SILE.resilient.cancelContextualCommands("header", function ()
+            SILE.process(headerContent)
+          end)
 
           SILE.typesetter:leaveHmode()
-
-          SILE.Commands["footnote"] = oldFt
-          SILE.Commands["label"] = oldLbl
           SILE.settings:popState()
         end
 

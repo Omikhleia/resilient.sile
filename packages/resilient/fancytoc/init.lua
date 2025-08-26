@@ -32,19 +32,6 @@ local function getMinLevel (toc)
   return smallest.level
 end
 
-local function cancelFragile (func)
-    -- Temporarilly kill footnotes and labels (fragile)
-    local oldFt = SILE.Commands["footnote"]
-    SILE.Commands["footnote"] = function () end
-    local oldLbl = SILE.Commands["label"]
-    SILE.Commands["label"] = function () end
-
-    func()
-
-    SILE.Commands["footnote"] = oldFt
-    SILE.Commands["label"] = oldLbl
-end
-
 function package:findToc (packages)
   if self._toc then return self._toc end -- memoized
 
@@ -88,7 +75,7 @@ function package:registerCommands ()
       SILE.settings:set("current.parindent", SILE.types.node.glue())
       SILE.settings:set("document.parindent", SILE.types.node.glue())
 
-      cancelFragile(function ()
+      SILE.resilient.cancelContextualCommands("toc", function ()
         -- Quick and dirty for now...
         -- TODO: We have the link only on pages, but would want it eventually on titles
         -- too, but this requires multi-line link support.
