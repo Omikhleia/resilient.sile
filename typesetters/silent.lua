@@ -1109,6 +1109,7 @@ function linerBox:_init (name, outputMethod)
    self.depth = SILE.types.length()
    self.name = name
    self.inner = {}
+   self.is_liner = true
    self.outputYourself = outputMethod
 end
 function linerBox:append (node)
@@ -1538,6 +1539,9 @@ function typesetter:makeHbox (content)
       width = l,
       depth = d,
       value = recentContribution,
+      is_unwrappable = true, -- Several hbox re-wrapping layers may use a value field.
+                             -- This is annoying for contentToText() extraction below,
+                             -- but here we know what we are doing.
       outputYourself = function (box, atypesetter, line)
          local _post = _rtl_pre_post(box, atypesetter, line)
          local ox = atypesetter.frame.state.cursorX
@@ -1626,13 +1630,27 @@ local function _nodesToText (nodes)
          if node.width:tonumber() > iwspcmin * 0.5 then
             string = string .. " "
          end
+      elseif node.is_liner then
+         -- A liner box just wraps other regular nodes, we can safely recurse into it.
+         string = string .. _nodesToText(node.inner)
       elseif not (node.is_zerohbox or node.is_migrating) then
          -- Here, typically, the main case is an hbox.
-         -- Even if extracting its content could be possible in some regular cases
-         -- we cannot take a general decision, as it is a versatile object  and its
-         -- outputYourself() method could moreover have been redefined to do fancy
-         -- things. Better warn and skip.
-         SU.warn("Some content could not be converted to text: " .. node)
+         -- Extracting its content could be possible in some regular cases...
+         local extract = nil
+         if node.value and node.is_unwrappable then
+            -- Sometimes we probably know what's in the box under reasonable assumptions.
+            extract = type(node.value) == "table" and #node.value > 0 and node.value
+         end
+         -- There could be other case of unwrappable boxes, to consider later on a case
+         -- by-case basis.
+         if extract then
+            string = string .. _nodesToText(extract)
+         else
+            -- Yet, we cannot take a general decision, as it is a versatile object and
+            -- its outputYourself() method could moreover have been redefined to do fancy
+            -- things. Better warn and skip.
+            SU.warn("Some hbox's content could not be converted to text: " .. tostring(node))
+         end
       end
    end
    -- Trim leading and trailing spaces, and simplify internal spaces.
@@ -1648,7 +1666,10 @@ end
 function typesetter:contentToText (content)
    self:pushState()
    self.state.hmodeOnly = true
-   SILE.process(content)
+   -- Disable any contextual command that could interfere with text output.
+   SILE.resilient.cancelContextualCommands("textual", function ()
+      SILE.process(content)
+   end)
    local text = _nodesToText(self.state.nodes)
    self:popState()
    return text

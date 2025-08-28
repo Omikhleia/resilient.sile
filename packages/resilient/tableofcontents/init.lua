@@ -151,28 +151,22 @@ function package:registerCommands ()
 
     _toc_used = true
 
-    -- Temporarilly kill footnotes and labels (fragile)
-    local oldFt = SILE.Commands["footnote"]
-    SILE.Commands["footnote"] = function () end
-    local oldLbl = SILE.Commands["label"]
-    SILE.Commands["label"] = function () end
-
-    local tocItems = {}
-    for i = 1, #toc do
-      local item = toc[i]
-      if item.level >= start and item.level <= start + depth then
-        tocItems[#tocItems + 1] = SU.ast.createCommand("tableofcontents:item", {
-          level = item.level,
-          pageno = item.pageno,
-          number = item.number,
-          link = linking and item.link
-        }, SU.ast.subContent(item.label))
+    -- Process the TOC content in a context where fragile commands are ignored.
+    SILE.resilient.cancelContextualCommands("toc", function ()
+      local tocItems = {}
+      for i = 1, #toc do
+        local item = toc[i]
+        if item.level >= start and item.level <= start + depth then
+          tocItems[#tocItems + 1] = SU.ast.createCommand("tableofcontents:item", {
+            level = item.level,
+            pageno = item.pageno,
+            number = item.number,
+            link = linking and item.link
+          }, SU.ast.subContent(item.label))
+        end
       end
-    end
-    SILE.call("style:apply:paragraph", { name = "toc" }, tocItems)
-
-    SILE.Commands["footnote"] = oldFt
-    SILE.Commands["label"] = oldLbl
+      SILE.call("style:apply:paragraph", { name = "toc" }, tocItems)
+    end)
   end, "Output the table of contents.")
 
   local dc = 1
@@ -182,16 +176,7 @@ function package:registerCommands ()
       dest = "dest" .. dc
       SILE.call("pdf:destination", { name = dest })
       if SU.boolean(options.bookmark, true) then
-        -- Temporarilly kill footnotes and labels (fragile)
-        local oldFt = SILE.Commands["footnote"]
-        SILE.Commands["footnote"] = function () end
-        local oldLbl = SILE.Commands["label"]
-        SILE.Commands["label"] = function () end
         local title = SILE.typesetter:contentToText(content)
-
-        SILE.Commands["footnote"] = oldFt
-        SILE.Commands["label"] = oldLbl
-
         SILE.call("pdf:bookmark", {
           title = title,
           dest = dest,

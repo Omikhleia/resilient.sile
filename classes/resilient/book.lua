@@ -181,6 +181,13 @@ function class:_init (options)
       SILE.call("style:apply:number", { name = stylename, text = text })
     end
   end)
+  -- TRANSITIONAL FIXME: These packages should do it themselves eventually,
+  -- with a proper interface to declare commands as contextual.
+  -- Here, there's also a strong reason that packages are not "reloaded" (and their commands reset)
+  -- (which we cancel in our override superclass)
+  SILE.resilient.enforceContextualCommand("footnote")
+  SILE.resilient.enforceContextualCommand("label")
+  SILE.resilient.enforceContextChangingCommand("ref", "ref")
 end
 
 function class:declareOptions ()
