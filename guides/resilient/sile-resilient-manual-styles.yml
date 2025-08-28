@@ -546,6 +546,14 @@ highlight-variable.builtin:
   style:
     color: "#C82829"
 
+index-entry-main:
+  style:
+
+index-pages-main:
+  style:
+    font:
+      features: "+onum"
+
 listing:
   style:
     paragraph:
