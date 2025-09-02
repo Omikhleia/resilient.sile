@@ -42,6 +42,15 @@ function class:_init (options)
   self:loadPackage("labelrefs") -- Warning: must be loaded after resilient.tableofcontents
                                 -- and before any other packages that would load it too.
   self:loadPackage("resilient.sectioning")
+  self:loadPackage("indexer", {
+    -- TODO: For now we go for default package options:
+    --   ["page-range-format"] = "expanded",
+    --   ["page-range-delimiter"] = "–",
+    --   ["page-delimiter"] = ", ",
+    --   filler = "dotfill"
+    -- Eventually we might want to customize them.
+    -- Should it be a special style or some other mechanism?
+  })
 
   -- Page-related packages
 
@@ -97,6 +106,11 @@ function class:_init (options)
     return {
       SU.ast.createCommand("use", { module = "packages.resilient.fancytoc" }),
       SU.ast.createCommand("fancytableofcontents", opts),
+    }
+  end)
+  mdc:registerSymbol("_INDEX_", true, function (opts)
+    return {
+      SU.ast.createCommand("printindex", opts),
     }
   end)
 
@@ -181,13 +195,28 @@ function class:_init (options)
       SILE.call("style:apply:number", { name = stylename, text = text })
     end
   end)
+
+  -- Override the indexer style hooks to rely on styles
+  self:registerCommand("index:entry:style", function (opts, content)
+    local name = "index-entry-" .. opts.index
+    local styleName = self:hasStyle(name) and name or "index-entry-main"
+    SILE.call("style:apply", { name = styleName }, content)
+  end)
+  self:registerCommand("index:pages:style", function (opts, content)
+    local name = "index-pages-" .. opts.index
+    local styleName = self:hasStyle(name) and name or "index-pages-main"
+    SILE.call("style:apply", { name = styleName }, content)
+  end)
+
   -- TRANSITIONAL FIXME: These packages should do it themselves eventually,
   -- with a proper interface to declare commands as contextual.
   -- Here, there's also a strong reason that packages are not "reloaded" (and their commands reset)
   -- (which we cancel in our override superclass)
   SILE.resilient.enforceContextualCommand("footnote")
   SILE.resilient.enforceContextualCommand("label")
+  SILE.resilient.enforceContextualCommand("indexentry")
   SILE.resilient.enforceContextChangingCommand("ref", "ref")
+  SILE.resilient.enforceContextChangingCommand("indexer", "printindex")
 end
 
 function class:declareOptions ()
@@ -556,6 +585,13 @@ function class:registerStyles ()
     special = {
       lines = 2
     }
+  })
+
+  -- index styles
+  self:registerStyle("index-entry-main", {}, {
+  })
+  self:registerStyle("index-pages-main", {}, {
+    font = { features = "+onum" }
   })
 end
 

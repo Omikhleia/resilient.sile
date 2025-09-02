@@ -63,3 +63,24 @@ The *resilient.book* class also provides a predefined Djot symbol for inserting 
   Insert a bibliography.
 
   ![](manicule.svg){height="0.60em"} See chapter [](#using-bibliographies) in part [](#master-document) for more information.
+
+### Indexes{:main}
+
+Index support is provided by SILE's standard indexer package.
+How to mark index entries in your document is covered in the _Markdown and Djot to PDF with SILE_ user guide [@willis:sile-markdown-djot], or in _The SILE Book_ [@cozens:sile] depending on the format you are using to author your content.
+
+The *resilient.book* class provides a predefined Djot symbol for inserting indexes.
+
+{variant=Simple}
+: `:_INDEX_:`
+
+  Insert an index.
+
+By default, this will insert the "main" index.
+When using multiple indexes, you can specify which index to insert, e.g. `:_INDEX_:{index=⟨name⟩}`, where `⟨name⟩` is the name of the index.
+An alternative syntax is `:_INDEX_:{:⟨name⟩}` (as a non-standard Djot extension).
+
+Each entry in the index is styled using the `index-entry-⟨name⟩` character style if it exists (and `index-entry-main` if it does not).
+Page numbers use the `index-pages-⟨name⟩` character style, or `index-pages-main` as a fallback.
+
+:_INDEX_:
