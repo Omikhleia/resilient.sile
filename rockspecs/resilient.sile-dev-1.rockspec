@@ -80,6 +80,8 @@ build = {
     ["sile.inputters.silm"] = "inputters/silm.lua",
 
     ["sile.resilient-tinyyaml"]  = "lua-libraries/resilient-tinyyaml.lua",
+
+    ["sile.resilient.patches.lang"]      = "resilient/patches/lang.lua",
   },
   install = {
     lua = {

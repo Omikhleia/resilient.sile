@@ -24,7 +24,8 @@ dependencies = {
    "ptable.sile >= 4.1.0",
    "qrcode.sile >= 2.1.0",
    "textsubsuper.sile >= 2.1.0",
-   "markdown.sile >= 2.5.0",
+   "smartquotes.sile >= 2.0.0",
+   "markdown.sile >= 3.0.0",
 }
 build = {
   type = "builtin",
@@ -81,6 +82,8 @@ build = {
     ["sile.inputters.silm"] = "inputters/silm.lua",
 
     ["sile.resilient-tinyyaml"]  = "lua-libraries/resilient-tinyyaml.lua",
+
+    ["sile.resilient.patches.lang"]      = "resilient/patches/lang.lua",
   },
   install = {
     lua = {
