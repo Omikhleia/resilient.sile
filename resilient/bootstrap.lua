@@ -13,6 +13,10 @@ pcall(function () local _ = SILE.inputters.markdown end)
 pcall(function () local _ = SILE.inputters.djot end)
 pcall(function () local _ = SILE.inputters.pandocast end)
 
+-- HACK: Hard-patch SILE core behavior.
+SU.debug("resilient.bootstrap", "Patching SILE core behavior")
+require("resilient.patches.lang")
+
 -- FIXME TRANSITIONAL
 -- Create the global SILE.resilient namespace, with some state and helper functions.
 SILE.resilient = {
