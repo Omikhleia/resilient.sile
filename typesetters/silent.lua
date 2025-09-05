@@ -821,7 +821,25 @@ function typesetter.leadingFor (_, vbox, previous)
    end
 end
 
-function typesetter:addrlskip (slice, margins, hangLeft, hangRight)
+function typesetter:addrlskip (slice, margins) -- FIXME TRANSITIONAL COMPATIBILITY
+   SU.warn("The sile·nt typesetter does not expose the addrlskip() method, what are you trying to do?")
+   self:_addrlskip(slice, margins)
+end
+
+--- Add left and right skips to a line slice.
+--
+-- It takes taking into account the writing direction of the current frame,
+-- and potential hanging indents on either side.
+--
+-- (Breaking change)
+-- Compare to SILE's original typesetter:addrlskip() method, it doesn't do
+-- anything else than handling the margin skips.
+--
+-- @tparam table slice Line slice
+-- @tparam table margins Margins (`lskip` and `rskip` glues)
+-- @tparam number hangLeft Amount to hang on the left side (absolute number)
+-- @tparam number hangRight Amount to hang on the right side (absolute number)
+function typesetter:_addrlskip (slice, margins, hangLeft, hangRight)
    local LTR = self.frame:writingDirection() == "LTR"
    local rskip = margins[LTR and "rskip" or "lskip"]
    if not rskip then
@@ -831,7 +849,6 @@ function typesetter:addrlskip (slice, margins, hangLeft, hangRight)
       rskip = SILE.types.node.glue({ width = rskip.width:tonumber() + hangRight })
    end
    rskip.value = "margin"
-   -- while slice[#slice].discardable do table.remove(slice, #slice) end
    table.insert(slice, rskip)
    table.insert(slice, SILE.types.node.zerohbox()) -- CODE SMELL: WHY?
    local lskip = margins[LTR and "lskip" or "rskip"]
@@ -842,9 +859,6 @@ function typesetter:addrlskip (slice, margins, hangLeft, hangRight)
       lskip = SILE.types.node.glue({ width = lskip.width:tonumber() + hangLeft })
    end
    lskip.value = "margin"
-   while slice[1].discardable do
-      table.remove(slice, 1)
-   end
    table.insert(slice, 1, lskip)
    table.insert(slice, 1, SILE.types.node.zerohbox()) -- CODE SMELL: WHY?
 end
@@ -865,9 +879,13 @@ function typesetter:breakpointsToLines (breakpoints, nodelist)
          for j = linestart, point.position do
             local currentNode = nodes[j]
             if
+               -- FIXME CODE SMELL: This is a kludge of sorts to detect...
                not currentNode.discardable
                and not (currentNode.is_glue and not currentNode.explicit)
                and not currentNode.is_zero
+               -- My addition, but debatable...
+               -- See removeEndingStuff().
+               and not currentNode.is_kern
             then
                -- actual visible content starts here
                lastContentNodeIndex = #slice + 1
@@ -910,10 +928,12 @@ function typesetter:breakpointsToLines (breakpoints, nodelist)
                linestart = point.position + 1
             end
 
-            -- Any unclosed liner is closed on the next line in reverse order.
+
             if lastContentNodeIndex then
                self:_repeatLeaveLiners(slice, lastContentNodeIndex + 1)
             end
+
+            self:_pruneDiscardables(slice)
 
             -- Track hanged lines
             if self.state.hangAfter then
@@ -930,7 +950,7 @@ function typesetter:breakpointsToLines (breakpoints, nodelist)
 
             -- Then only we can add some extra margin glue...
             local mrg = self:getMargins()
-            self:addrlskip(slice, mrg, point.left, point.right)
+            self:_addrlskip(slice, mrg, point.left, point.right)
 
             -- And compute the line...
             local ratio = self:computeLineRatio(point.width, slice)
@@ -960,16 +980,65 @@ function typesetter:breakpointsToLines (breakpoints, nodelist)
    return lines
 end
 
-function typesetter.computeLineRatio (_, breakwidth, slice)
+--- Remove trailing and leading discardable nodes from a slice
+--
+-- The slice is modified in place.
+--
+-- For leading nodes, this means glues and penalties (i.e. all discardable nodes).
+-- For trailing nodes, this means glues (unless made non-discardable explicitly), zero boxes,
+-- and trailing kerns (if consecutive).
+--
+-- FIXME: Clearly messy logic here, needs a clarification pass.
+--
+-- @tparam table slice Flat nodes from current line
+function typesetter:_pruneDiscardables (slice)
+   -- Leading discardables
+   while slice[1].discardable do -- FIXME CODE SMELL WHY HERE?
+      -- Remove any leading discardable nodes = in SILE's lingo, glues and penalties
+      -- (but not kerns and zero boxes).
+      table.remove(slice, 1)
+   end
+
+   -- Trailing discardables
+   local npos = #slice
+   -- Remove trailing glues and zero boxes, and trailing kerns.
+   while npos > 1 do
+      if not(
+         slice[npos].discardable -- glue (unless made non-discardable explicitly) or penalty
+         or slice[npos].is_zero -- zero box
+         -- FIXME
+         -- TeXBook ch. 14, seems to say kerns are discardable too.
+         -- But if they were, TeXBook app. D "dirty tricks" for hanging punctuation
+         -- would not work. The latter says however: "Consecutive glue, kern, and penalty
+         -- items disappear at a break." (referring vaguely to ch. 14)"
+         -- So kerns are not really discardable, but consecutive kerns are.
+         -- Erm. This works for the overhang logic, but we are quite far from
+         -- the original wording here, which is quite opaque...
+         or (slice[npos].is_kern and slice[npos - 1].is_kern)
+      ) then
+         break
+      end
+      npos = npos - 1
+   end
+   for i = npos + 1, #slice do
+      slice[i] = nil
+   end
+end
+
+function typesetter:computeLineRatio (breakwidth, slice)
    local naturalTotals = SILE.types.length()
 
    -- From the line end, account for the margin but skip any trailing
    -- glues (spaces to ignore) and zero boxes until we reach actual content.
+   -- CODE SMELL:
+   -- Theoretically, we have already removed most of these earlier.
+   -- But for some reason, addrlskip() adds some zero boxes in the mix,
    local npos = #slice
    while npos > 1 do
-      if slice[npos].is_glue or slice[npos].is_zero then
+      if (slice[npos].is_glue and slice[npos].discardable) or slice[npos].is_zero then
          if slice[npos].value == "margin" then
             naturalTotals:___add(slice[npos].width)
+            break-- Stop here at margin glue
          end
       else
          break

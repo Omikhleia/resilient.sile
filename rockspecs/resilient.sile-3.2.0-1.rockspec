@@ -93,6 +93,7 @@ build = {
     ["sile.resilient-tinyyaml"]  = "lua-libraries/resilient-tinyyaml.lua",
 
     ["sile.resilient.patches.lang"]      = "resilient/patches/lang.lua",
+    ["sile.resilient.patches.overhang"]  = "resilient/patches/overhang.lua",
   },
   install = {
     lua = {
