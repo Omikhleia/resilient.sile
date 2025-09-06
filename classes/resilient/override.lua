@@ -29,6 +29,7 @@ class._name = "resilient.override"
 
 function class:_init (options)
    SU.debug("resilient.override", "Replacing SILE's default typesetter with the SILEnt typesetter")
+   SILE.typesetters.base = require("typesetters.silent")
    SILE.typesetters.default = require("typesetters.silent")
 
    base._init(self, options)
