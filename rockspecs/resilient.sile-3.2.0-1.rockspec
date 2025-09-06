@@ -44,6 +44,7 @@ build = {
     ["sile.typesetters.mixins.liners"]         = "typesetters/mixins/liners.lua",
     ["sile.typesetters.mixins.shaping"]        = "typesetters/mixins/shaping.lua",
     ["sile.typesetters.mixins.hbox"]           = "typesetters/mixins/hbox.lua",
+    ["sile.typesetters.mixins.paragraphing"]   = "typesetters/mixins/paragraphing.lua",
 
     ["sile.packages.resilient.override"]  = "packages/resilient/override.lua",
 

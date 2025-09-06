@@ -1,7 +1,7 @@
 
 --- Shaping mixin for the typesetter.
 --
--- Some code in this file comes from SILE's core typesetter,
+-- Some code in this file comes from SILE's core typesetter.
 --
 -- License: MIT.
 -- Copyright (c) The SILE Organization / Simon Cozens et al.
@@ -21,10 +21,10 @@
 -- @module typesetters.mixins.shaping
 
 --- Extract the last shaped item from a node list.
--- @tparam table nodelist A list of nodes.
--- @treturn table The last shaped item.
--- @treturn boolean Whether the list contains a glue after the last shaped item.
--- @treturn number|nil The width of a punctuation kern after the last shaped item, if any.
+-- @tparam table nodelist A list of nodes
+-- @treturn table The last shaped item
+-- @treturn boolean Whether the list contains a glue after the last shaped item
+-- @treturn number|nil The width of a punctuation kern after the last shaped item, if any
 local function getLastShape (nodelist)
    local lastShape
    local hasGlue
@@ -55,10 +55,10 @@ local function getLastShape (nodelist)
 end
 
 --- Extract the first shaped item from a node list.
--- @tparam table nodelist A list of nodes.
--- @treturn table The first shaped item.
--- @treturn boolean Whether the list contains a glue before the first shaped item.
--- @treturn number|nil The width of a punctuation kern before the first shaped item, if any.
+-- @tparam table nodelist A list of nodes
+-- @treturn table The first shaped item
+-- @treturn boolean Whether the list contains a glue before the first shaped item
+-- @treturn number|nil The width of a punctuation kern before the first shaped item, if any
 local function getFirstShape (nodelist)
    local firstShape
    local hasGlue
@@ -107,9 +107,9 @@ end
 -- for high punctuation marks and guillemets), and take it into account for compensating the italic correction.
 -- (That is, we only apply a correction if it exceeds that extra space.)
 --
--- @tparam table precShape The last shaped item (italic).
--- @tparam table curShape The first shaped item (non-italic).
--- @tparam number|nil|false punctSpaceWidth The width of a punctuation kern between the two items, if applicable.
+-- @tparam table precShape The last shaped item (italic)
+-- @tparam table curShape The first shaped item (non-italic)
+-- @tparam number|nil|false punctSpaceWidth The width of a punctuation kern between the two items, if applicable
 local function fromItalicCorrection (precShape, curShape, punctSpaceWidth)
    local xOffset
    if not curShape or not precShape then
@@ -131,9 +131,9 @@ end
 --
 -- Same assumptions as fromItalicCorrection(), but on the starting side of the glyph.
 --
--- @tparam table precShape The last shaped item (non-italic).
--- @tparam table curShape The first shaped item (italic).
--- @tparam number|nil|false punctSpaceWidth The width of a punctuation kern between the two items, if applicable.
+-- @tparam table precShape The last shaped item (non-italic)
+-- @tparam table curShape The first shaped item (italic)
+-- @tparam number|nil|false punctSpaceWidth The width of a punctuation kern between the two items, if applicable
 local function toItalicCorrection (precShape, curShape, punctSpaceWidth)
    local xOffset
    if not curShape or not precShape then
@@ -151,8 +151,8 @@ local function toItalicCorrection (precShape, curShape, punctSpaceWidth)
    return xOffset
 end
 
---- Check if a shaped node is in italic-like style.
--- @tparam SILE.node nnode The node to check.
+--- Check if a shaped node is in italic-like style
+-- @tparam SILE.node nnode The node to check
 -- @treturn boolean
 local function isItalicLike (nnode)
    -- We could do...
@@ -176,7 +176,7 @@ local typesetter = { -- Not a real class, just a mixin
 --
 -- This also inserts italic correction nodes if needed (and if enabled).
 --
--- @tparam table nodelist A list of nodes, some of which may be unshaped.
+-- @tparam table nodelist A list of nodes, some of which may be unshaped
 -- @treturn table A new list of nodes
 function typesetter:shapeAll (nodelist)
    local newNodelist = {}

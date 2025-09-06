@@ -1,6 +1,6 @@
 --- Speaker change node for the typesetter.
 --
--- Some code in this file comes from SILE's core typesetter,
+-- Some code in this file comes from SILE's core typesetter.
 --
 -- License: MIT.
 -- Copyright (c) The SILE Organization / Simon Cozens et al.

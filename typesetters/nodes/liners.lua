@@ -1,6 +1,6 @@
 --- Liner nodes for supporting multi-line constructs in the typesetter.
 --
--- Some code in this file comes from SILE's core typesetter,
+-- Some code in this file comes from SILE's core typesetter.
 --
 -- License: MIT.
 -- Copyright (c) The SILE Organization / Simon Cozens et al.

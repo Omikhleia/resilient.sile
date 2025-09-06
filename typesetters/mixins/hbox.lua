@@ -1,6 +1,6 @@
 --- Horizontal box builder mixin for the typesetter.
 --
--- Some code in this file comes from SILE's core typesetter,
+-- Some code in this file comes from SILE's core typesetter.
 --
 -- License: MIT.
 -- Copyright (c) The SILE Organization / Simon Cozens et al.
@@ -10,6 +10,15 @@
 -- License: MIT.
 -- Copyright (c) 2025 Omikhkeia / Didier Willis
 --
+-- Logic for building an hbox from content.
+--
+-- It returns the hbox and an horizontal list of (migrating) elements
+-- extracted outside of it.
+-- None of these are pushed to the typesetter node queue. The caller
+-- is responsible of doing it, if the hbox is built for anything
+-- else than e.g. measuring it. Likewise, the call has to decide
+-- what to do with the migrating content.
+--
 -- Pre-requisites:
 --
 --  - The typesetter has a `state.hmodeOnly` boolean flag,
@@ -18,13 +27,6 @@
 --
 -- @module typesetters.mixins.hbox
 
--- Logic for building an hbox from content.
--- It returns the hbox and an horizontal list of (migrating) elements
--- extracted outside of it.
--- None of these are pushed to the typesetter node queue. The caller
--- is responsible of doing it, if the hbox is built for anything
--- else than e.g. measuring it. Likewise, the call has to decide
--- what to do with the migrating content.
 local _rtl_pre_post = function (box, atypesetter, line)
    local advance = function ()
       atypesetter.frame:advanceWritingDirection(box:scaledWidth(line))

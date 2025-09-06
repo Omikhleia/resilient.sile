@@ -2,7 +2,7 @@
 --
 -- Derived from SILE's base/default typesetter.
 --
--- Some code in this file comes from SILE's core typesetter,
+-- Some code in this file comes from SILE's core typesetter.
 --
 -- License: MIT.
 -- Copyright (c) The SILE Organization / Simon Cozens et al.
@@ -14,34 +14,67 @@
 --
 -- @module typesetters.silent
 
---- Mixins support
+--- Naive mixins support (merging mixin tables into a class).
 -- @tparam p.class cls Class to extend
 -- @tparam table t Mixin table
 local function mixin(cls, t)
    SU.debug("resilient.typesetter", "Applying mixin", (t._name or "<unnname>"), "to",  (cls._name or "<unnamed>"))
    for k, v in pairs(t) do
      if type(v) == 'function' then
-         assert(cls[k] == nil, ("Mixin conflict: %s already exists in %s"):format(k, cls._name or "<unnamed>"))
-         assert(k ~= '_init',  "refuse to override constructor _init")
-         cls[k] = v
-      end
+        assert(cls[k] == nil, ("Mixin conflict: %s already exists in %s"):format(k, cls._name or "<unnamed>"))
+        assert(k ~= '_init',  "refuse to override constructor _init")
+        cls[k] = v
+     end
    end
 end
 
 --- The sile·nt typesetter class.
--- @type typesetter
+--
+-- The typesetter does a lot of different things.
+--
+--  - Managing the typesetter state (horizontal/vertical mode, node node queues etc.)
+--  - Shaping text into glyphs,
+--  - Breaking paragraphs into lines,
+--  - And many other things...
+--
+-- It's a huge beast, with many interdependent parts and several roles.
+--
+-- SILE's typesetter, in this author's viewpoint, has become somewhat intricate over time,
+-- with lots of obscure decisions all over the place, and loosely organized parts and
+-- undocumented behaviors. all in a big monolithic file.
+--
+-- The sile·nt typesetter is a rewrite of SILE's base/default typesetter, where some parts
+-- of the logic have been split into "mixin" modules, each implementing a specific feature:
+--
+--  - @{typesetters.mixins.hbox}
+--  - @{typesetters.mixins.liners}
+--  - @{typesetters.mixins.paragraphing}
+--  - @{typesetters.mixins.shaping}
+--  - @{typesetters.mixins.totext}
+--  - And possibly more in the future.
+--
+-- There are also other deviations in the way it handles some algorithms, e.g., regarding
+-- in which order some operations are performed, in a attempt to make things more logical
+-- and easier to follow; and in some cases more efficient.
+-- The are also some API changes, as some methods have are considered internal and not part
+-- of the public-facing API.
+-- These methods are all documented, but their name starts with an underscore.
+-- Finaally, some weird code paths and non-functional features have been removed.
+--
+-- @type typesetters.silent
+
 local typesetter = pl.class()
 typesetter.type = "typesetter"
 typesetter._name = "sile·nt"
 
-mixin(typesetter, require("typesetters.mixins.liners"))
-mixin(typesetter, require("typesetters.mixins.totext"))
 mixin(typesetter, require("typesetters.mixins.hbox"))
+mixin(typesetter, require("typesetters.mixins.liners"))
+mixin(typesetter, require("typesetters.mixins.paragraphing"))
 mixin(typesetter, require("typesetters.mixins.shaping"))
+mixin(typesetter, require("typesetters.mixins.totext"))
 
 -- This is the default typesetter. You are, of course, welcome to create your own.
-local awful_bad = 1073741823
-local inf_bad = 10000
+local inf_bad = 10000 -- CODE SMELL: VALUES REPEATED / USED AT SEVERAL PLACES
 -- local eject_penalty = -inf_bad
 local supereject_penalty = 2 * -inf_bad
 -- local deplorable = 100000
@@ -68,9 +101,7 @@ function typesetter:_init (frame)
    self.frame = nil
    self.stateQueue = {}
    self:initFrame(frame)
-   self:initState()
-   -- In case people use stdlib prototype syntax off of the instantiated typesetter...
-   getmetatable(self).__call = self.init
+   self:_initState()
    return self
 end
 
@@ -189,15 +220,16 @@ function typesetter:declareSettings ()
    })
 end
 
-function typesetter:initState ()
+--- Initialize the typesetter state.
+function typesetter:_initState ()
    self.state = {
       nodes = {},
       outputQueue = {},
-      lastBadness = awful_bad,
       liners = {},
    }
 end
 
+--- Initialize the typesetter with a frame.
 function typesetter:initFrame (frame)
    if frame then
       self.frame = frame
@@ -205,28 +237,32 @@ function typesetter:initFrame (frame)
    end
 end
 
-function typesetter.getMargins ()
+--- Get the current left and right margins.
+function typesetter:getMargins ()
    return _margins(SILE.settings:get("document.lskip"), SILE.settings:get("document.rskip"))
 end
 
+--- Set the current left and right margins.
 function typesetter:setMargins (margins)
    SILE.settings:set("document.lskip", margins.lskip)
    SILE.settings:set("document.rskip", margins.rskip)
 end
 
+--- Push the current typesetter state onto the state queue,
 function typesetter:pushState ()
    self.stateQueue[#self.stateQueue + 1] = self.state
-   self:initState()
+   self:_initState()
 end
 
-function typesetter:popState (ncount)
-   local offset = ncount and #self.stateQueue - ncount or nil
-   self.state = table.remove(self.stateQueue, offset)
+--- Pop the last typesetter state from the state queue,
+function typesetter:popState ()
+   self.state = table.remove(self.stateQueue)
    if not self.state then
       SU.error("Typesetter state queue empty")
    end
 end
 
+--- Check if the typesetter queue is empty (no pending nodes, no output).
 function typesetter:isQueueEmpty ()
    if not self.state then
       return nil
@@ -234,10 +270,12 @@ function typesetter:isQueueEmpty ()
    return #self.state.nodes == 0 and #self.state.outputQueue == 0
 end
 
+--- Check if the typesetter is in vertical mode (no pending nodes).
 function typesetter:vmode ()
    return #self.state.nodes == 0
 end
 
+--- Debug print of the current typesetter state.
 function typesetter:debugState ()
    print("\n---\nI am in " .. (self:vmode() and "vertical" or "horizontal") .. " mode")
    print("Writing into " .. tostring(self.frame))
@@ -251,34 +289,39 @@ function typesetter:debugState ()
    end
 end
 
--- Boxy stuff
+--- Push a horizontal node into the current horizontal list.
 function typesetter:pushHorizontal (node)
    self:initline()
    self.state.nodes[#self.state.nodes + 1] = node
    return node
 end
 
+--- Push a vertical node into the current vertical list.
 function typesetter:pushVertical (vbox)
    self.state.outputQueue[#self.state.outputQueue + 1] = vbox
    return vbox
 end
 
+--- Push an hbox into the current horizontal list.
 function typesetter:pushHbox (spec)
    local ntype = SU.type(spec)
    local node = (ntype == "hbox" or ntype == "zerohbox") and spec or SILE.types.node.hbox(spec)
    return self:pushHorizontal(node)
 end
 
+--- Push an unshaped node into the current horizontal list.
 function typesetter:pushUnshaped (spec)
    local node = SU.type(spec) == "unshaped" and spec or SILE.types.node.unshaped(spec)
    return self:pushHorizontal(node)
 end
 
+--- Push a glue node into the current horizontal list.
 function typesetter:pushGlue (spec)
    local node = SU.type(spec) == "glue" and spec or SILE.types.node.glue(spec)
    return self:pushHorizontal(node)
 end
 
+--- Push an explicit glue node into the current horizontal list.
 function typesetter:pushExplicitGlue (spec)
    local node = SU.type(spec) == "glue" and spec or SILE.types.node.glue(spec)
    node.explicit = true
@@ -286,26 +329,31 @@ function typesetter:pushExplicitGlue (spec)
    return self:pushHorizontal(node)
 end
 
+--- Push a penalty node into the current horizontal list.
 function typesetter:pushPenalty (spec)
    local node = SU.type(spec) == "penalty" and spec or SILE.types.node.penalty(spec)
    return self:pushHorizontal(node)
 end
 
+--- Push a migrating node into the current horizontal list.
 function typesetter:pushMigratingMaterial (material)
    local node = SILE.types.node.migrating({ material = material })
    return self:pushHorizontal(node)
 end
 
+--- Push a vbox node into the current vertical list.
 function typesetter:pushVbox (spec)
    local node = SU.type(spec) == "vbox" and spec or SILE.types.node.vbox(spec)
    return self:pushVertical(node)
 end
 
+--- Push a vglue node into the current vertical list.
 function typesetter:pushVglue (spec)
    local node = SU.type(spec) == "vglue" and spec or SILE.types.node.vglue(spec)
    return self:pushVertical(node)
 end
 
+--- Push an explicit vglue node into the current vertical list.
 function typesetter:pushExplicitVglue (spec)
    local node = SU.type(spec) == "vglue" and spec or SILE.types.node.vglue(spec)
    node.explicit = true
@@ -313,12 +361,13 @@ function typesetter:pushExplicitVglue (spec)
    return self:pushVertical(node)
 end
 
+--- Push a penalty node into the current vertical list.
 function typesetter:pushVpenalty (spec)
    local node = SU.type(spec) == "penalty" and spec or SILE.types.node.penalty(spec)
    return self:pushVertical(node)
 end
 
--- Actual typesetting functions
+--- Split the input text into paragraphs, and push them to the current horizontal list.
 function typesetter:typeset (text)
    text = tostring(text)
    if text:match("^%\r?\n$") then
@@ -374,6 +423,7 @@ function typesetter:typeset (text)
    SILE.traceStack:pop(pId)
 end
 
+--- Initialize a new line if needed, entering horizontal mode and starting a new paragraph.
 function typesetter:initline ()
    if self.state.hmodeOnly then
       return
@@ -384,6 +434,7 @@ function typesetter:initline ()
    end
 end
 
+--- Leave horizontal mode and end the current paragraph.
 function typesetter:endline ()
    self:leaveHmode()
    SILE.documentState.documentClass.endPar(self)
@@ -401,7 +452,7 @@ local speakerChangeReplacement = luautf8.char(0x2014) .. " "
 local speaker = require("typesetters.nodes.speaker")
 local speakerChangeNode = speaker.speakerChangeNode
 
--- Takes string, writes onto self.state.nodes
+--- Takes an input paragraph string, and pushes it to the current horizontal list,
 function typesetter:setpar (text)
    text = text:gsub("\r?\n", " "):gsub("\t", " ")
    if #self.state.nodes == 0 then
@@ -431,33 +482,7 @@ function typesetter:setpar (text)
    end
 end
 
-local linebreak = require("typesetters.algorithms.knuthplass")
-
-function typesetter:breakIntoLines (nodelist, breakWidth)
-   nodelist = self:shapeAll(nodelist)
-
-   -- NOTE: There's some scope confusion between what should be settings and
-   -- current typesetter states. It might take time to be properly
-   -- addressed.
-   -- INTENT: Hanged lines are tracked (counted) so as to propagate the
-   -- remaining offset to the next paragraph.
-   local hangIndent = SILE.settings:get("current.hangIndent")
-   self.state.hangAfter = SILE.settings:get("current.hangAfter")
-   SILE.settings:set("linebreak.hangIndent", hangIndent or 0)
-   SILE.settings:set("linebreak.hangAfter", self.state.hangAfter)
-
-   local breakpoints, nlist = linebreak:doBreak(nodelist, breakWidth)
-   local lines = self:breakpointsToLines(breakpoints, nlist)
-
-   if self.state.hangAfter == 0 then
-      SILE.settings:set("current.hangIndent", nil)
-      SILE.settings:set("current.hangAfter", nil)
-   else
-      SILE.settings:set("current.hangAfter", self.state.hangAfter)
-   end
-   return lines
-end
-
+--- Shape all unshaped nodes in a list (legacy compatibility function).
 function typesetter:shapeAllNodes (nodelist, inplace)
    inplace = SU.boolean(inplace, true) -- Compatibility with earlier versions FIXME CODE SMELL
    local newNodelist = self:shapeAll(nodelist)
@@ -476,92 +501,12 @@ function typesetter:shapeAllNodes (nodelist, inplace)
    end
 end
 
--- Empties self.state.nodes, breaks into lines, puts lines into vbox, adds vbox to
--- Turns a node list into a list of vboxes
-function typesetter:boxUpNodes ()
-   local nodelist = self.state.nodes
-   if #nodelist == 0 then
-      return {}
-   end
-   for j = #nodelist, 1, -1 do
-      if not nodelist[j].is_migrating then
-         if nodelist[j].discardable then
-            table.remove(nodelist, j)
-         else
-            break
-         end
-      end
-   end
-   while #nodelist > 0 and nodelist[1].is_penalty do
-      table.remove(nodelist, 1)
-   end
-   if #nodelist == 0 then
-      return {}
-   end
-
-   nodelist = self:shapeAll(nodelist) -- FIXME HOW MANY PLACES DO WE NEED TO CALL THIS?
-   self.state.nodes = nodelist -- FIXME CODE SMELL (BIDI BREAKS OTHERWISE)
-
-   local parfillskip = SILE.settings:get("typesetter.parfillskip")
-   parfillskip.discardable = false
-   self:pushGlue(parfillskip)
-   self:pushPenalty(-inf_bad)
-   SU.debug("typesetter", function ()
-      return "Boxed up " .. (#nodelist > 500 and #nodelist .. " nodes" or SU.ast.contentToString(nodelist))
-   end)
-   local breakWidth = SILE.settings:get("typesetter.breakwidth") or self.frame:getLineWidth()
-   local lines = self:breakIntoLines(nodelist, breakWidth)
-   local vboxes = {}
-   for index = 1, #lines do
-      local line = lines[index]
-      local migrating = {}
-      -- Move any migrating material
-      local nodes = {}
-      for i = 1, #line.nodes do
-         local node = line.nodes[i]
-         if node.is_migrating then
-            for j = 1, #node.material do
-               migrating[#migrating + 1] = node.material[j]
-            end
-         else
-            nodes[#nodes + 1] = node
-         end
-      end
-      local vbox = SILE.types.node.vbox({ nodes = nodes, ratio = line.ratio })
-      local pageBreakPenalty = 0
-      if #lines > 1 and index == 1 then
-         pageBreakPenalty = SILE.settings:get("typesetter.widowpenalty")
-      elseif #lines > 1 and index == (#lines - 1) then
-         pageBreakPenalty = SILE.settings:get("typesetter.orphanpenalty")
-      elseif line.is_broken then
-         pageBreakPenalty = SILE.settings:get("typesetter.brokenpenalty")
-      end
-      vboxes[#vboxes + 1] = self:leadingFor(vbox, self.state.previousVbox)
-      vboxes[#vboxes + 1] = vbox
-      for i = 1, #migrating do
-         vboxes[#vboxes + 1] = migrating[i]
-      end
-      self.state.previousVbox = vbox
-
-      if line.hanged then
-         -- Do not break the frame in hanged lines for dropped capitals etc.
-         vboxes[#vboxes+1] = SILE.types.node.penalty(10000)
-      elseif pageBreakPenalty > 0 then
-         SU.debug("typesetter", "adding penalty of", pageBreakPenalty, "after", vbox)
-         vboxes[#vboxes + 1] = SILE.types.node.penalty(pageBreakPenalty)
-      end
-   end
-   return vboxes
-end
-
-function typesetter.pageTarget (_)
-   SU.deprecated("SILE.typesetter:pageTarget", "SILE.typesetter:getTargetLength", "0.13.0", "0.14.0")
-end
-
+--- Get the target length for the current frame.
 function typesetter:getTargetLength ()
    return self.frame:getTargetLength()
 end
 
+--- Register a hook function to be called at a certain event.
 function typesetter:registerHook (category, func)
    if not self.hooks[category] then
       self.hooks[category] = {}
@@ -569,6 +514,7 @@ function typesetter:registerHook (category, func)
    table.insert(self.hooks[category], func)
 end
 
+--- Run all hooks registered for a certain event.
 function typesetter:runHooks (category, data)
    if not self.hooks[category] then
       return data
@@ -579,18 +525,28 @@ function typesetter:runHooks (category, data)
    return data
 end
 
+--- Register a hook function to be called at each frame break.
+--
+-- Convenience helper.
 function typesetter:registerFrameBreakHook (func)
    self:registerHook("framebreak", func)
 end
 
+--- Register a hook function to be called at each new frame initialization.
+--
+-- Convenience helper.
 function typesetter:registerNewFrameHook (func)
    self:registerHook("newframe", func)
 end
 
+--- Register a hook function to be called at page end.
+--
+-- Convenience helper.
 function typesetter:registerPageEndHook (func)
    self:registerHook("pageend", func)
 end
 
+--- Attempt to build a page from the current vertical list.
 function typesetter:buildPage ()
    local pageNodeList
    local res
@@ -616,6 +572,7 @@ function typesetter:buildPage ()
    return true
 end
 
+--- Adjust vertical glues on a page to fit the target length.
 function typesetter:setVerticalGlue (pageNodeList, target)
    local glues = {}
    local gTotal = SILE.types.length()
@@ -697,6 +654,7 @@ function typesetter:setVerticalGlue (pageNodeList, target)
    SU.debug("pagebuilder", "Glues for this page adjusted by", adjustment, "drawn from", gTotal)
 end
 
+--- Initialize the next frame for typesetting.
 function typesetter:initNextFrame ()
    local oldframe = self.frame
    self.frame:leave(self)
@@ -718,12 +676,6 @@ function typesetter:initNextFrame ()
 
    if not SU.feq(oldframe:getLineWidth(), self.frame:getLineWidth()) then
       self:pushBack()
-      -- Some what of a hack below.
-      -- Before calling this method, we were in vertical mode...
-      -- pushback occurred, and it seems it messes up a bit...
-      -- Regardless what it does, at the end, we ought to be in vertical mode
-      -- again:
-      self:leaveHmode()
    else
       -- If I have some things on the vertical list already, they need
       -- proper top-of-frame leading applied.
@@ -737,17 +689,24 @@ function typesetter:initNextFrame ()
    self:runHooks("newframe")
 end
 
-function typesetter:pushBack ()
-   -- FIxME DIRTY HACK
+function typesetter:pushBack () -- Not documented, since not implemented
    if #self.state.outputQueue == 0 then
-      -- Nothing to push back
+      -- Nothing to push back (safe guard).
+      -- Within re·sil·ient, this notably happens after switching from cover pages
+      -- to book content, or between layout changes.
+      -- But normally, there is nothing to push back at these points.
       return
    end
    SU.error("Typesetter:pushBack not implemented in the sile·nt typesetter")
-   -- The pushback mechanism in SILE core is entirely brkoken.
+   -- The "pushback" mechanism in SILE core is entirely brkoken.
    -- Better to error out than to try and do something halfway.
+   -- Comment kept for reference:
+   -- Before calling this method, we were in vertical mode.
+   -- So whatever we may eventually do here, at the end we must be
+   -- back in vertical mode.
 end
 
+--- Output a list of lines to the current page.
 function typesetter:outputLinesToPage (lines)
    SU.debug("pagebuilder", "OUTPUTTING frame", self.frame.id)
    -- It would have been nice to avoid storing this "pastTop" into a frame
@@ -773,6 +732,7 @@ function typesetter:outputLinesToPage (lines)
    self.frame.state.totals.pastTop = pastTop
 end
 
+--- Leave horizontal mode, ending the current paragraph.
 function typesetter:leaveHmode (independent)
    if self.state.hmodeOnly then
       SU.error("Paragraphs are forbidden in restricted horizontal mode")
@@ -794,307 +754,7 @@ function typesetter:leaveHmode (independent)
    end
 end
 
-function typesetter:inhibitLeading ()
-   self.state.previousVbox = nil
-end
-
-function typesetter.leadingFor (_, vbox, previous)
-   -- Insert leading
-   SU.debug("typesetter", "   Considering leading between two lines:")
-   SU.debug("typesetter", "   1)", previous)
-   SU.debug("typesetter", "   2)", vbox)
-   if not previous then
-      return SILE.types.node.vglue()
-   end
-   local prevDepth = previous.depth
-   SU.debug("typesetter", "   Depth of previous line was", prevDepth)
-   local bls = SILE.settings:get("document.baselineskip")
-   local depth = bls.height:absolute() - vbox.height:absolute() - prevDepth:absolute()
-   SU.debug("typesetter", "   Leading height =", bls.height, "-", vbox.height, "-", prevDepth, "=", depth)
-
-   -- the lineskip setting is a vglue, but we need a version absolutized at this point, see #526
-   local lead = SILE.settings:get("document.lineskip").height:absolute()
-   if depth > lead then
-      return SILE.types.node.vglue(SILE.types.length(depth.length, bls.height.stretch, bls.height.shrink))
-   else
-      return SILE.types.node.vglue(lead)
-   end
-end
-
-function typesetter:addrlskip (slice, margins) -- FIXME TRANSITIONAL COMPATIBILITY
-   SU.warn("The sile·nt typesetter does not expose the addrlskip() method, what are you trying to do?")
-   self:_addrlskip(slice, margins)
-end
-
---- Add left and right skips to a line slice.
---
--- It takes taking into account the writing direction of the current frame,
--- and potential hanging indents on either side.
---
--- (Breaking change)
--- Compare to SILE's original typesetter:addrlskip() method, it doesn't do
--- anything else than handling the margin skips.
---
--- @tparam table slice Line slice
--- @tparam table margins Margins (`lskip` and `rskip` glues)
--- @tparam number hangLeft Amount to hang on the left side (absolute number)
--- @tparam number hangRight Amount to hang on the right side (absolute number)
-function typesetter:_addrlskip (slice, margins, hangLeft, hangRight)
-   local LTR = self.frame:writingDirection() == "LTR"
-   local rskip = margins[LTR and "rskip" or "lskip"]
-   if not rskip then
-      rskip = SILE.types.node.glue(0)
-   end
-   if hangRight and hangRight > 0 then
-      rskip = SILE.types.node.glue({ width = rskip.width:tonumber() + hangRight })
-   end
-   rskip.value = "margin"
-   table.insert(slice, rskip)
-   table.insert(slice, SILE.types.node.zerohbox()) -- CODE SMELL: WHY?
-   local lskip = margins[LTR and "lskip" or "rskip"]
-   if not lskip then
-      lskip = SILE.types.node.glue(0)
-   end
-   if hangLeft and hangLeft > 0 then
-      lskip = SILE.types.node.glue({ width = lskip.width:tonumber() + hangLeft })
-   end
-   lskip.value = "margin"
-   table.insert(slice, 1, lskip)
-   table.insert(slice, 1, SILE.types.node.zerohbox()) -- CODE SMELL: WHY?
-end
-
-function typesetter:breakpointsToLines (breakpoints, nodelist)
-   local linestart = 1
-   local lines = {}
-   local nodes = nodelist -- FIXME TRANSITIONAL
-
-   for i = 1, #breakpoints do
-      local point = breakpoints[i]
-      if point.position ~= 0 then
-         local slice = {}
-         local seenNonDiscardable = false
-         local seenLiner = false
-         local lastContentNodeIndex
-
-         for j = linestart, point.position do
-            local currentNode = nodes[j]
-            if
-               -- FIXME CODE SMELL: This is a kludge of sorts to detect...
-               not currentNode.discardable
-               and not (currentNode.is_glue and not currentNode.explicit)
-               and not currentNode.is_zero
-               -- My addition, but debatable...
-               -- See removeEndingStuff().
-               and not currentNode.is_kern
-            then
-               -- actual visible content starts here
-               lastContentNodeIndex = #slice + 1
-            end
-            if not seenLiner and lastContentNodeIndex then
-               -- Any stacked liner (unclosed from a previous line) is reopened on
-               -- the current line.
-               seenLiner = self:_repeatEnterLiners(slice)
-               lastContentNodeIndex = #slice + 1
-            end
-            if currentNode.is_discretionary and currentNode.used then
-               -- This is the used (prebreak) discretionary from a previous line,
-               -- repeated. Replace it with a clone, changed to a postbreak.
-               currentNode = currentNode:cloneAsPostbreak()
-            end
-            slice[#slice + 1] = currentNode
-            if currentNode then
-               if not currentNode.discardable then
-                  seenNonDiscardable = true
-               end
-               seenLiner = self:_processIfLiner(currentNode) or seenLiner
-            end
-         end
-         if not seenNonDiscardable then
-            -- Slip lines containing only discardable nodes (e.g. glues).
-            SU.debug("typesetter", "Skipping a line containing only discardable nodes")
-            linestart = point.position + 1
-         else
-            local is_broken = false
-            if slice[#slice].is_discretionary then
-               -- The line ends, with a discretionary:
-               -- repeat it on the next line, so as to account for a potential postbreak.
-               linestart = point.position
-               -- And mark it as used as prebreak for now.
-               slice[#slice]:markAsPrebreak()
-               -- We'll want a "brokenpenalty" eventually (if not an orphan or widow)
-               -- to discourage page breaking after this line.
-               is_broken = true
-            else
-               linestart = point.position + 1
-            end
-
-
-            if lastContentNodeIndex then
-               self:_repeatLeaveLiners(slice, lastContentNodeIndex + 1)
-            end
-
-            self:_pruneDiscardables(slice)
-
-            -- Track hanged lines
-            if self.state.hangAfter then
-               if self.state.hangAfter < 0
-                  and (point.left > 0 or point.right > 0) then
-                  -- count a hanged line
-                  self.state.hangAfter = self.state.hangAfter + 1
-               elseif self.state.hangAfter > 0
-                  and point.left == 0 and point.right == 0 then
-                  -- count a full line
-                  self.state.hangAfter = self.state.hangAfter - 1
-               end
-            end
-
-            -- Then only we can add some extra margin glue...
-            local mrg = self:getMargins()
-            self:_addrlskip(slice, mrg, point.left, point.right)
-
-            -- And compute the line...
-            local ratio = self:computeLineRatio(point.width, slice)
-
-            -- Re-shuffle liners, if any, into their own boxes.
-            if seenLiner then
-               slice = self:_reboxLiners(slice)
-            end
-
-            local thisLine = { ratio = ratio, nodes = slice, is_broken = is_broken }
-            lines[#lines + 1] = thisLine
-
-            if self.state.hangAfter and self.state.hangAfter < 0 then
-               -- Mark the line as hanged so we can later add a penalty:
-               -- Surely we don't want a frame break in the middle of dropped
-               -- capitals &c.
-               thisLine.hanged = true
-            end
-         end
-      end
-   end
-   if linestart < #nodes then
-      -- Abnormal, but warn so that one has a chance to check which bits
-      -- are missing at output.
-      SU.warn("Internal typesetter error " .. (#nodes - linestart) .. " skipped nodes")
-   end
-   return lines
-end
-
---- Remove trailing and leading discardable nodes from a slice
---
--- The slice is modified in place.
---
--- For leading nodes, this means glues and penalties (i.e. all discardable nodes).
--- For trailing nodes, this means glues (unless made non-discardable explicitly), zero boxes,
--- and trailing kerns (if consecutive).
---
--- FIXME: Clearly messy logic here, needs a clarification pass.
---
--- @tparam table slice Flat nodes from current line
-function typesetter:_pruneDiscardables (slice)
-   -- Leading discardables
-   while slice[1].discardable do -- FIXME CODE SMELL WHY HERE?
-      -- Remove any leading discardable nodes = in SILE's lingo, glues and penalties
-      -- (but not kerns and zero boxes).
-      table.remove(slice, 1)
-   end
-
-   -- Trailing discardables
-   local npos = #slice
-   -- Remove trailing glues and zero boxes, and trailing kerns.
-   while npos > 1 do
-      if not(
-         slice[npos].discardable -- glue (unless made non-discardable explicitly) or penalty
-         or slice[npos].is_zero -- zero box
-         -- FIXME
-         -- TeXBook ch. 14, seems to say kerns are discardable too.
-         -- But if they were, TeXBook app. D "dirty tricks" for hanging punctuation
-         -- would not work. The latter says however: "Consecutive glue, kern, and penalty
-         -- items disappear at a break." (referring vaguely to ch. 14)"
-         -- So kerns are not really discardable, but consecutive kerns are.
-         -- Erm. This works for the overhang logic, but we are quite far from
-         -- the original wording here, which is quite opaque...
-         or (slice[npos].is_kern and slice[npos - 1].is_kern)
-      ) then
-         break
-      end
-      npos = npos - 1
-   end
-   for i = npos + 1, #slice do
-      slice[i] = nil
-   end
-end
-
-function typesetter:computeLineRatio (breakwidth, slice)
-   local naturalTotals = SILE.types.length()
-
-   -- From the line end, account for the margin but skip any trailing
-   -- glues (spaces to ignore) and zero boxes until we reach actual content.
-   -- CODE SMELL:
-   -- Theoretically, we have already removed most of these earlier.
-   -- But for some reason, addrlskip() adds some zero boxes in the mix,
-   local npos = #slice
-   while npos > 1 do
-      if (slice[npos].is_glue and slice[npos].discardable) or slice[npos].is_zero then
-         if slice[npos].value == "margin" then
-            naturalTotals:___add(slice[npos].width)
-            break-- Stop here at margin glue
-         end
-      else
-         break
-      end
-      npos = npos - 1
-   end
-
-   -- Due to discretionaries, keep track of seen parent nodes
-   local seenNodes = {}
-   -- CODE SMELL: Not sure which node types were supposed to be skipped
-   -- at initial positions in the line!
-   local skipping = true
-
-   -- Until end of actual content
-   for i = 1, npos do
-      local node = slice[i]
-      if node.is_box then
-         skipping = false
-         if node.parent and not node.parent.hyphenated then
-            if not seenNodes[node.parent] then
-               naturalTotals:___add(node.parent:lineContribution())
-            end
-            seenNodes[node.parent] = true
-         else
-            naturalTotals:___add(node:lineContribution())
-         end
-      elseif node.is_penalty and node.penalty == -inf_bad then
-         skipping = false
-      elseif node.is_discretionary then
-         skipping = false
-         local seen = node.parent and seenNodes[node.parent]
-         if not seen then
-            if node.used then
-               if node.is_prebreak then
-                  naturalTotals:___add(node:prebreakWidth())
-                  node.height = node:prebreakHeight()
-               else
-                  naturalTotals:___add(node:postbreakWidth())
-                  node.height = node:postbreakHeight()
-               end
-            else
-               naturalTotals:___add(node:replacementWidth():absolute())
-               node.height = node:replacementHeight():absolute()
-            end
-         end
-      elseif not skipping then
-         naturalTotals:___add(node.width)
-      end
-   end
-
-   local _left = breakwidth:tonumber() - naturalTotals:tonumber()
-   local ratio = _left / naturalTotals[_left < 0 and "shrink" or "stretch"]:tonumber()
-   ratio = math.max(ratio, -1)
-   return ratio, naturalTotals
-end
-
+--- Emergency shipout everything
 function typesetter:chuck () -- emergency shipout everything
    self:leaveHmode(true)
    if #self.state.outputQueue > 0 then
