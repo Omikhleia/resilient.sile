@@ -1,11 +1,18 @@
+--- A minimalist document class for a "resumé" (CV).
 --
--- A minimalist SILE class for a "resumé" (CV)
--- Following the resilient styling paradigm.
+-- Somewhat experimental.
 -- This is indeed very minimalist :)
 --
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia /  Didier Willis
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhkeia / Didier Willis
+-- @module classes.resilient.resume
+
+--- The resumé (CV) document class for re·sil·ient.
 --
+-- Extends `classes.resilient.base`.
+--
+-- @type classes.resilient.resume
+
 local base = require("classes.resilient.base")
 local class = pl.class(base)
 class._name = "resilient.resume"
@@ -78,6 +85,15 @@ class.nextFrameset = {
   },
 }
 
+--- (Constructor) Initialize the class.
+--
+-- It initialize the parent class, loads some basic packages,
+-- and defines the page masters and frames.
+-- it also sets some sane defaults for certain settings,
+-- overrides some commands from standard SILE packages to make them
+-- style-aware, etc.
+--
+-- @tparam table options Class options
 function class:_init (options)
   base._init(self, options)
 
@@ -148,6 +164,8 @@ function class:_init (options)
   end)
 end
 
+--- (Override) Start a new page, switching to the next master if needed.
+--
 function class:newPage ()
   -- FIXME
   -- In 0.12.5
@@ -164,6 +182,8 @@ function class:newPage ()
   return self:initialFrame() -- And now this (?!)
 end
 
+--- (Override) End-page routine (headers and footers)
+--
 function class:endPage ()
   if SILE.scratch.counters.folio.value > 1 then
     self.packages["resilient.headers"]:outputHeader(SILE.scratch.headers.content)
@@ -186,6 +206,8 @@ function class:endPage ()
 end
 
 -- STYLES
+
+--- (Override) Register all styles used by the class.
 function class:registerStyles ()
   base.registerStyles(self)
 
@@ -297,6 +319,7 @@ local doSection = function (rows, _, content)
   end
 end
 
+--- (Override) Register all commands used by the class.
 function class:registerCommands ()
   base.registerCommands(self)
 

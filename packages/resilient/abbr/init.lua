@@ -1,18 +1,27 @@
+--- Some common shorthands and abbreviations for re·sil·ient.
 --
--- Some common shorthands and abbreviations for SILE.
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhleia / Didier Willis
+-- @module packages.resilient.abbr
+
+--- The "resilient.abbr" package.
 --
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia / Didier Willis
+-- Extends SILE's `packages.base`.
 --
+-- @type packages.resilient.abbr
+
 local base = require("packages.base")
 local package = pl.class(base)
 package._name = "resilient.abbr"
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
   self:loadPackage("textsubsuper")
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
   self:registerCommand("abbr:nbsp", function (options, _)
     local fixed = SU.boolean(options.fixed, false)

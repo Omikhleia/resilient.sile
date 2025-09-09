@@ -1,15 +1,23 @@
+--- Generic sectioning command and styles for re·sil·ient.
 --
--- Generic sectioning command and styles for SILE.
--- Following the resilient styling paradigm.
 -- It is nn extension of the "styles" package and the sectioning paradigm.
 --
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia / Didier Willis
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhleia / Didier Willis
+-- @module packages.resilient.sectioning
+
+--- The "resilient.sectioning" package.
 --
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.sectioning
+
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.sectioning"
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
   self:loadPackage("counters")
@@ -48,6 +56,7 @@ local function nameIfNotNull (name)
   SU.error("Invalid style name, expected a string or YAML null")
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
 
   local resolveSectionStyleDef = function (name)

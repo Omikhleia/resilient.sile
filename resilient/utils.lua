@@ -1,21 +1,20 @@
+--- Common utilities for re·sil·ient.
 --
--- Common utilities for RESILIENT
---
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
---
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhleia / Didier Willis
+-- @module resilient.utils
 
 --- Measure an inter-word space (which, depending on settings, might be variable
 -- and thus have stretch/shrink).
--- @treturn length interwordSpace
+-- @treturn SILE.types.length interwordSpace
 local function interwordSpace()
   return SILE.shaper:measureSpace(SILE.font.loadDefaults({}))
 end
 
---- Cast a kern length (e.g. in styles), also supporting the special "iwsp"
--- pseudo unit for interword space.
--- @tparam string|length kern The kern value to cast
--- @treturn length The kern value as a length
+--- Cast a kern length (e.g., as found in styles), also supporting the special "iwsp"
+-- pseudo-unit for interword space.
+-- @tparam string|SILE.types.length kern The kern value to cast
+-- @treturn SILE.types.length The kern value as a length
 local function castKern (kern)
   if type(kern) == "string" then
     local value, rest = kern:match("^(%d*)iwsp[ ]*(.*)$")
@@ -46,6 +45,7 @@ local function recursiveTableMerge(t1, t2)
   end
 end
 
+--- @export
 return {
   castKern = castKern,
   interwordSpace = interwordSpace,

@@ -1,16 +1,23 @@
---
--- USX (XML bible format) support for SILE.
--- Following the resilient styling paradigm.
+--- USX (XML bible format) support for re·sil·ient.
 --
 -- EXPERIMENTAL POSSIBLY INCOMPLETE
 --
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhleia / Didier Willis
+-- @module packages.resilient.bible.usx
+
+--- The "resilient.bible.usx" package.
 --
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.bible.usx
+
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.bible.usx"
 
+--- (Constructor) Initialize the package.
+-- @tparam table _ Package options (not used here)
 function package:_init(_)
   base._init(self)
   self:loadPackage("dropcaps")
@@ -20,6 +27,7 @@ function package:_init(_)
   end)
 end
 
+--- Output collated notes for the current page.
 function package:outputCollatedNotes ()
   SILE.typesetNaturally(SILE.getFrame("margins"), function ()
     SILE.settings:pushState()
@@ -136,9 +144,7 @@ local skippedCharStyles = {
   fr = true, -- fr (with ft content)
 }
 
----
--- PACKAGE COMMANDS
---
+--- (Override) Register package commands.
 function package:registerCommands()
 
   local bookrefFilter = function (node, content)
@@ -376,6 +382,7 @@ function package:registerCommands()
   end)
 end
 
+--- (Override) Register package styles.
 function package:registerStyles ()
   self:registerStyle("usx-para-mt1", { inherit = "sectioning-base" }, {
     font = { weight = 700, size = "1.4em" },

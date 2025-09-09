@@ -1,21 +1,30 @@
+--- TEI bible format with critical apparatus as used for the Gothic Bible
 --
--- TEI bible format with critical apparatus as used for the Gothic Bible
--- from wulfila.be (TEI Gothica).
--- Following the resilient styling paradigm.
+-- This implements the subset of TEI used in the Gotica XML document
+-- from project "wulfila.be" (TEI Gothica).
 --
 -- HIGHLY EXPERIMENTAL
 --
--- License: MIT
--- Copyright (C) 2022-2025 Omikhleia / Didier Willis
---
+-- @license MIT
+-- @copyright (c) 2022-2025 Omikhleia / Didier Willis
+-- @module packages.resilient.bible.tei
+
 local luautf8 = require("lua-utf8")
 local loadkit = require("loadkit")
 local loader = loadkit.make_loader("png")
+
+--- The resilient.bible.tei package.
+--
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.bible.tei
 
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.bible.tei"
 
+--- (Constructor) Initialize the package.
+-- @tparam table _ Package options (not used here)
 function package:_init (_)
   base._init(self)
   self:loadPackage("dropcaps")
@@ -26,6 +35,7 @@ function package:_init (_)
   end)
 end
 
+--- Outputs the collated notes for the current page.
 function package:outputCollatedNotes ()
   SILE.typesetNaturally(SILE.getFrame("margins"), function ()
     local refs = SILE.scratch.info.thispage.witnesses
@@ -164,9 +174,12 @@ local function replaceSpecialChars (input, _)
   return input:gsub("_", "…"):gsub("~", "-"):gsub("{90}", "ϡ")
 end
 
--- Check if a content tree contains commands, in which case it is
--- assumed to be a "structure"
+--- Check if a content tree contains commands, in which case it is assumed to be a "structure".
+--
 -- FIXME LIKELY BROKEN BY DESIGN, CHECK WHERE USED FOR REFACTORING OR CLARIFYING
+--
+-- @tparam table content Content tree
+-- @treturn boolean True if structured content
 local function isStructure(content)
   for i = 1, #content do
     if type(content[i]) == "table" then
@@ -178,6 +191,11 @@ local function isStructure(content)
   return false
 end
 
+--- Filter function to find relevant difference readings.
+--
+-- For `<seg>` elements, we ignore punctuation differences (subtype 5)
+-- @tparam table rdg A reading
+-- @treturn boolean True if relevant
 local function filterDifferences (rdg)
   return rdg.command == "seg"
     and rdg.options.subtype ~= "5"
@@ -185,6 +203,9 @@ local function filterDifferences (rdg)
     and rdg.options.subtype ~= "7"
 end
 
+--- Postprocess two readings to link corresponding segments.
+--
+-- @tparam table content Content tree
 local function postprocessReadings(content)
   local rdg1 = pl.tablex.filter(content[1], filterDifferences)
   local rdg2 = pl.tablex.filter(content[2], filterDifferences)
@@ -206,9 +227,11 @@ local function postprocessReadings(content)
   SU.ast.processAsStructure(content)
 end
 
--- Recursively walks through a content tree to find the first non-empty string
--- and capitalize it.
+--- Recursively walks through a content tree to find the first non-empty string and capitalize it.
+--
 -- NOTE: Processes all the content.
+--
+-- @tparam table content Content tree
 local function processCapitalize(content)
   local mustcase = true
   for i = 1, #content do
@@ -229,9 +252,11 @@ local function processCapitalize(content)
   end
 end
 
--- Check if a content tree (assumed already trimmed) starts with
--- a punctuation element <c>.
+--- Check if a content tree (assumed already trimmed) starts with a punctuation element `<c>`.
+--
 -- (TEI Gotica-specific)
+--
+-- @tparam table content Content tree
 local function startsWithPunct(content)
   for i = 1, #content do
     if type(content[i]) == "table" then
@@ -249,12 +274,17 @@ local function startsWithPunct(content)
   return false
 end
 
--- The lowest-level <seg> element can contain <unclear>, <add> and <del>
--- elements.s
+--- Recursively walks through a content tree to trim all text nodes.
+--
+-- The lowest-level `<seg>` element can contain `<unclear>`, `<add>` and `<del>`
+-- elements.
 -- The assuption is that these only contain a word parts (i.e. strings).
--- We extract the target word (incl. additions), the source word (incl.
+-- We extract the target word (incl. additions), the source word (including
 -- deletions).
+--
 -- (TEI Gotica-specific)
+--
+-- @tparam table content Content tree
 local function trimAllSubContents(content)
   local subc = {}
   for _, n in ipairs(content) do
@@ -294,7 +324,6 @@ end
 -- Called for "measuring" a weight of a reading (<rdg>) so as to try picking
 -- the best variant.
 -- (TEI Gotica-specific)
-
 -- Word weighting = nr of unclear parts, nr of emended word parts.
 local function weightSeg(content)
   local unclear, emended = 0, 0
@@ -337,6 +366,9 @@ local function weightDiff(content)
   return unclear, emended, segs
 end
 
+--- Recursively walks through a content tree to compute a weight for a reading.
+--
+-- @tparam table content Content tree
 local function weightReading(content)
   -- Quite lame: just number of (<seg>) descendant
   local unclear, segs = 0, 0
@@ -377,6 +409,9 @@ end
 
 -- PICK MAIN READING
 
+--- Preprocess a reading content tree to extract readings.
+--
+-- @tparam table content Content tree
 local function preprocessReading(content)
   local rdg = {}
   for key, value in pairs(content) do
@@ -398,11 +433,15 @@ local function preprocessReading(content)
   return rdg
 end
 
--- <seg type="diff" subtype="6"> is used in the source document to mark
+--- Handle the case where the first reading starts with a lacuna
+--
+-- A `<seg type="diff" subtype="6">` is used in the source document to mark
 -- difference in one variant where the other has a lacuna.
+--
 -- (TEI Gotica-specific)
-
--- Handle the case where the first reading starts with a lacuna
+--
+-- @tparam table rdgA First reading
+-- @tparam table rdgB Second reading
 local function handleStartsWithLacuna (rdgA, rdgB)
   if rdgA[1].command == "lacunaEnd" and rdgB[1].options.subtype == "6" then
     -- A starts with a lacuna and B complements it:
@@ -437,7 +476,11 @@ local function handleStartsWithLacuna (rdgA, rdgB)
   return false
 end
 
--- Handle the case where the first reading ends with a lacuna
+--- Handle the case where the first reading ends with a lacuna
+--
+-- @tparam table rdgA First reading
+-- @tparam table rdgB Second reading
+-- @treturn boolean True if handled
 local function handleEndsWithLacuna(rdgA, rdgB)
   if rdgA[#rdgA].command == "lacunaStart" and rdgB[#rdgB].options.subtype == "6" then
     -- "xxx (...)" vs "xxx 6"
@@ -451,8 +494,12 @@ local function handleEndsWithLacuna(rdgA, rdgB)
   return false
 end
 
--- Handle best readings (recursing into them to compute a weight):
+--- Handle best readings (recursing into them to compute a weight).
+--
 -- Pick the reading that has more words (longer), or less unclear forms.
+--
+-- @tparam table rdgA First reading
+-- @tparam table rdgB Second reading
 local function handleByWeight(rdgA, rdgB)
   local unclearA, segsA = weightReading(rdgA)
   local unclearB, segsB = weightReading(rdgB)
@@ -474,8 +521,11 @@ local function handleByWeight(rdgA, rdgB)
   end
 end
 
--- Walk an apparatus (<app>) content tree to weight and select readings (<rdg>)
+--- Walk an apparatus (`<app>`) content tree to weight and select readings (`<rdg>`).
+--
 -- (TEI Gotica-specific)
+--
+-- @tparam table content Apparatus content tree
 local function weightStructure(content)
   -- Collect readings
   local readings = {}
@@ -516,6 +566,8 @@ end
 --
 -- PACKAGE COMMANDS
 --
+
+--- (Override) Register package-specific commands.
 function package:registerCommands ()
 
   self:registerCommand("running-headers", function (_, content)
@@ -1164,6 +1216,7 @@ function package:registerCommands ()
 
 end
 
+--- (Override) Register package-specific styles.
 function package:registerStyles ()
   base.registerStyles(self)
 

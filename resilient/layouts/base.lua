@@ -1,11 +1,16 @@
+--- Base page layout class.
 --
--- Base layout class (a.k.a. default/none)
---
--- License: MIT
--- Copyright (C) 2022-2025 Omikhleia / Didier Willis
---
+-- @license MIT
+-- @copyright (c) 2022-2025 Omikhkeia / Didier Willis
+-- @module resilient.layouts.base
+
+--- Base layout class.
+-- @type resilient.layouts.base
+
 local layout = pl.class()
 
+--- (Constructor) Create a new layout instance.
+-- @tparam table _ Options (not used here)
 function layout:_init (_)
   self.inner = "width(page)/6"
   self.outer = "width(page)/6"
@@ -14,16 +19,30 @@ function layout:_init (_)
   self.offset = "0"
 end
 
+--- Set the paper size.
+--
+-- This is sort of a hack, as some layouts are hard to implement with SILE's frame
+-- specification model (and Cassowary constraints).
+--
+-- @tparam SILE.types.measurement W Paper width
+-- @tparam SILE.types.measurement H Paper height
 function layout:setPaperHack (W, H)
   -- unused here but see Canonical layout
   self.W = W
   self.H = H
 end
 
+--- Set the binding offset.
+--
+-- @tparam SILE.types.measurement offset Binding offset
 function layout:setOffset (offset)
   self.offset = offset
 end
 
+--- Compute the frameset for this layout.
+--
+-- @treturn table odd Frameset for odd pages
+-- @treturn table even Frameset for even pages
 function layout:frameset ()
   local odd = {
     textblock = self:textblock(true),
@@ -51,6 +70,9 @@ function layout:frameset ()
   return odd, even
 end
 
+--- Return the textblock frame specification.
+-- @tparam boolean isOdd Whether this is for an odd page
+-- @treturn table Frame specification
 function layout:textblock (isOdd)
   local left = isOdd and (self.inner .. " + " .. self.offset) or (self.outer .. " - " .. self.offset)
   local right = isOdd and (self.outer  .. " - " .. self.offset) or (self.inner  .. " + " .. self.offset)
@@ -62,6 +84,9 @@ function layout:textblock (isOdd)
   }
 end
 
+--- Return the content frame specification.
+-- @tparam boolean _ Whether this is for an odd page (unused here)
+-- @treturn table Frame specification
 function layout:content (_)
   return {
     left = "left(textblock)",
@@ -71,6 +96,9 @@ function layout:content (_)
   }
 end
 
+--- Return the footnotes frame specification.
+-- @tparam boolean _ Whether this is for an odd page (unused here)
+-- @treturn table Frame specification
 function layout:footnotes (_)
   return {
     left = "left(textblock)",
@@ -91,6 +119,9 @@ end
 -- And guess what, it looks "decent" for most standard layouts and page
 -- dimensions I checked. According to my tastes, at least.
 
+--- Return the footer frame specification.
+-- @tparam boolean _ Whether this is for an odd page (unused here)
+-- @treturn table Frame specification
 function layout:footer (_)
   return {
     left = "left(textblock)",
@@ -100,6 +131,9 @@ function layout:footer (_)
   }
 end
 
+--- Return the header frame specification.
+-- @tparam boolean _ Whether this is for an odd page (unused here)
+-- @treturn table Frame specification
 function layout:header (_)
   return {
     left = "left(textblock)",
@@ -109,6 +143,9 @@ function layout:header (_)
   }
 end
 
+--- Return the margins frame specification.
+-- @tparam boolean odd Whether this is for an odd page
+-- @treturn table Frame specification
 function layout:margins (odd)
   return {
     left = odd and "right(textblock) + 2.5%pw" or "left(page) + 0.5in",
@@ -118,6 +155,9 @@ function layout:margins (odd)
   }
 end
 
+--- Return the binding gutter frame specification.
+-- @tparam boolean isOdd Whether this is for an odd page
+-- @treturn table Frame specification
 function layout:gutter (isOdd)
   return {
     left = isOdd and ("left(page) + " .. self.offset) or "left(page)",
@@ -156,6 +196,12 @@ local function buildFrameRect (painter, frame, wratio, hratio, options)
 end
 
 local framesetAdapter = require("resilient.adapters.frameset")
+
+--- Draw a layout graph in the document.
+--
+-- @tparam SILE.types.measurement W Width of the drawing area
+-- @tparam SILE.types.measurement H Height of the drawing area
+-- @tparam table options Drawing options
 function layout:draw (W, H, options)
   local ratio = SU.cast("number", options.ratio or 6.5)
   local rough = SU.boolean(options.rough, false)

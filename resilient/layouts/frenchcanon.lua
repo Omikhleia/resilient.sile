@@ -1,22 +1,29 @@
---
--- French "Canon des Ateliers" page layout.
+--- French "Canon des Ateliers" page layout.
 --
 -- Sources:
--- Pierre DUPLAN & Roger JAUNEAU, Maquette et mise en page, Éditions du Moniteur,
--- Paris, 1986.
+--
+--  - Pierre DUPLAN & Roger JAUNEAU, Maquette et mise en page, Éditions du Moniteur, Paris, 1986.
 --
 -- Other resources on usual variants, with examples:
---   http://indus.graph.free.fr/Cours%20PDF/T2%20PDF%2024-11-04.pdf
+--
+--  - <http://indus.graph.free.fr/Cours%20PDF/T2%20PDF%2024-11-04.pdf>
+--
 -- Good general resource:
---   http://www.numdam.org/item/CG_2003___42_4_0.pdf
---     i.e. Markus Kohm, Étude comparative de différents modèles d’empagement,
---   Cahiers GUTenberg no. 42 (2003), p. 4-25
 --
--- License: MIT
--- Copyright (C) 2022-2025 Omikhleia / Didier Willis
+--  - Markus KOHM, "Étude comparative de différents modèles d’empagement", _Cahiers GUTenberg_ no. 42 (2003), pp. 4-25 (<http://www.numdam.org/item/CG_2003___42_4_0.pdf>)
 --
+-- @license MIT
+-- @copyright (c) 2022-2025 Omikhkeia / Didier Willis
+-- @module resilient.layouts.frenchcanon
+
+--- French Canon layout class.
+--
+-- Extends `resilient.layouts.base`.
+--
+-- @type resilient.layouts.frenchcanon
+
 local base = require("resilient.layouts.base")
-local frenchcannon = pl.class(base)
+local layout = pl.class(base)
 
 local qualities = {
   regular = 1/4,
@@ -31,7 +38,9 @@ local rules = {
   valt =   4
 }
 
-function frenchcannon:_init (options)
+--- (Constructor) Create a new French Canon layout instance.
+-- @tparam {quality=string,rule=string} options Options (quality and rule)
+function layout:_init (options)
   base._init(self, options)
   local N = qualities[options.quality or "regular"]
   local rule = rules[options.rule or "12e"]
@@ -74,4 +83,4 @@ function frenchcannon:_init (options)
   end
 end
 
-return frenchcannon
+return layout

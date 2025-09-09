@@ -1,9 +1,9 @@
+--- LPEG parser for layout class options.
 --
--- Parser for layout class options
---
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
---
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhkeia / Didier Willis
+-- @module resilient.layoutparser
+
 local lpeg = require("lpeg")
 local P, C, V = lpeg.P, lpeg.C, lpeg.V
 

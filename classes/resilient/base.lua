@@ -1,18 +1,31 @@
---
--- Base resilient class for SILE.
--- Following the resilient styling paradigm.
+--- The base style-aware document class for re·sil·ient.
 --
 -- It provides a base class for document classes that want to use styles,
--- and a few convenience methods hide the internals.
+-- following the re·sil·ient styling paradigm, with a few convenience methods
+-- hide the internals.
 --
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhleia / Didier Willis
+-- @module classes.resilient.base
+
+--- The base document class for re·sil·ient documents.
 --
+-- Extends `classes.resilient.override`.
+--
+-- @type classes.resilient.base
+
 local parent = require("classes.resilient.override")
 local class = pl.class(parent)
 class._name = "resilient.base"
 class.styles = nil
 
+--- (Constructor) Initialize the class.
+--
+-- It initialize the parent class, loads the `packages.resilient.styles` module,
+-- and invokes the `registerStyles()` method, which is a convenient hook
+-- for subclasses where to register all their styles.
+--
+-- @tparam table options Class options
 function class:_init (options)
   parent._init(self, options)
 
@@ -21,14 +34,6 @@ function class:_init (options)
   self:registerStyles()
 end
 
--- Some core or 3rd-party packages may load a non-style-aware variant of
--- another package, and this would cause issues with the commands being
--- redefined to the non-style-aware variant.
--- E.g. in SILE 0.15.12, the "url" package loaded the "verbatim" package
--- (despite not using it, and this was later fixed in SILE 0.15.13, but
--- you can get the idea).
--- Let's assume we are compatible with those packages (though we cannot
--- guarantee it), and always silently load the resilient variant instead.
 local styleAwareVariant = {
   lists = "resilient.lists",
   verbatim = "resilient.verbatim",
@@ -36,7 +41,18 @@ local styleAwareVariant = {
   footnotes = "resilient.footnotes",
 }
 
-function class:loadPackage (packname, options, reload)
+--- (Override) Load a package, using a style-aware alternative if available.
+--
+-- Some core or 3rd-party packages may load a non-style-aware variant of
+-- another package, and this would cause issues with the commands being
+-- redefined to the non-style-aware variant.
+--
+-- We enforce loading the resilient style-aware variant instead, assuming
+-- compatibility (though we cannot fully guarantee it).
+--
+-- @tparam string packname Package name
+-- @tparam table options Package options
+function class:loadPackage (packname, options)
   if styleAwareVariant[packname] then
     SU.debug("resilient", "Loading the resilient variant of package", packname, "=", styleAwareVariant[packname],
     [[
@@ -47,21 +63,34 @@ Please consider using resilient-compatible style-aware packages when available!
 ]])
     packname = styleAwareVariant[packname]
   end
-  return parent.loadPackage(self, packname, options, reload)
+  return parent.loadPackage(self, packname, options)
 end
 
+--- Register a style.
+-- @tparam string name Style name
+-- @tparam table opts Style options
+-- @tparam table styledef Style definition
 function class:registerStyle (name, opts, styledef)
   return self.styles:defineStyle(name, opts, styledef, self._name)
 end
 
+--- Resolve a style name into a style definition.
+-- @tparam string name Style name
+-- @tparam[opt] boolean discardable If true, do not raise an error if the style is not found
+-- @treturn table|nil Style definition
 function class:resolveStyle (name, discardable)
   return self.styles:resolveStyle(name, discardable)
 end
 
+--- Check if a style is defined.
+-- @tparam string name Style name
+-- @treturn boolean True if the style is defined
 function class:hasStyle (name)
   return self.styles:hasStyle(name)
 end
 
+--- (Abstract) Register all styles.
+--
 -- For overriding in any document subclass, as a convenient hook
 -- where to register all styles.
 function class:registerStyles () end

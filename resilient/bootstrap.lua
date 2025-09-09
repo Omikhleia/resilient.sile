@@ -1,9 +1,8 @@
+--- Bootstrap code for the resilient classes and packages.
 --
--- Bootstrap code for the resilient classes and packages.
---
--- License: MIT
--- Copyright (C) 2025 Omikhleia / Didier Willis
---
+-- @license MIT
+-- @copyright (c) 2025 Omikhkeia / Didier Willis
+-- @module resilient.bootstrap
 
 -- Enforce all inputters to be loaded, so that the user can use them directly.
 SU.debug("resilient.bootstrap", "Ensuring extra inputters are loaded")
@@ -30,8 +29,8 @@ SILE.resilient = {
 -- For instance, consider a title that contains a footnote.
 -- The title AST is stored in the TOC, and reused when typesetting the TOC.
 -- The footnote command would try to create a footnote at that point, which is not what one expects.
--- @tparam function func The function to execute without fragile commands
 -- @tparam string context A context identifier corresponding to the suppression purpose
+-- @tparam function func The function to execute without fragile commands
 function SILE.resilient.cancelContextualCommands (context, func)
   local oldContext = SILE.resilient.state.contextFor -- Nesting occurs, e.g. from toc to header and back
   SU.debug("resilient", "Cancelling contextual commands in context", context, "from", oldContext or "<none>")

@@ -1,16 +1,23 @@
+--- A poetry package for re·sil·ient.
 --
--- A poetry package for SILE.
--- Following the resilient styling paradigm.
---
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia / Didier Willis
---
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhkeia / Didier Willis
+-- @module packages.resilient.poetry
+
 local LOG10 = math.log(10)
+
+--- The "resilient.poetry" package.
+--
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.poetry
 
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.poetry"
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
   self:loadPackage("rebox")
@@ -18,6 +25,7 @@ function package:_init (options)
   self:loadPackage("inputfilter")
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
   local function prosodyFilter(text, content, options)
     local result = {}
@@ -288,6 +296,7 @@ function package:registerCommands ()
 
 end
 
+--- (Override) Declare all settings provided by this package.
 function package:declareSettings ()
   SILE.settings:declare({
     parameter = "resilient.poetry.offset",
@@ -311,6 +320,7 @@ function package:declareSettings ()
   })
 end
 
+--- (Override) Register all styles provided by this package.
 function package:registerStyles ()
 
   self:registerStyle("poetry-prosody", {}, {

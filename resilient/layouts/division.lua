@@ -1,21 +1,29 @@
---
--- Division-based layouts
+--- Division-based page layouts.
 --
 -- Sources:
--- Alain HURTGIG, http://www.alain.les-hurtig.org/varia/empagement.html
--- Jan TSCHICHOLD, Livre et typographie, Éditions Allia, Paris, 1994.
---   Division by 6: used Marcus Vencentinus (15th century) in a prayer book
---   Division by 9: Method proposed by Villard de Honnecourt (13th century).
--- Olivier RANDIER's general method: Olivier RANDIER, Mail to the Typographie
--- mailing-list, April 8, 2002.
 --
--- License: MIT
--- Copyright (C) 2022-2025 Omikhleia / Didier Willis
+--   - Alain HURTGIG, <http://www.alain.les-hurtig.org/varia/empagement.html>.
+--   - Jan TSCHICHOLD, _Livre et typographie,_ Éditions Allia, Paris, 1994.
+--   - Division by 6: used Marcus Vencentinus (15th century) in a prayer book.
+--   - Division by 9: Method proposed by Villard de Honnecourt (13th century).
+--   - Olivier RANDIER's general method: Olivier RANDIER, Mail to the Typographie mailing-list, April 8, 2002.
 --
-local base = require("resilient.layouts.base")
-local division = pl.class(base)
+-- @license MIT
+-- @copyright (c) 2022-2025 Omikhkeia / Didier Willis
+-- @module resilient.layouts.division
 
-function division:_init (options)
+--- Division layout class.
+--
+-- Extends `resilient.layouts.base`.
+--
+-- @type resilient.layouts.division
+
+local base = require("resilient.layouts.base")
+local layout = pl.class(base)
+
+--- (Constructor) Create a new Division layout instance.
+-- @tparam {n=number,ratio=number} options Options (base ratio and optional ratio)
+function layout:_init (options)
   base._init(self, options)
   self.n = options.n
   self.R = options.ratio
@@ -35,7 +43,10 @@ function division:_init (options)
   self.foot = "height(page) * " .. N .. " * " .. R
 end
 
-function division:setPaperHack (W, H)
+--- (Override) Set the paper size.
+-- @tparam SILE.types.measurement W Paper width
+-- @tparam SILE.types.measurement H Paper height
+function layout:setPaperHack (W, H)
   -- So recompute all.
   self.W = W
   self.H = H
@@ -51,4 +62,4 @@ function division:setPaperHack (W, H)
   self.foot = "height(page) * " .. N .. " * " .. R
 end
 
-return division
+return layout

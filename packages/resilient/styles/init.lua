@@ -1,15 +1,23 @@
+--- A style package for re·sil·ient.
 --
--- A style package for SILE
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhkeia / Didier Willis
+-- @module packages.resilient.styles
+
+--- The "resilient.styles" package.
 --
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia / Didier Willis
+-- Extends `packages.base`.
 --
+-- @type packages.resilient.styles
+
 local base = require("packages.base")
 local package = pl.class(base)
 package._name = "resilient.styles"
 
 local utils = require("resilient.utils")
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
 
@@ -84,6 +92,7 @@ local function tableToYaml (value, indent, done)
   end
 end
 
+--- (Override) Register all styles provided by this package.
 function package:readStyles ()
   local yaml = require("resilient-tinyyaml")
   local fname = SILE.masterFilename .. '-styles.yml'
@@ -120,6 +129,7 @@ function package:readStyles ()
   self:freezeStyles()
 end
 
+--- Write the styles to a YAML file, if there are new styles.
 function package.writeStyles () -- NOTE: Not called as a package method (invoked from class hook)
   -- NOTE: We just want the difference on the first set level (keys as style names)
   -- Normally the styles aren't changed after "freezing" them (unless someone taps directly
@@ -192,10 +202,15 @@ SILE.scratch.styles = {
   }
 }
 
--- programmatically define a style
--- optional origin allows tracking e.g which package declared that style and just used for debugging
--- after styles are 'frozen', we can still define new styles but not override
--- existing styles.
+--- Programmatically define a style.
+--
+-- Optional origin allows tracking e.g which package declared that style and just used for debugging
+-- after styles are 'frozen', we can still define new styles but not override existing styles.
+--
+-- @tparam string name Style name
+-- @tparam table opts Style options (e.g. inherit)
+-- @tparam table styledef Style definition
+-- @tparam[opt] string origin Origin of the style (e.g. package name) for debugging
 function package:defineStyle (name, opts, styledef, origin)
   if SILE.scratch.styles.state.locked then
     if SILE.scratch.styles.specs[name] then
@@ -207,9 +222,12 @@ function package:defineStyle (name, opts, styledef, origin)
 end
 
 
--- resolve a style (incl. inherited fields)
+--- Resolve a style (incl. inherited fields)
+--
 -- NOTE: an optimization could be to cache the results...
-
+--
+-- @tparam string name Style name
+-- @tparam[opt] boolean discardable If true, do not raise an error if the style is not found
 function package:resolveStyle (name, discardable)
   local stylespec = SILE.scratch.styles.specs[name]
   if not stylespec then
@@ -230,11 +248,20 @@ function package:resolveStyle (name, discardable)
   return pl.tablex.deepcopy(stylespec.style)
 end
 
+--- Check whether a style is defined.
+--
+-- @tparam string name Style name
+-- @treturn boolean True if the style is defined
 function package:hasStyle (name)
   local stylespec = SILE.scratch.styles.specs[name]
   return stylespec and true or false
 end
 
+--- Resolve a paragraph style, applying defaults to missing fields.
+--
+-- @tparam string name Style name
+-- @tparam[opt] boolean discardable If true, do not raise an error if the style is not found
+-- @treturn table The resolved style definition
 function package:resolveParagraphStyle (name, discardable)
   local styledef = self:resolveStyle(name, discardable)
   -- Apply defaults
@@ -260,6 +287,7 @@ local function readOnly (t)
   return proxy
 end
 
+--- Freeze the styles, preventing further modification.
 function package:freezeStyles ()
   SILE.scratch.styles.state.locked = true
   SILE.scratch.styles.state = readOnly(SILE.scratch.styles.state)
@@ -292,6 +320,7 @@ local function shallowNonNullOptions (options)
   return copy
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
   self:registerCommand("style:font", function (options, content)
     local size = tonumber(options.size)

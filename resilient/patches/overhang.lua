@@ -2,9 +2,6 @@
 --
 -- This file is part of re·sil·ient, a set of extensions to SILE.
 --
--- License: MIT.
--- Copyright (c) 2025 Omikhkeia / Didier Willis
---
 -- See LIMITATIONS below.
 --
 -- Knuth said that hanging punctuation is a solved problem...
@@ -24,6 +21,10 @@
 --
 -- Discretionary nodes neeed another dedicated approach.
 -- It's simpler, in a way, because we can just tweak the width of the prebreak content.
+--
+-- @license MIT
+-- @copyright (c) 2025 Omikhkeia / Didier Willis
+-- @module resilient.patches.overhang
 --
 SU.debug("resilient.patches", "Patching SILE for experimental overhang support")
 
@@ -68,10 +69,15 @@ local function overhangWidth (item, ratio)
    return (item.glyphWidth + item.x_bearing) * ratio
 end
 
--- Hook into the Unicode node maker to insert the overhang logic.
+--- Hook into the Unicode node maker to insert the overhang logic.
+-- @type SILE.nodeMakers.unicode
+
 local unicode = SILE.nodeMakers.unicode
 local oldHandleWordBreak = unicode.handleWordBreak
 
+--- (Hard-patch) Add a makeOverhang() method to the unicode node maker.
+-- @param self Instance pointer
+-- @tparam number w Width of the overhang
 unicode.makeOverhang = function (self, w)
    SU.debug("experimental.overhang", "Making overhang of width ", w)
    coroutine.yield(SILE.types.node.kern({
@@ -83,14 +89,20 @@ unicode.makeOverhang = function (self, w)
    self.lastnode = "kern"
 end
 
--- Override the handleWordBreak method.
+--- (Hard-patch) Override the handleWordBreak method.
+--
 -- LIMITATIONS:
+--
 -- This will NOT work for languages that inherit from unicode but override handleWordBreak,
 -- such as:
+--
 --  - French (because of the special space rules before punctuation)
 --  - Czech, Spanish, and others (because of special handling for repeated dashes)
+--
 -- So this experiment is not a general solution, but raises other questions on how the
 -- various Unicode segmenters work in SILE.
+-- @param self Instance pointer
+-- @tparam table item The item to handle
 unicode.handleWordBreak = function (self, item)
    if overhang[item.text] and SILE.settings:get("experimental.overhang") then
       SU.debug("experimental.overhang", "Handling overhang for ", item.text)
@@ -105,11 +117,14 @@ unicode.handleWordBreak = function (self, item)
    end
 end
 
--- Hook into the discretionary node to adjust the width of the prebreak.
-local discretionaryy = SILE.types.node.discretionary
-local extended = pl.class(discretionaryy)
+--- Hook into the discretionary node to adjust the width of the prebreak.
+-- @type SILE.types.node.discretionary
 
-function extended:_init (...)
+local orig = SILE.types.node.discretionary
+local discretionary = pl.class(orig)
+
+--- (Hard-patch) Override the discretionary constructor to adjust the width of the prebreak.
+function discretionary:_init (...)
    self:super(...) -- I am told there are issues with super() but I don't see them here.
    if self.prebreak then
       -- Dig into the last item of the prebreak
@@ -128,4 +143,4 @@ function extended:_init (...)
    end
 end
 
-SILE.types.node.discretionary = extended
+SILE.types.node.discretionary = discretionary
