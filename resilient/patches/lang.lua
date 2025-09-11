@@ -13,8 +13,9 @@
 -- We cannot wait forever for SILE to support BCP47 (and not just a 2-letter country code):
 -- Markdown and Djot need to be able to support qualified language names, notably for smart quotes to work adequately.
 --
--- License: MIT
--- Copyright (C) 2022, 2025 Omikhleia / Didier Willis
+-- @license MIT
+-- @copyright (c) 2022, 2025 Omikhleia / Didier Willis
+-- @module resilient.patches.lang
 --
 SU.debug("resilient.patches", "Patching SILE language support for BCP47")
 
@@ -60,6 +61,9 @@ SILE.languageSupport.languages = {}
   --   - and also packages/complex-spaces
   -- END OMIKHLEIA HACKLANG
 
+--- (Hard-patch) Override SILE.languageSupport.loadLanguage() to accept BCP47 language tags
+-- and load resources accordingly.
+-- @tparam string language BCP47 language tag
 SILE.languageSupport.loadLanguage = function (language)
   language = language or SILE.settings:get("document.language")
   -- BEGIN OMIKHLEIA HACKLANG

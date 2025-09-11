@@ -1,15 +1,11 @@
+--- The re·sil·ient book document class.
 --
--- A new advanced book class for SILE.
--- Following the resilient styling paradigm, and providing a more features.
+-- Following the re·sil·ient styling paradigm, and providing way more features
+-- then SILE's default "book" class.
 --
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia / Didier Willis
---
-local base = require("classes.resilient.base")
-local class = pl.class(base)
-class._name = "resilient.book"
-class.firstContentFrame = "content" -- We'll define framesets later
-                                    -- but this remains true.
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhleia / Didier Willis
+-- @module classes.resilient.book
 
 local layoutParser = require("resilient.layoutparser")
 
@@ -26,8 +22,26 @@ local DIVISIONNAME = {
   "backmatter"
 }
 
--- CLASS DEFINITION
+--- The resilient book class.
+--
+-- Extends `classes.resilient.base`.
+--
+-- @type classes.resilient.book
 
+local base = require("classes.resilient.base")
+local class = pl.class(base)
+class._name = "resilient.book"
+class.firstContentFrame = "content" -- We'll define framesets later
+                                    -- but this remains true.
+
+--- (Constructor) Initialize the book class.
+--
+-- Besides initializing the parent class and loading all needed packages,
+-- it also sets some sane defaults for certain settings,
+-- overrides some commands from standard SILE packages to make them
+-- style-aware, registers some Djot pre-defined symbols, etc.
+--
+-- @tparam table options Class options
 function class:_init (options)
   base._init(self, options)
   self.resilientState = {}
@@ -219,6 +233,14 @@ function class:_init (options)
   SILE.resilient.enforceContextChangingCommand("indexer", "printindex")
 end
 
+--- (Override) Declare class options.
+--
+-- The options specific to the resilient book class are:
+--
+--  - layout: page layout
+--  - offset: binding offset
+--  - headers: type of headers (novel, technical, none)
+--
 function class:declareOptions ()
   base.declareOptions(self)
 
@@ -248,6 +270,14 @@ function class:declareOptions ()
   end)
 end
 
+--- (Override) Set class options.
+--
+-- Sets the default options (layout to "division", no binding offset, and "technical" headers).
+-- All other options are processed by the base class.
+--
+-- The framesets are then defined according to the layout and offset.
+--
+-- @tparam table options Class options
 function class:setOptions (options)
   options = options or {}
   options.layout = options.layout or "division"
@@ -274,6 +304,10 @@ function class:setOptions (options)
   self.defaultFrameset = self.oddFrameset
 end
 
+--- (Override) Register class styles.
+--
+-- Registers the styles specific to the resilient book class.
+--
 function class:registerStyles ()
   base.registerStyles(self)
 
@@ -555,7 +589,6 @@ function class:registerStyles ()
     numbering = { before = { text = "listing " } }
   })
 
-
   -- code
   -- Default is similar to the original plain \code command, and quite as bad, but at
   -- least uses a font-relative size.
@@ -595,6 +628,10 @@ function class:registerStyles ()
   })
 end
 
+--- (Override) End-of-page custom hook.
+--
+-- Outputs the running header according to the page type (odd or even).
+--
 function class:endPage ()
   if SILE.scratch.info.thispage.headerOdd then
     SILE.scratch.headers.odd = SILE.scratch.info.thispage.headerOdd[#SILE.scratch.info.thispage.headerOdd]
@@ -610,6 +647,10 @@ function class:endPage ()
   return base.endPage(self)
 end
 
+--- (Override) Declare class settings.
+--
+-- Declares the settings specific to the resilient book class.
+--
 function class:declareSettings ()
   base.declareSettings(self)
 
@@ -621,6 +662,10 @@ function class:declareSettings ()
   })
 end
 
+--- (Override) Register class commands.
+--
+-- Registers the commands specific to the resilient book class.
+--
 function class:registerCommands ()
   base.registerCommands(self)
 

@@ -1,13 +1,21 @@
+--- Division-based page layout with wide margin for annotations.
 --
--- Division-based layout with wide margin for annotations.
---
--- License: MIT
--- Copyright (C) 2022-2025 Omikhleia / Didier Willis
---
-local base = require("resilient.layouts.base")
-local marginal = pl.class(base)
+-- @license MIT
+-- @copyright (c) 2022-2025 Omikhkeia / Didier Willis
+-- @module resilient.layouts.marginal
 
-function marginal:_init (options)
+--- Marginal layout class.
+--
+-- Extends `resilient.layouts.base`.
+--
+-- @type resilient.layouts.marginal
+
+local base = require("resilient.layouts.base")
+local layout = pl.class(base)
+
+--- (Constructor) Create a new Marginal layout instance.
+-- @tparam {n=number} options Options (base ratio)
+function layout:_init (options)
   base._init(self, options)
   self.n = options.n
 
@@ -18,7 +26,7 @@ function marginal:_init (options)
   self.foot = "height(page) * " .. N
 end
 
-function marginal:header (odd)
+function layout:header (odd)
   return {
     left = odd and "left(textblock)" or "left(margins)",
     right = odd and "right(margins)" or "right(textblock)",
@@ -27,4 +35,4 @@ function marginal:header (odd)
   }
 end
 
-return marginal
+return layout

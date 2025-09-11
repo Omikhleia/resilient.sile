@@ -1,15 +1,24 @@
+--- Fancy table of contents for re·sil·ient.
 --
--- Fancy table of contents.
 -- Only processes 2 levels, e.g. parts (level 0) and chapters (level 1)
 -- and display them as some braced content.
 --
--- License: MIT
--- Copyright (C) 2022-2025 Omikhleia / Didier Willis
+-- @license MIT
+-- @copyright (c) 2022-2025 Omikhkeia / Didier Willis
+-- @module packages.resilient.fancytoc
+
+--- The "resilient.fancytoc" package.
 --
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.fancytoc
+
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.fancytoc"
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
 
@@ -32,6 +41,15 @@ local function getMinLevel (toc)
   return smallest.level
 end
 
+--- Find and read the table of contents.
+--
+-- This package does not create and maintain a table of contents.
+-- It assumes some other adequate module (such as `packages.resilient.tableofcontents`)
+-- was previously loaded for that purpose, exposing a `readToc()` method.
+--
+-- @tparam table packages Loaded package instances
+-- @treturn table|false The table of contents, or false if not available
+-- @raise If no package exposing a `readToc()` method is found.
 function package:findToc (packages)
   if self._toc then return self._toc end -- memoized
 
@@ -45,6 +63,7 @@ function package:findToc (packages)
   SU.error("Package fancytoc needs a table of contents, but it does not seem a package exposing one is loaded.")
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
   self:registerCommand("fancytableofcontents", function (options, _)
     local linking = SU.boolean(options.linking, true)
@@ -138,6 +157,7 @@ function package:registerCommands ()
   end)
 end
 
+--- (Override) Register all styles provided by this package.
 function package:registerStyles ()
   self:registerStyle("fancytoc-base", {}, {})
   self:registerStyle("fancytoc-pageno", { inherit = "fancytoc-base" }, { font = { features = "+onum" } })

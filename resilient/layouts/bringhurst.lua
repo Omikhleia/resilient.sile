@@ -1,14 +1,25 @@
+--- Bringhurst's layout for pages in 1:√3 ratio.
 --
--- Bringhurst's layout for pages in 1:√3 ratio.
 -- As used in his book "The Elements of Typographic Style".
 --
--- License: MIT
--- Copyright (C) 2025 Omikhleia / Didier Willis
+-- Not supposed to be used with any other page size ratios.
 --
-local base = require("resilient.layouts.base")
-local isophi = pl.class(base)
+-- @license MIT
+-- @copyright (c) 2025 Omikhkeia / Didier Willis
+-- @module resilient.layouts.bringhurst
 
-function isophi:_init (options)
+--- Bringhurst layout class.
+--
+-- Extends `resilient.layouts.base`.
+--
+-- @type resilient.layouts.bringhurst
+
+local base = require("resilient.layouts.base")
+local layout = pl.class(base)
+
+--- (Constructor) Create a new Bringhurst layout instance.
+-- @tparam table options Options (none specific here)
+function layout:_init (options)
   base._init(self, options)
   self.inner = "width(page) * " .. (1 / 9)
   self.outer = "width(page) * " .. (2 / 9)
@@ -18,4 +29,4 @@ function isophi:_init (options)
   -- This layout is obviously not suitable for other page formats.
 end
 
-return isophi
+return layout

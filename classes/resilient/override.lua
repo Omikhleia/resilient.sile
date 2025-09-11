@@ -1,10 +1,10 @@
+--- Top-level super-class for re·sil·ient document classes.
 --
--- Base overrides on SILE's base class for use in resilient classes
--- (as toplevel superclass).
+-- Opinionated changes and overrides to SILE's standard base document class behavior.
 --
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
---
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhleia / Didier Willis
+-- @module classes.resilient.override
 
 -- BOOTSTRAP GLOBAL OVERRIDES
 -- This ensure our inputters are loaded, so one can \include files of the relevant format
@@ -17,18 +17,31 @@
 -- the user did not do so.
 require("resilient.bootstrap")
 
--- BASE CLASS OVERLOAD
--- We do a few things here:
--- - We replace SILE's default typesetter with our SILEnt typesetter
--- - Our classes do not use SILE's plain class, but implement minimal compatibility
--- - We cancel multiple package instanciation, as some of our packages are stateful
+--- The base document class for re·sil·ient documents.
+--
+-- Extends SILE's `classes.base`.
+--
+-- It deviates from SILE's implementation in several ways:
+--
+--  - It replaces SILE's default typesetter with the sile·nt typesetter?
+--  - It does not used SILE's "plain" class, but implements minimal compatibility via packages.
+--  - It cancels multiple package instanciation, as some of our packages are stateful.
+--
+-- @type classes.resilient.override
 
 local base = require("classes.base")
 local class = pl.class(base)
 class._name = "resilient.override"
 
+--- (Constructor) Initialize the class.
+--
+-- It enforces the use for the sile·nt typesetter.
+-- It loads the `packages.resilient.plain` and `bidi` packages for compatibility.
+--
+-- @tparam table options Class options
 function class:_init (options)
-   SU.debug("resilient.override", "Replacing SILE's default typesetter with the SILEnt typesetter")
+   SU.debug("resilient.override", "Replacing SILE's default typesetter with the silent new typesetter")
+   SILE.typesetters.base = require("typesetters.silent")
    SILE.typesetters.default = require("typesetters.silent")
 
    base._init(self, options)
@@ -39,8 +52,15 @@ function class:_init (options)
    self:loadPackage("bidi")
 end
 
+--- (Override) Declare class options.
+--
+-- The options added here are:
+--
+--  - direction: text direction (from SILE's plain class)
+--  - resolution: resolution in DPI (specific to resilient)
+--
 function class:declareOptions ()
-   -- Also from SILE's plain class (bidi-related)
+   -- From SILE's plain class (bidi-related)
    self:declareOption("direction", function (_, value)
       if value then
          SILE.documentState.direction = value
@@ -62,7 +82,28 @@ function class:declareOptions ()
    end)
 end
 
-function class:loadPackage (packname, options, _) -- last agument is the reload flag see below
+--- (Override) Load a package.
+--
+-- Packages such as `packages.resilient.styled` are stateful and freeze the styles at some point
+-- in their workflow.
+-- The multiple package instantiation model was introduced in SILE 0.13-0.14.
+-- I struggled too many times with this issue in August 2022 (initial effort porting
+-- my 0.12.5 packages to 0.14.x) and afterwards.
+-- See SILE issue 1531 for some details.
+-- I could never make any sense of this "feature", which introduces unintended
+-- side-effects and problems difficult to decently address.
+-- Some of the issues were supposed to be fixed in SILE 0.15, but removing the hacks
+-- below still breaks (at least) the styling logic.
+-- SILE's standard methood has an extra "reload" argument, which we do not use here.
+-- There is no way to distinguish between a new package instantiation and a non-forced reload.
+-- Some classes and packages need to modify and extend commands from other packages,
+-- but package reloading can break this.
+--
+-- In bried: we cancel the multiple package instanciation.
+--
+-- @tparam string packname Package name
+-- @tparam table options Package options
+function class:loadPackage (packname, options)
    local pack
    if type(packname) == "table" then
       pack, packname = packname, packname._name
@@ -75,30 +116,14 @@ function class:loadPackage (packname, options, _) -- last agument is the reload 
       end
    end
    SILE.packages[packname] = pack
-   if type(pack) == "table" and pack.type == "package" then -- current package api
+   if type(pack) == "table" and pack.type == "package" then -- current package API
       if self.packages[packname] then
-         -- BEGIN SILEX/RESILIENT CANCEL MULTIPLE PACKAGE INSTANCIATION
-         -- Packages such as resilient.style are stateful and freeze the styles at some point
-         -- in their workflow.
-         -- The multiple package instantiation model was introduced in SILE 0.13-0.14.
-         -- I struggled too many times with this issue in August 2022 (initial effort porting
-         -- my 0.12.5 packages to 0.14.x) and afterwards.
-         -- See SILE issue 1531 for some details.
-         -- I could never make any sense of this "feature", which introduces unintended
-         -- side-effects and problems difficult to decently address.
-         -- Some of the issues were supposed to be fixed in SILE 0.15, but removing the hacks
-         -- below still breaks (at least) package resilient.style...
-         -- I guess we are supposed to use reload flag there, but we can't distinguish
-         -- between a new package instantiation and a non-forced reload, can we?
-         -- Oh well, I am still lost after all this time, let's go on canceling this
-         -- multiple package instanciation...
          return SU.debug("resilient.override", "Ignoring package already loaded in the class:", pack._name)
-         -- END SILEX/RESILIENT CANCEL MULTIPLE PACKAGE INSTANCIATION
       else
          self.packages[packname] = pack(options)
       end
    else -- legacy package
-      self:initPackage(pack, options)
+      self:initPackage(pack, options) -- FIXME: This should be deprecated and killed
    end
 end
 
@@ -120,6 +145,7 @@ function class.endPar (typesetter)
   -- END SILEX/RESILIENT HANGED LINES
 end
 
+--- (Override) Finish the document.
 function class:finish ()
    SILE.inputter:postamble()
    -- SILE/RESILIENT: Original typesetter calls SILE.typesetter:endline() here.

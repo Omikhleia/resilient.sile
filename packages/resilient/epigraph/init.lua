@@ -1,14 +1,21 @@
+--- An epigraph package for re·sil·ient.
 --
--- An epigraph package for SILE.
--- Following the resilient styling paradigm.
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhleia / Didier Willis
+-- @module packages.resilient.epigraph
+
+--- The "resilient.epigraph" package.
 --
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia / Didier Willis
+-- Extends `packages.resilient.base`.
 --
+-- @type packages.resilient.epigraph
+
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.epigraph"
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
 
@@ -16,6 +23,7 @@ function package:_init (options)
   self:loadPackage("rules")
 end
 
+--- (Override) Declare all settings provided by this package.
 function package:declareSettings ()
   SILE.settings:declare({
     parameter = "epigraph.width",
@@ -39,6 +47,7 @@ function package:declareSettings ()
   })
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
   self:registerCommand("epigraph", function (options, content)
     SILE.settings:temporarily(function ()
@@ -115,6 +124,7 @@ function package:registerCommands ()
   end)
 end
 
+--- (Override) Register all styles provided by this package.
 function package:registerStyles ()
   self:registerStyle("epigraph", {}, {
     font = {

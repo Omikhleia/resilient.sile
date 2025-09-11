@@ -1,11 +1,12 @@
+--- Definition environment for re·sil·ient.
 --
--- Definition environment for SILE,
 -- Very minimal implementation for Djot/Markdown needs, with styling support.
 -- Following the resilient styling paradigm.
 --
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
---
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhkeia / Didier Willis
+-- @module packages.resilient.defn
+
 local trimLeft = function (str)
   return str:gsub("^%s*", "")
 end
@@ -18,14 +19,23 @@ local trim = function (str)
   return trimRight(trimLeft(str))
 end
 
+--- The "resilient.defn" package.
+--
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.defn
+
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.defn"
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
 end
 
+--- (Override) Declare all settings provided by this package.
 function package:declareSettings ()
 
   SILE.settings:declare({
@@ -44,6 +54,7 @@ function package:declareSettings ()
 
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
 
   self:registerCommand("defn:internal:term", function (options, content)
@@ -94,6 +105,7 @@ function package:registerCommands ()
 
 end
 
+--- (Override) Register all styles provided by this package.
 function package:registerStyles ()
   self:registerStyle("defn-base", {}, {})
 

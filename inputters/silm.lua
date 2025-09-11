@@ -1,10 +1,12 @@
---- Some YAML master file inputter for SILE
+--- A master file support module for re·sil·ient.
 --
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
+-- The master file document is a YAML file that describes the document structure,
+-- metadata, bibliography, book covers, title pages, endpapers, etc.
 --
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhleia / Didier Willis
 -- @module inputters.silm
---
+
 SILE.registerCommand("has:book-title-support", function (_, content)
   -- Fairly lame command detection
   if SILE.Commands["book-title"] then
@@ -299,10 +301,12 @@ local MasterSchema = {
 }
 
 --- Naive recursive schema validation
----@param obj      table           parsed YAML object
----@param schema   table           schema to validate against
----@param context? table           parent schema context for error messages
----@return         boolean,string  true if valid, false and error message otherwise
+--
+-- @tparam table obj Parsed YAML object
+-- @tparam table schema Schema to validate against
+-- @tparam[opt] table context Parent schema context for error messages
+-- @treturn boolean Whether the object is valid as per the schema
+-- @treturn string|nil Error message if not valid
 local function validate (obj, schema, context)
   context = context or ""
   if type(schema.type) == "table" then
@@ -376,8 +380,9 @@ local knownPdfMetadata = {
 }
 
 --- Insert PDF metadata into SILE AST
----@param content  table   SILE AST for insertion
----@param metadata table   Metadata (key, value) table
+--
+-- @tparam table content SILE AST for insertion
+-- @tparam table metadata Metadata (key, value) table
 local function insertPdfMetadata (content, metadata)
   for key, value in pairs(metadata) do
     if knownPdfMetadata[key] then
@@ -390,8 +395,9 @@ local function insertPdfMetadata (content, metadata)
 end
 
 --- Returned prepared Djot metadata
----@param metadata table   Metadata (key, value) table
----@return         table   Prefixed metadata table (keys as expected by the Djot inputter)
+--
+-- @tparam table metadata Metadata (key, value) table
+-- @treturn table Prefixed metadata table (keys as expected by the Djot inputter)
 local function handleDjotMetadata (metadata)
   local meta = {}
   for key, value in pairs(metadata) do
@@ -426,10 +432,11 @@ end
 local Levels = { "part", "chapter", "section", "subsection", "subsubsection" }
 
 --- Recursively process content sections
----@param content       table   SILE AST for insertion
----@param entries       table   Content entries to process (list of strings or tables)
----@param shiftHeadings number  Shift headings by this amount
----@param metaopts      table   Metadata options
+--
+-- @tparam table content SILE AST for insertion
+-- @tparam table entries Content entries to process (list of strings or tables)
+-- @tparam number shiftHeadings Shift headings by this amount
+-- @tparam table metaopts Metadata options
 local function doLevel (content, entries, shiftHeadings, metaopts)
   for _, entry in ipairs(entries) do
     local spec
@@ -476,6 +483,12 @@ local function doLevel (content, entries, shiftHeadings, metaopts)
   end
 end
 
+--- Process division content (frontmatter, mainmatter, backmatter)
+--
+-- @tparam table content SILE AST for insertion
+-- @tparam table entry Division content entry
+-- @tparam number shiftHeadings Shift headings by this amount
+-- @tparam table metaopts Metadata options
 local function doDivisionContent (content, entry, shiftHeadings, metaopts)
   if entry.parts then
     doLevel(content, entry.parts, shiftHeadings - 1, metaopts)
@@ -490,6 +503,12 @@ local function doDivisionContent (content, entry, shiftHeadings, metaopts)
   end
 end
 
+--- Process divisions (frontmatter, mainmatter, backmatter)
+--
+-- @tparam table content SILE AST for insertion
+-- @tparam table entry Division content entry
+-- @tparam number shiftHeadings Shift headings by this amount
+-- @tparam table metaopts Metadata options
 local function doDivision (content, entry, shiftHeadings, metaopts)
   if entry.frontmatter then
     content[#content+1] = SU.ast.createCommand("frontmatter")
@@ -506,9 +525,9 @@ local function doDivision (content, entry, shiftHeadings, metaopts)
 end
 
 --- Process back cover content (text included in the back cover)
----@param entry    table|string  Back cover content entry
----@param metaopts table         Metadata options
----@return         table         SILE AST for insertion
+---@tparam table|string entry  Back cover content entry
+---@tparam table metaopts Metadata options
+---@treturn table SILE AST for insertion
 local function doBackCoverContent (entry, metaopts)
   local content
   local spec
@@ -531,12 +550,24 @@ end
 
 -- INPUTTER
 
+--- The "master file" inputter for re·sil·ient.
+--
+-- Extends SILE's `inputters.base`.
+--
+-- @type inputters.silm
+
 local base = require("inputters.base")
 
 local inputter = pl.class(base)
 inputter._name = "silm"
 inputter.order = 2
 
+--- (Override) Whether this inputter is appropriate for the given file.
+--
+-- @tparam number round Detection round (1 = by extension, etc.)
+-- @tparam string filename Filename
+-- @tparam string _ Document content (not used here)
+-- @treturn boolean Whether this inputter is appropriate
 function inputter.appropriate (round, filename, _)
   if round == 1 then
     return filename:match("silm$")
@@ -549,6 +580,9 @@ function inputter.appropriate (round, filename, _)
   return false
 end
 
+--- (Override) Parse the given document and return a SILE AST.
+--
+-- @tparam string doc Document content
 function inputter:parse (doc)
   local yaml = require("resilient-tinyyaml")
   local master = yaml.parse(doc)

@@ -1,17 +1,27 @@
+--- Re-implementation of the tableofcontents package for re·sil·ient.
 --
--- Re-implementation of the tableofcontents package.
 -- Following the resilient styling paradigm.
 -- Hooks are removed and replaced by styles, allowing for a fully customizable TOC
 --
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia / Didier Willis
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhkeia / Didier Willis
+-- @module packages.resilient.tableofcontents
+
+
+--- The "resilient.tableofcontents" package
 --
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.tableofcontents
+
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.tableofcontents"
 
 local _toc_used = false
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
   SILE.scratch.tableofcontents = SILE.scratch.tableofcontents or {}
@@ -25,6 +35,9 @@ function package:_init (options)
   self.class:registerHook("finish", self.writeToc)
 end
 
+--- Move the TOC nodes collected on this page to the global TOC.
+--
+-- Called at the end of each page.
 function package:moveTocNodes ()
   local node = SILE.scratch.info.thispage.toc
   if node then
@@ -35,6 +48,9 @@ function package:moveTocNodes ()
   end
 end
 
+--- Write the TOC data to the .toc file.
+--
+-- Called at the end of the document processing.
 function package:writeToc ()
   local tocdata = pl.pretty.write(SILE.scratch.tableofcontents)
   local tocfile, err = io.open(SILE.masterFilename .. '.toc', "w")
@@ -47,6 +63,7 @@ function package:writeToc ()
   end
 end
 
+--- Read the TOC data from the .toc file, if it exists.
 function package:readToc ()
   if SILE.scratch._tableofcontents and #SILE.scratch._tableofcontents > 0 then
     -- already loaded
@@ -126,6 +143,7 @@ local tocNumberStyles = {
   {},
 }
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
 
   -- Warning for users of the legacy (SILE core) tableofcontents
@@ -258,6 +276,7 @@ function package:registerCommands ()
   end, "Typeset the (section) number in a TOC entry - internal.")
 end
 
+--- (Override) Register all styles provided by this package.
 function package:registerStyles ()
   -- The interpretation after the ~ below are just indicative, one could
   -- customize everything differently. It corresponds to their use in

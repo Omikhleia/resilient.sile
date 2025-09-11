@@ -1,16 +1,25 @@
+--- Re-implementation of the footnotes package for re·sil·ient.
 --
--- Re-implementation of the footnotes package for SILE.
 -- Following the resilient styling paradigm.
 --
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia / Didier Willis
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhkeia / Didier Willis
+-- @module packages.resilient.footnotes
+
+--- The "resilient.footnotes" package.
 --
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.footnotes
+
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.footnotes"
 
 local utils = require("resilient.utils")
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
 
@@ -37,6 +46,7 @@ function package:_init (options)
   })
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
   -- Footnote separator and rule
 
@@ -160,6 +170,7 @@ function package:registerCommands ()
   end, "Typeset a footnote (main command for end-users)")
 end
 
+--- (Override) Register all styles provided by this package.
 function package:registerStyles ()
   self:registerStyle("footnote", { main = true }, {
     numbering = { display = "arabic" },

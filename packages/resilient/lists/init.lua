@@ -1,14 +1,15 @@
+--- Enumerations and bullet lists for re·sil·ient.
 --
--- Enumerations and bullet lists for SILE.
 -- Following the resilient styling paradigm.
-
+--
 -- This a replacement to the "lists" package introduced in SILE,
 -- with (expectedly) the same user API but with additiona features and styling
 -- methods.
 --
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia / Didier Willis
---
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhleia / Didier Willis
+-- @module packages.resilient.lists
+
 -- NOTE: Though not described explicitly in the documentation, the package supports
 -- two nesting techniques:
 -- The "simple" or compact one:
@@ -37,10 +38,6 @@
 -- But personally, for simple lists, I prefer the first "more readable" one.
 -- Lists from Mardown, obviously, due to their structure, would need the
 -- second technique.
---
-local base = require("packages.resilient.base")
-local package = pl.class(base)
-package._name = "resilient.lists"
 
 local checkEnumStyleName = function (name, defname)
   return SILE.scratch.styles.specs[name] and name or defname
@@ -72,6 +69,19 @@ local unichar = function (str)
   return nil
 end
 
+--- The "resilient.lists" package.
+--
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.lists
+
+local base = require("packages.resilient.base")
+local package = pl.class(base)
+package._name = "resilient.lists"
+
+--- Resolve a list style definition for an enumeration or itemization style.
+-- @tparam string name Style name
+-- @treturn table List style definition
 function package:resolveEnumStyleDef (name)
   local stylespec = self:resolveStyle(name)
   if stylespec.numbering then
@@ -95,6 +105,9 @@ function package:resolveEnumStyleDef (name)
   SU.error("Style '"..name.."' is not a list style")
 end
 
+--- Perform the processing of an item element.
+-- @tparam table options Item options
+-- @tparam table content Item content
 function package:doItem (options, content)
   local enumStyle = content._lists_.style
   local styleName = content._lists_.styleName
@@ -158,6 +171,10 @@ function package:doItem (options, content)
   SILE.process(content)
 end
 
+--- Perform the processing of a nested list.
+-- @tparam string listType "enumerate" or "itemize"
+-- @tparam table options List options
+-- @tparam table content List content
 function package:doNestedList (listType, options, content)
   -- variant
   local variant = SILE.settings:get("lists."..listType..".variant")
@@ -263,11 +280,14 @@ function package:doNestedList (listType, options, content)
   end
 end
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
   self:loadPackage("counters")
 end
 
+--- (Override) Declare all settings provided by this package.
 function package:declareSettings ()
 
   SILE.settings:declare({
@@ -330,6 +350,7 @@ function package:declareSettings ()
 
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
 
   self:registerCommand("enumerate", function (options, content)
@@ -349,6 +370,7 @@ function package:registerCommands ()
 
 end
 
+--- (Override) Register all styles provided by this package.
 function package:registerStyles ()
   self:registerStyle("lists-enumerate-base", {}, {})
   self:registerStyle("lists-itemize-base", {}, {})

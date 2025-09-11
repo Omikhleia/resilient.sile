@@ -34,7 +34,17 @@ build = {
     ["sile.classes.resilient.book"]      = "classes/resilient/book.lua",
     ["sile.classes.resilient.resume"]    = "classes/resilient/resume.lua",
 
-    ["sile.typesetters.silent"]          = "typesetters/silent.lua",
+    ["sile.typesetters.silent"]                = "typesetters/silent.lua",
+    ["sile.typesetters.algorithms.knuthplass"] = "typesetters/algorithms/knuthplass.lua",
+    ["sile.typesetters.nodes.liners"]          = "typesetters/nodes/liners.lua",
+    ["sile.typesetters.nodes.speaker"]         = "typesetters/nodes/speaker.lua",
+    ["sile.typesetters.mixins.totext"]         = "typesetters/mixins/totext.lua",
+    ["sile.typesetters.mixins.liners"]         = "typesetters/mixins/liners.lua",
+    ["sile.typesetters.mixins.shaping"]        = "typesetters/mixins/shaping.lua",
+    ["sile.typesetters.mixins.hbox"]           = "typesetters/mixins/hbox.lua",
+    ["sile.typesetters.mixins.paragraphing"]   = "typesetters/mixins/paragraphing.lua",
+
+    ["sile.packages.resilient.override"]  = "packages/resilient/override.lua",
 
     ["sile.packages.resilient.base"]            = "packages/resilient/base.lua",
 
@@ -82,6 +92,7 @@ build = {
     ["sile.resilient-tinyyaml"]  = "lua-libraries/resilient-tinyyaml.lua",
 
     ["sile.resilient.patches.lang"]      = "resilient/patches/lang.lua",
+    ["sile.resilient.patches.overhang"]  = "resilient/patches/overhang.lua",
   },
   install = {
     lua = {

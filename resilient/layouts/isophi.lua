@@ -1,14 +1,23 @@
+--- Bringhurst's proposed page layout for ISO formats.
 --
--- Bringhurst's proposed layout for ISO formats.
 -- Not supposed to be used with any other non ISO page sizes (1:√2 ratio).
 --
--- License: MIT
--- Copyright (C) 2025 Omikhleia / Didier Willis
---
-local base = require("resilient.layouts.base")
-local isophi = pl.class(base)
+-- @license MIT
+-- @copyright (c) 2025 Omikhkeia / Didier Willis
+-- @module resilient.layouts.isophi
 
-function isophi:_init (options)
+--- ISO-phi layout class.
+--
+-- Extends `resilient.layouts.base`.
+--
+-- @type resilient.layouts.isophi
+
+local base = require("resilient.layouts.base")
+local layout = pl.class(base)
+
+--- (Constructor) Create a new ISO-phi layout instance.
+-- @tparam {n=8}|{n=9} options Options (base ratio)
+function layout:_init (options)
   base._init(self, options)
   self.n = options.n
   if self.n == 8 then
@@ -29,4 +38,4 @@ function isophi:_init (options)
   end
 end
 
-return isophi
+return layout

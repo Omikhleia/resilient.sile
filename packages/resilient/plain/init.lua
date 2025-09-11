@@ -1,7 +1,17 @@
+--- Some minimal subset of common "Plain TeX"-like commands.
 --
--- Some minimal subset of common "Plain TeX"-like commands.
--- Extracted from SILE's plain class and moved into a package.
+-- Extracted from SILE's plain class and moved into a standalone package.
 --
+-- @license MIT
+-- @copyright (c) 2025 Omikhkeia / Didier Willis / The SILE Organization
+-- @module packages.resilient.plain
+
+--- The "resilient.plain" package.
+--
+-- Extends `packages.base`.
+--
+-- @type packages.resilient.plain
+
 local base = require("packages.base")
 local package = pl.class(base)
 package._name = "resilient.plain"
@@ -12,10 +22,13 @@ local skips = {
   big = "12pt plus 4pt minus 4pt",
 }
 
+--- (Constructor) Initialize the package.
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
 end
 
+--- (Override) Declare all settings provided by this package.
 function package:declareSettings ()
   for k, v in pairs(skips) do
     SILE.settings:declare({
@@ -27,6 +40,7 @@ function package:declareSettings ()
   end
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
   self:registerCommand("noindent", function (_, content)
     if #SILE.typesetter.state.nodes ~= 0 then

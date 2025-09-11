@@ -1,28 +1,41 @@
+--- Lightweight frameset parser/solver.
 --
--- Lightweight frameset parser/solver.
 -- Aimed at resolving a master frameset so as to render it graphically, etc.
 --
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
+-- The logic is mostly taken from SILE's core frame.
 --
--- The logic is mostly taken from SILE's core frame, MIT licensed (c) Simon Cozens / The SILE Organization.
--- But the frames and frameParser there  rely on several side effects and global variables...
+-- MIT licensed (c) Simon Cozens / The SILE Organization.
+--
+-- But the frames and frameParser in that implementation rely on several side effects
+-- and global variables.
 -- I extracted and refactored the minimal code for solving frame specifications
 -- independently, so as to be able to resolve a full master layout and draw it.
 --
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhkeia / Didier Willis
+-- @module resilient.adapters.frameset
+
 local cassowary = require("cassowary")
 local lpeg = require("lpeg")
 local P, C, V = lpeg.P, lpeg.C, lpeg.V
-
--- Adapted from SILE core.frame:
--- Lightweight reimplementation of a frame.
 
 local widthdims = pl.Set { "left", "right", "width" }
 local heightdims = pl.Set { "top", "bottom", "height" }
 local alldims = widthdims + heightdims
 
+--- Lightweight frame class.
+--
+-- Adapted from `SILE core.frame`.
+--
+-- Lightweight re-implementation of a frame.
+--
+-- @type frameAdapter
+
 local frameAdapter = pl.class()
 
+--- (Constructor) Create a new frameAdapter instance.
+-- @tparam table spec Frame specification
+-- @param frameParser Frame parser instance
 function frameAdapter:_init (spec, frameParser)
   self.frameParser = frameParser
   self.constraints = {}
@@ -46,10 +59,17 @@ function frameAdapter:_init (spec, frameParser)
   end
 end
 
+--- Constrain a dimension of the frame.
+-- @tparam string method The dimension to constrain
+-- @tparam string|number|SILE.measurement dimension The dimension specification
 function frameAdapter:constrain (method, dimension)
   self.constraints[method] = tostring(dimension)
 end
 
+--- Reify a constraint into the solver.
+-- @tparam cassowary.SimplexSolver solver Cassowary solver instance
+-- @tparam string method The dimension to reify
+-- @tparam boolean stay Whether to add a "stay" constraint
 function frameAdapter:reifyConstraint (solver, method, stay)
   local constraint = self.constraints[method]
   if not constraint then return end
@@ -64,6 +84,8 @@ function frameAdapter:reifyConstraint (solver, method, stay)
   if stay then solver:addStay(eq) end
 end
 
+--- Add width and height definitions to the solver.
+-- @tparam cassowary.SimplexSolver solver Cassowary solver instance
 function frameAdapter:addWidthHeightDefinitions (solver)
   local vars = self.variables
   local weq = cassowary.Equation(vars.width, cassowary.minus(vars.right, vars.left))
@@ -72,11 +94,21 @@ function frameAdapter:addWidthHeightDefinitions (solver)
   solver:addConstraint(heq)
 end
 
--- Adapted from SILE core.frameparser
--- Lightweight implementation of a master frameset.
+--- Lightweight frameset class.
+--
+-- It provides methodes for parsing and solving a frameset specification.
+--
+-- Adapted from `SILE core.frameparser`.
+--
+-- Lightweight re-implementation of a "master" frameset.
+--
+-- @type framesetAdapter
 
 local framesetAdapter = pl.class()
 
+--- (Constructor) Create a new framesetAdapter instance.
+--
+-- @tparam table frames Frameset specification
 function framesetAdapter:_init (frames)
   self:initFrameParser()
 
@@ -87,6 +119,7 @@ function framesetAdapter:_init (frames)
   end
 end
 
+--- Initialize the frame parser.
 function framesetAdapter:initFrameParser()
   local number = SILE.parserBits.number
   local identifier = SILE.parserBits.identifier
@@ -118,9 +151,11 @@ function framesetAdapter:initFrameParser()
   }
 end
 
--- Adapted from SILE core.frame
--- Constraint solver.
-
+--- Solve the frameset.
+--
+-- Adapted from the constrain solver in `SILE core.frame`.
+--
+-- @treturn table Table of resolved frames
 function framesetAdapter:solve ()
   SU.debug("resilient.adapters.frameset", "Solving...")
   local solver = cassowary.SimplexSolver()

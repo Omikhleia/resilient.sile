@@ -1,14 +1,22 @@
+--- Re-implementation of the verbatim package for re·sil·ient.
 --
--- Re-implementation of the verbatim package for SILE
 -- Following the resilient styling paradigm.
 --
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhkeia / Didier Willis
+-- @module packages.resilient.verbatim
+
+--- The "resilient.verbatim" package.
 --
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.verbatim
+
 local base = require("packages.resilient.base")
 local package = pl.class(base)
 package._name = "resilient.verbatim"
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
 
   -- Unchanged from the original implementation.
@@ -60,6 +68,7 @@ function package:registerCommands ()
 
 end
 
+--- (Override) Register all styles provided by this package.
 function package:registerStyles ()
   base.registerStyles(self)
 

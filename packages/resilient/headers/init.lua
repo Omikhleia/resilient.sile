@@ -1,16 +1,24 @@
+--- headers package for book-like classes in re·sil·ient.
 --
--- headers package for book-like classes for SILE.
 -- Core logic for activating/deactivating headers- and handling their output.
 --
--- License: MIT
--- Copyright (C) 2021-2025 Omikhleia / Didier Willis
+-- @license MIT
+-- @copyright (c) 2021-2025 Omikhkeia / Didier Willis
+-- @module packages.resilient.headers
+
+--- The "resilient.headers" package.
 --
+-- Extends `packages.base`.
+--
+-- @type packages.resilient.headers
+
 local base = require("packages.base")
 local package = pl.class(base)
 package._name = "resilient.headers"
 
 SILE.scratch.headers = SILE.scratch.headers or { off = false }
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
   self:registerCommand("headers", function (_, _)
     SILE.scratch.headers.off = false
@@ -43,6 +51,10 @@ function package:registerCommands ()
   end, "Command to set a header rule.")
 end
 
+--- Output the header content in the specified frame.
+--
+-- @tparam table headerContent AST content to be processed in the header
+-- @tparam[opt] string frame Target frame name (defaults to "header")
 function package:outputHeader (headerContent, frame)
   if not frame then frame = "header" end
   if SILE.scratch.headers.off then

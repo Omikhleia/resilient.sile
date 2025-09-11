@@ -1,22 +1,21 @@
+--- Some "liners" for the SILE typesetting system and re·sil·ient.
 --
--- Some "liners" for the SILE typesetting system.
 -- This an alternative to some commands from the "rules" package (underline, strikethrough).
--- Rough drawing is supported, using the low level API from the "framebox" package,
--- which is a dependency of the resilient collection.
+-- Rough drawing is supported, using the Grail library (a dependency of the resilient collection).
 --
 -- FIXME TODO: Pretty repetitive code, could be refactored...
 -- But early abstraction is often a bad idea, so let's wait for more use cases.
 --
--- License: MIT
--- Copyright (C) 2024-2025 Omikhleia / Didier Willis
---
-local base = require("packages.base")
-local package = pl.class(base)
-package._name = "resilient.liners"
+-- @license MIT
+-- @copyright (c) 2024-2025 Omikhkeia / Didier Willis
+-- @module packages.resilient.liners
 
 local PathRenderer = require("grail.renderer")
 local RoughPainter = require("grail.painters.rough")
 
+--- Get the parameters for underlining from the current font.
+-- @treturn number underlinePosition Position of the underline from the baseline
+-- @treturn number underlineThickness Thickness of the underline
 local function getUnderlineParameters ()
   local ot = require("core.opentype-parser")
   local fontoptions = SILE.font.loadDefaults({})
@@ -28,6 +27,9 @@ local function getUnderlineParameters ()
   return underlinePosition, underlineThickness
 end
 
+--- Get the parameters for strikethrough from the current font.
+-- @treturn number yStrikeoutPosition Position of the strikethrough from the baseline
+-- @treturn number yStrikeoutSize Thickness of the strikethrough
 local function getStrikethroughParameters ()
   local ot = require("core.opentype-parser")
   local fontoptions = SILE.font.loadDefaults({})
@@ -41,6 +43,14 @@ end
 
 local metrics = require("fontmetrics")
 local bsratiocache = {}
+
+--- Compute the baseline ratio for the current font.
+--
+-- Based on font metrics (typographic extents).
+--
+-- Memoized for performance.
+--
+-- @treturn number Baseline ratio
 local computeBaselineRatio = function ()
   local fontoptions = SILE.font.loadDefaults({})
   local bsratio = bsratiocache[SILE.font._key(fontoptions)]
@@ -53,10 +63,23 @@ local computeBaselineRatio = function ()
   return bsratio
 end
 
+--- The "resilient.liners" package.
+--
+-- Extends SILE's `packages.base`.
+--
+-- @type packages.resilient.liners
+
+local base = require("packages.base")
+local package = pl.class(base)
+package._name = "resilient.liners"
+
+--- (Constructor) Initialize the package.
+-- @tparam table _ Package options (not used here)
 function package:_init ()
   base._init(self)
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
 
   self:registerCommand("resilient:liner:underline", function (options, content)
