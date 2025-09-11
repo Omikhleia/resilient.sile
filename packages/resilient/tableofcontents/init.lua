@@ -191,7 +191,7 @@ function package:registerCommands ()
   self:registerCommand("tocentry", function (options, content)
     local dest
     if SILE.Commands["pdf:destination"] then
-      dest = "dest" .. dc
+      dest = "resilient.toc:" .. dc
       SILE.call("pdf:destination", { name = dest })
       if SU.boolean(options.bookmark, true) then
         local title = SILE.typesetter:contentToText(content)
