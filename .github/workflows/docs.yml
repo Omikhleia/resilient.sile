@@ -19,7 +19,7 @@ jobs:
       - name: Install Lua + LDoc locally
         run: |
           sudo apt-get update
-          sudo apt-get install -y lua5.4 luarocks unzip
+          sudo apt-get install -y --no-install-recommends lua5.4 luarocks unzip
           luarocks install --local ldoc
 
       - name: Generate API docs
@@ -27,8 +27,14 @@ jobs:
           export PATH=$HOME/.luarocks/bin:$PATH
           ldoc . -d docs/api
 
-      - name: Merge manual pages
-        run: cp -r docs/manual/* docs/ || true
+      - name: Build manual pages with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: static
+          destination: docs/manual_html
+
+      - name: Merge manual pages into deploy folder
+        run: cp -r docs/manual_html/* docs/
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -43,4 +49,3 @@ jobs:
       id-token: write
     steps:
       - uses: actions/deploy-pages@v4
-
