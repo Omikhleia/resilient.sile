@@ -1,0 +1,46 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua + LDoc locally
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.4 luarocks unzip
+          luarocks install --local ldoc
+
+      - name: Generate API docs
+        run: |
+          export PATH=$HOME/.luarocks/bin:$PATH
+          ldoc . -d docs/api
+
+      - name: Merge manual pages
+        run: cp -r docs/manual/* docs/ || true
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/deploy-pages@v4
+
