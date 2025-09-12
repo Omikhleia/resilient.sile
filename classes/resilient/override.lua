@@ -25,7 +25,7 @@ require("resilient.bootstrap")
 --
 --  - It replaces SILE's default typesetter with the sile·nt typesetter?
 --  - It does not used SILE's "plain" class, but implements minimal compatibility via packages.
---  - It cancels multiple package instanciation, as some of our packages are stateful.
+--  - It cancels multiple package instantiation, as some of our packages are stateful.
 --
 -- @type classes.resilient.override
 
@@ -41,8 +41,7 @@ class._name = "resilient.override"
 -- @tparam table options Class options
 function class:_init (options)
    SU.debug("resilient.override", "Replacing SILE's default typesetter with the silent new typesetter")
-   SILE.typesetters.base = require("typesetters.silent")
-   SILE.typesetters.default = require("typesetters.silent")
+   SILE.resilient.enforceSilentTypesetterAndPagebuilder () -- TRANSITIONAL
 
    base._init(self, options)
 
@@ -84,8 +83,9 @@ end
 
 --- (Override) Load a package.
 --
--- Packages such as `packages.resilient.styled` are stateful and freeze the styles at some point
+-- Packages such as `packages.resilient.styles` are stateful and freeze the styles at some point
 -- in their workflow.
+--
 -- The multiple package instantiation model was introduced in SILE 0.13-0.14.
 -- I struggled too many times with this issue in August 2022 (initial effort porting
 -- my 0.12.5 packages to 0.14.x) and afterwards.
@@ -94,12 +94,12 @@ end
 -- side-effects and problems difficult to decently address.
 -- Some of the issues were supposed to be fixed in SILE 0.15, but removing the hacks
 -- below still breaks (at least) the styling logic.
--- SILE's standard methood has an extra "reload" argument, which we do not use here.
+-- SILE's standard method has an extra "reload" argument, which we do not use here.
 -- There is no way to distinguish between a new package instantiation and a non-forced reload.
 -- Some classes and packages need to modify and extend commands from other packages,
 -- but package reloading can break this.
 --
--- In bried: we cancel the multiple package instanciation.
+-- In brief: we cancel the multiple package instantiation.
 --
 -- @tparam string packname Package name
 -- @tparam table options Package options
@@ -116,14 +116,15 @@ function class:loadPackage (packname, options)
       end
    end
    SILE.packages[packname] = pack
-   if type(pack) == "table" and pack.type == "package" then -- current package API
+   if type(pack) == "table" and pack.type == "package" then -- current package API (0.14+)
       if self.packages[packname] then
          return SU.debug("resilient.override", "Ignoring package already loaded in the class:", pack._name)
       else
          self.packages[packname] = pack(options)
       end
-   else -- legacy package
-      self:initPackage(pack, options) -- FIXME: This should be deprecated and killed
+   else -- legacy package API (pre-0.14)
+      -- We do not support legacy packages anymore in resilient.
+      SU.error(("Package '%s' does not use the current package API"):format(packname))
    end
 end
 

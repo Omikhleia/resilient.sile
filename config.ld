@@ -5,11 +5,12 @@ format = "markdown"
 all = true
 backtick_references = true
 file = {
-   "classes/",
+   "classes",
    "inputters",
    "packages",
+   "pagebuilders",
    "resilient",
-   "typesetters/",
+   "typesetters",
 }
 dir = "public"
 style = "!new"
