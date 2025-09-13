@@ -44,6 +44,8 @@ build = {
     ["sile.typesetters.mixins.hbox"]           = "typesetters/mixins/hbox.lua",
     ["sile.typesetters.mixins.paragraphing"]   = "typesetters/mixins/paragraphing.lua",
 
+    ["sile.pagebuilders.pageant"]              = "pagebuilders/pageant.lua",
+
     ["sile.packages.resilient.override"]  = "packages/resilient/override.lua",
 
     ["sile.packages.resilient.base"]            = "packages/resilient/base.lua",

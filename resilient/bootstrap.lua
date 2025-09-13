@@ -1,4 +1,4 @@
---- Bootstrap code for the resilient classes and packages.
+--- Bootstrap code for re·sil·ient.
 --
 -- @license MIT
 -- @copyright (c) 2025 Omikhkeia / Didier Willis
@@ -17,18 +17,23 @@ SU.debug("resilient.bootstrap", "Patching SILE core behavior")
 require("resilient.patches.lang")
 require("resilient.patches.overhang")
 
--- FIXME TRANSITIONAL
+-- TRANSITIONAL
 -- Create the global SILE.resilient namespace, with some state and helper functions.
 SILE.resilient = {
    state = {},
 }
 
---- Temporarilly cancels "fragile" commands (normally, such as like footnotes and labels).
--- Such commands break when used in moving arguments (like table of contents entries, headers, etc.)
+--- Temporarilly cancels "fragile" commands.
+--
+-- Typically, these are commands such as footnotes and labels.
+--
+-- Such commands break when used in moving arguments (like table of contents entries, running headers, etc.)
 -- The need to cancel them derives from the fact that AST content is stored and reused in different contexts.
+--
 -- For instance, consider a title that contains a footnote.
 -- The title AST is stored in the TOC, and reused when typesetting the TOC.
 -- The footnote command would try to create a footnote at that point, which is not what one expects.
+--
 -- @tparam string context A context identifier corresponding to the suppression purpose
 -- @tparam function func The function to execute without fragile commands
 function SILE.resilient.cancelContextualCommands (context, func)
@@ -39,11 +44,16 @@ function SILE.resilient.cancelContextualCommands (context, func)
   SILE.resilient.state.contextFor = oldContext
 end
 
----- Make a command "robust", i.e. ignore it in certain contexts.
--- This is useful for commands that are known to be "fragile", such as footnotes and labels.
+--- Make a command "robust" (cancelled in certain contexts).
 --
--- TRANSITIONAL: This is for enforcing existing commands to be robust, when they were not
--- declared as such initially.
+-- The command will be ignored when in a context where fragile commands are to be cancelled.
+--
+-- TRANSITIONAL:
+-- This utility allows **enforcing** an existing command to be robust globally,
+-- when it was not written as such initially.
+-- This is useful for commands that are known to be "fragile", such as footnotes and labels,
+-- in their original non-context-switching implementation.
+--
 -- @tparam string command The command name to make robust
 function SILE.resilient.enforceContextualCommand (command)
   local oldCmd = SILE.Commands[command]
@@ -60,14 +70,21 @@ function SILE.resilient.enforceContextualCommand (command)
   end
 end
 
----- Make a command context-switching, i.e. some of its processing needs needs
--- to run in a context where fragile commands are ignored.
--- This is useful for commands that are not fragile per se, but that process
--- content that may contain fragile commands, such as label refs.
+--- Make a command context-switching.
 --
--- TRANSITIONAL: This is for enforcing existing commands to be context-switching,
--- when they dit not invoke the cancellation of fragile commands initially when processing
--- content.
+-- This utility is useful fwhen a command needs to process content in a context
+-- where fragile commands are ignored, but the command itself was not written
+-- to switch context for its own processing.
+--
+-- The command is not fragile itself, _per se_, but it processes content that may
+-- contain fragile commands, such as label references, and should have taken care
+-- of cancelling them at appropriate times.
+--
+-- TRANSITIONAL:
+-- This utility allows **enforcing** an existing command to be context-switching
+-- globally, when it does not invoke the cancellation of fragile commands by itself
+-- initially.
+--
 -- @tparam string context A context identifier corresponding to the suppression purpose
 -- @tparam string command The command name to make context-switching
 function SILE.resilient.enforceContextChangingCommand(context, command)
@@ -82,4 +99,54 @@ function SILE.resilient.enforceContextChangingCommand(context, command)
     end)
     return ret
   end
+end
+
+--- Activate the sile·nt typesetter and the page·ant pagebuilder.
+--
+-- These are "new" implementations of the typesetter and pagebuilder
+-- for re·sil·ient.
+--
+-- They act as full replacements to SILE's base typesetter and pagebuilder,
+-- when processing a resilient document.
+--
+-- TRANSITIONAL:
+-- This is highly linked to the way SILE instantiates typesetters and pagebuilders,
+-- which changed multiple times.
+--
+function SILE.resilient.enforceSilentTypesetterAndPagebuilder ()
+  -- SILE typesetter instantiation changed multuple times in the 0.14.x and 0.15.x series.
+  -- In 0.15.11 "default" classes were added as noop subclasses of the "base" ones,
+  -- with an obscure interdiction to use and modify the base classes directly.
+  -- Method hot-patching is discouraged, and making a new class inheriting from the base
+  -- oene is the recommended way...
+  --
+  -- In resilient and its ecosystem,
+  -- we had 3rd-party packages instantiating a typesetter and monkey-patching it.
+  -- We also had 3rd-party packages inheriting from the "base" typesetter, adding
+  -- their own overrides.
+  -- And resilient itself (initially via sile·x) was forking the base typesetter.
+  --
+  -- All this is now a mess, and we need to fix it.
+  --
+  -- Simple and straightforward, let's stop the shenanigans and sort this out
+  -- once and for all.
+  --
+  -- The sile·nt typesetter and the page·ant pagebuilder are full replacements,
+  -- not inheriting from SILE's base or default classes.
+  --
+  -- We enforce them completely when this utility function is called.
+  SILE.typesetters.base = require("typesetters.silent")
+  SILE.typesetters.default = require("typesetters.silent")
+  SILE.pagebuilders.base = require("pagebuilders.pageant")
+  SILE.pagebuilders.default = require("pagebuilders.pageant")
+
+  -- The SILE.pagebuilder instance is set in sile/core/init.lua very early during SILE
+  -- initialization.
+  -- Which is funny since it's only needed after we have a typesetter and a document class.
+  -- It sounds like a wrong design decision, that should be addressed in SILE core at some point.
+  -- Anyway, replace it...
+  SILE.pagebuilder = SILE.pagebuilders.default()
+  -- The SILE.typesetter instance is set in the base document class's _post_init() method,
+  -- so after it the latter is fully instantiated.
+  -- So we should be safe doing nothing about it here.
 end
