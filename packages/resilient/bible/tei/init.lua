@@ -1,4 +1,4 @@
---- TEI bible format with critical apparatus as used for the Gothic Bible
+--- TEI bible format with critical apparatus as used for the Gothic Bible.
 --
 -- This implements the subset of TEI used in the Gotica XML document
 -- from project "wulfila.be" (TEI Gothica).

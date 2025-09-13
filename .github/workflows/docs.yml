@@ -18,8 +18,10 @@ jobs:
 
       - name: Install Lua + LDoc locally
         run: |
+          echo "man-db man-db/auto-update boolean false" | sudo debconf-set-selections
+          sudo rm -f /var/lib/man-db/auto-update
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends lua5.4 luarocks unzip
+          sudo apt-get install -y --no-install-recommends lua5.4 luarocks
           luarocks install --local ldoc
 
       - name: Generate API docs
