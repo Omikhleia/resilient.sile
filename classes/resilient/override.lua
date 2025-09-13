@@ -33,6 +33,27 @@ local base = require("classes.base")
 local class = pl.class(base)
 class._name = "resilient.override"
 
+-- It cannot be exhaustive by nature, but at least the packages we know will
+-- interfere poorly with re·sil·ient.
+local forbiddenPackages = {
+   -- Our autodoc-resilient should be used instead.
+   -- We don't want partial half-loading of packages via the standard autodoc package.
+   -- It brreaks to many things, incl. our style-aware packages.
+   autodoc = true,
+   -- Integrated in the sile·nt typesetter natively.
+   bidi = true,
+   -- These packages would clearly interfere with sile·nt and/or page·ant.
+   -- ['balanced-frames'] = true, KEPT for now, but should really be killed eventually.
+   ['break-firstfit'] = true,
+   grid = true,
+   linespacing = true,
+   ['pagebuilder-bestfit'] = true,
+   -- This package is for SILE's own backward compatibility.
+   -- As re·sil·ient use its own package/class hierarchy, we do not want
+   -- this module to be loaded and mess with things that never applied to re·sil·ient.
+   retrograde = true,
+}
+
 --- (Constructor) Initialize the class.
 --
 -- It enforces the use for the sile·nt typesetter.
@@ -106,6 +127,9 @@ end
 -- @tparam table options Package options
 function class:loadPackage (packname, options)
    local pack
+   if forbiddenPackages[packname] then
+      SU.error(("Package '%s' is forbidden in resilient documents."):format(packname))
+   end
    if type(packname) == "table" then
       pack, packname = packname, packname._name
    elseif type(packname) == "nil" or packname == "nil" or pl.stringx.strip(packname) == "" then
