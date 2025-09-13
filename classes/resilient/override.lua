@@ -24,7 +24,7 @@ require("resilient.bootstrap")
 -- It deviates from SILE's implementation in several ways:
 --
 --  - It replaces SILE's default typesetter with the sile·nt typesetter?
---  - It does not used SILE's "plain" class, but implements minimal compatibility via packages.
+--  - It does not used SILE's "plain" document class, but implements minimal compatibility via packages.
 --  - It cancels multiple package instantiation, as some of our packages are stateful.
 --
 -- @type classes.resilient.override
@@ -48,18 +48,19 @@ function class:_init (options)
    -- We do not use SILE's plain class, but implement minimal compatibility via packages
    SU.debug("resilient.override", "Loading plain compatibility packages")
    self:loadPackage("resilient.plain")
-   self:loadPackage("bidi")
 end
 
 --- (Override) Declare class options.
 --
 -- The options added here are:
 --
---  - direction: text direction (from SILE's plain class)
+--  - direction: text direction (option from SILE's "plain" class, but "bidi"-related)
 --  - resolution: resolution in DPI (specific to resilient)
 --
 function class:declareOptions ()
    -- From SILE's plain class (bidi-related)
+   -- But note that we do not load the "bidi" package here, as its functionality
+   -- is directly integrated in the sile·nt typesetter.
    self:declareOption("direction", function (_, value)
       if value then
          SILE.documentState.direction = value
@@ -128,6 +129,38 @@ function class:loadPackage (packname, options)
    end
 end
 
+--- (Override) Register class commands.
+--
+-- It provides bidi-related commands that were originally in SILE's "bidi" package,
+-- since we no longer load it (its functionality being integrated in the sile·nt typesetter).
+--
+function class:registerCommands ()
+   base.registerCommands(self)
+   self:registerCommand("thisframeLTR", function (_, _)
+      local direction = "LTR"
+      SILE.typesetter.frame.direction = direction
+      SILE.settings:set("font.direction", direction)
+      SILE.typesetter:leaveHmode()
+      SILE.typesetter.frame:newLine()
+   end)
+
+   self:registerCommand("thisframedirection", function (options, _)
+      local direction = SU.required(options, "direction", "frame direction")
+      SILE.typesetter.frame.direction = direction
+      SILE.settings:set("font.direction", direction)
+      SILE.typesetter:leaveHmode()
+      SILE.typesetter.frame:init()
+   end)
+
+   self:registerCommand("thisframeRTL", function (_, _)
+      local direction = "RTL"
+      SILE.typesetter.frame.direction = direction
+      SILE.settings:set("font.direction", direction)
+      SILE.typesetter:leaveHmode()
+      SILE.typesetter.frame:newLine()
+   end)
+end
+
 -- WARNING: not called as class method
 function class.newPar (typesetter)
    local parindent = SILE.settings:get("current.parindent") or SILE.settings:get("document.parindent")
@@ -150,7 +183,9 @@ end
 function class:finish ()
    SILE.inputter:postamble()
    -- SILE/RESILIENT: Original typesetter calls SILE.typesetter:endline() here.
-   -- We really need to clean up and clarify the typesetter's expectations....
+   -- We really need to clean up and clarify the typesetter's expectations...
+   -- CODE SMELL, it's unclear why the document class would do such thinks
+   -- as building pages and ejecting, etc.
    SILE.call("vfill")
    while not SILE.typesetter:isQueueEmpty() do
       SILE.call("supereject")

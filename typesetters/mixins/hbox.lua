@@ -27,17 +27,7 @@
 --
 -- @module typesetters.mixins.hbox
 
-local _rtl_pre_post = function (box, atypesetter, line)
-   local advance = function ()
-      atypesetter.frame:advanceWritingDirection(box:scaledWidth(line))
-   end
-   if atypesetter.frame:writingDirection() == "RTL" then
-      advance()
-      return function () end
-   else
-      return advance
-   end
-end
+local bidi = require("typesetters.algorithms.bidi")
 
 ---
 -- @type typesetter
@@ -68,7 +58,9 @@ function typesetter:makeHbox (content)
 
    -- We must do a first pass for shaping the nnodes:
    -- This is also where italic correction may occur.
-   local nodes = self:shapeAll(self.state.nodes)
+   local nodelist = bidi.splitNodelistIntoBidiRuns(self.state.nodes, self.frame:writingDirection())
+   local nodes = self:shapeAll(nodelist)
+   nodes = bidi.reorder(nodes, self.frame:writingDirection())
 
    -- Then we can process and measure the nodes.
    local l = SILE.types.length()
@@ -112,14 +104,20 @@ function typesetter:makeHbox (content)
                              -- This is annoying for contentToText() extraction below,
                              -- but here we know what we are doing.
       outputYourself = function (box, atypesetter, line)
-         local _post = _rtl_pre_post(box, atypesetter, line)
          local ox = atypesetter.frame.state.cursorX
          local oy = atypesetter.frame.state.cursorY
          SILE.outputter:setCursor(atypesetter.frame.state.cursorX, atypesetter.frame.state.cursorY)
          SU.debug("hboxes", function ()
+            local isRtl = atypesetter.frame:writingDirection() == "RTL"
             -- setCursor is also invoked by the internal (wrapped) hboxes etc.
             -- so we must show our debug box before outputting its content.
+            if isRtl then
+               SILE.outputter:setCursor(ox - box:scaledWidth(line), oy)
+            end
             SILE.outputter:debugHbox(box, box:scaledWidth(line))
+            if isRtl then
+               SILE.outputter:setCursor(ox, oy)
+            end
             return "Drew debug outline around hbox"
          end)
          for _, node in ipairs(box.value) do
@@ -127,7 +125,7 @@ function typesetter:makeHbox (content)
          end
          atypesetter.frame.state.cursorX = ox
          atypesetter.frame.state.cursorY = oy
-         _post()
+         atypesetter.frame:advanceWritingDirection(box:scaledWidth(line))
       end,
    })
    return hbox, migratingNodes
