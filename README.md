@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/github/license/Omikhleia/resilient.sile?label=License)](LICENSE)
 [![Luacheck](https://img.shields.io/github/actions/workflow/status/Omikhleia/resilient.sile/luacheck.yml?branch=main&label=Luacheck&logo=Lua)](https://github.com/Omikhleia/resilient.sile/actions?workflow=Luacheck)
 [![Luarocks](https://img.shields.io/luarocks/v/Omikhleia/resilient.sile?label=Luarocks&logo=Lua)](https://luarocks.org/modules/Omikhleia/resilient.sile)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://omikhleia.github.io/resilient.sile/)
 
 This collection of classes and packages for the [SILE](https://github.com/sile-typesetter/sile) typesetting system provides advanced classes, packages and tools for streamlining the production of high-quality books and documents.
 

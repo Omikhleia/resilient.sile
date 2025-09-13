@@ -1,4 +1,4 @@
---- Hard-patch SILE language support to use BCP47 language tags
+--- Hard-patch SILE language support to use BCP47 language tags.
 --
 -- CAVEAT EMPTOR:
 -- This is theoretically compatible with SILE up to (and including) 0.15.13.
