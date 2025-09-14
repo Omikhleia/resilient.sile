@@ -19,7 +19,7 @@ It offers a wide range of features, including:
   - A great parity with Markdown, including many Pandoc-like extensions, and with Djot.
 - A lightweight “résumé” class, for you to produce a colorful and yet professional-looking _curriculum vitæ_.
 
-Whether you a seasoned typist or a beginner, the _re·sil·ient_ collection aims at making the process of creating beautiful books as simple as possible, from front cover to back cover, using a lightweight markup language for most of the content, if not all of it.
+Whether you are a seasoned typist or a beginner, the _re·sil·ient_ collection aims at making the process of creating beautiful books as simple as possible, from front cover to back cover, using a lightweight markup language for most of the content, if not all of it.
 
 ## Demonstration
 
@@ -65,7 +65,7 @@ This collection also imports several modules also provided separately, would you
 - [Pie charts](https://github.com/Omikhleia/piecharts.sile) (support for pie charts)
 - [Code syntax highlighting](https://github.com/Omikhleia/highlighter.sile)
 
-When used with this collection, the Markdown packages and the fancy table of contents are leveraged with additional capabilities.
+When used with this collection, the Markdown/Djot packages are leveraged with additional capabilities.
 
 ## Historical note
 
