@@ -428,12 +428,13 @@ function typesetter:computeLineRatio (breakwidth, slice)
    -- glues (spaces to ignore) and zero boxes until we reach actual content.
    -- CODE SMELL:
    -- Theoretically, we have already removed most of these earlier.
-   -- But for some reason, addrlskip() adds some zero boxes in the mix,
+   -- But for some reason, addrlskip() adds some zero boxes in the mix.
    local npos = #slice
    while npos > 1 do
       if (slice[npos].is_glue and slice[npos].discardable) or slice[npos].is_zero then
          if slice[npos].value == "margin" then
             naturalTotals:___add(slice[npos].width)
+            npos = npos - 1
             break-- Stop here at margin glue
          end
       else
