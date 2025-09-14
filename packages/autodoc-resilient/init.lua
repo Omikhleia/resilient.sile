@@ -1,14 +1,15 @@
---
--- Documentation tooling for package designers.
---
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
+--- Documentation tooling for package designers for re·sil·ient.
 --
 -- CAVEAT:
--- This is a modified version of the standard 'autodoc' package,
--- so that it works with the 'resilient' module,
--- with a rather OPINIONATED change. See HACKS comments below.
 --
+-- This is a modified version of the standard 'autodoc' package,
+-- so that it works with the 'resilient' modules,with a rather OPINIONATED change in the underlying implementation.
+-- See in-code HACKS comments...
+--
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhleia / Didier Willis
+-- @module packages.autodoc-resilient
+
 local base = require("packages.base")
 local package = pl.class(base)
 package._name = "autodoc-resilient"

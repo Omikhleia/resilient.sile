@@ -1,55 +1,19 @@
---
--- Print options for professional printers
+--- Print options for professional printers.
 --
 -- Requires: Inkscape and GraphicsMagick to be available on the host system.
+--
 -- Reminders: GraphicsMagick also needs Ghostscript for PDF images
 -- (it delegates to it).
 --
--- License: MIT
--- Copyright (C) 2022-2025 Omikhleia / Didier Willis
+-- @license MIT
+-- @copyright (c) 2022-2025 Omikhleia / Didier Willis
+-- @module packages.printoptions
+
+--- Handle path and extension of a filename.
 --
-local base = require("packages.base")
-
-local package = pl.class(base)
-package._name = "printoptions"
-
-function package:declareSettings ()
-  SILE.settings:declare({
-    parameter = "printoptions.resolution",
-    type = "integer or nil",
-    default = nil,
-    help = "If set, defines the target image resolution in DPI (dots per inch)"
-  })
-
-  SILE.settings:declare({
-    parameter = "printoptions.vector.rasterize",
-    type = "boolean",
-    default = true,
-    help = "When true and resolution is set, SVG vectors are rasterized."
-  })
-
-  SILE.settings:declare({
-    parameter = "printoptions.image.flatten",
-    type = "boolean",
-    default = false,
-    help = "When true and resolution is set, images are flattened (transparency removed)."
-  })
-
-  SILE.settings:declare({
-    parameter = "printoptions.image.grayscale",
-    type = "boolean",
-    default = true,
-    help = "When true and resolution is set, images are converted to grayscale."
-  })
-
-  SILE.settings:declare({
-    parameter = "printoptions.image.tolerance",
-    type = "number",
-    default = 0.85,
-    help = "Warning threshold for under-resolved images (percentage)."
-  })
-end
-
+-- @tparam string filename Input filename
+-- @treturn string Basename without extension
+-- @treturn string Extension with leading dot
 local function handlePath (filename)
   local basename = pl.path.basename(filename):match("(.+)%..+$")
   local ext = pl.path.extension(filename)
@@ -64,6 +28,15 @@ local function handlePath (filename)
   return pl.path.join(dir, basename), ext
 end
 
+--- Convert an image to a target resolution.
+--
+-- It uses GraphicsMagick to convert and resample the image.
+--
+-- @tparam string filename Input filename
+-- @tparam int widthInPx Target width in pixels
+-- @tparam int resolution Target resolution in DPI
+-- @tparam int pageno Page number to extract (for PDF)
+-- @treturn string|nil Converted filename, or nil on failure
 local function imageResolutionConverter (filename, widthInPx, resolution, pageno)
   local basename, ext = handlePath(filename)
   local flatten = SILE.settings:get("printoptions.image.flatten")
@@ -166,6 +139,14 @@ local function imageResolutionConverter (filename, widthInPx, resolution, pageno
   end
 end
 
+--- Rasterize a SVG vector image to a PNG.
+--
+-- It uses Inkscape to convert the SVG to a PNG.
+--
+-- @tparam string filename Input filename
+-- @tparam int widthInPx Target width in pixels
+-- @tparam int _ Target resolution in DPI (currently unused for technical reasons)
+-- @treturn string|nil Converted filename, or nil on failure
 local function svgRasterizer (filename, widthInPx, _)
   local basename, ext = handlePath(filename)
   if ext ~= ".svg" then SU.error("Expected SVG file for "..filename) end
@@ -207,6 +188,14 @@ local function svgRasterizer (filename, widthInPx, _)
   end
 end
 
+--- Push a SVG image to the typesetter's hbox list, possibly rasterizing it.
+--
+-- @tparam string filename Input filename
+-- @tparam string svgdata SVG data
+-- @tparam SILE.types.measurement|nil width Target width (or nil)
+-- @tparam SILE.types.measurement|nil height Target height (or nil)
+-- @tparam number density SVG density (72 is considered 100%)
+-- @raise If both width and height are provided (aspect ratio change not supported yet)
 local drawSVG = function (filename, svgdata, width, height, density)
   -- FIXME/CAVEAT: We are reimplementing the whole logic from _drawSVG in the
   -- "svg" package, but the latter might be wrong:
@@ -251,6 +240,20 @@ local drawSVG = function (filename, svgdata, width, height, density)
   })
 end
 
+--- The "printoptions" package.
+--
+-- @type packages.printoptions
+
+local base = require("packages.base")
+local package = pl.class(base)
+package._name = "printoptions"
+
+--- (Constructor) Initialize the package.
+--
+-- It overrides the `\svg` command from the svg package to handle rasterization,
+-- and the outputter's image drawing method to handle image resampling.
+--
+-- @tparam table pkgoptions Package options
 function package:_init (pkgoptions)
   base._init(self, pkgoptions)
   self:loadPackage("image")
@@ -283,6 +286,44 @@ function package:_init (pkgoptions)
     end
     outputter(outputterSelf, filename, x, y, width, height, pageno)
   end
+end
+
+--- (Override) Declare package-specific settings.
+function package:declareSettings ()
+  SILE.settings:declare({
+    parameter = "printoptions.resolution",
+    type = "integer or nil",
+    default = nil,
+    help = "If set, defines the target image resolution in DPI (dots per inch)"
+  })
+
+  SILE.settings:declare({
+    parameter = "printoptions.vector.rasterize",
+    type = "boolean",
+    default = true,
+    help = "When true and resolution is set, SVG vectors are rasterized."
+  })
+
+  SILE.settings:declare({
+    parameter = "printoptions.image.flatten",
+    type = "boolean",
+    default = false,
+    help = "When true and resolution is set, images are flattened (transparency removed)."
+  })
+
+  SILE.settings:declare({
+    parameter = "printoptions.image.grayscale",
+    type = "boolean",
+    default = true,
+    help = "When true and resolution is set, images are converted to grayscale."
+  })
+
+  SILE.settings:declare({
+    parameter = "printoptions.image.tolerance",
+    type = "number",
+    default = 0.85,
+    help = "Warning threshold for under-resolved images (percentage)."
+  })
 end
 
 package.documentation = [[\begin{document}

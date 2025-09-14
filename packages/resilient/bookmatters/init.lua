@@ -1,18 +1,63 @@
---
--- Book matter support (front and back covers, half-title, title pages,
--- endpapers, etc.) for SILE.
--- Following the resilient styling paradigm.
+--- Book matter support (front and back covers, half-title, title pages, endpapers, etc.) for re·sil·ient.
 --
 -- This package is for internal use only.
 -- It is used (mostly) by the "master document".
 -- API is subject to change.
 --
--- License: MIT
--- Copyright (C) 2023-2025 Omikhleia / Didier Willis
---
+-- @license MIT
+-- @copyright (c) 2023-2025 Omikhkeia / Didier Willis
+-- @module packages.resilient.bookmatters
+
 local layoutParser = require("resilient.layoutparser")
 local loadkit = require("loadkit")
 local templateLoader = loadkit.make_loader("djt")
+
+--- Resolve a template and prepare an include command specification.
+--
+-- @tparam string template Template name (without extension)
+-- @tparam table metaopts Initial options (metadata) to pass to the include command
+-- @treturn table Include command options
+-- @raise Error if the template cannot be found
+local function getTemplateInclude (template, metaopts)
+  local tpl = SILE.resolveFile("templates/" .. template .. ".djt")
+              or templateLoader("templates." .. template)
+  if not tpl then
+    SU.error("Cannot find template '" .. template .. "'")
+  end
+  local spec = pl.tablex.union(metaopts, { src = tpl, format = "djot"})
+  return spec
+end
+
+--- Compute a weighted color distance in 3D space.
+--
+-- @tparam SILE.types.color color Input color (RGB only for now)
+local function weightedColorDistanceIn3D (color)
+  -- Source: https://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
+  return math.sqrt(
+    (color.r * 255)^2 * 0.241
+    + (color.g * 255)^2 * 0.691
+    + (color.b * 255)^2 * 0.068
+  )
+end
+
+--- Compute the best contrast color (black or white) for a given background color.
+--
+-- @tparam SILE.types.color color Input color (RGB only for now)
+-- @treturn string "black" or "white"
+local function contrastColor(color)
+  if not color.r then
+    -- Not going to bother with other color schemes for now...
+    SU.error([[Background color for back cover must be in RGB.
+Feel free to propose a PR to the maintainer if you want it otherwise]])
+  end
+  return weightedColorDistanceIn3D(color) < 130 and "white" or "black"
+end
+
+--- The "bookmatters" package.
+--
+-- Extends `packages.resilient.base`.
+--
+-- @type packages.resilient.bookmatters
 
 local base = require("packages.resilient.base")
 local package = pl.class(base)
@@ -25,6 +70,9 @@ local extraRequestedPackages = {
   "resilient.headers"
 }
 
+--- (Constructor) Initialize the package.
+--
+-- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
 
@@ -66,36 +114,7 @@ Please consider using a resilient-compatible class!]])
   })
 end
 
--- Look for templates explicitly in a templates/ subdirectory
--- as per other document resources, and if not found, try to
--- load them from module locations.
-local function getTemplateInclude (res, metaopts)
-  local tpl = SILE.resolveFile("templates/" .. res .. ".djt")
-              or templateLoader("templates." .. res)
-  if not tpl then
-    SU.error("Cannot find template '" .. res .. "'")
-  end
-  local spec = pl.tablex.union(metaopts, { src = tpl, format = "djot"})
-  return spec
-end
-
--- Source: https://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
-local function weightedColorDistanceIn3D (color)
-  return math.sqrt(
-    (color.r * 255)^2 * 0.241
-    + (color.g * 255)^2 * 0.691
-    + (color.b * 255)^2 * 0.068
-  )
-end
-local function contrastColor(color)
-  if not color.r then
-    -- Not going to bother with other color schemes for now...
-    SU.error([[Background color for back cover must be in RGB.
-Feel free to propose a PR to the maintainer if you want it otherwise]])
-  end
-  return weightedColorDistanceIn3D(color) < 130 and "white" or "black"
-end
-
+--- (Override) Register package commands.
 function package:registerCommands ()
 
   -- Book matter support commands
@@ -254,6 +273,7 @@ function package:registerCommands ()
 
 end
 
+--- (Override) Register package styles.
 function package:registerStyles ()
   -- Some default styles for (usually) the front cover
   -- (When template-generated)
