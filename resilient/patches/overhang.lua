@@ -126,15 +126,21 @@ local discretionary = pl.class(orig)
 --- (Hard-patch) Override the discretionary constructor to adjust the width of the prebreak.
 function discretionary:_init (...)
    self:super(...) -- I am told there are issues with super() but I don't see them here.
-   if self.prebreak then
+   if self.prebreak and #self.prebreak > 0 then
       -- Dig into the last item of the prebreak
       -- to see if it is a punctuation mark we want to overhang, typically the hyphen.
       local last = self.prebreak[#self.prebreak]
+      if not (last and last.nodes and #last.nodes > 0) then
+         return
+      end
       local nodes = last.nodes
       local lastnode = nodes[#nodes]
+      if not (lastnode and lastnode.value and lastnode.value.items and #lastnode.value.items > 0) then
+         return
+      end
       local lastitem = lastnode.value.items[#lastnode.value.items]
-      if overhang[lastitem.text] and SILE.settings:get("experimental.overhang") then
-         local spec = overhang[lastitem.text]
+      local spec = overhang[lastitem.text]
+      if spec and SILE.settings:get("experimental.overhang") then
          local ratio = SILE.settings:get("experimental.overhang." .. spec.name)
          local w = overhangWidth(lastitem, ratio)
          -- Reduce the width of the last node
