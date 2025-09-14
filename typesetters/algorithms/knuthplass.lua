@@ -3,12 +3,12 @@
 -- **Original code from SILE**
 --
 -- License: MIT
--- Copyright (C) The SILE Organization / Simon Cozens
+-- Copyright (c) The SILE Organization / Simon Cozens
 --
 -- **Modified see RESILIENT comments**
 --
 -- License: MIT
--- Copyright (C) 2025 Omikhleia / Didier Willis
+-- Copyright (c) 2025 Omikhleia / Didier Willis
 --
 -- @module typesetters.algorithms.knuthplass
 --

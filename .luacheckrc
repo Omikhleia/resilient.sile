@@ -1,15 +1,11 @@
 std = "min+sile"
 include_files = {
   "**/*.lua",
-  "sile.in",
-  "*.rockspec",
+  "**/*.rockspec",
   ".busted",
   ".luacheckrc"
 }
 exclude_files = {
-  "benchmark-*",
-  "compare-*",
-  "sile-*",
   "lua_modules",
   ".lua",
   ".luarocks",

@@ -43,7 +43,22 @@ luac.out
 *.toc
 *.ref
 *.pdf
+*.idx
 *.debug
 **/converted/*
 **/embedded/*
 temp/*
+
+# LDoc if ran locally
+doc/*
+ldoc/*
+public/*
+
+# Stuff copied or linked from lua_libraries/ to sile/
+# for hacking (as those files from lua_libraries/ are not in the sile namespace)
+sile/*
+
+# LDoc artifacts
+ldoc/
+doc/
+public/
