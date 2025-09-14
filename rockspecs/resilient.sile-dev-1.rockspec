@@ -47,8 +47,6 @@ build = {
 
     ["sile.pagebuilders.pageant"]              = "pagebuilders/pageant.lua",
 
-    ["sile.packages.resilient.override"]  = "packages/resilient/override.lua",
-
     ["sile.packages.resilient.base"]            = "packages/resilient/base.lua",
 
     ["sile.packages.resilient.abbr"]            = "packages/resilient/abbr/init.lua",
