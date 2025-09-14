@@ -31,6 +31,8 @@ local typesetter = { -- Not a real class, just a mixin
    _name = "mixin.paragraphing"
 }
 
+local bidi = require("typesetters.algorithms.bidi")
+
 --- Box up the current node list into a list of vboxes.
 --
 -- SMELL: Bad name, undocumented behavior, ad-hoc logic...
@@ -43,6 +45,9 @@ function typesetter:boxUpNodes ()
    if #nodelist == 0 then
       return {}
    end
+
+   nodelist = bidi.splitNodelistIntoBidiRuns(nodelist, self.frame:writingDirection())
+
    for j = #nodelist, 1, -1 do
       if not nodelist[j].is_migrating then
          if nodelist[j].discardable then
@@ -59,8 +64,7 @@ function typesetter:boxUpNodes ()
       return {}
    end
 
-   nodelist = self:shapeAll(nodelist) -- FIXME HOW MANY PLACES DO WE NEED TO CALL THIS?
-   self.state.nodes = nodelist -- FIXME CODE SMELL (BIDI BREAKS OTHERWISE)
+   self.state.nodes = nodelist -- FIXME CODE SMELL: Sounds stupid, but just below we pushGlue(), pushPenalty()...
 
    local parfillskip = SILE.settings:get("typesetter.parfillskip")
    parfillskip.discardable = false
@@ -117,8 +121,8 @@ end
 
 --- Break a list of nodes into lines.
 --
--- SMELL how many times are we invoking shapeAll() in the whole process?
--- How badly the bidi package hacks into these things?
+-- CODE SMELL: Where we should have shaped the nodes is unclear.
+-- At least now we shouldn't shape them multiple times...
 --
 -- @tparam table nodelist List of nodes to break into lines
 -- @tparam SILE.types.length breakWidth Target width for the lines
@@ -259,12 +263,16 @@ function typesetter:breakpointsToLines (breakpoints, nodelist)
                linestart = point.position + 1
             end
 
-
             if lastContentNodeIndex then
                self:_repeatLeaveLiners(slice, lastContentNodeIndex + 1)
             end
 
             self:_pruneDiscardables(slice)
+
+            -- Bidi-reordering must occur after line breaking, but before liners reboxing.
+            -- We can probably do it here: added margins and line ratio computation should not
+            -- be affected by the reordering...
+            slice = bidi.reorder(slice, self.frame:writingDirection())
 
             -- Track hanged lines
             if self.state.hangAfter then

@@ -36,6 +36,7 @@ build = {
 
     ["sile.typesetters.silent"]                = "typesetters/silent.lua",
     ["sile.typesetters.algorithms.knuthplass"] = "typesetters/algorithms/knuthplass.lua",
+    ["sile.typesetters.algorithms.bidi"]       = "typesetters/algorithms/bidi.lua",
     ["sile.typesetters.nodes.liners"]          = "typesetters/nodes/liners.lua",
     ["sile.typesetters.nodes.speaker"]         = "typesetters/nodes/speaker.lua",
     ["sile.typesetters.mixins.totext"]         = "typesetters/mixins/totext.lua",
