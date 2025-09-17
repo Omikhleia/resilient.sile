@@ -483,7 +483,7 @@ local function doLevel (content, entries, shiftHeadings, metaopts)
   end
 end
 
---- Process division content (frontmatter, mainmatter, backmatter)
+--- Process division content (parts or chapters/appendices)
 --
 -- @tparam table content SILE AST for insertion
 -- @tparam table entry Division content entry
@@ -738,22 +738,18 @@ function inputter:parse (doc)
     })
   end
 
-  -- Document content
-
-  if master.parts then
-    doLevel(content, master.parts, baseShiftHeadings - 1, metadataOptions)
-  elseif master.chapters then
-    doLevel(content, master.chapters, baseShiftHeadings, metadataOptions)
-  elseif master.content then
-    if master.content.parts then
-      doLevel(content, master.content.parts, baseShiftHeadings - 1, metadataOptions)
-    elseif master.content.chapters then
-      doLevel(content, master.content.chapters, baseShiftHeadings, metadataOptions)
-    elseif master.content.frontmatter or master.content.mainmatter or master.content.backmatter then
+  if master.content then
+    if master.content.frontmatter or master.content.mainmatter or master.content.backmatter then
       doDivision(content, master.content, baseShiftHeadings, metadataOptions)
-    else
-      SU.error("Invalid master document (no division, parts or chapters)")
+    elseif master.content.parts or master.content.chapters or master.content.appendices then
+      -- Assume (implicit) mainmatter
+      doDivisionContent(content, master.content, baseShiftHeadings, metadataOptions)
     end
+  elseif master.parts or master.chapters or master.appendices then
+    -- Before we introduced the "content" field for a cleaner hierarchical structure,
+    -- we accepted parts or chapter directly at the root of the master file.
+    -- Let's keep that (now undocumented) possibility for backward compatibility.
+    doDivisionContent(content, master, baseShiftHeadings, metadataOptions)
   end
 
   if enabledBook then
