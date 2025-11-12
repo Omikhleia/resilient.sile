@@ -40,16 +40,70 @@ SILE.settings:declare({
    default = false,
    help = "If set to true, the paragraph shaping method is activated.",
 })
-SILE.settings:declare({ parameter = "linebreak.tolerance", type = "integer or nil", default = 500 })
-SILE.settings:declare({ parameter = "linebreak.pretolerance", type = "integer or nil", default = 100 })
-SILE.settings:declare({ parameter = "linebreak.hangIndent", type = "measurement", default = 0 })
-SILE.settings:declare({ parameter = "linebreak.hangAfter", type = "integer or nil", default = nil })
+
+-- BEGIN SILE
+-- Since 2019, SILE core (at least until 0.15.13) sets the default value of
+-- "linebreak.tolerance" to 500.
+-- The tolerance should be greater that the pretolerance, but TeX uses 200 here.
+-- The difference could not be justified, but is probably a mistake from earlier
+-- experimentations.
+-- See https://github.com/sile-typesetter/sile/issues/2254
+--
+-- THE DEFAULT VALUE MAY CHANGE IN A FUTURE MAJOR RELEASE.
+--
+-- Note that SILE loads its line-breaking algorithm at a very early stage in
+-- its initialization, and that settings declaration cannot be overridden,
+-- so any different default value wouldn't be honored here anyway.
+-- We could invoke SILE.settings:set("linebreak.tolerance", 200, true)
+-- explicitly here to enforce it, but that would change how lines are broken
+-- in all previous documents, so for now we just keep the default, and users can
+-- set it to 200 if they want to...
 SILE.settings:declare({
-   parameter = "linebreak.adjdemerits",
+   parameter = "linebreak.tolerance",
    type = "integer",
-   default = 10000,
-   help = "Additional demerits which are accumulated in the course of paragraph building when two consecutive lines are visually incompatible. In these cases, one line is built with much space for justification, and the other one with little space.",
+   default = 500, -- WRONG DEFAULT BUT SEE ABOVE
+   help = "A parameter without unit that tells the line-breaking algorithm how much badness is allowable in a paragraph (0 to 10000).",
 })
+-- END SILE
+
+SILE.settings:declare({
+   parameter = "linebreak.pretolerance",
+   type = "integer",
+   default = 100,
+   help = "A parameter without unit that tells the line-breaking algorithm how much badness is allowable in a paragraph during the first pass without hyphenation (0 to 10000). Set it to -1 to disable the pretolerance pass.",
+})
+
+SILE.settings:declare({
+   parameter = "linebreak.hangIndent",
+   type = "measurement",
+   default = 0
+})
+SILE.settings:declare({
+   parameter = "linebreak.hangAfter",
+   type = "integer or nil",
+   default = nil
+})
+
+-- BEGIN SILE / RESILIENT
+-- TeX sets \adjdemerits to 10000 by default, and it's used in the algorithm.
+-- SILE core (at least until 0.15.13) defines "linebreak.adjdemerits" to 10000 but doesn't
+-- use it: that part of the algorithm was skipped in the original SILE implementation:
+-- See https://github.com/sile-typesetter/sile/issues/2362
+-- It's thus always behaving as if it was set to 0.
+-- In sile·nt / re·sil·ient, we remove the unused "linebreak.adjdemerits" setting, and replace
+-- it with "linebreak.adjacentDemerits" which is used in the algorithm, but set to 0 by default,
+-- so that the behavior is the same as before, but users can set it to a different value if they
+-- want to.
+--
+-- THE DEFAULT VALUE MAY CHANGE IN A FUTURE MAJOR RELEASE.
+SILE.settings:declare({
+   parameter = "linebreak.adjacentDemerits",
+   type = "integer",
+   default = 0, -- WRONG DEFAULT BUT SEE ABOVE
+   help = "Additional demerits which are accumulated in the course of paragraph building when two consecutive lines are visually incompatible.",
+})
+-- END SILE / RESILIENT
+
 SILE.settings:declare({ parameter = "linebreak.looseness", type = "integer", default = 0 })
 SILE.settings:declare({ parameter = "linebreak.prevGraf", type = "integer", default = 0 })
 SILE.settings:declare({ parameter = "linebreak.emergencyStretch", type = "measurement", default = 0 })
@@ -64,9 +118,6 @@ SILE.settings:declare({ parameter = "linebreak.finalHyphenDemerits", type = "int
 -- to 1000 indicate a glue adjustment fraction f times 1000, values above 1000 are
 -- interpreted as f = 1
 SILE.settings:declare({ parameter = "linebreak.doLastLineFit", type = "boolean", default = false }) -- unimplemented,
-
--- doubleHyphenDemerits
--- hyphenPenalty
 
 -- (TeX82 817; PDFTeX 993)
 local TIGHT_FIT = 3 -- fitness classification for lines shrinking 0.5 to 1.0 of their shrinkability
@@ -120,7 +171,7 @@ function lineBreak:init ()
    self.breakWidth = SILE.types.length()
 
    -- BEGIN (TeX82 827; PDFTeX 1003)
-   -- NOTE: More or less... TeX uses lots of registers here, no very clear.
+   -- FIXME NOTE: More or less... TeX uses lots of registers here, no very clear.
    local rskip = (SILE.settings:get("document.rskip") or SILE.types.node.glue()).width:absolute()
    local lskip = (SILE.settings:get("document.lskip") or SILE.types.node.glue()).width:absolute()
    self.background = rskip + lskip
@@ -192,9 +243,9 @@ end
 --
 -- (SILE) Removes trailing glue nodes from the paragraph node list.
 -- Done differently as we handle parfillskip outside.
-   -- FIXME This might however have to be revisited for doLastLineFit, as there's some setup
-   -- for that in PDFTeX 992 not implemented here yet.
 function lineBreak:trimGlue ()
+   -- FIXME: This might however have to be revisited for doLastLineFit, as there's some setup
+   -- for that in PDFTeX 992 not implemented here yet.
    local nodes = self.nodes
    if nodes[#nodes].is_glue then
       nodes[#nodes] = nil
@@ -380,8 +431,6 @@ end
 -- width. In such cases, node `r` will be deactivated. We also deactivate node `r` when a break at `cur_p` is forced,
 -- since future breaks must go through a forced break
 --
--- PARTIALLY CHECKED TODO FIXME
---
 -- @tparam number pi Penalty
 -- @tparam string breakType ("hyphenated" or "unhyphenated")
 function lineBreak:considerDemerits (pi, breakType)
@@ -512,12 +561,9 @@ function lineBreak:computeDemerits (pi, breakType)
       end
    end
 
-   -- FIXME MISSING / NOT DONE HERE FOR SOME REASON ?
-   --   if abs (fit_class − fitness (r)) > 1 then d ← d + adj_demerits ;
-   -- MAYBE:
-   -- if self.r.fitness and math.abs(self.fitClass - self.r.fitness) > 1 then
-   --    demerit = demerit + param("adjdemerits")
-   -- end
+   if math.abs(self.fitClass - self.r.fitness) > 1 then
+      demerit = demerit + self.adjdemerits
+   end
    return demerit
 end
 
@@ -733,7 +779,7 @@ end
 
 --- Check for legal break at the current node.
 --
--- Derived from (TeX82 866; PDFTeX 1042) TO CHECK FIXME
+-- Derived from (TeX82 866; PDFTeX 1042) PARTIALLY CHECKED FIXME
 --
 -- NOTE: this function is called many thousands of times even in single
 -- page documents. Speed is more important than pretty code here.
@@ -779,6 +825,8 @@ end
 --
 -- @treturn boolean true if the desired breakpoints have been found
 function lineBreak:tryFinalBreak ()
+   -- FIXME
+   -- The original comment:
    -- XXX TeX has self:tryBreak() here. But this doesn't seem to work
    -- for us. If we call tryBreak(), we end up demoting all break points
    -- to veryLoose (possibly because the active width gets reset - why?).
@@ -789,9 +837,8 @@ function lineBreak:tryFinalBreak ()
    -- instead of every single time. If things go strange with the break
    -- algorithm in the future, this should be the first place to look!
    -- self:tryBreak()
-   -- FIXME ?
-   -- TEX82 873 has indeed: try_break(ejectPenalty, "hyphenated") ;
-   -- self:tryBreak()
+   -- SOMETHING IS LIKELY WRONG HERE.
+   -- TEX82 873 has indeed: try_break(ejectPenalty, "hyphenated")
 
    if self.activeListHead.next == self.activeListHead then
       return false
@@ -820,69 +867,46 @@ function lineBreak:tryFinalBreak ()
    -- The adjustment for a desired looseness is a slightly more complicated version of the loop just
    -- considered. Note that if a paragraph is broken into segments by displayed equations, each segment will be
    -- subject to the looseness calculation, independently of the other segments.
-   --
-   -- FIXME MISSING / NOT FULLY IMPLEMENTED
-   --
-   -- begin r ← link (active); actual_looseness ← 0;
-   --    repeat if type (r) != delta node then
-   --       begin line_diff ← line_number (r) − best_line;
-   --       if ((line_diff < actual_looseness ) ∧ (looseness ≤ line_diff )) ∨
-   --             ((line_diff > actual_looseness ) ∧ (looseness ≥ line_diff )) then
-   --          begin best_bet ← r; actual_looseness ← line_diff ; fewest_demerits ← total_demerits (r);
-   --       end
-   --       else if (line_diff = actual_looseness ) ∧ (total_demerits (r) < fewest_demerits ) then
-   --          begin best_bet ← r; fewest_demerits ← total_demerits (r);
-   --          end;
-   --       end;
-   --       r ← link(r);
-   --    until r = last_active ;
-   --    best line ← line_number (best_bet);
-   -- end
-   --
-   -- MAYBE CONVERT TO:
-   --
-   -- self.r = self.activeListHead.next
-   -- local actualLooseness = 0
-   -- repeat
-   --    if self.r.type ~= "delta" then
-   --       local lineDiff = self.r.lineNumber - self.bestBet.lineNumber
-   --       if (lineDiff < actualLooseness and looseness <= lineDiff)
-   --          or (lineDiff > actualLooseness and looseness >= lineDiff)
-   --       then
-   --          self.bestBet = self.r
-   --          actualLooseness = lineDiff
-   --          fewestDemerits = self.r.totalDemerits
-   --       elseif lineDiff == actualLooseness and self.r.totalDemerits < fewestDemerits then
-   --          self.bestBet = self.r
-   --          fewestDemerits = self.r.totalDemerits
-   --       end
-   --    end
-   --    self.r = self.r.next
-   -- until self.r == self.activeListHead
-   -- -- self.bestLine = self.bestBet.lineNumber -- Not needed as we can get it from bestBet
-   --
+   self.r = self.activeListHead.next
+   local actualLooseness = 0
+   repeat
+      if self.r.type ~= "delta" then
+         local lineDiff = self.r.lineNumber - self.bestBet.lineNumber
+         if (lineDiff < actualLooseness and looseness <= lineDiff)
+            or (lineDiff > actualLooseness and looseness >= lineDiff)
+         then
+            self.bestBet = self.r
+            actualLooseness = lineDiff
+            fewestDemerits = self.r.totalDemerits
+         elseif lineDiff == actualLooseness and self.r.totalDemerits < fewestDemerits then
+            self.bestBet = self.r
+            fewestDemerits = self.r.totalDemerits
+         end
+      end
+      self.r = self.r.next
+   until self.r == self.activeListHead
    -- END (TeX82 875; PDFTeX 1021)
 
-   -- FIXME self.actualLooseness not set anywhere, see above
-   if self.actualLooseness == looseness or self.finalpass then
+   if actualLooseness == looseness or self.finalpass then
       return true
    end
-   -- END TeX82 873
 end
 
 --- Main line breaking procedure.
 --
--- Derived from (TeX82 863; PDFTeX 1039) PARTIALLY CHECKED FIX%E
+-- Derived from (TeX82 863; PDFTeX 1039) PARTIALLY CHECKED FIXME
 --
 -- @tparam table nodes List of nodes representing the paragraph
 -- @tparam SILE.length hsize Line width
+-- @treturn table List of breakpoints
+-- @treturn table Possibly modified list of nodes
 function lineBreak:doBreak (nodes, hsize)
    passSerial = 1
    debugging = SU.debugging("break")
    self.nodes = nodes
    self.hsize = hsize
    self:init()
-   self.adjdemerits = param("adjdemerits")
+   self.adjdemerits = param("adjacentDemerits")
 
    -- BEGIN (TeX82 863; PDFTeX 1039) --- FIXME PARTIALLY CHECKED
    -- Find optimal breakpoints
@@ -955,7 +979,8 @@ function lineBreak:doBreak (nodes, hsize)
          end
       end
 
-      -- Not doing "Clean up the memory by removing the break nodes" (TeX82 865; PDFTeX 1041)
+      -- FIXME:
+      -- SILE: Not doing "Clean up the memory by removing the break nodes" (TeX82 865; PDFTeX 1041)
 
       if self.pass ~= "second" then
          self.pass = "second"
@@ -988,7 +1013,7 @@ end
 
 --- Generate the list of line breaks after the best breakpoints have been found.
 --
--- FIXME TODO CHECK in (TeX82; PDFTeX)
+-- FIXME NOT RE-CHECKED YET AGAINST (TeX82; PDFTeX), but there are also some SILE-specific adjustments here.
 --
 function lineBreak:postLineBreak ()
    local p = self.bestBet
