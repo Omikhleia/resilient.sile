@@ -23,7 +23,8 @@
 -- **Modified**
 --
 --  - See RESILIENT comments for adaptations to work with the sile·nt typesetter.
---  - Removed non-stantard "alternates" nodes (SILE's `gutenberg` non-working packages).
+--  - Removed non-stantard "alternates" nodes (SILE's `gutenberg` non-working package).
+--  - Removed non-standard "sideways" logic (SILE's experimental `pagebuilder-bestfit` package).
 --  - Refactored based on TeX82 and PDFTeX documentation, with comments (partial pass)
 --  - Notably added comments for non-implemented parts (doLastLineFit), but perhaps not all yet.
 --  - Removed some dead code or hard-to-follow debug code absent from the original algorithm
@@ -606,10 +607,7 @@ function lineBreak:createNewActiveNodes (breakType)
          self.breakWidth:___sub(node:replacementWidth())
       end
       while self.nodes[place] and not self.nodes[place].is_box do
-         if self.sideways and self.nodes[place].height then
-            self.breakWidth:___sub(self.nodes[place].height)
-            self.breakWidth:___sub(self.nodes[place].depth)
-         elseif self.nodes[place].width then -- We use the fact that (a) nodes know if they have width and (b) width subtraction is polymorphic
+         if self.nodes[place].width then -- We use the fact that (a) nodes know if they have width and (b) width subtraction is polymorphic
             self.breakWidth:___sub(self.nodes[place]:lineContribution())
          end
          place = place + 1
@@ -746,16 +744,7 @@ function lineBreak:checkForLegalBreak (node)
       SU.debug("break", "considering node " .. node)
    end
    local previous = self.nodes[self.place - 1]
-   if self.sideways and node.is_box then
-      self.activeWidth:___add(node.height)
-      self.activeWidth:___add(node.depth)
-   elseif self.sideways and node.is_vglue then
-      if previous and previous.is_box then
-         self:tryBreak()
-      end
-      self.activeWidth:___add(node.height)
-      self.activeWidth:___add(node.depth)
-   elseif node.is_box then
+   if node.is_box then
       self.activeWidth:___add(node:lineContribution())
    elseif node.is_glue then
       -- auto_breaking parameter not implemented
@@ -887,13 +876,11 @@ end
 --
 -- @tparam table nodes List of nodes representing the paragraph
 -- @tparam SILE.length hsize Line width
--- @tparam boolean sideways Whether we are breaking sideways text
-function lineBreak:doBreak (nodes, hsize, sideways)
+function lineBreak:doBreak (nodes, hsize)
    passSerial = 1
    debugging = SU.debugging("break")
    self.nodes = nodes
    self.hsize = hsize
-   self.sideways = sideways
    self:init()
    self.adjdemerits = param("adjdemerits")
 
