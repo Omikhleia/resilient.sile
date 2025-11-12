@@ -52,6 +52,11 @@ local forbiddenPackages = {
    -- As re·sil·ient use its own package/class hierarchy, we do not want
    -- this module to be loaded and mess with things that never applied to re·sil·ient.
    retrograde = true,
+   -- Experimental SILE package that never worked and required a modified knuth-plass
+   -- line-breaking algorithm.
+   -- Disabled as re·sil·ient moved back to a more standard implementation of the
+   -- latter.
+   gutenberg = true,
 }
 
 --- (Constructor) Initialize the class.
