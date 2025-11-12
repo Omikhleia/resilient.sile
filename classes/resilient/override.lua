@@ -38,7 +38,7 @@ class._name = "resilient.override"
 local forbiddenPackages = {
    -- Our autodoc-resilient should be used instead.
    -- We don't want partial half-loading of packages via the standard autodoc package.
-   -- It brreaks to many things, incl. our style-aware packages.
+   -- It breaks too many things, incl. our style-aware packages.
    autodoc = true,
    -- Integrated in the sile·nt typesetter natively.
    bidi = true,
@@ -47,6 +47,9 @@ local forbiddenPackages = {
    ['break-firstfit'] = true,
    grid = true,
    linespacing = true,
+   -- This package would also interfere interfere with sile·nt and/or page·ant.
+   -- Also disable as it required a modified knuth-plass line-breaking algorithm,
+   -- and re·sil·ient moved back to a more standard implementation of the latter.
    ['pagebuilder-bestfit'] = true,
    -- This package is for SILE's own backward compatibility.
    -- As re·sil·ient use its own package/class hierarchy, we do not want
