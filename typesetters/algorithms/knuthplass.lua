@@ -1,5 +1,21 @@
 --- (Modified) Knuth-Plass line breaking algorithm.
 --
+-- TEX82 comments and numbers refer to https://tug.ctan.org/info/knuth-pdf/tex/tex.pdf
+-- (At the time of writing, the linked document indicates March 12, 2025 15:39 as the date of generation).
+--
+-- PDFTeX comments and numbers refer to https://tug.ctan.org/info/knuth-pdf/pdftex/pdftex.pdf
+-- (At the time of writing, the linked document indicates March 12, 2025 15:39 as the date of generation).
+-- The latter has the "doLastLineFit" extension from e-TeX (not implemented here yet)
+-- and several other PDFTeX-specific extensions (not implemented here by design).
+--
+-- SILE comments refer to SILE's change to the original algorithm.
+--
+-- Interesting other references for readers:
+--
+--   - https://tug.ctan.org/macros/luatex/latex/linebreaker/linebreaker-doc.pdf
+--   - https://www.latex-project.org/publications/2012-FMi-TUB-tb106mittelbach-e-tex-revisited.pdf
+--
+--
 -- **Original code from SILE**
 --
 -- License: MIT
@@ -7,11 +23,13 @@
 --
 -- **Modified see RESILIENT comments**
 --
+--  - Removed non-stantard "alternates" nodes (SILE's gutenberg non-working packages)
+--
 -- License: MIT
 -- Copyright (c) 2025 Omikhleia / Didier Willis
 --
 -- @module typesetters.algorithms.knuthplass
---
+
 SILE.settings:declare({
    parameter = "linebreak.parShape",
    type = "boolean",
@@ -45,7 +63,6 @@ local passSerial = 0
 local awful_bad = 1073741823
 local inf_bad = 10000
 local ejectPenalty = -inf_bad
-local lineBreak = {}
 
 --[[
   Basic control flow:
@@ -70,6 +87,13 @@ end
 -- to avoid debugging and concat calls.
 local debugging = false
 
+--- Knuth-Plass line breaking algorithm.
+--
+-- @type lineBreak
+
+local lineBreak = {}
+
+--- Initialize the line breaker.
 function lineBreak:init ()
    self:trimGlue() -- 842
    -- 849
@@ -306,67 +330,9 @@ local function fitclass (self, shortfall)
    return badness, class
 end
 
-function lineBreak:tryAlternatives (from, to)
-   local altSizes = {}
-   local alternates = {}
-   for i = from, to do
-      if self.nodes[i] and self.nodes[i].is_alternative then
-         alternates[#alternates + 1] = self.nodes[i]
-         altSizes[#altSizes + 1] = #self.nodes[i].options
-      end
-   end
-   if #alternates == 0 then
-      return
-   end
-   local localMinimum = awful_bad
-   -- local selectedShortfall
-   local shortfall = self.lineWidth - self.curActiveWidth
-   if debugging then
-      SU.debug("break", "Shortfall was ", shortfall)
-   end
-   for combination in SU.allCombinations(altSizes) do
-      local addWidth = 0
-      for i = 1, #alternates do
-         local alternative = alternates[i]
-         addWidth = (addWidth + alternative.options[combination[i]].width - alternative:minWidth())
-         if debugging then
-            SU.debug("break", alternative.options[combination[i]], " width", addWidth)
-         end
-      end
-      local ss = shortfall - addWidth
-      -- Warning, assumes abosolute
-      local badness =
-         SU.rateBadness(inf_bad, ss.length.amount, self.curActiveWidth[ss > 0 and "stretch" or "shrink"].length.amount)
-      if debugging then
-         SU.debug("break", "  badness of", ss, "(", self.curActiveWidth, ") is", badness)
-      end
-      if badness < localMinimum then
-         self.r.alternates = alternates
-         self.r.altSelections = combination
-         -- selectedShortfall = addWidth
-         localMinimum = badness
-      end
-   end
-   if debugging then
-      SU.debug("break", "Choosing ", alternates[1].options[self.r.altSelections[1]])
-   end
-   -- self.curActiveWidth:___add(selectedShortfall)
-   shortfall = self.lineWidth - self.curActiveWidth
-   if debugging then
-      SU.debug("break", "Is now ", shortfall)
-   end
-end
-
 function lineBreak:considerDemerits (pi, breakType) -- 877
    self.artificialDemerits = false
    local nodeStaysActive = false
-   -- self:dumpActiveRing()
-   if self.seenAlternatives then
-      self:tryAlternatives(
-         self.r.prevBreak and self.r.prevBreak.curBreak or 1,
-         self.r.curBreak and self.r.curBreak or 1
-      )
-   end
    local shortfall = self.lineWidth - self.curActiveWidth
    self.badness, self.fitClass = fitclass(self, shortfall)
    if debugging then
@@ -630,9 +596,6 @@ function lineBreak:checkForLegalBreak (node) -- 892
       SU.debug("break", "considering node " .. node)
    end
    local previous = self.nodes[self.place - 1]
-   if node.is_alternative then
-      self.seenAlternatives = true
-   end
    if self.sideways and node.is_box then
       self.activeWidth:___add(node.height)
       self.activeWidth:___add(node.depth)
@@ -642,8 +605,6 @@ function lineBreak:checkForLegalBreak (node) -- 892
       end
       self.activeWidth:___add(node.height)
       self.activeWidth:___add(node.depth)
-   elseif node.is_alternative then
-      self.activeWidth:___add(node:minWidth())
    elseif node.is_box then
       self.activeWidth:___add(node:lineContribution())
    elseif node.is_glue then
@@ -707,8 +668,7 @@ end
 
 function lineBreak:doBreak (nodes, hsize, sideways)
    passSerial = 1
-   debugging = SILE.debugFlags["break"]
-   self.seenAlternatives = false
+   debugging = SU.debugging("break")
    self.nodes = nodes
    self.hsize = hsize
    self.sideways = sideways
@@ -832,12 +792,7 @@ function lineBreak:postLineBreak () -- 903
          left = left,
          right = right,
       })
-      if p.alternates then
-         for i = 1, #p.alternates do
-            p.alternates[i].selected = p.altSelections[i]
-            p.alternates[i].width = p.alternates[i].options[p.altSelections[i]].width
-         end
-      end
+
       p = p.prevBreak
       line = line + 1
    until not p
