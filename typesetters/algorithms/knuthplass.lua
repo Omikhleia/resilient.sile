@@ -65,9 +65,6 @@ SILE.settings:declare({ parameter = "linebreak.finalHyphenDemerits", type = "int
 -- interpreted as f = 1
 SILE.settings:declare({ parameter = "linebreak.doLastLineFit", type = "boolean", default = false }) -- unimplemented,
 
--- doubleHyphenDemerits
--- hyphenPenalty
-
 -- (TeX82 817; PDFTeX 993)
 local TIGHT_FIT = 3 -- fitness classification for lines shrinking 0.5 to 1.0 of their shrinkability
 local LOOSE_FIT = 1 -- fitness classification for lines stretching 0.5 to 1.0 of their stretchability
@@ -512,12 +509,9 @@ function lineBreak:computeDemerits (pi, breakType)
       end
    end
 
-   -- FIXME MISSING / NOT DONE HERE FOR SOME REASON ?
-   --   if abs (fit_class − fitness (r)) > 1 then d ← d + adj_demerits ;
-   -- MAYBE:
-   -- if self.r.fitness and math.abs(self.fitClass - self.r.fitness) > 1 then
-   --    demerit = demerit + param("adjdemerits")
-   -- end
+   if math.abs(self.fitClass - self.r.fitness) > 1 then
+      demerit = demerit + param("adjdemerits")
+   end
    return demerit
 end
 
@@ -791,7 +785,6 @@ function lineBreak:tryFinalBreak ()
    -- self:tryBreak()
    -- FIXME ?
    -- TEX82 873 has indeed: try_break(ejectPenalty, "hyphenated") ;
-   -- self:tryBreak()
 
    if self.activeListHead.next == self.activeListHead then
       return false
@@ -820,54 +813,29 @@ function lineBreak:tryFinalBreak ()
    -- The adjustment for a desired looseness is a slightly more complicated version of the loop just
    -- considered. Note that if a paragraph is broken into segments by displayed equations, each segment will be
    -- subject to the looseness calculation, independently of the other segments.
-   --
-   -- FIXME MISSING / NOT FULLY IMPLEMENTED
-   --
-   -- begin r ← link (active); actual_looseness ← 0;
-   --    repeat if type (r) != delta node then
-   --       begin line_diff ← line_number (r) − best_line;
-   --       if ((line_diff < actual_looseness ) ∧ (looseness ≤ line_diff )) ∨
-   --             ((line_diff > actual_looseness ) ∧ (looseness ≥ line_diff )) then
-   --          begin best_bet ← r; actual_looseness ← line_diff ; fewest_demerits ← total_demerits (r);
-   --       end
-   --       else if (line_diff = actual_looseness ) ∧ (total_demerits (r) < fewest_demerits ) then
-   --          begin best_bet ← r; fewest_demerits ← total_demerits (r);
-   --          end;
-   --       end;
-   --       r ← link(r);
-   --    until r = last_active ;
-   --    best line ← line_number (best_bet);
-   -- end
-   --
-   -- MAYBE CONVERT TO:
-   --
-   -- self.r = self.activeListHead.next
-   -- local actualLooseness = 0
-   -- repeat
-   --    if self.r.type ~= "delta" then
-   --       local lineDiff = self.r.lineNumber - self.bestBet.lineNumber
-   --       if (lineDiff < actualLooseness and looseness <= lineDiff)
-   --          or (lineDiff > actualLooseness and looseness >= lineDiff)
-   --       then
-   --          self.bestBet = self.r
-   --          actualLooseness = lineDiff
-   --          fewestDemerits = self.r.totalDemerits
-   --       elseif lineDiff == actualLooseness and self.r.totalDemerits < fewestDemerits then
-   --          self.bestBet = self.r
-   --          fewestDemerits = self.r.totalDemerits
-   --       end
-   --    end
-   --    self.r = self.r.next
-   -- until self.r == self.activeListHead
-   -- -- self.bestLine = self.bestBet.lineNumber -- Not needed as we can get it from bestBet
-   --
+   self.r = self.activeListHead.next
+   local actualLooseness = 0
+   repeat
+      if self.r.type ~= "delta" then
+         local lineDiff = self.r.lineNumber - self.bestBet.lineNumber
+         if (lineDiff < actualLooseness and looseness <= lineDiff)
+            or (lineDiff > actualLooseness and looseness >= lineDiff)
+         then
+            self.bestBet = self.r
+            actualLooseness = lineDiff
+            fewestDemerits = self.r.totalDemerits
+         elseif lineDiff == actualLooseness and self.r.totalDemerits < fewestDemerits then
+            self.bestBet = self.r
+            fewestDemerits = self.r.totalDemerits
+         end
+      end
+      self.r = self.r.next
+   until self.r == self.activeListHead
    -- END (TeX82 875; PDFTeX 1021)
 
-   -- FIXME self.actualLooseness not set anywhere, see above
-   if self.actualLooseness == looseness or self.finalpass then
+   if actualLooseness == looseness or self.finalpass then
       return true
    end
-   -- END TeX82 873
 end
 
 --- Main line breaking procedure.
@@ -876,6 +844,8 @@ end
 --
 -- @tparam table nodes List of nodes representing the paragraph
 -- @tparam SILE.length hsize Line width
+-- @treturn table List of breakpoints
+-- @treturn table Possibly modified list of nodes
 function lineBreak:doBreak (nodes, hsize)
    passSerial = 1
    debugging = SU.debugging("break")
