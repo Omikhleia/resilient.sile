@@ -1,0 +1,23 @@
+-- English localization for re·sil·ient invoices
+return {
+  invoice = "Invoice",
+  invoice_issue_date = "Issue Date",
+  invoice_delivery_date = "Delivery Date",
+  invoice_due_date = "Due Date",
+  invoice_due_terms = "Payment within {days} {day_terms}",
+  line_id = "ID",
+  line_description = "Description",
+  line_quantity = "Quantity",
+  line_unit_price = "Unit Price",
+  line_tax_rate = "VAT",
+  line_gross_amount = "Gross Amount",
+  total_net_amount = "Net Amount",
+  total_taxes = "Taxes",
+  total_amount_due = "Amount Due",
+  HUR = { "hour", "hours" },
+  day_terms = { "day", "days" },
+  contact = "Contact",
+  date_format = "%m/%d/%Y",
+  payment_bank = "Payment by bank transfer.",
+  payment_cheque = "Payment by cheque payable to {payee}.",
+}

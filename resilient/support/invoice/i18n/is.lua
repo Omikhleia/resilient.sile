@@ -1,0 +1,23 @@
+-- Icelandic localization for re·sil·ient invoices
+return {
+  invoice = "Reikningur",
+  invoice_issue_date = "Útgáfudagur",
+  invoice_delivery_date = "Afhendingardagur",
+  invoice_due_date = "Gjaldadagur",
+  invoice_due_terms = "Greiðsla innan {days} {day_terms}",
+  line_id = "ID",
+  line_description = "Lýsing",
+  line_quantity = "Magn",
+  line_unit_price = "Einingaverð",
+  line_tax_rate = "VSK",
+  line_gross_amount = "Heildarupphæð",
+  total_net_amount = "Nettó upphæð",
+  total_taxes = "Skattar",
+  total_amount_due = "Greiðsluskyldu upphæð",
+  HUR = { "stund", "stundir" },
+  day_terms = { "dag", "daga" },
+  contact = "Samband",
+  date_format = "%d.%m.%Y",
+  payment_bank = "Greiðsla með bankaflutningi.",
+  payment_cheque = "Greiðsla með tékka til {payee}.",
+}

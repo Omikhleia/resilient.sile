@@ -1,0 +1,23 @@
+-- Catalan localization for re·sil·ient invoices
+return {
+  invoice = "Factura",
+  invoice_issue_date = "Data d’emissió",
+  invoice_delivery_date = "Data de lliurament",
+  invoice_due_date = "Data de venciment",
+  invoice_due_terms = "Pagament en un termini de {days} {day_terms}",
+  line_id = "ID",
+  line_description = "Descripció",
+  line_quantity = "Quantitat",
+  line_unit_price = "Preu unitari",
+  line_tax_rate = "IVA",
+  line_gross_amount = "Import brut",
+  total_net_amount = "Import net",
+  total_taxes = "Impostos",
+  total_amount_due = "Import a pagar",
+  HUR = { "hora", "hores" },
+  day_terms = { "dia", "dies" },
+  contact = "Contacte",
+  date_format = "%d/%m/%Y",
+  payment_bank = "Pagament per transferència bancària.",
+  payment_cheque = "Pagament per xec a nom de {payee}.",
+}

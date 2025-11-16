@@ -1,0 +1,23 @@
+-- French localization for re·sil·ient invoices
+return {
+  invoice = "Facture",
+  invoice_issue_date = "Date d’émission",
+  invoice_delivery_date = "Date de livraison",
+  invoice_due_date = "Date d’échéance",
+  invoice_due_terms = "Paiement sous {days} {day_terms}",
+  line_id = "ID",
+  line_description = "Description",
+  line_quantity = "Quantité",
+  line_unit_price = "Prix Unitaire",
+  line_tax_rate = "T.V.A",
+  line_gross_amount = "Montant TTC",
+  total_net_amount = "Montant HT",
+  total_taxes = "Taxes",
+  total_amount_due = "Net à Payer",
+  HUR = { "heure", "heures" },
+  day_terms = { "jour", "jours" },
+  contact = "Contact",
+  date_format = "%d/%m/%Y",
+  payment_bank = "Paiement par virement bancaire.",
+  payment_cheque = "Paiement par chèque à l’ordre de {payee}.",
+}

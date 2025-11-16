@@ -19,6 +19,35 @@ local class = pl.class(parent)
 class._name = "resilient.base"
 class.styles = nil
 
+-- Some defaults
+class.firstContentFrame = "content"
+class.defaultFrameset = {
+  content = {
+    left = "left(page) + 10%pw",
+    right = "left(page) + 90%pw",
+    top = "top(page) + 10%pw",
+    bottom = "bottom(page)-10%pw"
+  },
+  header = {
+    left = "left(content)",
+    right = "right(content)",
+    top = "top(content) - 5%ph",
+    bottom = "top(content) - 2%ph"
+  },
+  footer = {
+    left = "left(content)",
+    right = "right(content)",
+    top = "bottom(content) + 2%ph",
+    bottom = "bottom(content) + 5%ph"
+  },
+  folio = { -- same as footer for now, compatibility with folio package
+    left = "left(content)",
+    right = "right(content)",
+    top = "bottom(content) + 2%ph",
+    bottom = "bottom(content) + 5%ph"
+  },
+}
+
 --- (Constructor) Initialize the class.
 --
 -- It initialize the parent class, loads the `packages.resilient.styles` module,

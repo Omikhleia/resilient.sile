@@ -4,3 +4,7 @@ For now, if you are a developer, you can browse the [generated documentation](ap
 Most, if not all, of the re·sil·ient modules have been annotated with LDoc comments, for you to browse and understand the internals.
 
 Feel free to contribute to this effort, and help up make re·sil·ient better, easier to maintain, and easier to extend.
+
+Our "Going on an Adventure with re·sil·ient" series is also hosted here.
+
+ - (#1) [Making Factur-X/ZUGFeRD invoices with SILE](adventures/invoice/index.md)

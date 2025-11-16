@@ -73,6 +73,8 @@ build = {
 
     ["sile.packages.resilient.attachments"]     = "packages/resilient/attachments/init.lua",
 
+    ["sile.packages.resilient.invoice"]         = "packages/resilient/invoice/init.lua",
+
     ["sile.packages.autodoc-resilient"]    = "packages/autodoc-resilient/init.lua",
     ["sile.packages.printoptions"]         = "packages/printoptions/init.lua",
 
@@ -94,8 +96,26 @@ build = {
     ["sile.resilient.adapters.frameset"] = "resilient/adapters/frameset.lua",
 
     ["sile.inputters.silm"] = "inputters/silm.lua",
+    ["sile.inputters.invoice"] = "inputters/invoice.lua",
 
-    ["sile.resilient.support.xmp"]       = "resilient/support/xmp.lua",
+    ["sile.resilient.schemas.validator"] = "resilient/schemas/validator.lua",
+    ["sile.resilient.schemas.common"]    = "resilient/schemas/common.lua",
+    ["sile.resilient.schemas.invoice"]   = "resilient/schemas/invoice/init.lua",
+    ["sile.resilient.schemas.silm"]      = "resilient/schemas/silm/init.lua",
+
+    ["sile.resilient.support.invoice.facturx"] = "resilient/support/invoice/facturx.lua",
+    ["sile.resilient.support.invoice.i18n.ca"] = "resilient/support/invoice/i18n/ca.lua",
+    ["sile.resilient.support.invoice.i18n.de"] = "resilient/support/invoice/i18n/de.lua",
+    ["sile.resilient.support.invoice.i18n.en"] = "resilient/support/invoice/i18n/en.lua",
+    ["sile.resilient.support.invoice.i18n.es"] = "resilient/support/invoice/i18n/es.lua",
+    ["sile.resilient.support.invoice.i18n.fr"] = "resilient/support/invoice/i18n/fr.lua",
+    ["sile.resilient.support.invoice.i18n.is"] = "resilient/support/invoice/i18n/is.lua",
+    ["sile.resilient.support.invoice.i18n.it"] = "resilient/support/invoice/i18n/it.lua",
+    ["sile.resilient.support.invoice.i18n.nl"] = "resilient/support/invoice/i18n/nl.lua",
+    ["sile.resilient.support.invoice.i18n.pt"] = "resilient/support/invoice/i18n/pt.lua",
+    ["sile.resilient.support.invoice.i18n.ru"] = "resilient/support/invoice/i18n/ru.lua",
+
+    ["sile.resilient.support.xmp"]             = "resilient/support/xmp.lua",
 
     ["sile.resilient-tinyyaml"]  = "lua-libraries/resilient-tinyyaml.lua",
 
