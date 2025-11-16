@@ -274,3 +274,9 @@ class writers.
 ``` =sile
 \package-documentation{resilient.liners}
 ```
+
+## PDF attachments
+
+``` =sile
+\package-documentation{resilient.attachments}
+```
