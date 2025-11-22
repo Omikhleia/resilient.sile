@@ -21,6 +21,7 @@ local utils = require("resilient.utils")
 function package:_init (options)
   base._init(self, options)
 
+  self:loadPackage("color")
   self:loadPackage("textsubsuper")
   self:loadPackage("textcase")
   self:loadPackage("resilient.liners")
