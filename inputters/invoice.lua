@@ -616,18 +616,6 @@ local function totalValuesBox(lines, invoice)
   })
 end
 
-  -- payment:                                   # Optional entries with payment means information (non-exclusive)
-  --   bank:
-  --     iban: GB12 BARC 202015 12345678        # Mandatory, IBAN format
-  --     bic:  BARCGB22XXX                      # Optional, BIC/SWIFT code
-  --     name: National Westminster Bank        # Optional
-  --   cheque:
-  --     name: Holmes Brothers & Associates     # Optional, default payee is seller.name
-
-  -- I18n keys to use:
-  -- payment_bank = "Payment by bank transfer",
-  -- payment_cheque = "Payment by cheque payable to {payee}",
-
 --- Creates the payment means box.
 --
 -- @tparam table payment Payment means table

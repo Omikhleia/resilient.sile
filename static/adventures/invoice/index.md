@@ -1,6 +1,6 @@
 # Making Factur-X/ZUGFeRD invoices with SILE
 
-_(Going on an adventure with _re·sil·ient_  #1_)
+_(Going on an adventure with re·sil·ient #1)_
 
 In our series of "Going on an Adventure", we'll explore below the process of creating PDF invoices compliant with the Factur-X/ZUGFeRD standard using SILE, the programmable typesetting system, and our own _re·sil·ient_ collection of SILE add-on modules.
 

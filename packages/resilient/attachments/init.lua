@@ -419,10 +419,9 @@ For instance, with the Poppler utilities:
 
 \medskip
 PDF/A-3 compliance requires that all attachments are listed in the XMP metadata of the PDF.
-The XMP metadata include a DocumentID which should theoretically be unique to the logical document.
+The XMP metadata include a DocumentID which should theoretically be unique to the logical document, and stable across generations of the same document.
 
-The \autodoc:command{\xmp-set-document[key=<key>]} command may to pass a specific key, that will be used to generate the DocumentID.
-For instance, when generating invoices, the invoice reference identifier may be used as the key.
+The \autodoc:command{\xmp-set-document[key=<key>]} command may be used to pass a specific key to be used for generating the DocumentID.
 
 \medskip
 Note that attachments are only supported with SILE’s \code{libtexpdf} outputter, and are ignored otherwise.
