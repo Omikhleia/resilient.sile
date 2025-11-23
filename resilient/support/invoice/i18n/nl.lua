@@ -1,0 +1,23 @@
+-- Dutch localization for re·sil·ient invoices
+return {
+  invoice = "Factuur",
+  invoice_issue_date = "Uitgiftedatum",
+  invoice_delivery_date = "Leveringsdatum",
+  invoice_due_date = "Vervaldatum",
+  invoice_due_terms = "Betaling binnen {days} {day_terms}",
+  line_id = "ID",
+  line_description = "Beschrijving",
+  line_quantity = "Aantal",
+  line_unit_price = "Stukprijs",
+  line_tax_rate = "BTW",
+  line_gross_amount = "Bruto Bedrag",
+  total_net_amount = "Netto Bedrag",
+  total_taxes = "Belastingen",
+  total_amount_due = "Te Betalen Bedrag",
+  HUR = { "uur", "uren" },
+  day_terms = { "dag", "dagen" },
+  contact = "Contact",
+  date_format = "%d-%m-%Y",
+  payment_bank = "Betaling via bankoverschrijving.",
+  payment_cheque = "Betaling via cheque aan {payee}.",
+}

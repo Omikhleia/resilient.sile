@@ -1,0 +1,98 @@
+# An example invoice in the re·sil·ient YAML-based format.
+invoice:
+  language:      en                          # Optional, BCP47 language code, default "en"
+                                             # Used for localized strings in the PDF
+  id:            EX-SILE2025-01              # Mandatory, number or string identifying the invoice
+  issue-date:    2025-11-05                  # Mandatory, YYYY-MM-DD format
+  due-date:      2025-12-24                  # Mandatory, either an explicit date or a number of days
+  delivery-date: 2025-11-23                  # Optional
+  currency:      GBP                         # Mandatory, Must be an ISO 4217 alpha-3 currency code (GBP, EUR, USD, etc.)
+
+  # The note is an optional free text field that will be presented in the invoice PDF, not included in Factur-X.
+  note: |
+    Thank you for your purchase.
+    We hope you are plaintly satisfied with our services.
+    Please make the payment by the due date. — The Sherlock Holmes Company
+
+  seller:
+    name: Holmes Brothers & Associates       # Mandatory
+    logo: sherlock.png                       # Optional. Not used in Factur-X but rendered in the PDF
+    uri: https://sile-typesetter.org         # Optional, Not used in Factur-X but rendered in the PDF
+    tax-registration: GB1234567              # Optional.
+                                             # If present, shall have an ISO 3166-1 alpha-2 country code prefix
+    address:                                 # Optional
+      postal-code: NW1 6XE                   # Optional
+      location:                              # Up to 3 location lines are used in Factur-X
+        - 221b Baker St
+        - Marylebone
+      city: London                           # Optional
+      country: GB                            # Mandatory, ISO 3166-1 code, if the address is present
+    contact:                                 # Optional
+      name: Sherlock Holmes                  # Optional
+      department: Sales Dept.                # Optional
+      phone: "+44 20 7123 4567"              # Optional, in international format (in Factur-X, only digits are kept).
+      email: sherlock.holmes@sile.org        # Optional
+
+  buyer:                                     # Same structure as seller, we just won't use a buyer logo in the PDF.
+    name: Detective Agency Ltd.
+    # uri: ...
+    # tax-registration: ...
+    address:
+      postal-code: W1
+      location:
+        - 203 Whitehaven Mansions
+        - Sandhurst Square
+        - Barbican
+      city: London
+      country: GB
+    contact:
+      name: Hercule Poirot
+      department: Purchasing Service
+      phone: "+44 20 7123 4568"
+      email: hercule.poirot@sile.org
+
+  payment:                                   # Optional entries with payment means information (non-exclusive)
+    bank:
+      iban: GB12 BARC 202015 12345678        # Mandatory, IBAN format
+      bic:  BARCGB22XXX                      # Optional, BIC/SWIFT code
+      name: National Westminster Bank        # Optional
+    cheque:
+      name: Holmes B. International          # Optional, default payee is seller.name
+
+  lines:
+    - id:          1                         # Mandatory, not necessarily a sequential number, just an identifier
+      description: Detective toolkit         # Mandatory
+      quantity:    1                         # Mandatory
+      unit:        EA                        # Optional, EA (default, "each"), HUR (hours)
+      unit-price:  150                       # Mandatory, unit price without tax
+      tax-rate:    0.20                      # Mandatory, tax rate as a decimal (0.19 = 19%)
+    - id: 2
+      description: |
+        Reference books:
+        The Hollow Needle
+        The Murders in the Rue Morgue
+      quantity:    2
+      unit-price:  10
+      tax-rate:    0
+    - id: 3
+      description: Special consultation on advanced deduction techniques
+      unit-price:  200
+      unit:        HUR
+      quantity:    7
+      tax-rate:    0.20
+    - id: 4
+      description: Travel by train
+      quantity:    2
+      unit-price:  40
+      tax-rate:    0
+    - id: 6
+      description: Installation of energy-efficient fireplace insert
+      quantity:    1
+      unit-price:  250
+      tax-rate:    0.05
+    - id: 7
+      description: Installation of a hidden surveillance system
+      quantity:    1
+      unit-price:  300
+      unit:       HUR
+      tax-rate:    0.20

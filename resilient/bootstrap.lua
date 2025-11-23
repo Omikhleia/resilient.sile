@@ -11,6 +11,7 @@ pcall(function () local _ = SILE.inputters.silm end)
 pcall(function () local _ = SILE.inputters.markdown end)
 pcall(function () local _ = SILE.inputters.djot end)
 pcall(function () local _ = SILE.inputters.pandocast end)
+pcall(function () local _ = SILE.inputters.invoice end)
 
 -- HACK: Hard-patch SILE core behavior.
 SU.debug("resilient.bootstrap", "Patching SILE core behavior")

@@ -1,0 +1,23 @@
+-- Italian localization for re·sil·ient invoices
+return {
+  invoice = "Fattura",
+  invoice_issue_date = "Data di Emissione",
+  invoice_delivery_date = "Data di Consegna",
+  invoice_due_date = "Data di Scadenza",
+  invoice_due_terms = "Pagamento entro {days} {day_terms}",
+  line_id = "ID",
+  line_description = "Descrizione",
+  line_quantity = "Quantità",
+  line_unit_price = "Prezzo Unitario",
+  line_tax_rate = "IVA",
+  line_gross_amount = "Importo Lordo",
+  total_net_amount = "Importo Netto",
+  total_taxes = "Tasse",
+  total_amount_due = "Importo Dovuto",
+  HUR = { "ora", "ore" },
+  day_terms = { "giorno", "giorni" },
+  contact = "Contatto",
+  date_format = "%d/%m/%Y",
+  payment_bank = "Pagamento tramite bonifico bancario.",
+  payment_cheque = "Pagamento tramite assegno intestato a {payee}.",
+}

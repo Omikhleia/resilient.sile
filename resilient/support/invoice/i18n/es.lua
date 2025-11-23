@@ -1,0 +1,23 @@
+-- Spanish localization for re·sil·ient invoices
+return {
+  invoice = "Factura",
+  invoice_issue_date = "Fecha de Emisión",
+  invoice_delivery_date = "Fecha de Entrega",
+  invoice_due_date = "Fecha de Vencimiento",
+  invoice_due_terms = "Pago dentro de {days} {day_terms}",
+  line_id = "ID",
+  line_description = "Descripción",
+  line_quantity = "Cantidad",
+  line_unit_price = "Precio Unitario",
+  line_tax_rate = "IVA",
+  line_gross_amount = "Importe Bruto",
+  total_net_amount = "Importe Neto",
+  total_taxes = "Impuestos",
+  total_amount_due = "Importe a Pagar",
+  HUR = { "hora", "horas" },
+  day_terms = { "día", "días" },
+  contact = "Contacto",
+  date_format = "%d/%m/%Y",
+  payment_bank = "Pago por transferencia bancaria.",
+  payment_cheque = "Pago por cheque a nombre de {payee}.",
+}

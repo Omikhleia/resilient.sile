@@ -188,8 +188,9 @@ end
 -- @tparam string part PDF/A part (e.g., "3")
 -- @tparam string conformance PDF/A conformance level (e.g., "B")
 -- @tparam pl.OrderedMap attachments Hash map of attachments
+-- @tparam boolean isFacturX Whether the document is a Factur-X invoice
 -- @treturn string XMP metadata packet
-local function xmpMetadata (documentKey, part, conformance, attachments)
+local function xmpMetadata (documentKey, part, conformance, attachments, isFacturX)
   local xmpPDFAidSnippt = xmpPDFAIdentification(part, conformance)
   local documentUUID
   if not documentKey then
@@ -202,10 +203,6 @@ local function xmpMetadata (documentKey, part, conformance, attachments)
 
   local xmpMediaManagementSnippet = xmpMediaManagement(documentUUID, instanceUUID)
   local xmpAssociatedFilesSnippet = xmpAssociatedFiles(attachments)
-
-  -- HACK base isFacturX on presence of an attachment named "factur-x.xml"
-  -- This is an "usual" name for the embedded XML invoice in Factur-X.
-  local isFacturX = attachments["factur-x.xml"] ~= nil
   local xmpContent
   if isFacturX then
     local xmpFacturXSnippet = string.format([[
@@ -235,3 +232,39 @@ end
 return {
   xmpMetadata = xmpMetadata,
 }
+
+-- Known mandatory XMP metadata elements for PDF/A-3B compliance, missing from our current implementation:
+--       <!-- Dublin Core metadata -->
+--       <dc:title>
+--         <rdf:Alt>
+--           <rdf:li xml:lang="x-default">Sample PDF/A-3 Document</rdf:li>
+--           <!-- Same as /Title in Info dictionary -->
+--         </rdf:Alt>
+--       </dc:title>
+--       <dc:creator>
+--         <rdf:Seq>
+--           <rdf:li>Author Name</rdf:li>
+--           <!-- Same as /Author in Info dictionary -->
+--         </rdf:Seq>
+--       </dc:creator>
+--       <dc:description>
+--         <rdf:Alt>
+--           <rdf:li xml:lang="x-default">A short description of the PDF/A-3 document.</rdf:li>
+--           <!-- Optional but same as /Subject in Info dictionary -->
+--         </rdf:Alt>
+--       </dc:description>
+--       <dc:date>
+--         <rdf:Seq>
+--           <rdf:li>2025-11-21T12:00:00Z</rdf:li>
+--           <!-- Same as /CreationDate in Info dictionary -->
+--         </rdf:Seq>
+--       </dc:date>
+--
+--       <!-- XMP tool metadata -->
+--       <xmp:CreatorTool>...</xmp:CreatorTool><!-- In our case, same as /Producer in Info dictionary -->
+--       <xmp:CreateDate>2025-11-21T12:00:00Z</xmp:CreateDate><!-- Same as /CreationDate in Info dictionary -->
+--       <xmp:ModifyDate>2025-11-21T12:00:00Z</xmp:ModifyDate><!-- Same as /ModDate in Info dictionary, and on new files, ModDate = CreationDate -->
+--       <xmp:MetadataDate>2025-11-21T12:00:00Z</xmp:MetadataDate><!-- Same as /ModDate in Info dictionary -->
+--
+--       <!-- PDF producer info -->
+--       <pdf:Producer>...</pdf:Producer><!-- Same as /Producer in Info dictionary -->

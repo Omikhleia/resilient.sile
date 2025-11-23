@@ -17,9 +17,14 @@ It offers a wide range of features, including:
   - More book divisions (front matter, main matter, back matter) and subdivisions (appendices)…
   - And other useful features, from cross-references to advanced captioned figure and table environments, and more…
   - A great parity with Markdown, including many Pandoc-like extensions, and with Djot.
-- A lightweight “résumé” class, for you to produce a colorful and yet professional-looking _curriculum vitæ_.
 
 Whether you are a seasoned typist or a beginner, the _re·sil·ient_ collection aims at making the process of creating beautiful books as simple as possible, from front cover to back cover, using a lightweight markup language for most of the content, if not all of it.
+
+The collection also includes additional components, such as:
+- A lightweight “résumé” class, for you to produce a colorful and yet professional-looking _curriculum vitæ_.
+- An “invoice” support module, with:
+  - An easy-to-use YAML-based input format,
+  - Support for hybrid PDF/XML invoices following the Factur-X/ZUGFeRD standard.
 
 ## Demonstration
 
@@ -32,10 +37,11 @@ A complete PDF version of the documentation (but not necessarily always the late
 
 Did we say complete? Well, we lied a bit. For Markdown and Djot input, there is also a dedicated booklet, available [HERE](https://drive.google.com/file/d/19VfSMmfBIZwr43U-W842IkSE349wdgZb/view?usp=sharing) — or, again, in our [Calaméo bookshelf](https://www.calameo.com/accounts/7349338).
 
+For advanced users, developers and contributors, some technical documentation is also [available](https://omikhleia.github.io/resilient.sile/).
 
 ## Installation
 
-These packages require SILE v0.15.12.
+These packages require SILE v0.15.12 or v0.15.13.
 
 Installation relies on the **luarocks** package manager.
 See its installation instructions on the [LuaRocks](https://luarocks.org/) website.

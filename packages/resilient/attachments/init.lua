@@ -40,6 +40,7 @@ function package:_init (options)
   self._attachments = SILE.scratch.attachments
 
   self._xmpDocumentKey = nil -- Used for XMP DocumentID generation
+  self._isFacturX = false
 
   self._hasAttachmentSupport = true
   if SILE.outputter._name ~= "libtexpdf" then
@@ -157,6 +158,23 @@ function package:_buildAttachments ()
         fileSpecRef2 = fileSpecRef2
       }
     })
+
+    -- Heuristic.
+    local MAX_SNIFF_LENGTH = 1500
+    if entry.mime == "application/xml"
+      and entry.relation == "Alternative"
+      -- There are quite a lot of namespaces in a Factur-X XML invoice so anything shorter
+      -- is unlikely to be one.
+      and string.len(data) > MAX_SNIFF_LENGTH
+    then
+      local sniff = data:sub(1, MAX_SNIFF_LENGTH) -- To avoid trying to match too much
+      if sniff:match("urn:cen%.eu:en16931:") ~= nil -- In GuidelineSpecifiedDocumentContextParameter
+        and sniff:match("<%w*:?CrossIndustryInvoice") ~= nil -- Root element possibly namespaced
+      then
+        self._isFacturX = true
+        SU.debug("resilient.attachments", "Detected Factur-X attachment", name)
+      end
+    end
   end
   return attachments
 end
@@ -258,7 +276,7 @@ function package:_outputAttachments ()
   -- Real PDF/A compliance requires more elements than currently handled.
   -- But A-3 is what we need for attaching arbitrary files, and B is the
   -- minimum level of compliance.
-  local xmpContent = xmpMetadata(self._xmpDocumentKey, "3", "B", self._attachments)
+  local xmpContent = xmpMetadata(self._xmpDocumentKey, "3", "B", self._attachments, self._isFacturX)
   local xmpStreamStr = table.concat({
     "<<",
       "/Type /Metadata",
