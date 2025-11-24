@@ -1,6 +1,8 @@
 # Making Factur-X/ZUGFeRD invoices with SILE
 
-_(Going on an adventure with re·sil·ient #1)_
+_Going on an adventure with re·sil·ient #1_ 
+
+Authored 23/11/2025, revised 25/11/2025.
 
 In our series of "Going on an Adventure", we'll explore below the process of creating PDF invoices compliant with the Factur-X/ZUGFeRD standard using SILE, the programmable typesetting system, and our own _re·sil·ient_ collection of SILE add-on modules.
 
@@ -112,11 +114,11 @@ invoice.yaml: Unicode text, UTF-8 text
 sherlock.png: PNG image data, 334 x 334, 8-bit/color RGBA, non-interlaced
 ```
 
-The inclusion of the YAML source file and the seller logo image mean than whenever you receive this invoice PDF, you can extract the original data and re-generate the invoice if needed.
+The inclusion of the YAML source file and the seller logo image means than whenever you receive this invoice PDF, you can extract the original data and re-generate the invoice if needed.
 This is a great way to ensure long-term accessibility of your invoices, isn't it?
 
 > The PDF would also contain a buyer logo image, if we had declared one in our invoice.
-> If you re-run the generation command a second time, a style file will also be attached to the PDF. The styling paradigm in _re·sil·ient_ won't be detailed be here, but many aspects of the invoice presentation can be customized via a simple style file, if you are not satisfied with the default presentation.
+> If you re-run the generation command a second time, a style file will also be attached to the PDF. The styling paradigm in _re·sil·ient_ won't be detailed here, but many aspects of the invoice presentation can be customized via a simple style file, if you are not satisfied with the default presentation.
 
 The Factur-X file is an XML document following the Factur-X 1.07.2 / ZUGFeRD 2.3.2 (EN 16931) standard for electronic invoices.
 It can be extracted and processed by accounting software supporting this standard, ensuring interoperability with various systems.
@@ -130,7 +132,7 @@ With such a self-contained PDF invoice, you have the best of three worlds:
 
 What were the necessary steps to achieve this interesting result?
 
- 1. An "inputter" module to read our invoice data from a YAML file and prepare it for SILE,
+ 1. An input module ("inputter") to read our invoice data from a YAML file and prepare it for SILE's core processing,
  1. Some code to generate the Factur-X XML file from the invoice data,
  1. Some code to add proper PDF metadata (title, author, etc.) to the PDF,
  1. Some code to embed attachments in the PDF.
@@ -141,7 +143,7 @@ Let's detail these steps.
 1. First, we need SILE to accept our invoice data in YAML format.
 
    That's one of thet great thing about SILE: it is not tied to a specific input format.
-   Right, reading its User Manual, you may had the first impression that SILE only processes its own SIL-TeXlike or SIL-XML formats.
+   Right, reading its User Manual, you may had the first impression that SILE only processes its own custom SIL-TeXlike or SIL-XML formats.
 
    For everyone with a background in digital typesetting solutions, the impression is understandable. The (La)TeX world is used to having a single input format, and Typst is also going this way.
 
@@ -157,12 +159,12 @@ Let's detail these steps.
 
    It's just a matter of creating the XML structure according to the Factur-X standard, but performing such a task in other typesetting systems is often not straightforward.
 
-   In the (La)TeX world, it would be a nightmare to do that in pure TeX macros. Surely, there's Lua(La)TeX now, but why use sunch a convoluted system when programmability in Lua is the core "spirit" of SILE?
+   In the (La)TeX world, it would be a nightmare to do that in pure TeX macros. Surely, there's Lua(La)TeX now, but why use such a convoluted system when programmability in Lua is the core "spirit" of SILE?
    As for Typst, it has much better programming capabilities than TeX, but you have to use its own scripting language. It's powerful, but why use a specialized language, specific to that engine?
 
    In SILE, we can use Lua, a full-fledged programming language, to implement such functionalities.
 
-   I implemented the Factur-X generation code in pure Lua.
+   Therefore, I implemented the Factur-X generation code in pure Lua.
 
    > It's just a simple table (parsed representation of the YAML invoice data) to string (the XML content) conversion, not needing any SILE-specific features... So it's normally reusable in other Lua-based systems as well.
 
@@ -277,7 +279,7 @@ This is the file specification object for the `factur-x.xml` embedded file.
  - The `/F` and `/UF` entries provide the file name in "regular" and UTF-16 encoding, respectively. The UTF-16 version reads "factur-x.xml". The "regular" version is problematic, as non-ASCII characters may not be properly represented. — Our implementation does not bother to check if the Unicode name can be represented in the regular encoding, and just put a placeholder name there. We should improve that, but it's not a big deal as PDF viewers should use the UTF-16 version if present, as per the PDF specification.
  - The `/EF` entry points to the actual embedded file stream object. Note that PDF allows to have different streams for the "regular" and UTF-16 versions of the file name, but this is rarely used in practice. Call that a convoluted design choice of the PDF format...
 
-Obviously, the Factur-X XML file is marked as an "Alternative" (as it should). We are no going to look at the other files with as much details, but just note that the YAML source file is marked as a "Source" (since you can regenerate the same invoice from it), and the logo image(s) as a "Supplement" (as they are indeed supplementary files).
+Obviously, the Factur-X XML file is marked as an "Alternative" (as it should). We are not going to look at the other files with as much details, but just note that the YAML source file is marked as a "Source" (since you can regenerate the same invoice from it), and the logo image(s) and style file as a "Supplement" (as they are indeed supplementary files).
 
 ### File streams
 
@@ -301,7 +303,7 @@ endobj
 ```
 
 There we are at last, the actual embedded file stream, our actual content.
- - The `/Subtype` entry encodes the MIME type of the embedded file. Here, `application/xml` (with some PDF-specific fancyness),
+ - The `/Subtype` entry encodes the MIME type of the embedded file. Here, `application/xml` (with some PDF-specific eccentricity),
  - The stream content is compressed using the Flate algorithm, as indicated by the `/Filter` entry.
 
 And the stream content is indeed the Factur-X XML file our implementation generated.
@@ -333,7 +335,13 @@ endstream
 endobj
 ```
 
-It proves that the XMP packet is indeed present in our generated PDF invoice. There are some concerns to discuss regading its content, but we'll address them too when we discuss compliance to standards below.
+It proves that the XMP packet is indeed present in our generated PDF invoice. There are some concerns to discuss regarding its content, but we'll address them too when we discuss compliance to standards below.
+
+Using Poppler again, we can also visualize the XMP metadata in a simpler way.
+
+```
+$ pdfinfo -meta examples/invoice/invoice.pdf 
+```
 
 ### Preliminary conclusion
 
@@ -355,12 +363,12 @@ I haven't yet performed a full compliance check. But some aspects need further a
 
  - XMP metadata must be present, which we do, but...
     - The stream should not be compressed. SILE's version of **libtexpdf** currently compresses all streams by default, below a certain size threshold. — There's a June 2016 fix in **dvipfmx** to enforce that rule, but (unfortunately) SILE's derived implementation is older.
-    - Our XMP includes the PDF/A identification part, the list of embedded files (and for Factur-X, the expected entries as well), but misses other mandatory elements, such as the Dublin Core parts and CreateDate/ModifyDate parts. — That would require some more **libtexpdf** low-level PDF commands to be exposed to Lua, or some clever workarounds.
+    - Our XMP includes the PDF/A identification part, and the expected entries for Factur-X, but misses other mandatory elements, such as the Dublin Core parts and CreateDate/ModifyDate parts. — That would require some more **libtexpdf** low-level PDF commands to be exposed to Lua, or some clever workarounds.
  - More generally, other aspects of PDF/A-3B compliance must be checked, such as color profiles, fonts embedding, etc. — SILE's quite old **libtexpdf** library may not fully comply with all PDF/A-3B requirements.
 
 In a nutshell, our document is probably not fully compliant with PDF/A-3B requirements.
 
-It's a big topic, but the question at stake is how far do we have to ensure compliance, for other Factur-X tools to properly accept our generated PDF invoices, and not to reject them due to some PDF/A-3B non-compliance in the details. Fractur-X itself doesn't really care about PDF/A-3B compliance, as long as the necessary associated invoice XML is present. It all depends on the target software processing these invoices, whether they are permissive or strict on that point.
+It's a big topic, but the question at stake is how far do we have to ensure compliance, for other Factur-X tools to properly accept our generated PDF invoices, and not to reject them due to some PDF/A-3B non-compliance in the details. Factur-X itself doesn't really care about PDF/A-3B compliance, as long as the necessary associated invoice XML is present. It all depends on the target software processing these invoices, whether they are permissive or strict on that point.
 
 ### Factur-X compliance
 
