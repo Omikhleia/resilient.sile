@@ -618,7 +618,8 @@ end
 
 --- Creates the payment means box.
 --
--- @tparam table payment Payment means table
+-- @tparam table it Payment means table
+-- @tparam table seller Seller trade party
 -- @treturn table Boxed payment means
 local function paymentMeansBox (it, seller)
   if not it then
