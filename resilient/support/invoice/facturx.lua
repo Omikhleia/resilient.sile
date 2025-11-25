@@ -9,8 +9,11 @@
 -- References:
 --
 --  - XSD Schemas: <https://www.einlassband.eu/libs/horstoeko/zugferd/schema/>
---  - A validator: <https://validator.invoice-portal.de/index.php>
---  - Another validator: <https://xrechnung.avvaneo.com/>
+--  - Factur-X XML validator: <https://validator.invoice-portal.de/index.php>
+--  - Another Factur-X XML validator: <https://xrechnung.avvaneo.com/>
+--  - A Factur-X and PDF/A3-B validator: <https://mustangserver.com/validate/>
+--  - A PDF/A validator: <https://www.pdf-online.com/osa/validate.aspx>
+--  - A PDF/A and X%P validator: <https://www.pdflib.com/pdf-knowledge-base/xmp/free-xmp-validator>
 --
 -- Factur-X 1.07.2 ZUGFeRD 2.3.2 EN16931 compliance is targeted.
 --

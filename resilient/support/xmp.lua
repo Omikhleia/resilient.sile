@@ -47,39 +47,44 @@ end
 --     ...
 --   }
 
---- Generate the XML snippet for associated files (embedded attachments).
---
--- @tparam table attachments Hash map of attachments
--- @treturn string XML snippet for associated files
-local function xmpAssociatedFiles (attachments)
-  if not attachments or next(attachments) == nil then
-    return ""
-  end
-  local liTags = {}
-  for name, entry in attachments:iter() do
-    liTags[#liTags+1] = string.format([[
-          <rdf:li rdf:parseType="Resource">
-            %s
-            %s
-            %s
-          </rdf:li>]],
-      xmlTagHelper("pdfaExt:AFRelationship", {}, entry.relation),
-      xmlTagHelper("pdfaExt:FileName", {}, name),
-      xmlTagHelper("pdfaExt:MimeType", {}, entry.mime)
-    )
-  end
-  return string.format([[
-    <!-- Embedded files (associated files) -->
-    <rdf:Description rdf:about="">
-      <pdfaExt:associatedFiles>
-        <rdf:Bag>
-%s
-        </rdf:Bag>
-      </pdfaExt:associatedFiles>
-    </rdf:Description>]],
-    table.concat(liTags, "\n")
-  )
-end
+-- --- Generate the XML snippet for associated files (embedded attachments).
+-- --
+-- -- CAVEAT: Do not use: Non-standard in PDF/A-3, and rejected by several validators.
+-- -- I can't remember where I read that, but it's wrong visibly, or not mature.
+-- -- We'll see what PDF/A-4 may bring, or not. It's funny that the XMP packet does
+-- -- not seem to have a standardized way to declare associated files.
+-- --
+-- -- @tparam table attachments Hash map of attachments
+-- -- @treturn string XML snippet for associated files
+-- local function xmpAssociatedFiles (attachments)
+--   if not attachments or next(attachments) == nil then
+--     return ""
+--   end
+--   local liTags = {}
+--   for name, entry in attachments:iter() do
+--     liTags[#liTags+1] = string.format([[
+--           <rdf:li rdf:parseType="Resource">
+--             %s
+--             %s
+--             %s
+--           </rdf:li>]],
+--       xmlTagHelper("pdfaExtension:AFRelationship", {}, entry.relation),
+--       xmlTagHelper("pdfaExtension:FileName", {}, name),
+--       xmlTagHelper("pdfaExtension:MimeType", {}, entry.mime)
+--     )
+--   end
+--   return string.format([[
+--     <!-- Embedded files (associated files) -->
+--     <rdf:Description xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/" rdf:about="">
+--       <pdfaExtension:associatedFiles>
+--         <rdf:Bag>
+-- %s
+--         </rdf:Bag>
+--       </pdfaExtension:associatedFiles>
+--     </rdf:Description>]],
+--     table.concat(liTags, "\n")
+--   )
+-- end
 
 --- Generate the XMP Media Management XML snippet.
 --
@@ -89,7 +94,7 @@ end
 local function xmpMediaManagement (documentUUID, instanceUUID)
   return string.format([[
     <!-- XMP Media Management -->
-    <rdf:Description rdf:about="">
+    <rdf:Description xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/" rdf:about="">
       %s
       %s
     </rdf:Description>]],
@@ -115,12 +120,9 @@ end
 
 local XMPTemplateSimple = [[
 <x:xmpmeta xmlns:x="adobe:ns:meta/">
-  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-           xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
-           xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/"
-           xmlns:pdfaExt="http://www.aiim.org/pdfa/ns/extension/">
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!-- PDF/A identification -->
-    <rdf:Description rdf:about="">
+    <rdf:Description xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/" rdf:about="">
 %s
     </rdf:Description>
 %s
@@ -134,17 +136,57 @@ local XMPTemplateSimple = [[
 -- I haven't checked the specification.
 local XMPTemplateFacturX = [[
 <x:xmpmeta xmlns:x="adobe:ns:meta/">
-  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-           xmlns:fx="urn:ferd:pdfa:CrossIndustryDocument:invoice:1p0#"
-           xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
-           xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/"
-           xmlns:pdfaExt="http://www.aiim.org/pdfa/ns/extension/">
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!-- PDF/A identification -->
-    <rdf:Description rdf:about="">
+    <rdf:Description xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/" rdf:about="">
 %s
     </rdf:Description>
+    <!-- Required PDF/A extension schema declaration -->
+    <rdf:Description xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/"
+                     xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#"
+                     xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#"
+                     rdf:about="">
+      <!-- Factur-X extension schema -->
+      <pdfaExtension:schemas>
+        <rdf:Bag>
+          <rdf:li rdf:parseType="Resource">
+            <pdfaSchema:schema>Factur-X extension schema</pdfaSchema:schema>
+            <pdfaSchema:namespaceURI>urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#</pdfaSchema:namespaceURI>
+            <pdfaSchema:prefix>fx</pdfaSchema:prefix>
+            <pdfaSchema:property>
+              <rdf:Seq>
+                <rdf:li rdf:parseType="Resource">
+                  <pdfaProperty:name>DocumentFileName</pdfaProperty:name>
+                  <pdfaProperty:valueType>Text</pdfaProperty:valueType>
+                  <pdfaProperty:category>external</pdfaProperty:category>
+                  <pdfaProperty:description>name of the embedded XML invoice file</pdfaProperty:description>
+                </rdf:li>
+                <rdf:li rdf:parseType="Resource">
+                  <pdfaProperty:name>DocumentType</pdfaProperty:name>
+                  <pdfaProperty:valueType>Text</pdfaProperty:valueType>
+                  <pdfaProperty:category>external</pdfaProperty:category>
+                  <pdfaProperty:description>INVOICE</pdfaProperty:description>
+                </rdf:li>
+                <rdf:li rdf:parseType="Resource">
+                  <pdfaProperty:name>Version</pdfaProperty:name>
+                  <pdfaProperty:valueType>Text</pdfaProperty:valueType>
+                  <pdfaProperty:category>external</pdfaProperty:category>
+                  <pdfaProperty:description>The actual version of the ZUGFeRD XML schema</pdfaProperty:description>
+                </rdf:li>
+                <rdf:li rdf:parseType="Resource">
+                  <pdfaProperty:name>ConformanceLevel</pdfaProperty:name>
+                  <pdfaProperty:valueType>Text</pdfaProperty:valueType>
+                  <pdfaProperty:category>external</pdfaProperty:category>
+                  <pdfaProperty:description>The selected ZUGFeRD profile completeness</pdfaProperty:description>
+                </rdf:li>
+              </rdf:Seq>
+            </pdfaSchema:property>
+          </rdf:li>
+        </rdf:Bag>
+      </pdfaExtension:schemas>
+    </rdf:Description>
     <!-- Factur-X core metadata -->
-    <rdf:Description rdf:about="">
+    <rdf:Description xmlns:fx="urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#" rdf:about="">
 %s
     </rdf:Description>
 %s
@@ -187,11 +229,11 @@ end
 -- @tparam string|nil documentKey Document Key (deterministic)
 -- @tparam string part PDF/A part (e.g., "3")
 -- @tparam string conformance PDF/A conformance level (e.g., "B")
--- @tparam pl.OrderedMap attachments Hash map of attachments
+-- @tparam pl.OrderedMap _ Hash map of attachments (ignored currently)
 -- @tparam boolean isFacturX Whether the document is a Factur-X invoice
 -- @treturn string XMP metadata packet
-local function xmpMetadata (documentKey, part, conformance, attachments, isFacturX)
-  local xmpPDFAidSnippt = xmpPDFAIdentification(part, conformance)
+local function xmpMetadata (documentKey, part, conformance, _, isFacturX)
+  local xmpPDFAidSnippet = xmpPDFAIdentification(part, conformance)
   local documentUUID
   if not documentKey then
     SU.warn("XMP Metadata DocumentID is not deterministic as no document key was provided.")
@@ -202,7 +244,7 @@ local function xmpMetadata (documentKey, part, conformance, attachments, isFactu
   local instanceUUID = UUID.v4()
 
   local xmpMediaManagementSnippet = xmpMediaManagement(documentUUID, instanceUUID)
-  local xmpAssociatedFilesSnippet = xmpAssociatedFiles(attachments)
+  -- local xmpAssociatedFilesSnippet = xmpAssociatedFiles(attachments) SEE COMMENT ABOVE
   local xmpContent
   if isFacturX then
     local xmpFacturXSnippet = string.format([[
@@ -212,17 +254,17 @@ local function xmpMetadata (documentKey, part, conformance, attachments, isFactu
       <fx:ConformanceLevel>BASIC</fx:ConformanceLevel>]])
     xmpContent = string.format(
       XMPTemplateFacturX,
-      xmpPDFAidSnippt,
+      xmpPDFAidSnippet,
       xmpFacturXSnippet,
       xmpMediaManagementSnippet,
-      xmpAssociatedFilesSnippet
+      "" -- xmpAssociatedFilesSnippet SEE COMMENT ABOVE
     )
   else
     xmpContent = string.format(
       XMPTemplateSimple,
-      xmpPDFAidSnippt,
+      xmpPDFAidSnippet,
       xmpMediaManagementSnippet,
-      xmpAssociatedFilesSnippet
+      "" -- xmpAssociatedFilesSnippet SEE COMMENT ABOVE
     )
   end
   return xmpPacket(xmpContent)
