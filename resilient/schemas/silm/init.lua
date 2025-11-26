@@ -1,4 +1,4 @@
---- An master document schema for re·sil·ient.
+--- A master document schema for re·sil·ient.
 --
 -- The master document is a YAML file that describes the book structure.
 --
@@ -6,17 +6,12 @@
 -- @copyright (c) 2023-2025 Omikhleia / Didier Willis
 -- @module resilient.schemas.silm
 
-local DateSchema = require("resilient.schemas.common").DateSchema
+local CommonSchema = require("resilient.schemas.common")
+local DateSchema, PrimitiveTypeSchema = CommonSchema.DateSchema, CommonSchema.PrimitiveTypeSchema
 
 local OptionsSchema = {
   type = "object",
-  additionalProperties = {
-    type = { -- oneOf
-      { type = "string" },
-      { type = "boolean" },
-      { type = "number" },
-    },
-  },
+  additionalProperties = PrimitiveTypeSchema,
   properties = {}
 }
 
@@ -27,6 +22,8 @@ local FileSchema = {
     format = { type = "string" },
     options = OptionsSchema
   }
+  -- Making 'file' required breaks other schemas using FileSchema!
+  -- TODO: revisit, we may have a mistake somewhere in nested schemas.
 }
 
 local SingleFileSchema = {
@@ -40,7 +37,8 @@ local CaptionSchema = {
   type = "object",
   properties = {
     caption = { type = "string" },
-  }
+  },
+  required = { "caption" },
 }
 
 local ContentCaptionSchema = pl.tablex.deepcopy(CaptionSchema)
@@ -189,6 +187,21 @@ local FontSchema = {
   }
 }
 
+--- The SILE settings schema.
+--
+-- @field type "object"
+-- @table SettingsSchema
+local SettingsSchema = {
+  type = "object",
+  -- Allow any setting unknown to us
+  additionalProperties = PrimitiveTypeSchema,
+  properties = {
+    -- Some well-known often-used settings can get proper validation
+    ["textsubsuper.fake"] = { type = "boolean" },
+    ["typesetter.italicCorrection"] = { type = "boolean" },
+  }
+}
+
 --- The SILE configuration schema.
 --
 -- @field type "object"
@@ -199,21 +212,15 @@ local SileConfigurationSchema = {
     options = {
       type = "object",
       properties = {
-        class = { type = "string" },
-        papersize = { type = "string" },
+        class = { type = "string", default = "resilient.book" },
+        papersize = { type = "string", default = "a4" },
         layout = { type = "string" },
         resolution = { type = "number" },
         headers = { type = "string" },
         offset = { type = "string" },
       }
     },
-    settings = {
-      type = "object",
-      -- Allow any setting without validation
-      additionalProperties = true,
-      properties = {
-      }
-    },
+    settings = SettingsSchema,
     packages = {
       type = "array",
       items = { type = "string" }
@@ -262,6 +269,7 @@ local StructuredContentSchema = {
 -- @field type "object"
 -- @table MasterDocumentSchema
 local MasterDocumentSchema = {
+  ["$id"] = "urn:example:omikhleia:resilient:masterfile",
   type = "object",
   additionalProperties = true,
   properties = {
@@ -270,7 +278,7 @@ local MasterDocumentSchema = {
     },
     metadata = MetaDataSchema,
     font = FontSchema,
-    language = { type = "string" },
+    language = { type = "string", default = "en" },
     sile = SileConfigurationSchema,
     book = BookSchema,
     bibliography = BibliographySchema,

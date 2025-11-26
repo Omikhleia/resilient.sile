@@ -430,7 +430,7 @@ function inputter:parse (doc)
   -- Document wrap-up
   local options = sile.options or {}
   local classopts = isRoot and {
-      class = options.class or "resilient.book", -- Sane default. We Are Resilient.
+      class = options.class,
       papersize = options.papersize,
       layout = options.layout,
       resolution = options.resolution,

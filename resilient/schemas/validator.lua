@@ -18,10 +18,14 @@
 -- @treturn boolean Whether the object is valid as per the schema
 -- @treturn string|nil Error message if invalid
 local function validate (obj, schema, context)
-  context = context or ""
+  context = context or "doc"
+  if schema["$id"] then
+    SU.debug("resilient.schemas", "Validating", context, "against schema", schema["$id"])
+  end
 
   if type(schema.type) == "table" then -- oneOf type
     local oneOfMatched = false
+    SU.debug("resilient.schemas", "Validating", context, "as oneOf types")
     for _, v in ipairs(schema.type) do
       oneOfMatched = validate(obj, v, context)
       if oneOfMatched then
@@ -38,6 +42,7 @@ local function validate (obj, schema, context)
   end
 
   if schema.type == "array" then
+    SU.debug("resilient.schemas", "Validating", context, "as array")
     -- array type
     if type(obj) ~= "table" then
       return false, context .. " must be an array"
@@ -56,14 +61,29 @@ local function validate (obj, schema, context)
   end
 
   if schema.type == "object" then
+    SU.debug("resilient.schemas", "Validating", context, "as object")
     if type(obj) ~= "table" then
       return false, context .. " must be an object"
     end
+    -- Apply default values
+    for key, prop in pairs(schema.properties) do
+      if obj[key] == nil and prop.default ~= nil then
+        obj[key] = prop.default
+        SU.debug("resilient.schemas", "Applying default value to", context .. "." .. key)
+      end
+    end
+    -- Validate properties
     for key, val in pairs(obj) do
       local field = context .. "." .. key or key
       if not schema.properties[key] then
         if not schema.additionalProperties then
           return false, field .. " is not expected in " .. context
+        elseif type(schema.additionalProperties) == "table" then
+          SU.debug("resilient.schemas", "Validating", field, "with additional properties schema")
+          local ok, err = validate(val, schema.additionalProperties, field)
+          if not ok then
+            return false, err
+          end
         end
       else
         local ok, err = validate(val, schema.properties[key], field)
@@ -72,10 +92,13 @@ local function validate (obj, schema, context)
         end
       end
     end
+    -- Check required fields
     if schema.required then
       for _, reqKey in ipairs(schema.required) do
+        local field = context .. "." .. reqKey
+        SU.debug("resilient.schemas", "Checking required", field, "is present")
         if obj[reqKey] == nil then
-          return false, context .. "." .. reqKey .. " is required"
+          return false, field .. " is required"
         end
       end
     end
@@ -83,6 +106,7 @@ local function validate (obj, schema, context)
   end
 
   if schema.type == "integer" then
+    SU.debug("resilient.schemas", "Validating", context, "as integer")
     if type(obj) ~= "number" or obj % 1 ~= 0 then
       return false, context .. " must be an integer"
     end
@@ -96,6 +120,7 @@ local function validate (obj, schema, context)
   end
 
   if type(obj) == schema.type then -- primitive type (string, number, boolean)
+    SU.debug("resilient.schemas", "Validating", context, "as", schema.type)
     return true
   end
 

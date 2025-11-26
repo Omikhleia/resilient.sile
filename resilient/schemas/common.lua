@@ -29,6 +29,19 @@ local DateSchema = {
   required = { "year", "month", "day" },
 }
 
+--- Primitive schema (string, number, boolean).
+--
+-- @field type "oneOf"
+-- @table PrimitiveTypeSchema
+local PrimitiveTypeSchema = {
+  type = { -- oneOf
+    { type = "string" },
+    { type = "number" },
+    { type = "boolean" },
+  }
+}
+
 return {
   DateSchema = DateSchema,
+  PrimitiveTypeSchema = PrimitiveTypeSchema,
 }

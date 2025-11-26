@@ -57,9 +57,9 @@ end
 local function Unit (qty, unit)
   local n = tonumber(qty)
   local i18nUnit
-  -- Unit ignored if unit is "EA" or absent,
+  -- Unit ignored if "EA" (default)
   -- otherwise we try to localize it.
-  if unit and unit ~= "EA" then
+  if unit ~= "EA" then
     local choice = I18n(unit)
     if type(choice) == "table" then
       -- Singular/plural form
@@ -284,7 +284,7 @@ local knownISO4217CurrencySymbol = { -- Not exhaustive, TOTO move to a common mo
 -- @tparam number n Numerical value
 -- @treturn string Formatted decimal number
 local function Decimal (n)
-  local lang = context.language or "en" -- luacheck: ignore
+  local lang = context.language -- luacheck: ignore
   n = SU.cast("number", n)
   local formatted = icu.format_number(n, lang, 1) -- 1 = UNUM_DECIMAL
   return formatted
@@ -300,7 +300,7 @@ end
 -- @tparam string currency ISO 4217 currency code
 -- @treturn string Formatted currency
 local function Currency (n, currency)
-  local lang = context.language or "en" -- luacheck: ignore
+  local lang = context.language -- luacheck: ignore
   n = SU.cast("number", n)
   currency = knownISO4217CurrencySymbol[currency:upper()] or currency
   local formatted = icu.format_number(n, lang, 10) -- 10 = UNUM_CURRENCY
@@ -315,7 +315,7 @@ end
 -- @tparam number n Number between 0 and 1.
 -- @treturn string Formatted perrcentage
 local function Percent (n)
-  local lang = context.language or "en" -- luacheck: ignore
+  local lang = context.language -- luacheck: ignore
   -- ICU is not reliable/sufficient here, it rounds percentages to integers
   -- but we can have taxes such as 5.5%...
   -- HACK: We'll do a ISO currency format and replace the symbol.
@@ -531,7 +531,7 @@ local function lineItemBox (it, invoice, isLast)
       Style("invoice-line-description", (it.description:gsub("\n+", "\n\n"):gsub("\n+$",""):gsub("^\n+","")))
     ),
     Cell({ border = border, valign="middle", halign = "right"  },
-      Decimal(it.quantity), it.unit and it.unit ~= "EA" and Style("invoice-unit", Unit(it.quantity, it.unit))
+      Decimal(it.quantity), it.unit ~= "EA" and Style("invoice-unit", Unit(it.quantity, it.unit))
     ),
     Cell({ border = border, valign="middle", halign = "right"  },
       Currency(it["unit-price"], invoice.currency)
@@ -834,7 +834,7 @@ function inputter:parse (doc)
   local invoice = t.invoice
 
   -- Extend function environments for i18n and number formatting
-  local context = { context = { language = invoice.language or "en" } }
+  local context = { context = { language = invoice.language } }
   I18n     = extendFunctionEnvironment(I18n, context)
   Currency = extendFunctionEnvironment(Currency, context)
   Percent  = extendFunctionEnvironment(Percent, context)
@@ -869,7 +869,7 @@ function inputter:parse (doc)
       )
     end
 
-  content[#content+1] =  CreateCommand("language", { main =  invoice.language or "en" },
+  content[#content+1] =  CreateCommand("language", { main =  invoice.language },
     mainInvoiceBox(invoice)
   )
 
