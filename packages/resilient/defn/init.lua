@@ -7,18 +7,6 @@
 -- @copyright (c) 2023-2025 Omikhkeia / Didier Willis
 -- @module packages.resilient.defn
 
-local trimLeft = function (str)
-  return str:gsub("^%s*", "")
-end
-
-local trimRight = function (str)
-  return str:gsub("%s*$", "")
-end
-
-local trim = function (str)
-  return trimRight(trimLeft(str))
-end
-
 --- The "resilient.defn" package.
 --
 -- Extends `packages.resilient.base`.
@@ -90,10 +78,13 @@ function package:registerCommands ()
       if type(v) == "string" then
         -- All text nodes are ignored in structure tags, but just warn
         -- if there do not just consist in spaces.
-        local text = trim(v)
+        local text = pl.stringx.strip(v)
         if text ~= "" then SU.warn("Ignored standalone text ("..text..")") end
       else
-        SU.error("Definition structure error")
+        if type(v) == "table" and v.command then
+          SU.error("Structure error: unexpected command \\" .. v.command .. " in definition")
+        end
+        SU.error("Structure error: unexpected content (" .. tostring(v) .. ") in definition")
       end
     end
 

@@ -43,18 +43,6 @@ local checkEnumStyleName = function (name, defname)
   return SILE.scratch.styles.specs[name] and name or defname
 end
 
-local trimLeft = function (str)
-  return str:gsub("^%s*", "")
-end
-
-local trimRight = function (str)
-  return str:gsub("%s*$", "")
-end
-
-local trim = function (str)
-  return trimRight(trimLeft(str))
-end
-
 local enforceListType = function (cmd)
   if cmd ~= "enumerate" and cmd ~= "itemize" then
     SU.error("Only 'enumerate', 'itemize' or 'item' are accepted in lists, found '"..cmd.."'")
@@ -239,10 +227,10 @@ function package:doNestedList (listType, options, content)
       elseif type(content[i]) == "string" then
         -- All text nodes are ignored in structure tags, but just warn
         -- if there do not just consist in spaces.
-        local text = trim(content[i])
+        local text = pl.stringx.strip(content[i])
         if text ~= "" then SU.warn("Ignored standalone text ("..text..")") end
       else
-        SU.error("List structure error")
+        SU.error("Structure error: unexpected content (" .. tostring(content[i]) .. ") in list")
       end
     end
   end)
