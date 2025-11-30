@@ -280,3 +280,9 @@ class writers.
 ``` =sile
 \package-documentation{resilient.attachments}
 ```
+
+## PDF forms
+
+``` =sile
+\package-documentation{resilient.forms}
+```
