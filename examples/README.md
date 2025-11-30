@@ -34,6 +34,19 @@ A PDF version can be generated with the following command:
 resilient examples/sil/lefevre-tuor-idril.sil
 ```
 
+## A sample invoice
+
+The _re·sil·ient_ collection can also be used to generate professional-looking invoices, from a fairly simple but descriptive YAML file.
+
+```bash
+resilient examples/invoice/invoice.yaml
+```
+
+One of the advantages of YAML is that it is easy to read and edit, even for non-technical users. 
+You can just focus on the well-structured invoice data, without having to deal with layout or formatting issues.
+
+The generated PDF is a hybrid document, compliant with Factur-X 1.07.2 / ZUGFeRD 2.3.2 (EN 16931) — that is, beyond the nice visual representation of the invoice, it also contains an embedded XML file with the invoice data that can be automatically processed by accounting software supporting this e-invoicing standard.
+
 ## More examples?
 
 You can also check our repository of books and show-cases: [Awesome SILE books](https://github.com/Omikhleia/awesome-sile-books).
