@@ -1,7 +1,7 @@
 --- TEI bible format with critical apparatus as used for the Gothic Bible.
 --
 -- This implements the subset of TEI used in the Gotica XML document
--- from project "wulfila.be" (TEI Gothica).
+-- from project "wulfila.be" (TEI Gotica).
 --
 -- HIGHLY EXPERIMENTAL
 --
@@ -155,17 +155,6 @@ local MSSNAMES = {
   Speyer = "Frag. de Spire",
 }
 
--- String trimming
-local trimLeft = function (str)
-  return str:gsub("^%s*", "")
-end
-local trimRight = function (str)
-  return str:gsub("%s*$", "")
-end
-local trim = function (str)
-  return trimRight(trimLeft(str))
-end
-
 -- The XML sources uses "_" for incomplete words, and "~"" for assimilation,
 -- rather than some structured markup:
 -- Replace them with ellipsis and regular dash for output.
@@ -288,7 +277,7 @@ end
 local function trimAllSubContents(content)
   local subc = {}
   for _, n in ipairs(content) do
-    subc[#subc+1] = trim(n)
+    subc[#subc+1] = pl.stringx.strip(n)
   end
   return subc
 end
@@ -314,8 +303,8 @@ local function parseEmendations(content)
         sourceText[#sourceText+1] = node
       end
     else
-      targetText[#targetText+1] = trim(node)
-      sourceText[#sourceText+1] = trim(node)
+      targetText[#targetText+1] = pl.stringx.strip(node)
+      sourceText[#sourceText+1] = pl.stringx.strip(node)
     end
   end
   return emended, targetText, sourceText
