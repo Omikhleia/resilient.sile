@@ -12,6 +12,7 @@
 
 local PathRenderer = require("grail.renderer")
 local RoughPainter = require("grail.painters.rough")
+local computeBaselineRatio = require("resilient.utils").computeBaselineRatio
 
 --- Get the parameters for underlining from the current font.
 -- @treturn number underlinePosition Position of the underline from the baseline
@@ -39,28 +40,6 @@ local function getStrikethroughParameters ()
   local yStrikeoutPosition = font.os2.yStrikeoutPosition / upem * fontoptions.size
   local yStrikeoutSize = font.os2.yStrikeoutSize / upem * fontoptions.size
   return yStrikeoutPosition, yStrikeoutSize
-end
-
-local metrics = require("fontmetrics")
-local bsratiocache = {}
-
---- Compute the baseline ratio for the current font.
---
--- Based on font metrics (typographic extents).
---
--- Memoized for performance.
---
--- @treturn number Baseline ratio
-local computeBaselineRatio = function ()
-  local fontoptions = SILE.font.loadDefaults({})
-  local bsratio = bsratiocache[SILE.font._key(fontoptions)]
-  if not bsratio then
-    local face = SILE.font.cache(fontoptions, SILE.shaper.getFace)
-    local m = metrics.get_typographic_extents(face)
-    bsratio = m.descender / (m.ascender + m.descender)
-    bsratiocache[SILE.font._key(fontoptions)] = bsratio
-  end
-  return bsratio
 end
 
 --- The "resilient.liners" package.

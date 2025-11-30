@@ -45,9 +45,32 @@ local function recursiveTableMerge(t1, t2)
   end
 end
 
+local metrics = require("fontmetrics")
+local bsratiocache = {} -- Baseline ratio cache
+
+--- Compute the baseline ratio for the current font.
+--
+-- Based on font metrics (typographic extents).
+--
+-- Memoized for performance.
+--
+-- @treturn number Baseline ratio
+local computeBaselineRatio = function ()
+  local fontoptions = SILE.font.loadDefaults({})
+  local bsratio = bsratiocache[SILE.font._key(fontoptions)]
+  if not bsratio then
+    local face = SILE.font.cache(fontoptions, SILE.shaper.getFace)
+    local m = metrics.get_typographic_extents(face)
+    bsratio = m.descender / (m.ascender + m.descender)
+    bsratiocache[SILE.font._key(fontoptions)] = bsratio
+  end
+  return bsratio
+end
+
 --- @export
 return {
   castKern = castKern,
+  computeBaselineRatio = computeBaselineRatio,
   interwordSpace = interwordSpace,
   recursiveTableMerge = recursiveTableMerge,
 }
