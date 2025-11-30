@@ -56,6 +56,15 @@ function package:_init (options)
   end)
 end
 
+local function isAsciiString (s)
+  for i = 1, #s do
+    if s:byte(i) > 127 then
+      return false
+    end
+  end
+  return true
+end
+
 --- (Private) Build the PDF objects for all registered attachments.
 --
 -- It iterates over all registered attachments and builds the necessary PDF objects
@@ -84,7 +93,7 @@ function package:_buildAttachments ()
       file:close()
     end
 
-    n = n + 1
+    n = n + 1 -- Attachment counter for fallback names if needed
 
     -- Build the PDF objects for this attachment...
 
@@ -118,7 +127,7 @@ function package:_buildAttachments ()
     -- Create the file specification dictionary
     -- <<
     --   /Type /Filespec
-    --   /F (...)                % File name (ASCII mandatory, so we'll use placeholder name to avoid issues)
+    --   /F (...)                % File name (ASCII mandatory)
     --   /UF <...>               % Unicode file name (UTF-16BE hex-encoded), optional but we will always set it
     --   /Desc <...>             % Description (optional)
     --   /EF <<
@@ -128,10 +137,14 @@ function package:_buildAttachments ()
     --       >>
     --   /AFRelationship /Data   % Relationship type (Data, Source, Supplement, Alternative, Unspecified)
     -- >>
+    local ascname = isAsciiString(name)
+      and name
+      or ("attachment" .. n .. ".txt") -- Fallback to some placeholder name if not ASCII
+
     local fileStr = table.concat({
       "<<",
         "/Type /Filespec",
-        "/F (attachment" .. n .. ".txt)",
+        "/F (" .. ascname .. ")",
         "/UF <" .. u16name .. ">",
         "/Desc <" .. u16desc .. ">",
         "/AFRelationship /" .. entry.relation,
@@ -159,20 +172,29 @@ function package:_buildAttachments ()
       }
     })
 
-    -- Heuristic.
+    -- Heuristic to detect Factur-X EN16931 XML attachment:
+    --  - Name must be "factur-x.xml" (implied by some documents, if not mandated),
+    --  - MIME "application/xml" and relation "Alternative"
+    --  - Content must match CrossIndustryInvoice (CII) XML and EN16931 specification.
     local MAX_SNIFF_LENGTH = 1500
-    if entry.mime == "application/xml"
-      and entry.relation == "Alternative"
-      -- There are quite a lot of namespaces in a Factur-X XML invoice so anything shorter
-      -- is unlikely to be one.
-      and string.len(data) > MAX_SNIFF_LENGTH
-    then
-      local sniff = data:sub(1, MAX_SNIFF_LENGTH) -- To avoid trying to match too much
-      if sniff:match("urn:cen%.eu:en16931:") ~= nil -- In GuidelineSpecifiedDocumentContextParameter
-        and sniff:match("<%w*:?CrossIndustryInvoice") ~= nil -- Root element possibly namespaced
+    if name == "factur-x.xml" then
+      if entry.mime == "application/xml"
+        and entry.relation == "Alternative"
+        -- There are quite a lot of namespaces in a Factur-X XML invoice so anything shorter
+        -- is unlikely to be one.
+        and string.len(data) > MAX_SNIFF_LENGTH
       then
-        self._isFacturX = true
-        SU.debug("resilient.attachments", "Detected Factur-X attachment", name)
+        local sniff = data:sub(1, MAX_SNIFF_LENGTH) -- To avoid trying to match too much
+        if sniff:match("urn:cen%.eu:en16931:") ~= nil -- In GuidelineSpecifiedDocumentContextParameter
+          and sniff:match("<%w*:?CrossIndustryInvoice") ~= nil -- Root element possibly namespaced
+        then
+          self._isFacturX = true
+          SU.debug("resilient.attachments", "Detected Factur-X attachment", name)
+        else
+          SU.warn("Attachment 'factur-x.xml' does not appear to be a valid Factur-X XML invoice.")
+        end
+      else
+        SU.warn("Attachment 'factur-x.xml' does not match expected MIME type or relation for Factur-X.")
       end
     end
   end
