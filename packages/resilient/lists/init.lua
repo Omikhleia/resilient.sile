@@ -230,7 +230,7 @@ function package:doNestedList (listType, options, content)
         local text = pl.stringx.strip(content[i])
         if text ~= "" then SU.warn("Ignored standalone text ("..text..")") end
       else
-        SU.error("List structure error")
+        SU.error("Structure error: unexpected content (" .. tostring(content[i]) .. ") in list")
       end
     end
   end)

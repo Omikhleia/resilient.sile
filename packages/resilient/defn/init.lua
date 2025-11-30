@@ -81,7 +81,10 @@ function package:registerCommands ()
         local text = pl.stringx.strip(v)
         if text ~= "" then SU.warn("Ignored standalone text ("..text..")") end
       else
-        SU.error("Definition structure error")
+        if type(v) == "table" and v.command then
+          SU.error("Structure error: unexpected command \\" .. v.command .. " in definition")
+        end
+        SU.error("Structure error: unexpected content (" .. tostring(v) .. ") in definition")
       end
     end
 
