@@ -203,7 +203,7 @@ local function IncludedSupplyChainTradeLineItem (it)
         -- UltimateCustomerOrderReferencedDocument
       '</ram:SpecifiedLineTradeAgreement>',
       '<ram:SpecifiedLineTradeDelivery>',
-        xmlTagHelper("ram:BilledQuantity", { unitCode = it.unit or "EA" }, tostring(it.quantity)), -- default unit is "EA" (each)
+        xmlTagHelper("ram:BilledQuantity", { unitCode = it.unit }, tostring(it.quantity)),
         -- ChargeFreeQuantity
         -- PackageQuantity
         -- ShipToTradeParty
@@ -221,7 +221,7 @@ local function IncludedSupplyChainTradeLineItem (it)
           -- BasisAmount
           -- LineTotalBasisAmount
           -- AllowanceChargeBasisAmount
-          xmlTagHelper("ram:CategoryCode", {}, it['tax-rate'] == 0 and "Z" or "S"),
+          xmlTagHelper("ram:CategoryCode", {}, it['tax-rate'] == 0 and "Z" or "S"), -- Zero or Standard
           -- ExemptionReasonCode
           -- TaxPointDate
           -- DueDateTypeCode

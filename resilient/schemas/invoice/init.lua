@@ -108,7 +108,7 @@ local IncludedSupplyChainTradeLineItemSchema = {
     },
     description = { type = "string" },
     quantity = { type = "number" },
-    unit = { type = "string", default = "EA" }, -- TODO Defaults not handled in our validator yet
+    unit = { type = "string", default = "EA" },
     ["unit-price"] = { type = "number" },
     ["tax-rate"] = { type = "number" },
   },
@@ -128,8 +128,11 @@ local InvoiceContentSchema = {
         { type = "number" },
       },
     },
-    language = { type = "string" }, -- Not from Factur-X, but we use it for localization
-    note = { type = "string" },     -- Not from Factur-X, but free text note for presentation
+    language = {  -- Not from Factur-X, but we use it for localization
+      type = "string",
+      default = "en",
+    },
+    note = { type = "string" }, -- Not from Factur-X, but free text note for presentation
     ["issue-date"] = DateSchema,
     ["due-date"] = { type = {
         DateSchema,
@@ -143,6 +146,7 @@ local InvoiceContentSchema = {
         { type = "string" },
         { type = "number" },
       },
+      default = "380", -- Standard invoice
     },
     seller = TradePartySchema,
     buyer = TradePartySchema,
@@ -160,10 +164,12 @@ local InvoiceContentSchema = {
 -- @field type "object"
 -- @table InvoiceSchema
 local InvoiceSchema = {
+  ["$id"] = "urn:example:omikhleia:resilient:invoice",
   type = "object",
   properties = {
     invoice = InvoiceContentSchema
-  }
+  },
+  required = { "invoice" },
 }
 
 return {
