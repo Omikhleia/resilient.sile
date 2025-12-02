@@ -1,0 +1,60 @@
+masterfile: 1.0
+metadata:
+  title: Markdown and Djot to PDF with SILE
+  subtitle: User Guide
+  subject: User manual for the markdown.sile module
+  keywords:
+    - SILE
+    - Markdown
+    - Djot
+    - Pandoc
+  authors: Didier Willis
+  publisher: Omikhleia
+  pubdate: 2025-08-29
+  url: https://github.com/Omikhleia/markdown.sile
+  copyright: © 2022–2025, Didier Willis.
+  legal: |
+    This material may be distributed only subject to the terms and conditions
+    set forth in the  Creative Commons Attribution, Share-Alike License,
+    version 2.0 (http://creativecommons.org/licenses/by-sa/2.0/).
+font:
+  family: [Libertinus Serif, Symbola]
+  size: 10pt
+language: en
+book:
+  enabled: true
+  cover:
+    front:
+      image: cover-front-markdown.jpg
+    back:
+      image: cover-back-markdown.jpg
+      content: sile-and-markdown-backcover.dj
+      background: "#012d36"
+sile:
+  options:
+    # class: resilient.book # optional (default)
+    papersize: 6in x 9in
+    layout: division 9
+    resolution: 300
+  settings:
+    textsubsuper.fake: true
+    autodoc.highlighting: true
+    document.baselineskip: 1.2em
+    typesetter.italicCorrection: true
+  packages:
+    - autodoc-resilient # REQUIRED FOR RESILIENT, do not use regular autodoc
+    - dropcaps
+    - resilient.poetry
+content:
+  chapters:
+    - toc.dj
+    - extra-styles.dj
+    - introduction.dj
+    - lightweight-markup.dj
+    - sile-and-djot.dj
+    - sile-and-markdown.md
+    - sile-and-pandoc.dj
+    - pandoc-tables.pandoc
+    - file: final-notes.dj
+      content:
+        - biblio.dj

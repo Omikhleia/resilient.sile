@@ -1,0 +1,32 @@
+digraph G {
+  rankdir="LR"
+  edge[arrowhead="vee"];
+
+  subgraph cluster_in {
+    label=input
+    doc [shape=note, label="Djot\nor\nMarkdown"];
+    style=filled;
+    color="#e0e0d0";
+
+  }
+
+  subgraph cluster_out {
+   pdf [shape=note, label="PDF"];
+   style=filled;
+   color="#e0f0e0";
+   label="output";
+  }
+
+  sile [shape=doublecircle, color="#e8ccd7 ", style=filled, label="SILE"];
+
+  pandoc [shape=doublecircle, color="#d0d0d0", style=filled, label="Pandoc", fontsize=12];
+
+  ast [shape=note, label="Pandoc\nAST", color="#c0c0c0", fontsize=12];
+
+  doc -> sile [label="native path", fontsize=11]
+  doc -> pandoc  [style=dashed, color="#a0a0a0"]
+  pandoc -> ast [color="#a0a0a0"]
+  ast -> sile [color="#a0a0a0"]
+
+  sile -> pdf
+}
