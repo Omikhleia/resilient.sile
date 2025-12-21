@@ -8,3 +8,4 @@ Feel free to contribute to this effort, and help up make re·sil·ient better, e
 Our "Going on an Adventure with re·sil·ient" series is also hosted here.
 
  - (#1) [Making Factur-X/ZUGFeRD invoices with SILE](adventures/invoice/index.md)
+ - (#2) [An overview of Djot extensions and interpretations in _re·sil·ient_](adventures/djot/index.md)

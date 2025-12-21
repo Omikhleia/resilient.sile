@@ -172,7 +172,7 @@ Let's detail these steps.
 
 1. Addding PDF metadata is straightforward with SILE.
 
-   We just need to invoke therelevant commands from the SILE **pdf** package. The inputter takes care of adding them to the AST, with the proper values from the invoice data.
+   We just need to invoke the relevant commands from the SILE **pdf** package. The inputter takes care of adding them to the AST, with the proper values from the invoice data.
 
 1. The standard SILE distribution does not provide any package to embed attachments in the PDF.
 
