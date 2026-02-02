@@ -191,9 +191,22 @@ local function bib2csl (entry)
 
    -- journaltitle / booktitle
    if bibtex.journaltitle then
-      csl["container-title"] = bibtex.journaltitle
+      -- Leap of faith, assuming the journaltitle is the short form (minimal)
+      csl["container-title-short"] = bibtex.journaltitle
+      -- But then build the full form with the subtitle and addon if any, since these otherwise would be lost in CSL 1.0.2.
+      -- It quite makes sense nevertheless:
+      --   - The addon is useful for a case like "Lembas Extra 1993/1994" where one wants the journal to be "Lembas Extra"
+      --     but the long form used in references to include the addon.
+      --   - The subtitle is useful in bibliographies (references) as well.
+      local titlefull = bibtex.journaltitleaddon and (bibtex.journaltitle .. " " .. bibtex.journaltitleaddon) or bibtex.journaltitle
+      csl["container-title"] = bibtex.journalsubtitle
+         and (titlefull .. ": " .. bibtex.journalsubtitle) or titlefull
    elseif bibtex.booktitle then
-      csl["container-title"] = bibtex.booktitle
+      -- Adopt the same logic for booktitle
+      csl["container-title-short"] = bibtex.booktitle
+      local titlefull = bibtex.booktitleaddon and (bibtex.booktitle .. " " .. bibtex.booktitleaddon) or bibtex.booktitle
+      csl["container-title"] = bibtex.booksubtitle
+         and (titlefull .. ": " .. bibtex.booksubtitle) or titlefull
    end
 
    -- publisher / institution / school / organization
@@ -208,6 +221,9 @@ local function bib2csl (entry)
    -- title / chapter
    if bibtex.title then
       csl.title = bibtex.title
+      if bibtex.chapter and tonumber(bibtex.chapter) then
+         csl['chapter-number'] = bibtex.chapter
+      end
    else
       csl.title = bibtex.chapter
    end
