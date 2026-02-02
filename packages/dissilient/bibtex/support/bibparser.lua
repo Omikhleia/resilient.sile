@@ -94,6 +94,75 @@ local function splitSeparatedField (str)
       :filter(function (s) return s ~= "" end)
 end
 
+local function parseAnnotation(ann)
+  local res = {}
+  local i = 1
+
+  while i <= #ann do
+    if ann:sub(i,i) == '"' then
+      local j = ann:find('"', i+1, true)
+      assert(j, "unterminated quote")
+      res[#res+1] = ann:sub(i+1, j-1)
+      i = j + 1
+    else
+      local j = ann:find(',', i, true)
+      res[#res+1] = j and ann:sub(i, j-1) or ann:sub(i)
+      i = j and j + 1 or #ann + 1
+    end
+    if ann:sub(i,i) == ',' then i = i + 1 end
+  end
+
+  return res
+end
+
+local function annotSpecs(str)
+  local i, n, quoted = 1, #str, false
+  return function()
+    if i > n then return nil end
+    local buf = {}
+    while i <= n do
+      local c = str:sub(i,i)
+      i = i + 1
+      if c == '"' then
+        quoted = not quoted
+      elseif c == ';' and not quoted then
+        break
+      end
+      buf[#buf+1] = c
+    end
+    return table.concat(buf)
+  end
+end
+
+local function parseAnnotationSpec (str)
+   -- <annotationspecs> ::= <annotationspec> [ ";" <annotationspec> ]
+   -- <annotationspec> ::= [ <itemcount> [ ":" <part> ] ] "=" <annotations>
+   -- <annotations> ::= <annotation> [ "," <annotation> ]
+   -- <annotation> ::= ["] (string) ["]
+   local result = {}
+   for spec in annotSpecs(str) do
+      local head, ann = spec:match("^(.-)=(.+)$")
+      local itemcount, part = head:match("^(%w+):(%w+)$")
+      itemcount = itemcount or head:match("^(%w+)$")
+      local annotations = parseAnnotation(ann)
+      result[#result+1] = { itemcount = itemcount, part = part, annotations = annotations }
+   end
+   return result
+end
+
+local function applyAnnotations (authors, specs, allowed_parts)
+   for _, s in ipairs(specs) do
+      local i = tonumber(s.itemcount)
+      if not i or not authors[i] then
+         SU.warn("invalid itemcount: "..tostring(s.itemcount))
+      elseif #s.annotations ~= 1 then
+         SU.warn("wrong cardinality for item "..i)
+      else
+         authors[i][s.part or allowed_parts[1]] = s.annotations[1]
+      end
+   end
+end
+
 local function consolidateEntry (entry, label)
    local consolidated = {}
    -- BibLaTeX aliases for legacy BibTeX fields
@@ -122,6 +191,17 @@ local function consolidateEntry (entry, label)
          consolidated[field] = names
       end
    end
+   -- xxxx+an:orcid fields on author, editor, translator
+   for _, field in ipairs({ "author", "editor", "translator" }) do
+      for _, id in ipairs({ "orcid", "viaf", "isni", "wikidata" }) do
+         local annfield = field .. "+an:" .. id
+         if consolidated[annfield] then
+            local annotations = parseAnnotationSpec(consolidated[annfield])
+            applyAnnotations(consolidated[field], annotations, { id:upper() })
+         end
+      end
+   end
+
    -- Month field in either number or string (3-letter code)
    if consolidated.month then
       local month = tonumber(consolidated.month) or months[consolidated.month:lower()]
