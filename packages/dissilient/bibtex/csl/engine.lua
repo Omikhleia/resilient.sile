@@ -1625,15 +1625,23 @@ function CslEngine:_postrender (text)
    local piquote = SU.boolean(self.locale.styleOptions["punctuation-in-quote"], false)
 
    -- Typography: Ensure there are no double straight quotes left from the input.
+   -- a. Straight quotes at the beginning and end of the text are replaced.
    text = luautf8.gsub(text, '^"', ldquote)
    text = luautf8.gsub(text, '"$', rdquote)
-   text = luautf8.gsub(text, '([%s%p])"', "%1" .. ldquote)
+   -- b. Straight quotes after spaces, parentheses, apostrophes, or end of XML tags
+   -- are opening quotes.
+   text = luautf8.gsub(text, '([%s()’>])"', "%1" .. ldquote)
+   -- c. Straight quotes before spaces or any punctuation are closing quotes.
    text = luautf8.gsub(text, '"([%s%p])', rdquote .. "%1")
    -- HACK: punctuation-in-quote is applied globally, not just to generated quotes.
    -- Not so sure it's the intended behavior from the specification?
    if piquote then
       -- move commas and periods before closing quotes
       text = luautf8.gsub(text, "([" .. rdquote .. rsquote .. "]+)%s*([.,])", "%2%1")
+   else
+      -- move commas and periods after closing quotes
+      -- (the typical cases occurs in the original entries in English)
+      text = luautf8.gsub(text, "([,]+)([" .. rdquote .. rsquote .. "]+)", "%2%1")
    end
    -- HACK: remove spaces before punctuation
    -- This and other hacks below tries to fix issues in CSL styles
