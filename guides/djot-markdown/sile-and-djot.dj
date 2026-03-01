@@ -337,7 +337,7 @@ Otherwise, the converter uses its own fallback method.
 #### Extended image types
 
 Besides regular image files, a few specific file extensions are also recognized and processed appropriately by this converter.
-Notably ![](./examples/manicule.svg){height="1.3ex"} SVG is supported too (`.svg`), as demonstrated.
+Notably ![](manicule.svg){height="1.3ex"} SVG is supported too (`.svg`), as demonstrated.
 This inline "manicule" is obtained with:
 
 {custom-style=CodeBlock}
@@ -1412,7 +1412,7 @@ You should NOT see this paragraph in the output.
 {!non-existent}
 Now, this paragraph has the `{!non-existent}` condition, and since the `non-existent` symbol is NOT defined, it is rendered.
 
-Conditions work on blocks and inline elements alike.
+Conditions work on block and inline elements alike.
 They only apply to user-defined symbols (defined as pseudo-footnotes) and contextual metadata symbols (set by the calling context).
 
 We can't say if future versions of the Djot specification will make use of `?` and `!` in attributes or bracketed content.
@@ -1470,7 +1470,7 @@ As above, multiple indexes are possible too:
 {custom-style=CodeBlock}
 :::
 ```
-[Simon's Cat]{index="main animals genus" indexed-genus=Felis indexed-animals=cat}
+[Simon's Cat]{:main :genus=Felis :animals=cat}
 [Nils Olav III]{:main :animals="penguin" :genus=Aptenodytes}
 ```
 :::

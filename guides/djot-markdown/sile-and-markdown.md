@@ -66,7 +66,7 @@ On these block elements, attributes are placed _after_ the element they are atta
  - Code blocks
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Slightly different syntax.
  - Supported on less elements.
@@ -81,7 +81,7 @@ On these block elements, attributes are placed _after_ the element they are atta
 Markdown treats multiple spaces as a single space.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
 Backslash-escaped spaces are not interpreted as non-breaking spaces.
 To obtain a non-breaking space, the alternative is to use the HTML entity `&nbsp;` (see §[](#markdown-html-elements)).
@@ -105,7 +105,7 @@ Hard line breaks...\
 
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
 Markdown also supports using two trailing spaces at the end of a line to create a hard line break.
 While this syntax comes from the original Markdown specification, it is not recommended to use it, as these spaces are "invisible" and may be easily lost in the editing process.
@@ -128,7 +128,7 @@ Straight double quotes (`"`) and single quotes (`'`) are converted into appropri
 This converter takes into account the current language when converting straight double and single quotation marks to the appropriate typographic variant.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
 The smart quotes feature is less robust than in Djot, and may sometimes be defeated (producing the wrong quotes).
 In some documents, it may be better to disable it (see §[](#markdown-configuration)).
@@ -152,7 +152,7 @@ _This is _an emphasis inside_ an emphasis._
 :::
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Slightly different syntax.
  - Edge cases are handled differently.
@@ -168,7 +168,7 @@ Thus, ~~deletion~~ is `~~deletion~~`
 For this converter, this is equivalent to a span with a `.strike` pseudo-class respectively (see §[](#markdown-spans) for details and styling).
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Different syntax and interpretation.
  - No direct support for "insertions"
@@ -184,7 +184,7 @@ You thus get an ==highlight== with `==highlight==`
 For this converter, this is equivalent to a span with a `.mark` pseudo-class (see §[](#markdown-spans) for details and styling).
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Different syntax.
 
@@ -204,7 +204,7 @@ Thus, H~2~O is a liquid, and 2^10^ is 1024.
 This converter assumes that the content of a superscript or subscript consists of text, as it tries to use font features or text scaling techniques to render it.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - No attribute support on these elements.
 
@@ -266,7 +266,7 @@ Oxford is located at 51° 45' 7" N, 1° 15' 27" W
 
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Prime conversion is specific to this Markdown converter.
 
@@ -286,7 +286,7 @@ Attributes are optional, and are passed through to the underlying SILE package.
 You can notably specify the required image width and/or height, as done just above, by appending the `{width=... height=...}` attributes --- Note that any unit system supported by SILE is accepted, as well as percentages (see §[](#final-notes-units)).
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - The "indirect" syntax is supported too, but does not support attributes (yet), so it is probably not very useful at this point.
 
@@ -312,12 +312,12 @@ Specifically, if the **resilient** book class is used, the caption is numbered b
 #### Extended image types
 
 Besides regular image files, a few specific file extensions are also recognized and processed appropriately by this converter.
-Notably ![](./examples/manicule.svg){height="1.3ex"} SVG is supported too (`.svg`), as demonstrated.
+Notably ![](manicule.svg){height="1.3ex"} SVG is supported too (`.svg`), as demonstrated.
 This inline "manicule" is obtained with:
 
 ::: {custom-style=CodeBlock}
 ```
-... ![](./examples/manicule.svg){height="1.3ex"} is supported ...
+... ![](manicule.svg){height="1.3ex"} is supported ...
 ```
 :::
 
@@ -391,7 +391,7 @@ The reference label should be defined somewhere in the document.
 If the label is empty, then the link text will be taken to be the reference label as well as the link text.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - The "indirect" syntax does not support attributes (yet).
 
@@ -468,7 +468,7 @@ $$\pi=\sum_{k=0}^\infty\frac{1}{16^k}(\frac{4}{8k+1} − \frac{2}{8k+4} − \fra
 :::
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Different syntax (delimiters).
  - Sometimes ambiguous, although the converter tries to be smart about it.
@@ -499,7 +499,7 @@ They are introduced with directly with the caret `^`, immediately followed by th
 :::
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Direct inline footnotes are not supported in Djot.
 
@@ -527,7 +527,7 @@ For more information, you may also want to check _The SILE Book_ [@sile, chapter
 ### Symbols
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
   - No support for symbols in Markdown.
 
@@ -568,7 +568,7 @@ In this admittedly lame example, we used it between groups of a same letter.
 HTML entities are also processed, e.g. `&permil;` renders as &permil;.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - HTML elements and entities are not supported in Djot.
 
@@ -615,7 +615,7 @@ Here is an example illustrating the use of these attributes:
 :::
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Attributes come after the heading text, not on a separate line before it.
  - The heading text must be on the same line as the `#` characters.
@@ -639,7 +639,7 @@ It does not support more than two levels of headings.
 It consists of a line of `=` or `-` characters under the heading text, for level 1 and 2 headings, respectively.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - The "Setext" syntax is not supported in Djot.
 
@@ -666,7 +666,7 @@ If your document class or previously loaded packages provide a `blockquote` envi
 Otherwise, the converter uses its own fallback method, with hard-coded styling.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Attributed quotes (epigraphs) are not supported.
 
@@ -712,7 +712,7 @@ With this converter, the list marker is not significant, and the supporting pack
     - It can be nested.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Subtle differences regarding how spaces are handled.
  - Djot is stricter on where it expects blank lines.
@@ -773,7 +773,7 @@ Your starting number, however, is honored, would you want to start at a differen
 
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - The hash enumerator is specific to Markdown, with no equivalent in Djot.
  - Numbering schemes enclosed in parentheses are not (yet) supported
@@ -804,7 +804,7 @@ citrus
 
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Different syntax.
  - No support for attributes on definition lists.
@@ -842,7 +842,7 @@ This is a regular footnote.[^markdown-fnt]
 :::
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - No support for attributes on footnotes references.
  - Hence,
@@ -876,7 +876,7 @@ Markdown supports the "pipe table" syntax, with its own way for marking the opti
 When using the **resilient** classes, the caption will be numbered by default, and added to the list of tables.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Different syntax for introducing the caption.
  - No support for table attributes.
@@ -907,7 +907,7 @@ This is obtained by indenting the content by at least four spaces...
 :::
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Different syntax for introducing the format string.
  - Block attributes go after the opening fence (instead of the format string), not before it.
@@ -1059,7 +1059,7 @@ This converter recognizes a few specific attributes on divs:
  - The `lang` attribute, see §[](#djot-language-changes)
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Different syntax for introducing the class name or attributes.
  - No support for divs with a caption (Djot extension)
@@ -1108,7 +1108,7 @@ With all these variants at your disposal, you should be able to typeset print-qu
 books and novels, with the appropriate dividers within chapters, or at the end of thereof.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - _Ad hoc_ interpretation of separators, so as to produce more typographically sound results despite not supporting attributes on horizontal rules.
  - Less flexibility than the class-based approach in Djot.
@@ -1181,7 +1181,7 @@ We can now use our new command as a custom style (see §[](#markdown-custom-styl
 Other converters will likely ignore the style, and the ISBN will be displayed as-is, so this technique degrades gracefully.
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Curly braces around the `{=sile}` and `{=sile-lua}` annotations.
 
@@ -1238,7 +1238,7 @@ It is assumed to implement the same features and options ---namely, `numbering` 
 ~~~
 
 :::{custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Line blocks are not (yet) supported in Djot, and Mardown shines here.
 
@@ -1312,7 +1312,7 @@ While you could invoke _any_ SILE command with this feature, we recommend, thoug
 Another more powerful way to leverage Djot with SILE’s full processing capabilities, and benefit from the best of both worlds, is to use the "raw" annotations, described in §[](#markdown-raw-inlines) and §[](#markdown-raw-blocks).
 
 ::: {custom-style=Difference}
-![](./examples/manicule.svg){height=1.3ex} **Main differences with Djot**
+![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
  - Only works on divs and spans (versus almost any element in Djot).
 

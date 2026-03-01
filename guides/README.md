@@ -88,7 +88,7 @@ resilient guides/resilient/resume-sample.sil
 
 It should generate a 2-page PDF file named `guides/resilient/resume-sample.pdf`.
 
-Next, build the User Guide itself.
+Next, build the "The re·sil·ient collection of classes & packages for SILE" user guide itself.
 
 ```bash
 resilient guides/resilient/sile-resilient-manual.silm
@@ -99,3 +99,13 @@ This will generate a PDF file named `guides/resilient/sile-resilient-manual.pdf`
 Run the above command up to three times in total, to ensure that the table of contents, indexes, and other cross-references are properly generated and re-paginated.
 
 Now, you can open the User Guide PDF file in your favorite PDF viewer, or print it out if you prefer a paper version.
+
+Finally, build the "Markdown and Djot to PDF with SILE" user guide.
+
+```bash
+resilient guides/djot-markdown/sile-and-markdown-manual.silm 
+```
+
+Likewise, run the above command up to three times in total.
+
+It will generate a PDF file named `guides/djot-markdown/sile-and-markdown-manual.pdf`.

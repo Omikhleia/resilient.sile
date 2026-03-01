@@ -64,5 +64,5 @@ end)
 % in content files.
 % So this is a workaround to load the bibliography here, be able to release a
 % new version of markdown.sile and move forward with the development.
-\loadbibliography[file=examples/markdown-djot.bib]
+\loadbibliography[file=markdown-djot.bib]
 ```
