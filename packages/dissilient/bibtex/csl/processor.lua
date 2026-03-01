@@ -197,6 +197,13 @@ function CslProcessor:getCslEngine ()
    return self._engine
 end
 
+function CslProcessor:getCslNameEngine ()
+   if not self._nameengine then
+      self:setNameStyle(true)
+   end
+   return self._nameengine
+end
+
 ---- Set the bibliography style and locale for the CSL engine.
 -- Example usage:
 --
@@ -232,6 +239,47 @@ function CslProcessor:setBibliographyStyle (stylename, lang, options)
    end
    local locale = loadCslLocale(lang)
    self._engine = CslEngine(style, locale, options)
+   if self._nameengine then
+      -- If the name engine was already initialized, we need to update its locale and options.
+      self._nameengine = CslEngine(self._namestyle, locale, options)
+   end
+end
+
+--- Set the style for names in integral citations.
+--
+-- @tparam boolean short Whether to use the short or long form of names (default: false)
+function CslProcessor:setNameStyle (short)
+   if not self._engine then
+      self:setBibliographyStyle('chicago-author-date', 'en-US')
+   end
+   local s = SU.boolean(short, false)
+   -- We use a custom style for names, to control a consistent format outside of citations, whatever citation style is used.
+   -- TODO:
+   -- We could load it, to allow for more flexibility.
+   local namestyle, err = CslStyle.parse([[
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0">
+  <macro name="contributors">
+    <names form="]] .. (s and "short" or "long") .. [[" variable="author">
+      <name and="text"/>
+      <et-al font-style="italic"/>
+      <substitute>
+        <names variable="editor"/>
+      </substitute>
+    </names>
+  </macro>
+  <citation et-al-min="3" et-al-use-first="1">
+    <layout delimiter="; ">
+       <text macro="contributors"/>
+    </layout>
+  </citation>
+</style>
+]])
+   if not namestyle then
+      SU.error("Could not parse CSL style for names: " .. err)
+   end
+   local locale = self._engine.locale
+   self._namestyle = namestyle
+   self._nameengine = CslEngine(namestyle, locale)
 end
 
 local function resolveEntry (bib, key)
@@ -559,6 +607,21 @@ function CslProcessor:bibliography (options)
 
    print("<bibliography: " .. #entries .. " entries>")
    return cite
+end
+
+function CslProcessor:citeauthor (key)
+   local entry = resolveEntry(self._data.bib, key)
+   if not entry then
+      return
+   end
+   crossrefAndXDataResolve(self._data.bib, entry)
+   if not entry then
+      return
+   end
+   local cslentry = self:_adapter(entry)
+   local engine = self:getCslNameEngine()
+   local author = engine:cite(cslentry)
+   return author
 end
 
 --- Define a named filter for the CSL processor.

@@ -88,6 +88,14 @@ function package:registerCommands ()
          mathExtension = SU.boolean(options.mathExtension, true),
          breakISBN = SU.boolean(options.breakISBN, true),
       })
+
+      local nameStyle = options.names or "short"
+      if nameStyle ~= "short" and nameStyle ~= "long" then
+         SU.error("Invalid value for names option in bibliographystyle: " .. nameStyle)
+      end
+      self._processor:setNameStyle(
+         nameStyle == "short"
+      )
    end, "Set the bibliography style and locale for citations and references.")
 
    -- Citation commands
@@ -169,6 +177,35 @@ function package:registerCommands ()
          SILE.call("par")
       end)
    end, "Produce a bibliography of references.")
+
+   self:registerCommand("citeauthor", function (options, content)
+      local key = self:_getCitationKey(options, content)
+      local author = self._processor:citeauthor(key)
+      if author then
+         SILE.processString(("<sile>%s</sile>"):format(author), "xml")
+      else
+         SU.error("No author found for entry with key " .. key)
+      end
+   end, "Produce the name of the author(s) of a bibliographic entry.")
+
+   self:registerCommand("citeintegral", function (options, content)
+      -- Combination of \citeauthor and \cite:
+      -- equivalent to \citeauthor[key=mykey] \cite[author=false, key=mykey, ...]
+      -- Example use:
+      --   \citeintegral[key=mykey] argues...
+      local key = self:_getCitationKey(options, content)
+      local author = self._processor:citeauthor(key)
+      if not author then
+         SU.error("No author found for entry with key " .. key)
+         return
+      end
+      options.key = key
+      options.author = false
+      local cite = self._processor:cite(options)
+      if cite then
+         SILE.processString(("<sile>%s %s</sile>"):format(author, cite), "xml")
+      end
+   end, "Produce an integral citation")
 
    -- Hooks for CSL processing
 
@@ -316,6 +353,10 @@ Some frequent abbreviations are also supported (art, chap, col, fig…)
 
 The \autodoc:parameter{author=false} option can be used to suppress the author in the citation.
 For instance, \autodoc:command{\cite[author=false]{<key>}} may produce something like “(1982)” — obviously, it only makes sense with citation styles that include the author in the citation.
+
+The \autodoc:command{\citeauthor{<key>}} command produces only the name of the author(s) of the cited work.
+
+Combining author suppression and the previous command, the \autodoc:command{\citeintegral{<key>}} command is a convenience wrapper for producing an integral citation, as in “Jones (1982) argues that…”
 
 To mark an entry as cited without actually producing a citation, use \autodoc:command{\nocite{<key>}}.
 This is useful when you want to include an entry in the bibliography without citing it in the text.
