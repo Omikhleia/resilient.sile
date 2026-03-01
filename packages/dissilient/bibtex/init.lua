@@ -309,8 +309,13 @@ For convenience and testing, SILE bundles the \code{chicago-author-date} and \co
 If you don’t specify a style or locale, the author-date style and the \code{en-US} locale will be used.
 
 To produce an inline citation, call \autodoc:command{\cite{<key>}}, which will typeset something like “(Jones 1982)”.
+The syntax \autodoc:command{\cite[key=<key>]} is also accepted.
+
 If you want to cite a particular page number, use \autodoc:command{\cite[page=22]{<key>}}. Other “locator”  options are available (article, chapter, column, line, note, paragraph, section, volume, etc.) – see the CSL documentation for details.
 Some frequent abbreviations are also supported (art, chap, col, fig…)
+
+The \autodoc:parameter{author=false} option can be used to suppress the author in the citation.
+For instance, \autodoc:command{\cite[author=false]{<key>}} may produce something like “(1982)” — obviously, it only makes sense with citation styles that include the author in the citation.
 
 To mark an entry as cited without actually producing a citation, use \autodoc:command{\nocite{<key>}}.
 This is useful when you want to include an entry in the bibliography without citing it in the text.

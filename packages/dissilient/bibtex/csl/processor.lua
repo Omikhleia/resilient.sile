@@ -275,6 +275,12 @@ function CslProcessor:_getEntryForCite (key, warn_uncited)
    return entry, cited.citnum
 end
 
+-- In cites, all other options are supposed to be locators.
+local CITEOPTIONS = {
+   key = true,
+   author = true,
+}
+
 --- Retrieve a locator from an options table.
 -- Keys are expected to be locators like "page", "chapter", etc. as per CSL rules,
 -- Some some extra convenience abbreviations and aliases are also supported,
@@ -284,7 +290,7 @@ end
 function CslProcessor:_getLocator (options)
    local locator
    for k, v in pairs(options) do
-      if k ~= "key" then
+      if not CITEOPTIONS[k] then
          if not locators[k] then
             SU.warn("Unknown option '" .. k .. "' in \\cite")
          else
@@ -392,9 +398,16 @@ end
 --    local cite = biblio:cite({
 --       key = 'mykey1',
 --       page = "191-193",
+--       author = true,
 --    })
 --
--- @tparam {key=string,[string]=string} item Citation item with a key and optional locator
+-- The key is mandatory and must correspond to an entry in the bibliography.
+-- The locator is optional and can be any of the supported locators (e.g. page, chapter, etc.) or their aliases.
+-- The author flag defaults to true, and can be set to false to suppress the author in the citation.
+--
+-- How author suppression and locators affect the citation depends on the CSL style.
+--
+-- @tparam {key=string,[string]=string,author=boolean}} item Citation item with a key, an optional locator, and an optional author flag
 -- @treturn string|nil Formatted citation string or nil if the entry is not found
 function CslProcessor:cite (item)
    local key = item.key
@@ -407,6 +420,7 @@ function CslProcessor:cite (item)
       local cslentry = self:_adapter(entry, citnum)
       cslentry.locator = locator
       cslentry.position = pos
+      cslentry._suppressAuthor = not SU.boolean(item.author, true)
       local cite = engine:cite(cslentry)
       return cite
    end
@@ -428,7 +442,7 @@ end
 --       { key = 'mykey3' },
 --    })
 --
--- @tparam {key:string,[string]:string}[] items List of citation items, each with a key and optional locator
+-- @tparam {key:string,[string]:string,author=boolean}[] items List of citation items, each with a key, an optional locator, and an optional author flag
 -- @treturn string|nil Formatted citation string or nil if no entries are found
 function CslProcessor:cites (items)
    local is_single = #items == 1
@@ -443,6 +457,7 @@ function CslProcessor:cites (items)
          local cslentry = self:_adapter(entry, citnum)
          cslentry.locator = locator
          cslentry.position = pos
+         cslentry._suppressAuthor = not SU.boolean(item.author, true)
          cites[#cites + 1] = cslentry
       end
    end

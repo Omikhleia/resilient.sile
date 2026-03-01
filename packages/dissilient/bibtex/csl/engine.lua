@@ -462,6 +462,13 @@ function CslEngine:_layout (options, content, entries)
             table.insert(output, elem)
          end
       end
+      if #output == 0 then
+         -- Author suppression may lead to empty cites in some styles.
+         -- We need to warn about it, as the in-flow text will likely look strange
+         -- (with unexpected spaces, etc.) if the user is not aware of it.
+         SU.warn("CSL layout rendered an empty citation, likely due to author suppression.")
+         return
+      end
       -- The CSL 1.0.2 specification is not very clear on this point, but on
       -- citations, affixes and formatting apply on the whole layout.
       -- Affixes are around the delimited list, e.g. "(Smith, 2000; Jones, 2001)"
@@ -1195,6 +1202,15 @@ function CslEngine:_names_with_resolved_opts (options, substitute_node, entry)
 end
 
 function CslEngine:_names (options, content, entry)
+   -- Pandoc supports author suppression in cites, but it's not that well defined with respect to CSL:
+   -- When are we supposed to drop the author with respect to substitutions, etc.?
+   -- Our assumption here is that we can drop it immediately for rendering (before any substitution),
+   -- but not for sorting.
+   -- It should work with most styles... But is that a correct assumption?
+   if not self.state.sorting and options.variable == "author" and entry._suppressAuthor then
+      SU.debug("csl", "Suppressing author")
+      return nil
+   end
    -- Extract needed elements and options from the content
    local name_node = nil
    local label_opts = nil
