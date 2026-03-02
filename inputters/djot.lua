@@ -1,11 +1,13 @@
---- Djot native inputter for SILE
+--- Djot native inputter for re·sil·ient.
 --
 -- Using the djot Lua library for parsing.
 -- Reusing the common commands initially made for the "markdown" inputter/package.
 --
--- @copyright License: MIT (c) 2023-2025 Omikhleia, Didier Willis
+-- @license MIT
+-- @copyright (c) 2023-2026 Omikhleia / Didier Willis
 -- @module inputters.djot
 --
+
 local utils = require("packages.markdown.utils")
 local createCommand, createStructuredCommand
         = SU.ast.createCommand, SU.ast.createStructuredCommand
@@ -211,7 +213,7 @@ function Renderer:div (node)
   local content = self:render_children(node)
   local pos = node_pos(node)
   local out
-  --- Djot extension: caption supported on div blocks
+  -- Djot extension: caption supported on div blocks
   out = createCommand("markdown:internal:div", options, content, pos)
   if node.caption then
     local caption = self:render_children(node.caption)
@@ -759,7 +761,13 @@ function Renderer:naive_citations (node)
   return utils.naiveCitations(node.s, pos)
 end
 
--- SILE INPUTTER LOGIC
+-- INPUTTER
+
+--- The Djot inputter.
+--
+-- Extends SILE's `inputters.base`.
+--
+-- @type inputters.djot
 
 local base = require("inputters.base")
 
@@ -767,6 +775,12 @@ local inputter = pl.class(base)
 inputter._name = "djot"
 inputter.order = 2
 
+--- (Override) Whether this inputter is appropriate for the given file.
+--
+-- @tparam number round Detection round (1 = by extension, etc.)
+-- @tparam string filename Filename
+-- @tparam string _ Document content (not used here)
+-- @treturn boolean Whether this inputter is appropriate
 function inputter.appropriate (round, filename, _)
   if round == 1 then
     return filename:match("dj$")
@@ -794,6 +808,9 @@ function inputter:_loadFilter (name, env)
   SU.error("Cannot find filter '" .. name .. "'")
 end
 
+--- (Override) Parse the given document and return a SILE AST.
+--
+-- @tparam string doc Document content
 function inputter:parse (doc)
   local djot = require("djot")
   local djast = djot.parse(doc, true, function (warning)

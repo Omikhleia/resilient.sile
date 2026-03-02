@@ -1,4 +1,4 @@
---- Pandoc JSON AST native inputter for SILE
+--- Pandoc JSON AST native inputter for re·sil·ient.
 --
 -- Focussed on Markdown needs (things such as table support is therefore
 -- limited to that scope).
@@ -9,9 +9,10 @@
 -- Using the luajson (LPEG-based) or lunajson (pure Lua) library for parsing.
 -- Reusing the common commands initially made for the "markdown" inputter/package.
 --
--- @copyright License: MIT (c) 2022-2024 Omikhleia, Didier Willis
+-- @license MIT
+-- @copyright (c) 2022-2026 Omikhleia / Didier Willis
 -- @module inputters.pandocast
---
+
 local utils = require("packages.markdown.utils")
 local createCommand, createStructuredCommand
         = SU.ast.createCommand, SU.ast.createStructuredCommand
@@ -607,12 +608,26 @@ function Renderer:Span (attributes, inlines)
   return createCommand("markdown:internal:span" , options, content)
 end
 
+-- INPUTTER
+
+--- The pandocast inputter for Pandoc JSON AST.
+--
+-- Extends SILE's `inputters.base`.
+--
+-- @type inputters.pandocast
+
 local base = require("inputters.base")
 
 local inputter = pl.class(base)
 inputter._name = "pandocast"
 inputter.order = 2
 
+--- (Override) Whether this inputter is appropriate for the given file.
+--
+-- @tparam number round Detection round (1 = by extension, etc.)
+-- @tparam string filename Filename
+-- @tparam string doc Document content
+-- @treturn boolean Whether this inputter is appropriate
 function inputter.appropriate (round, filename, doc)
   if round == 1 then
     return filename:match("pandoc$")
@@ -638,6 +653,9 @@ function inputter.appropriate (round, filename, doc)
   return false
 end
 
+--- (Override) Parse the given document and return a SILE AST.
+--
+-- @tparam string doc Document content
 function inputter:parse (doc)
   -- Load JSON parser:
   -- Luajson is LPEG-based, and lunajson is pure Lua without other

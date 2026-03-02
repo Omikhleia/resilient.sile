@@ -1,14 +1,18 @@
----A base class for markdown command packages.
+--- A base class for markdown command packages.
 --
 -- Derived from SILE's `packages.base`.
 --
 -- It abstracts the low-level details of feature detection and compatibility with resilient components.
 -- So the markdown.command packages can focus on their specific features and commands.
 --
+-- @license MIT
+-- @copyright (c) 2024-2026 Omikhleia / Didier Willis
+-- @module packages.markdown.cmbase
+
+--- The "markdown.cmbase" package.
 --
--- @copyright License: MIT (c) 2024 Omikhleia, Didier Willis
--- @classmod packages.markdown.cmbase
---
+-- @type packages.markdown.cmbase
+
 local base = require("packages.base")
 
 local package = pl.class(base)

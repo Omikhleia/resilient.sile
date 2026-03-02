@@ -1,10 +1,12 @@
---- Markdown native support for SILE
+--- Markdown native support for for re·sil·ient.
 --
 -- Using the lunamark Lua library for parsing.
 --
--- @copyright License: MIT (c) 2022-2024 Omikhleia, Didier Willis
+-- @license MIT
+-- @copyright (c) 2022-2026 Omikhleia / Didier Willis
 -- @module inputters.markdown
 --
+
 local utils = require("packages.markdown.utils")
 local createCommand, createStructuredCommand
         = SU.ast.createCommand, SU.ast.createStructuredCommand
@@ -392,12 +394,26 @@ end
 
 -- Now we have everything needed to implement a SILE inputter.
 
+-- INPUTTER
+
+--- The markdown inputter.
+--
+-- Extends SILE's `inputters.base`.
+--
+-- @type inputters.markdown
+
 local base = require("inputters.base")
 
 local inputter = pl.class(base)
 inputter._name = "markdown"
 inputter.order = 2
 
+--- (Override) Whether this inputter is appropriate for the given file.
+--
+-- @tparam number round Detection round (1 = by extension, etc.)
+-- @tparam string filename Filename
+-- @tparam string _ Document content (not used here)
+-- @treturn boolean Whether this inputter is appropriate
 function inputter.appropriate (round, filename, _)
   if round == 1 then
     return filename:match("md$") or filename:match("markdown$")
@@ -409,6 +425,9 @@ function inputter.appropriate (round, filename, _)
   -- though it won't meet expectations!
 end
 
+--- (Override) Parse the given document and return a SILE AST.
+--
+-- @tparam string doc Document content
 function inputter:parse (doc)
   local extensions = {
     smart = true,

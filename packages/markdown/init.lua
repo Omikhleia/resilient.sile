@@ -1,14 +1,19 @@
---- Markdown native support for SILE
+--- Markdown native support for re·sil·ient.
 --
--- @copyright License: MIT (c) 2022 Omikhleia
--- @classmod packages.markdown
+-- @license MIT
+-- @copyright (c) 2022-2026 Omikhleia / Didier Willis
+-- @module packages.markdown
+
+--- The "markdown" package.
 --
+-- @type packages.markdown
+
 local base = require("packages.base")
 
 local package = pl.class(base)
 package._name = "markdown"
 
---- Package initialization.
+--- (Constructor) Initialize the package.
 --
 -- It basically loads the required common packages,
 -- and loads the markdown inputter.
@@ -21,9 +26,9 @@ function package:_init ()
   local _ = SILE.inputters.markdown
 end
 
---- Package raw handler registrations.
+--- (Override) Register all raw handlers provided by this package.
 --
--- It enables a raw handler for markdown content.
+-- Currently provides a "markdown" raw handler for Markdown content.
 function package:registerRawHandlers ()
 
   self.class:registerRawHandler("markdown", function(options, content)

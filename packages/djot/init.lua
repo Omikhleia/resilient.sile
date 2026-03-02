@@ -1,14 +1,19 @@
---- Djot native support for SILE
+--- Djot native support for for re·sil·ient.
 --
--- @copyright License: License: MIT (c) 2023 Omikhleia
--- @classmod packages.djot
+-- @license MIT
+-- @copyright (c) 2023-2026 Omikhleia / Didier Willis
+-- @module packages.djot
+
+--- The "djot" package.
 --
+-- @type packages.djot
+
 local base = require("packages.base")
 
 local package = pl.class(base)
 package._name = "djot"
 
---- Package initialization.
+--- (Constructor) Initialize the package.
 --
 -- It basically loads the required common packages,
 -- and loads the djot inputter.
@@ -21,9 +26,9 @@ function package:_init ()
   local _ = SILE.inputters.djot
 end
 
---- Package raw handler registrations.
+--- (Override) Register all raw handlers provided by this package.
 --
--- It enables a raw handler for djot content.
+-- Currently provides a "djot" raw handler for Djot content.
 function package:registerRawHandlers ()
 
   self.class:registerRawHandler("djot", function(options, content)

@@ -1,14 +1,19 @@
---- Pandoc JSON AST native support for SILE
+--- Pandoc JSON AST native support for re·sil·ient.
 --
--- @copyright License: MIT (c) 2022-2023 Omikhleia
--- @classmod packages.pandocast
+-- @license MIT
+-- @copyright (c) 2022-2026 Omikhleia / Didier Willis
+-- @module packages.pandocast
+
+--- The "pandocast" package.
 --
+-- @type packages.pandocast
+
 local base = require("packages.base")
 
 local package = pl.class(base)
 package._name = "pandocast"
 
---- Package initialization.
+--- (Constructor) Initialize the package.
 --
 -- It basically loads the required common packages,
 -- and enables the pandocast inputter.

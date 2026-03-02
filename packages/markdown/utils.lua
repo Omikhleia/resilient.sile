@@ -1,8 +1,9 @@
---- A few utilities for the markdown / pandocast inputters
+--- A few utilities for the markdown / djot / pandocast inputters.
 --
--- @copyright License: MIT (c) 2022-2025 Omikhleia
+-- @license MIT
+-- @copyright (c) 2022-2026 Omikhleia / Didier Willis
 -- @module packages.markdown.utils
---
+
 local createCommand = SU.ast.createCommand
 local createStructuredCommand = SU.ast.createStructuredCommand
 

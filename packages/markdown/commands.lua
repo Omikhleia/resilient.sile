@@ -10,9 +10,10 @@
 --
 -- It also exposes a method for classes or packages to register predefined Djot symbols.
 --
--- @copyright License: MIT (c) 2022-2025 Omikhleia, Didier Willis
--- @classmod packages.markdown.commands
---
+-- @license MIT
+-- @copyright (c) 2022-2026 Omikhleia / Didier Willis
+-- @module packages.markdown.commands
+
 local utils = require("packages.markdown.utils")
 local hasClass = utils.hasClass
 
@@ -20,6 +21,10 @@ local createCommand, createStructuredCommand,
       removeFromTree, subContent
         = SU.ast.createCommand, SU.ast.createStructuredCommand,
           SU.ast.removeFromTree, SU.ast.subContent
+
+--- The "markdown.commands" package.
+--
+-- @type packages.markdown.commands
 
 local base = require("packages.markdown.cmbase")
 
@@ -215,6 +220,7 @@ function package:_getSectioningCommand (level)
   return "markdown:fallback:header"
 end
 
+--- (Override) Register all settings provided by this package.
 function package.declareSettings (_)
   SILE.settings:declare({
     parameter = "markdown.fixednbsp",
@@ -224,6 +230,7 @@ function package.declareSettings (_)
   })
 end
 
+--- (Override) Register all commands provided by this package.
 function package:registerCommands ()
   -- A. Commands (normally) intended to be used by this package only.
 
