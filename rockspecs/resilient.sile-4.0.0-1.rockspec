@@ -1,8 +1,9 @@
 rockspec_format = "3.0"
 package = "resilient.sile"
-version = "dev-1"
+version = "4.0.0-1"
 source = {
   url = "git+https://github.com/Omikhleia/resilient.sile.git",
+  tag = "v4.0.0",
 }
 description = {
   summary = "Advanced book classes and tools for the SILE typesetting system.",
@@ -13,22 +14,21 @@ description = {
   homepage = "https://github.com/Omikhleia/resilient.sile",
   license = "MIT",
 }
-
 dependencies = {
    "lua >= 5.1",
    "lunajson",
    "mimetypes",
    "sha1",
-   "barcodes.sile",
-   "couyards.sile",
-   "embedders.sile",
-   "highlighter.sile",
-   "labelrefs.sile",
-   "piecharts.sile",
-   "ptable.sile",
-   "qrcode.sile",
-   "smartquotes.sile",
-   "textsubsuper.sile",
+   "barcodes.sile >= 2.1.0",
+   "couyards.sile >= 1.0.0",
+   "embedders.sile >= 1.1.0",
+   "highlighter.sile >= 0.2.1",
+   "labelrefs.sile >= 0.1.0",
+   "piecharts.sile >= 2.1.0",
+   "ptable.sile >= 4.1.0",
+   "qrcode.sile >= 2.1.0",
+   "smartquotes.sile >= 2.0.0",
+   "textsubsuper.sile >= 2.1.0",
 }
 build = {
   type = "builtin",
