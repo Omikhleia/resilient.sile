@@ -50,12 +50,13 @@ local bsratiocache = {} -- Baseline ratio cache
 
 --- Compute the baseline ratio for the current font.
 --
--- Based on font metrics (typographic extents).
+-- Based on font metrics (typographic extents), it computes the ratio of the descender
+-- to the theoretical height of the font (ascender + descender).
 --
 -- Memoized for performance.
 --
--- @treturn number Baseline ratio
-local computeBaselineRatio = function ()
+-- @treturn number Baseline ratio (descender ratio to the theoretical height of the font)
+local function computeBaselineRatio ()
   local fontoptions = SILE.font.loadDefaults({})
   local bsratio = bsratiocache[SILE.font._key(fontoptions)]
   if not bsratio then

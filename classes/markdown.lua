@@ -17,7 +17,7 @@ local book = require("classes.resilient.book")
 local class = pl.class(book)
 class._name = "markdown"
 
---- (Constructor) Initialize the markdown/djobook class.
+--- (Constructor) Initialize the markdown/djot book class.
 --
 -- It just initializes the class, and loads the packages that are needed to process Markdown, Djot and Pandoc ASTs.
 --

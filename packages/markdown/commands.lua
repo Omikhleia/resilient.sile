@@ -16,6 +16,7 @@
 
 local utils = require("packages.markdown.utils")
 local hasClass = utils.hasClass
+local computeBaselineRatio = require("resilient.utils").computeBaselineRatio
 
 local createCommand, createStructuredCommand,
       removeFromTree, subContent
@@ -186,15 +187,14 @@ end
 -- in Djot content, and expanded to something programmatic.
 --
 -- The rendering function takes the symbol options and content as arguments,
--- and must return a SILE AST (table).
+-- and must return a SILE AST (table or string).
 --
 -- Note that a span will also be created around an inline symbol if it has
 -- attributes, so styling can be applied to the symbol.
 --
 -- @tparam string name Name of the symbol
 -- @tparam boolean standalone If true, the symbol must be used alone at block-level
--- @tparam function render Function that will be called to render the symbo.
---   an AST (table or string).
+-- @tparam function render Function that will be called to render the symbol
 function package:registerSymbol(name, standalone, render)
   -- Multiple package reinstancing is may occur in SILE, see comment above
   -- on scratch variables... So we do not warn if a symbol is already registered,
@@ -925,7 +925,7 @@ Please consider using a resilient-compatible class!]])
 
   self:registerCommand("markdown:fallback:mark", function (_, content)
     local leading = SILE.types.measurement("1bs"):tonumber()
-    local bsratio = utils.computeBaselineRatio()
+    local bsratio = computeBaselineRatio()
     SILE.typesetter:liner("markdown:fallback:mark", content,
       function (box, typesetter, line)
         local outputWidth = SU.rationWidth(box.width, box.width, line.ratio)
