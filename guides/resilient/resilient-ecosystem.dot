@@ -121,7 +121,7 @@ digraph omikhleia {
   }
 
   subgraph cluster_markdown {
-    label = "markdown.sile";
+    label = "markdown & djot";
 
     markdown [shape=component,style=filled,fillcolor=lemonchiffon]
     djot [shape=component,style=filled,fillcolor=lemonchiffon]

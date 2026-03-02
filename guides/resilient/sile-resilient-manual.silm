@@ -4,16 +4,16 @@ masterfile: 1.0
 metadata:
   title: The re·sil·ient collection of classes & packages for SILE
   subtitle: User Guide
-  subject: User manual for the resilient.sile module
+  subject: User manual for the resilient.sile collection
   keywords:
     - SILE
     - typesetting
     - book
   authors: Didier Willis
   publisher: Omikhleia
-  pubdate: 2025-09-14
+  pubdate: 2023-03-01
   url: https://github.com/Omikhleia/resilient.sile
-  copyright: © 2021–2025, Didier Willis.
+  copyright: © 2021–2026, Didier Willis.
   legal: |
     This material may be distributed only subject to the terms and conditions
     set forth in the  Creative Commons Attribution, Share-Alike License,

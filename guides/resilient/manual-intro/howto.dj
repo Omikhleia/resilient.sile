@@ -21,8 +21,7 @@ Obviously, you first need to pick a mark-up language for your content.
 If you are reading this document, you probably already browsed through _The SILE Book_ and consider using its SIL language.
 
 You might do so, indeed---but please note that Markdown and Djot are acceptable options too.
-If you properly installed the _re·sil·ient_ collection, then the *[markdown.sile](https://github.com/Omikhleia/markdown.sile)* module is installed too.
-When used with this collection, it's leveraged with additional capabilities.
+If you properly installed the _re·sil·ient_ collection, support for these mark-up languages is included out of the box.
 
 On the other hand, if you are not already experienced with the SIL language and your content is reasonably simple, this author would recommend to seriously consider Markdown or Djot (with even a preference for Djot when possible).
 Not only are they simpler and lightweight, but they are also more portable, with great tools such as Pandoc to convert them to other formats, so you won't be stuck with a custom mark-up.

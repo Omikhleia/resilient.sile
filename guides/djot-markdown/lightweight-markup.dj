@@ -4,7 +4,7 @@
 
 My response to this challenge was the _re·sil·ient_ collection of classes and packages for SILE.
 It includes master documents, book matters, a robust book class, and a neat styling paradigm.
-As mentioned in the introduction, this module doesn't enforce the use of the resilient collection, but it does strongly recommend it for maximizing the package collection's benefits.
+All of these, combined with the use of a lightweight markup language, aim at making the process of creating beautiful books as simple as possible.
 You do not have to believe me on faith, and you can judge for yourself.
 After all, you are currently reading a user guide based on it, with styled headings, colorful dropped capitals, and more...
 
@@ -82,14 +82,11 @@ Beyond technical considerations, it's also worth examining the functionality of 
 
 ## On the book document class
 
-The converters included in this module try to play fair with SILE's *book* document class, via the provision of a set of "fallback" commands and environments.
-These serve as wrappers, using those provided by the document class whenever possible, or implementing simpler and more basic versions as fallbacks, when not available.
+Earlier versions of our Djot and Markdown converters tried to play fair with SILE's default *book* document class, via the provision of a set of "fallback" commands and environments.
+These served as wrappers, using those provided by the document class whenever possible, or implementing simpler and more basic versions as degraded fallbacks, when not available.
 
-In simpler terms, by installing the _re·sil·ient_ collection, users gain access to more comprehensive and enhanced versions.
-The degraded fallbacks ensure that users still have access to functional alternatives when using other document classes that lack these features.
-
-As stated, while we encourage the use of the *resilient.book* document class for optimal functionality and flexibility, we did not want to force people interested in using Djot or Markdown to also use it.
-Nevertheless, I believe that the default SILE book class, in its current state as of 2024, may not be the most practical choice for serious projects.
+It is no longer the case, and the converters now rely on the *resilient.book* document class for optimal functionality and flexibility.
+This author believes that the default SILE book class, in its current state as of 2026, may not be the most practical choice for serious projects.
 The advantages of the resilient collection include:
 
  - A cohesive and comprehensive approach to styling decisions, simplifying complexity.

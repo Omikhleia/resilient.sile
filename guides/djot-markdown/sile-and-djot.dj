@@ -349,16 +349,16 @@ This inline "manicule" is obtained with:
 
 Files in Graphviz DOT graph language (`.dot`) are supported and rendered as images, when the *embedders.sile* collection is properly configured.
 
-![The *markdown.sile* ecosystem (simplified).](./markdown-sile-schema.dot){width="90%"}
+![The *resilient.sile* ecosystem (simplified).](./markdown-sile-schema.dot){width="90%"}
 
 {custom-style=CodeBlock}
 :::
 ```
-![The *markdown.sile* ecosystem (simplified).](./markdown-sile-schema.dot){width="90%"}
+![The *resilient.sile* ecosystem (simplified).](./markdown-sile-schema.dot){width="90%"}
 ```
 :::
 
-CSV files are also supported, when the *piecharts.sile* optional collection is properly installed (see §[](#recommended-additional-packages)), and are rendered as pie charts.
+CSV files are also supported, when the *piecharts.sile* optional collection is properly installed, and are rendered as pie charts.
 
 ![A pie chart.](./data-pie.csv){height="8em" cutoff="0.07"}
 
@@ -1210,7 +1210,7 @@ Why not "style" an EAN-13 ISBN as a nice barcode?
 First, we ensure the *barcodes.ean13* packages is loaded.[^djot-ean13-assume]
 Let's use some SIL language for that.
 
-[^djot-ean13-assume]: The package is part of the *barcodes.sile* collection, and is not installed by default --- But the *resilient.sile* collection does include it, and this is what we are using here.
+[^djot-ean13-assume]: The package is part of the *barcodes.sile* collection, installed by default.
 
 {custom-style=CodeBlock}
 :::

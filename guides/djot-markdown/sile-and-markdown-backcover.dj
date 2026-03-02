@@ -7,7 +7,7 @@ SILE.call("medskip")
 Have you ever dreamt of authoring a book in Markdown or Djot, and then generate a beautiful PDF?
 Sure, there are a few existing tools out there that can do that... Last time you checked, how good did they perform?
 
-The *markdown.sile* collection is a 3rd-party module for the SILE typesetting system.
+The *resilient.sile* collection is a 3rd-party module for the SILE typesetting system.
 It provides several components for processing Markdown files, with a great set of Pandoc-like extensions and plenty of extra goodies.
 
 Djot, a recent experimental but serious contender to Markdown, is also supported, with additional features too. And there is more than we can list here on a back cover!

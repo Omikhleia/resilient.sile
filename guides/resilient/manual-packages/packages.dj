@@ -226,26 +226,17 @@ This package is part of the *highlighter.sile* collection.
 
 ## Djot
 
-{custom-style=admon}
-This package is part of the *markdown.sile* collection.
-
 ``` =sile
 \package-documentation{djot}
 ```
 
 ## Markdown
 
-{custom-style=admon}
-This package is part of the *markdown.sile* collection.
-
 ``` =sile
 \package-documentation{markdown}
 ```
 
 ## Pandoc AST
-
-{custom-style=admon}
-This package is part of the *markdown.sile* collection.
 
 ``` =sile
 \package-documentation{pandocast}

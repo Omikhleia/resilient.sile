@@ -36,40 +36,16 @@ To install the latest version, you may use the provided “rockspec”:
 {custom-style=CodeBlock}
 :::
 ```bash
-luarocks install markdown.sile
+luarocks install resilient.sile
 ```
 :::
 
 Refer to the SILE manual for more detailed 3rd-party package installation information.
 
-{#recommended-additional-packages}
-### Recommended additional packages
-
-The following package collections are not strictly required, but they are recommended for a better experience.
-When installed, they provide additional features:
-
- - The [*couyards.sile*](https://github.com/Omikhleia/couyards.sile) collection provides additional support for fancy thematic breaks.
- - The [*piecharts.sile*](https://github.com/Omikhleia/piecharts.sile) collection provides support for rendering pie charts from CSV data.
-
-To install them, use the following commands:
-
-{custom-style=CodeBlock}
-:::
-```bash
-luarocks install couyards.sile
-luarocks install piecharts.sile
-```
-:::
-
-Also recommended is the [*resilient.sile*](https://github.com/Omikhleia/resilient.sile) collection, which provides a set of classes and packages for a more advanced usage.
-It is described below in §[](#usage-with-the-resilient-collection).
-Note that it takes care of installing the above collections as well, so you don't have to install them separately if you go the "resilient" way.
-
 {#recommended-additional-software}
 ### Recommended additional software
 
-This module also installs the [*embedders.sile*](https://github.com/Omikhleia/embedders.sile) collection, a general framework for embedding
-images from textual representations, performing their on-the-fly conversion via shell commands.
+This module also installs the [*embedders.sile*](https://github.com/Omikhleia/embedders.sile) collection, a general framework for embedding images from textual representations, performing their on-the-fly conversion via shell commands.
 
 These require additional software to be installed on your host system, to invoke the necessary conversion commands.
 Please refer to its documentation for more information.
@@ -103,35 +79,10 @@ sile -u inputters.djot somefile.dj
 ```
 :::
 
-This method directly produces a PDF from the input file, using SILE's standard *book* class.[^intro-book-class]
+This method directly produces a PDF from the input file.[^intro-book-class]
 
-[^intro-book-class]: Actually, it uses a *markdown* class derived from the standard book class and loading the required modules.
+[^intro-book-class]: Under the hood, it uses a *markdown* class derived from the *resilient.book* class and loading the required modules.
 You don't really have to know that, unless you intend to invoke SILE with the `-c` option to specify another class of your choice; in that case you will need to load additional modules explicitly---unless it is a resilient class, of course.
-
-{#usage-with-the-resilient-collection}
-### Usage with the _re·sil·ient_ collection
-
-To unleash the full potential of this package collection, we recommend that you also install our [*resilient.sile*](https://github.com/Omikhleia/resilient.sile) collection of classes and packages.
-
-{custom-style=CodeBlock}
-:::
-```bash
-luarocks install resilient.sile
-```
-:::
-
-Then, you can automatically benefit from a few advanced features.
-Conversion from command line just requires to load a resilient document class, and optionally the poetry package.
-For instance:
-
-{custom-style=CodeBlock}
-:::
-```bash
-sile -c resilient.book -u inputters.markdown -u packages.resilient.poetry somefile.md
-```
-:::
-
-(And likewise for the Pandoc AST or Djot processing.)
 
 A "resilient style file" is also generated.
 It can be modified to change many styling decisions and adapt the output at convenience.

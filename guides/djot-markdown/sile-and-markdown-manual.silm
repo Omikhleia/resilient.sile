@@ -2,7 +2,7 @@ masterfile: 1.0
 metadata:
   title: Markdown and Djot to PDF with SILE
   subtitle: User Guide
-  subject: User manual for the markdown.sile module
+  subject: User manual for Markdown and Djot with the resilient.sile collection
   keywords:
     - SILE
     - Markdown
@@ -10,9 +10,9 @@ metadata:
     - Pandoc
   authors: Didier Willis
   publisher: Omikhleia
-  pubdate: 2025-08-29
-  url: https://github.com/Omikhleia/markdown.sile
-  copyright: © 2022–2025, Didier Willis.
+  pubdate: 2026-03-01
+  url: https://github.com/Omikhleia/resilient.sile
+  copyright: © 2022–2026, Didier Willis.
   legal: |
     This material may be distributed only subject to the terms and conditions
     set forth in the  Creative Commons Attribution, Share-Alike License,
@@ -21,6 +21,11 @@ font:
   family: [Libertinus Serif, Symbola]
   size: 10pt
 language: en
+bibliography:
+  style: chicago-author-date
+  language: en-US
+  files:
+    - markdown-djot.bib
 book:
   enabled: true
   cover:

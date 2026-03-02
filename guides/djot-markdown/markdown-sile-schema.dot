@@ -57,41 +57,45 @@ digraph omikhleia {
     highlighter [shape=component,style=filled,fillcolor=aliceblue]
   }
 
-  subgraph cluster_resilient {
+  subgraph cluster_x {
     label = "resilient.sile";
 
-    book [shape=component,style=filled,fillcolor=aliceblue,label="resilient.book"]
-    poetry [shape=component,style=filled,fillcolor=aliceblue,label="resilient.poetry"]
-    defn [shape=component,style=filled,fillcolor=aliceblue,label="resilient.defn"]
-    epigraph [shape=component,style=filled,fillcolor=aliceblue,label="resilient.epigraph"]
+    subgraph cluster_resilient {
+      label = "book support";
+  
+      book [shape=component,style=filled,fillcolor=aliceblue,label="resilient.book"]
+      poetry [shape=component,style=filled,fillcolor=aliceblue,label="resilient.poetry"]
+      defn [shape=component,style=filled,fillcolor=aliceblue,label="resilient.defn"]
+      epigraph [shape=component,style=filled,fillcolor=aliceblue,label="resilient.epigraph"]
+    }
+  
+    subgraph cluster_markdown {
+      label = "lightweight markup support";
+  
+      markdown [shape=component,style=filled,fillcolor=lightyellow]
+      pandocast [shape=component,style=filled,fillcolor=lightyellow]
+      djot [shape=component,style=filled,fillcolor=lightyellow]
+  
+      mrkcmd [shape=component,label="markdown.commands",style=filled,fillcolor=linen]
+  
+      markdown -> mrkcmd
+      pandocast -> mrkcmd
+      djot -> mrkcmd
+  
+      mrkcmd -> embedders
+      mrkcmd -> labelrefs
+      mrkcmd -> ptable
+      mrkcmd -> smartquotes
+      mrkcmd -> textsubsuper
+      mrkcmd -> highlighter
+      mrkcmd -> couyards [style=dashed]
+      mrkcmd -> piecharts [style=dashed]
+    }
   }
 
-  subgraph cluster_markdown {
-    label = "markdown.sile";
-
-    markdown [shape=component,style=filled,fillcolor=lightyellow]
-    pandocast [shape=component,style=filled,fillcolor=lightyellow]
-    djot [shape=component,style=filled,fillcolor=lightyellow]
-
-    mrkcmd [shape=component,label="markdown.commands",style=filled,fillcolor=linen]
-
-    markdown -> mrkcmd
-    pandocast -> mrkcmd
-    djot -> mrkcmd
-
-    mrkcmd -> embedders
-    mrkcmd -> labelrefs
-    mrkcmd -> ptable
-    mrkcmd -> smartquotes
-    mrkcmd -> textsubsuper
-    mrkcmd -> highlighter
-    mrkcmd -> couyards [style=dashed]
-    mrkcmd -> piecharts [style=dashed]
-  }
-
-  mybook [shape = circle, label="Markdown\nfor\nSILE", fontsize="25"]
+  mybook [shape = circle, label="Markdown\n& Djot\nfor\nSILE", fontsize="25"]
   mybook -> markdown
   mybook -> pandocast
   mybook -> djot
-  mybook -> book [style=dashed, lhead=cluster_resilient]
+  mybook -> book
 }

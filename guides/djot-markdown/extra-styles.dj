@@ -57,12 +57,3 @@ class:registerCommand("Initial", function (_, content)
   SILE.call("dropcap", { lines = lines, family = family, color = color, join = true }, { letter })
 end)
 ```
-
-```=sile
-% Chicken and egg problem: resilient.sile will support loading bibliographies
-% in master documents, but relies on markdown.sile as dependency for references
-% in content files.
-% So this is a workaround to load the bibliography here, be able to release a
-% new version of markdown.sile and move forward with the development.
-\loadbibliography[file=markdown-djot.bib]
-```

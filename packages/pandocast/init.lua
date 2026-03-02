@@ -30,7 +30,7 @@ package.documentation = [[\begin{document}
 The \autodoc:package{pandocast} package allows you to use Pandoc’s JSON AST as an input format
 for documents.
 Pandoc is a free-software document converter, created by the same John MacFarlane who
-provided the \strong{lunamark} library which empowers SILE’s \autodoc:package{markdown}
+provided the \strong{lunamark} library which empowers the \autodoc:package{markdown}
 package. The latter, though, does not offer as many options and extensions as Pandoc does,
 for advanced typesetting.
 
