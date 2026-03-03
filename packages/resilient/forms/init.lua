@@ -17,8 +17,8 @@ local computeBaselineRatio = require("resilient.utils").computeBaselineRatio
 local function getFieldFlags (options, btype)
   -- PDF 1.7 Table 221
   -- Field flags common to all field types.
-  local readonly = SU.boolean(options.required, false) and 1 or 0 -- Bit 1
-  local required = SU.boolean(options.readonly, false) and 2 or 0 -- Bit 2
+  local readonly = SU.boolean(options.readonly, false) and 1 or 0 -- Bit 1
+  local required = SU.boolean(options.required, false) and 2 or 0 -- Bit 2
   local noexport = SU.boolean(options.noexport, false) and 4 or 0 -- Bit 3
   -- Other bits are type-specific
   local flags = btype + required + readonly + noexport
@@ -104,6 +104,7 @@ function package:_init (options)
     self._hasFormSupport = false
   else
     self._hasFormSupport = true
+    self:_hackOutputterLinkAnnotations() -- HACK
     pdf = require("justenoughlibtexpdf")
   end
   local this = self
@@ -913,6 +914,83 @@ function package:registerCommands ()
   --  - Firefox replaces all interactive form fields with its own widgets, ignoring the appearance streams.
   --  - Chromium seems shows the appearance streams properly.
   -- PDF is a complicated format and form support is spotty in many viewers.
+end
+
+-- HACK
+-- Copied from the internals (locals) of the libtexpdf outputter.
+
+local function borderColor (color)
+   if color then
+      if color.r then
+         return "/C [" .. color.r .. " " .. color.g .. " " .. color.b .. "]"
+      end
+      if color.c then
+         return "/C [" .. color.c .. " " .. color.m .. " " .. color.y .. " " .. color.k .. "]"
+      end
+      if color.l then
+         return "/C [" .. color.l .. "]"
+      end
+   end
+   return ""
+end
+local function borderStyle (style, width)
+   if style == "underline" then
+      return "/BS<</Type/Border/S/U/W " .. width .. ">>"
+   end
+   if style == "dashed" then
+      return "/BS<</Type/Border/S/D/D[3 2]/W " .. width .. ">>"
+   end
+   return "/Border[0 0 " .. width .. "]"
+end
+
+function package:_hackOutputterLinkAnnotations ()
+  SILE.outputter.endLink = function (_, dest, opts, x0, y0, x1, y1)
+    local bordercolor = borderColor(opts.bordercolor)
+    local borderwidth = SU.cast("integer", opts.borderwidth)
+    local borderstyle = borderStyle(opts.borderstyle, borderwidth)
+    local target = opts.external and "/Type/Action/S/URI/URI" or "/S/GoTo/D"
+    local d = "<</Type/Annot/Subtype/Link" .. borderstyle .. bordercolor .. "/A<<" .. target .. "(" .. dest .. ")>>>>"
+    -- BEGIN HACK
+    -- pdf.end_annotation(
+    --    d,
+    --    trueXCoord(x0),
+    --    trueYCoord(y0 - opts.borderoffset),
+    --    trueXCoord(x1),
+    --    trueYCoord(y1 + opts.borderoffset)
+    -- )
+    --
+    -- Add the annotation to the page's /Annots array manually, not using pdf.end_annotation().
+    --
+    -- pdf.end_annotation() called in the original outputter code does add the annotation to the page,
+    -- but the libtexpdf internal logic uses a page->annots pointer to store it.
+    -- It then creates the dictionary without checking for its existence, so we have a conflict between
+    -- the two logics.
+    --
+    -- Let's bypass the libtexpdf logic for now.
+    -- We cannot use it for our forms, as justenoughlibtexpdf expects a string, not a parsed dictionary with
+    -- references...
+    -- Another option would be to extend the justenoughlibtexpdf package to provide a proper API to handle our
+    -- different cases (links, form fields, etc.), but this would need hacking into the C code...
+    -- And the libtexpdf module is a mess full of internal state, global variables, and side effects, which
+    -- do not help. Understandably, since it wasn't supposed to be used this way originally, but still...
+    --
+    -- There's still a problem if links are used on a page before loading the resilient.forms package,
+    -- but let's assume that this won't be the case for now, i.e. that the package will be loaded early
+    -- enough in the document...
+    local annotDict = pdf.parse(d)
+    local page = pdf.get_dictionary("@THISPAGE")
+    local annots = pdf.lookup_dictionary(page, "Annots")
+    local rect = string.format("[%f %f %f %f]", trueXCoord(x0), trueYCoord(y0 - opts.borderoffset), trueXCoord(x1), trueYCoord(y1 + opts.borderoffset))
+    pdf.add_dict(annotDict, pdf.parse("/Rect"), pdf.parse(rect))
+    if not annots then
+      SU.debug("resilient.forms", "Creating /Annots array on current page for link annotation")
+      annots = pdf.parse("[]")
+      pdf.add_dict(page, pdf.parse("/Annots"), annots)
+    end
+    pdf.push_array(annots, pdf.reference(annotDict))
+    pdf.release(annotDict) -- Release the annotation object, no longer needed
+    -- END HACK
+  end
 end
 
 package.documentation = [[\begin{document}
