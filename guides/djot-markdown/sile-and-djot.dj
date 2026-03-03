@@ -330,9 +330,8 @@ Direct (inline) link's attributes override reference's attributes.
 An image with nonempty caption (i.e. "alternate" text), occurring alone by itself in a paragraph, is rendered as a figure with a caption, as actually seen above.
 Otherwise, the caption is ignored.
 
-If your document class or previously loaded packages provide a `captioned-figure` environment, it is wrapped around the image (and it is then assumed to take care of the caption, i.e. to extract and display it appropriately).
-Specifically, if the *resilient* book class is used, the caption is numbered by default, and added to the list of figures. Specify `.unnumbered`, and `.notoc` respectively, if you do not want it.
-Otherwise, the converter uses its own fallback method.
+With default styles, the captioned figure is numbered, and added to the list of figures.
+You can specify `.unnumbered`, and `.notoc` respectively, if you do not want it.
 
 #### Extended image types
 
@@ -396,7 +395,7 @@ the [SILE website](https://sile-typesetter.org/){.underline}.[^djot-link-attribu
 ```
 :::
 
-[^djot-link-attributes]: Within a **resilient** class, we'd possibly rather recommend using a style to color links, etc.
+[^djot-link-attributes]: Within a *resilient* class, we'd possibly rather recommend using a style to color links, etc.
 
 There are actually two kinds of links, inline links and reference links.
 Both start with the link text (which may contain arbitrary inline formatting) inside `[`...`]` delimiters.
@@ -648,9 +647,11 @@ The contents of the block quote are parsed as block-level content.
 >
 > > Such quotes can be nested.
 
-If your document class or previously loaded packages provide a `blockquote` environment, it is used.
-When using the *resilient* classes, styles are used, and the `variant` option may be used to switch to an alternate style.
-Otherwise, the converter uses its own fallback method, with hard-coded styling.
+Block attributes are passed to the underlying quote environment.
+Notably, the `variant` attribute can be used to switch to an alternate style.[^djot-blockquote-variant]
+
+[^djot-blockquote-variant]: Within *resilient*, you can fully customize the style used for quotes.
+The `variant` option is intended to switch to a different style, when you need more than one for different purposes in the same document.
 
 #### Attributed quotes (epigraphs)
 
@@ -660,7 +661,7 @@ Otherwise, the converter uses its own fallback method, with hard-coded styling.
 ^ Jorge Luis [Borges]{.smallcaps}, "The Library of Babel"
 
 Standard Djot only honors captions on tables, and ignores them on other block elements.
-When using a *resilient* document class, however, a captioned block quote is rendered as an "epigraph", with the caption content used as its "source" (in a broad sense).
+In *resilient*, however, a captioned block quote is rendered as an "epigraph", with the caption content used as its "source" (in a broad sense).
 The caption is introduced with a `^` character, and can contain inline elements.
 For instance, the above quote was obtained with:
 
@@ -829,9 +830,8 @@ Any further blocks included in the item are assumed to be the definition.
 
   Like oranges but yellow.
 
-Block attributes are passed to the underlying definition environment.
-When not using a supporting class or package, the converter uses its own fallback method, with hard-coded styling (e.g. the term is typeset in boldface).
-When using the *resilient* classes, the *resilient.defn* environment is loaded, and the `variant` option may thus be used to switch to an alternate style.[^djot-defn-variant]
+Block attributes are passed to the underlying definition list implementation.
+Notably, the `variant` attribute can be used to switch to an alternate style.[^djot-defn-variant]
 As an example, let's say you have a "Custom" variant with an _ad hoc_ style.
 
 {custom-style=CodeBlock}
@@ -849,7 +849,7 @@ As an example, let's say you have a "Custom" variant with an _ad hoc_ style.
 
   A light markup syntax.
 
-[^djot-defn-variant]: Within *resilient*, you can already fully style the default definition list.
+[^djot-defn-variant]: Within *resilient*, you can fully customize the styles used for definition terms and definitions.
 The `variant` option is intended to switch to a different style, when you need more than one for different purposes in the same document.
 
 #### Task lists
@@ -918,8 +918,7 @@ Djot supports the "pipe table" syntax, with an optional caption.
 ```
 :::
 
-
-When using the *resilient* classes, the caption is numbered by default, and added to the list of tables.
+With default styles, captioned tables are numbered, and added to the list of tables.
 Specify `.unnumbered`, and `.notoc` respectively, as table attributes, if you do not want it.
 
 ### Code blocks
@@ -1122,7 +1121,8 @@ _Some content here._
 Be aware that this behavior is currently an extension.
 Other Djot converters will therefore likely skip the caption.
 
-As for implicit captioned images, this feature relies on the document class or other packages to provide a `captioned-figure` environment. See §[](#djot-captioned-images), the same remarks apply here as well.
+With default styles, captioned figures are numbered, and added to the list of figures.
+See §[](#djot-captioned-images), the same remarks apply here as well.
 
 ### Horizontal dividers
 
@@ -1505,7 +1505,7 @@ For document classes supporting it (in particular, the *resilient* book class), 
 :::
 
 For developers, the converter also accepts a `filter` option, whose value is the name of a Lua script (with or without the `.lua` extension).
-This script is loaded in a sandboxed environment and must return a table of filters in the form expected by the **djot.lua** library.
+This script is loaded in a sandboxed environment and must return a table of filters in the form expected by the *djot.lua* library.
 
 Filters traverse the Djot AST and rewrite it, following the transformation rules you define.
 They can be useful to customize the conversion process in arbitrary ways --- adding features, modifying formatting, or transforming content structure in ways this converter doesn't provide out of the box.

@@ -199,7 +199,7 @@ function Renderer:blockquote (node)
       createCommand("caption", {}, caption)
     }, pos)
   else
-    out = createCommand("markdown:internal:blockquote", node.attr or {}, content, pos)
+    out = createCommand("blockquote", node.attr or {}, content, pos)
   end
   if node.attr then
     -- Add a div when containing attributes
@@ -274,7 +274,7 @@ function Renderer:code_block (node)
   out = createCommand("markdown:internal:codeblock", options, node.s, pos)
   if node.caption then
     -- Potential Djot extension (but not yet -- explicit wrapping in a div block might
-    -- be sufficient for now.
+    -- be sufficient for now. TODO)
     SU.warn("Caption on code block is not supported (ignored)")
   end
   return out
@@ -442,7 +442,7 @@ end
 function Renderer:definition_list_item (node)
   -- See the list renderer, we'll override options on defn nodes from
   -- Djot attributes on the whole list.
-  return createStructuredCommand("markdown:internal:defn", {}, self:render_children(node))
+  return createStructuredCommand("defn", {}, self:render_children(node))
 end
 
 function Renderer.reference_definition (_)

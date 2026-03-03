@@ -305,9 +305,8 @@ Otherwise, the caption is ignored.
 ```
 :::
 
-As with Djot, it relies on the presence of a `captioned-figure` environment in your document class or previously loaded packages.
-
-Specifically, if the **resilient** book class is used, the caption is numbered by default, and added to the list of figures. Specify `.unnumbered`, and `.notoc` respectively, if you do not want it.
+As with Djot, with default styles, the captioned figure is numbered, and added to the list of figures.
+You can specify `.unnumbered`, and `.notoc` respectively, if you do not want it.
 
 #### Extended image types
 
@@ -422,9 +421,7 @@ is on page [](#markdown-tables){.page}.
 
 Besides heading levels, it also works for various elements where you can define an identifier.
 For instance we had some centered text in section [](#markdown-centered).
-With appropriate class and package support,[^markdown-sec-label-support] you may even refer to Gutenberg as "figure [](#markdown-gutenberg)", or to some poetry verse mentioning the Sun ("Soleil"), in [](#sun){.section}, as "verse [](#sun)".
-
-[^markdown-sec-label-support]: Typically, it works with the **resilient** collection of classes and packages. It won't work with non-supporting class and packages, using the fallback implementation for captioned elements, poetry, etc.
+You may even refer to Gutenberg as "figure [](#markdown-gutenberg)", or to some poetry verse mentioning the Sun ("Soleil"), in [](#sun){.section}, as "verse [](#sun)".
 
 #### Automatic links
 
@@ -662,9 +659,6 @@ The contents of the block quote are parsed as block-level content.
 >
 > > Such quotes can be nested.
 
-If your document class or previously loaded packages provide a `blockquote` environment, it will be used.
-Otherwise, the converter uses its own fallback method, with hard-coded styling.
-
 ::: {custom-style=Difference}
 ![](manicule.svg){height=1.3ex} **Main differences with Djot**
 
@@ -873,7 +867,7 @@ Markdown supports the "pipe table" syntax, with its own way for marking the opti
 ```
 :::
 
-When using the **resilient** classes, the caption will be numbered by default, and added to the list of tables.
+With default styles, captioned tables are numbered, and added to the list of tables.
 
 ::: {custom-style=Difference}
 ![](manicule.svg){height=1.3ex} **Main differences with Djot**

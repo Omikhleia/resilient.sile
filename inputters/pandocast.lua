@@ -236,7 +236,7 @@ end
 -- BlockQuote [Block]
 function Renderer:BlockQuote (blocks)
   local content = self:render(blocks)
-  return createCommand("markdown:internal:blockquote", {}, content)
+  return createCommand("blockquote", {}, content)
 end
 
 -- OrderedList ListAttributes [[Block]]
@@ -295,7 +295,7 @@ function Renderer:DefinitionList (items)
   for _, item in ipairs(items) do
     local term = self:render(item[1])
     local definition = self:render(item[2])
-    buffer[#buffer + 1] = createStructuredCommand("markdown:internal:defn", {}, {
+    buffer[#buffer + 1] = createStructuredCommand("defn", {}, {
       createCommand("term", {}, term),
       createStructuredCommand("desc", {}, definition)
     })

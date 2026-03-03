@@ -96,7 +96,7 @@ local function SileAstWriter (writerOps, renderOps)
   writer.emphasis = simpleCommandWrapper("em")
   writer.subscript = simpleCommandWrapper("textsubscript")
   writer.superscript = simpleCommandWrapper("textsuperscript")
-  writer.blockquote = simpleCommandWrapper("markdown:internal:blockquote")
+  writer.blockquote = simpleCommandWrapper("blockquote")
   writer.verbatim = simpleCommandWrapper("verbatim")
   writer.listitem = simpleCommandWrapper("item")
   writer.linebreak = simpleCommandWrapper("markdown:internal:hardbreak")
@@ -228,7 +228,7 @@ local function SileAstWriter (writerOps, renderOps)
   writer.definitionlist = function (items, _) -- items, tight
     local buffer = {}
     for _, item in ipairs(items) do
-      buffer[#buffer + 1] = createStructuredCommand("markdown:internal:defn", {}, {
+      buffer[#buffer + 1] = createStructuredCommand("defn", {}, {
         createCommand("term", {}, item.term),
         createStructuredCommand("desc", {}, item.definitions)
       })

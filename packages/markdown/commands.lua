@@ -158,6 +158,9 @@ function package:_init (_)
   self:loadPackage("textsubsuper")
   self:loadPackage("url")
 
+  self:loadPackage("resilient.epigraph")
+  self:loadPackage("resilient.defn")
+
   -- Do those at the end so the resilient versions may possibly override things.
   self:loadAltPackage("resilient.lists", "lists")
   self:loadAltPackage("resilient.verbatim", "verbatim")
@@ -165,12 +168,6 @@ function package:_init (_)
   -- Optional packages
   self:loadOptPackage("couyards")
   self:loadOptPackage("piecharts")
-
-  -- Other conditional packages
-  if self.isResilient then
-    self:loadPackage("resilient.epigraph")
-    self:loadPackage("resilient.defn")
-  end
 
   -- Register some predefined symbols
   self:registerSymbol("_TOC_", true, function (options)
@@ -363,30 +360,9 @@ function package:registerCommands ()
     if hasClass(options, "notoc") then
       options.toc = false
     end
-    if self.isResilient then
-      --Sectioning commands support the marker option.
+    --Resilient sectioning commands support the marker option.
       options.marker = id
       SILE.call(command, options, content)
-    else
-      -- We don't know if the marker option is supported.
-      -- Presumably no, e.g. it's the SILE default book class...
-      -- Things are somewhat messy then, as of how to insert the identifier label.
-      -- If done before the sectioning, it could end on the previous page.
-      -- Within the title content, it poses other problems to ToC entries, running headers...
-      -- We are left with doing it after, but that's not perfect either vs.
-      -- page breaks, paragraph indents and skips...
-      SILE.call(command, options, content)
-      if id then
-        if not self.warnResilient then
-          SU.warn([[You are not using a resilient class.
-Sectioning command (]] .. command .. [[) with an identifier (]] .. id .. [[)
-may sometimes introduce weird skips.
-Please consider using a resilient-compatible class!]])
-          self.warnResilient = true
-        end
-        SILE.call("label", { marker = id })
-      end
-    end
   end, "Header in Markdown (internal)")
 
   self:registerCommand("markdown:internal:div:id", function (options, content)
@@ -638,50 +614,26 @@ Please consider using a resilient-compatible class!]])
     end
   end, "Raw native block in Markdown (internal)")
 
-  self:registerCommand("markdown:internal:blockquote", function (options, content)
-    -- SILE's plain class provides a "blockquote" since SILE 0.15.0.
-    -- Resilient document classes also provide a blockquote environment.
-    -- So we do not need to maintain our own fallback, and this is just
-    -- a simple wrapper.
-    SILE.call("blockquote", options, content)
-  end, "Block quote in Markdown (internal)")
-
   self:registerCommand("markdown:internal:captioned-table", function (options, content)
-    -- Makes it easier for class/packages to provide their own captioned-table
-    -- environment if they want to do so (possibly with more features,
-    -- e.g. managing list of tables, numbering and cross-references etc.),
-    -- while minimally providing a default fallback solution.
-    if not self.hasCommandSupport["captioned-table"] then
-      SILE.call("markdown:fallback:captioned-table", {}, content)
-    else
-      local tableopts = {}
-      if hasClass(options, "unnumbered") then
-        tableopts.numbering = false
-      end
-      if hasClass(options, "notoc") then
-        tableopts.toc = false
-      end
-      SILE.call("captioned-table", tableopts, content)
+    local tableopts = {}
+    if hasClass(options, "unnumbered") then
+      tableopts.numbering = false
     end
+    if hasClass(options, "notoc") then
+      tableopts.toc = false
+    end
+    SILE.call("captioned-table", tableopts, content)
   end, "Captioned table in Markdown (internal)")
 
   self:registerCommand("markdown:internal:captioned-figure", function (options, content)
-    -- Makes it easier for class/packages to provide their own captioned-figure
-    -- environment if they want to do so (possibly with more features,
-    -- e.g. managing list of tables, numbering and cross-references etc.),
-    -- while minimally providing a default fallback solution.
-    if not self.hasCommandSupport["captioned-figure"] then
-      SILE.call("markdown:fallback:captioned-figure", {}, content)
-    else
-      local figopts = {}
-      if hasClass(options, "unnumbered") then
-        figopts.numbering = false
-      end
-      if hasClass(options, "notoc") then
-        figopts.toc = false
-      end
-      SILE.call("captioned-figure", figopts, content)
+    local figopts = {}
+    if hasClass(options, "unnumbered") then
+      figopts.numbering = false
     end
+    if hasClass(options, "notoc") then
+      figopts.toc = false
+    end
+    SILE.call("captioned-figure", figopts, content)
   end, "Captioned figure in Markdown (internal)")
 
   -- Code blocks
@@ -776,19 +728,12 @@ Please consider using a resilient-compatible class!]])
     end
     local title = removeFromTree(content, "caption")
 
-    if self.hasCommandSupport.epigraph then -- assuming the implementation from resilient.epigraph.
-      if title then
-        -- Trick: Put the extract title back as "\source"
-        title.command = "source"
-        content[#content+1] = title
-      end
-      SILE.call("epigraph", options, content)
-    else
-      SU.warn([[Apparently, you are not using a resilient class.
-Quotation captions are ignored.
-Please consider using a resilient-compatible class!]])
-      SILE.call("markdown:internal:blockquote", options, content)
+    if title then
+      -- Trick for resilient.epigraph: Put the extracted title back as "\source"
+      title.command = "source"
+      content[#content+1] = title
     end
+    SILE.call("epigraph", options, content)
   end, "Captioned blockquote in Djot (internal)")
 
   self:registerCommand("markdown:internal:toc", function (options, _)
@@ -808,17 +753,6 @@ Please consider using a resilient-compatible class!]])
     SILE.call("tableofcontents", options)
     SILE.Commands["tableofcontents:header"] = tocHeaderCmd
   end, "Table of contents in Djot (internal)")
-
-  self:registerCommand("markdown:internal:defn", function (options, content)
-    -- Makes it easier for class/packages to provide their own definition
-    -- environment if they want to do so (possibly with more features),
-    -- while minimally providing a default fallback solution.
-    if not self.hasCommandSupport.defn then
-      SILE.call("markdown:fallback:defn", {}, content)
-    else
-      SILE.call("defn", options, content)
-    end
-  end, "Definition item in Markdown (internal)")
 
   self:registerCommand("markdown:internal:symbol", function (options, _)
     local symbol = SU.required(options, "_symbol_", "symbol")
@@ -865,63 +799,6 @@ Please consider using a resilient-compatible class!]])
     SILE.call("par")
     SILE.call("novbreak")
   end, "A fallback default header if none exists for the requested sectioning level")
-
-  self:registerCommand("markdown:fallback:captioned-table", function (_, content)
-    if type(content) ~= "table" then
-      SU.error("Expected a table AST content in captioned table environment")
-    end
-    local caption = removeFromTree(content, "caption")
-
-    SILE.process(content)
-    if caption then
-      SILE.call("novbreak")
-      SILE.call("font", {
-        size = SILE.settings:get("font.size") * 0.95
-      }, function ()
-        SILE.call("center", {}, caption)
-      end)
-      SILE.call("smallskip")
-    end
-  end, "A fallback command for Markdown to insert a captioned table")
-
-  self:registerCommand("markdown:fallback:defn", function (_, content)
-    if type(content) ~= "table" then
-      SU.error("Expected a table AST content in captioned table environment")
-    end
-    local term = removeFromTree(content, "term")
-    local desc = removeFromTree(content, "desc")
-
-    SILE.typesetter:leaveHmode()
-    SILE.call("strong", {}, term)
-    SILE.call("novbreak")
-    SILE.settings:temporarily(function ()
-      local indent = SILE.types.measurement("2em"):absolute()
-      local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
-      SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width + indent))
-      SILE.process(desc)
-      SILE.typesetter:leaveHmode()
-    end)
-    SILE.call("smallskip")
-  end, "A fallback command for Markdown to insert a definition item (term, desc)")
-
-  self:registerCommand("markdown:fallback:captioned-figure", function (_, content)
-    if type(content) ~= "table" then
-      SU.error("Expected a table AST content in captioned figure environment")
-    end
-    local caption = removeFromTree(content, "caption")
-
-    SILE.call("smallskip")
-    SILE.call("center", {}, function ()
-      SILE.process(content)
-      if caption then
-        SILE.call("novbreak")
-        SILE.call("font", {
-          size = SILE.settings:get("font.size") * 0.95
-        }, caption)
-      end
-    end)
-    SILE.call("smallskip")
-  end, "A fallback command for Markdown to insert a captioned figure")
 
   self:registerCommand("markdown:fallback:mark", function (_, content)
     local leading = SILE.types.measurement("1bs"):tonumber()

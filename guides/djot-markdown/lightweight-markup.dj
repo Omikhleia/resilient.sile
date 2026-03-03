@@ -83,7 +83,7 @@ Beyond technical considerations, it's also worth examining the functionality of 
 ## On the book document class
 
 Earlier versions of our Djot and Markdown converters tried to play fair with SILE's default *book* document class, via the provision of a set of "fallback" commands and environments.
-These served as wrappers, using those provided by the document class whenever possible, or implementing simpler and more basic versions as degraded fallbacks, when not available.
+These were thus used when the document class or loaded packages did not provide the necessary commands and environments, as simple and more basic versions (albeit degraded) of the ones provided by the resilient collection.
 
 It is no longer the case, and the converters now rely on the *resilient.book* document class for optimal functionality and flexibility.
 This author believes that the default SILE book class, in its current state as of 2026, may not be the most practical choice for serious projects.
