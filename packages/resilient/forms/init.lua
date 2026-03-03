@@ -17,8 +17,8 @@ local computeBaselineRatio = require("resilient.utils").computeBaselineRatio
 local function getFieldFlags (options, btype)
   -- PDF 1.7 Table 221
   -- Field flags common to all field types.
-  local readonly = SU.boolean(options.required, false) and 1 or 0 -- Bit 1
-  local required = SU.boolean(options.readonly, false) and 2 or 0 -- Bit 2
+  local readonly = SU.boolean(options.readonly, false) and 1 or 0 -- Bit 1
+  local required = SU.boolean(options.required, false) and 2 or 0 -- Bit 2
   local noexport = SU.boolean(options.noexport, false) and 4 or 0 -- Bit 3
   -- Other bits are type-specific
   local flags = btype + required + readonly + noexport
