@@ -1,0 +1,104 @@
+# General considerations
+
+[O]{custom-style=Initial}[ne]{.smallcaps} of the primary motivations behind the development of the components provided in this module was the ability to typeset an entire book "from front cover to back cover," using text files written in a lightweight markup language.
+
+My response to this challenge was the _re·sil·ient_ collection of classes and packages for SILE.
+It includes master documents, book matters, a robust book class, and a neat styling paradigm.
+All of these, combined with the use of a lightweight markup language, aim at making the process of creating beautiful books as simple as possible.
+You do not have to believe me on faith, and you can judge for yourself.
+After all, you are currently reading a user guide based on it, with styled headings, colorful dropped capitals, and more...
+
+Resilient meets most of my own requirements, and I hope to improve it further.
+However, there was still one issue that needed to be addressed: the input format.
+
+## On markup languages
+
+While I once enjoyed using LaTeX, I found it impractical due to its complex and non-user-friendly syntax, as well as difficulties in converting to other formats.
+Though Patoline and Pollen appeared promising, their lack of widespread support posed limitations.
+Lout, once hailed as a potential LaTeX replacement, is now defunct.
+I am going full opinionated here: 
+SILE does not fare much better with its SIL custom language, burdened by its own spacing idiosyncrasies.
+HTML with CSS is too technical for most authors, and the WYSIWYG office suites are not appropriate for large projects.
+
+Anyhow, these languages are not "lightweight markup languages," as close to plain text as possible...
+Forget FOP and XML-FO, insane XSLT transformations, DocBook and the like, for the same reasons.
+
+In recent exploration, Typst caught my attention.
+However, in my views, its custom syntax fails to significantly improve upon existing options, blurring the distinction between content and style and lacking a clear separation of concerns.
+Regarding styling, Typst does not revolutionize the field, and does not seem to tackle the challenge.
+I am not saying that mixing scripting, layout decisions, styling, and content is _inherently_ bad.
+I am doing it casually in this document (via raw inline and raw block elements), and it's fine for advanced tasks.
+But for most content, it's not the best approach...
+
+What if I could get rid of SIL, and any similar custom language, and use a lightweight markup language instead?
+Hold on, SILE is actually agnostic to the input format.
+Since every bit of its Lua code is exposed to the user, it's possible to extend it to support other input formats, potentially leading to wider community adoption, and independent tooling.
+Enters Markdown. 
+Actually, enters a serious contender, Djot.
+
+## On Djot over Markdown
+
+Should you pick Djot over Markdown, as hinted by this author here and in the following chapters?
+Several reasons are purely technical and relate to how the languages are implemented within this module.
+
+: Easier debugging
+
+  The implementation of Djot excels in tracking line numbers and positions, or at least in providing some context when encountering a syntax issue in the input document.
+  Conversely, the Markdown implementation lacks this functionality, making debugging and generating meaningful error messages more challenging.
+  Troubleshooting a minor markup mistake in a lengthy Markdown document can be arduous.
+
+: Better performances
+
+  The Djot syntax demonstrates less ambiguity compared to Markdown, contributing to a more efficient implementation of the language grammar.
+  Markdown, while benefiting from a PEG-based implementation in order to accommodate numerous extensions and syntax subleties, suffers from decreased efficiency.
+  Parsing a comparable document in Djot significantly outperforms Markdown in processing speed.
+
+{.dinkus}
+---
+
+Beyond technical considerations, it's also worth examining the functionality of each language and assessing their ease of use.
+
+: Readability 
+
+  Markdown can be intricate, with subtle nuances where even a single space can trigger unexpected effects.
+  It exhibits non-intuitive behaviors, such as the use of indentation to denote code blocks.
+  There are inconsistent outcomes with lists, emphases, headings...
+  See John MacFarlane's ["Beyond Markdown"](https://johnmacfarlane.net/beyond-markdown.html) essay for some more examples, and the reasons that led him propose Djot [@djot:macfarlane2018].
+
+: Extensibility
+
+  Djot offers greater flexibility and power by supporting attributes on both block and inline elements. These attributes can be leveraged by the converter to produce content with enhanced richness and styling options.
+  Djot's extensibility is also facilitated through the use of symbols.
+  In the upcoming chapter, we will delve into various methods employed by this module to expand Djot's capabilities even further. These include generalized captions, templates, variable substitutions, conditional statements, and more --- all while maintaining fidelity to the original concepts.
+
+: Compatibility
+
+  Markdown enjoys widespread adoption, with native support from numerous tools and platforms.
+  This could be your main reason to stick with Markdown, especially if you already have a large collection of documents written in this format.
+  However, its utility is somewhat diminished by the proliferation of dialects and extensions developed over the years.
+  The Pandoc software adeptly handles a vast array of these variations, making it an excellent tool for converting between different flavors of Markdown.
+  Nevertheless, since version 3.1.12, Pandoc has extended its support to Djot, rendering the distinction between Markdown and Djot less significant.
+
+
+## On the book document class
+
+Earlier versions of our Djot and Markdown converters tried to play fair with SILE's default *book* document class, via the provision of a set of "fallback" commands and environments.
+These were thus used when the document class or loaded packages did not provide the necessary commands and environments, as simple and more basic versions (albeit degraded) of the ones provided by the resilient collection.
+
+It is no longer the case, and the converters now rely on the *resilient.book* document class for optimal functionality and flexibility.
+This author believes that the default SILE book class, in its current state as of 2026, may not be the most practical choice for serious projects.
+The advantages of the resilient collection include:
+
+ - A cohesive and comprehensive approach to styling decisions, simplifying complexity.
+ - A robust "book" class, featuring:
+
+    - A diverse selection of page layouts, spanning from traditional to contemporary designs.
+    - Comprehensive support for essential book elements, including parts, chapters, sections, subsections, and subsubsections.
+    - Extensive customization options for table of contents, headers, footers, footnotes, and sectioning environments.
+    - Advanced captioned figure and table environments, among other features.
+
+ - A versatile "master document" format,
+
+     - Facilitating the seamless assembly of content files written in Djot, Markdown, or SIL into a cohesive work.
+     - Providing a structured framework for organizing your book, encompassing its front cover, half-title page, title page, endpapers, and back cover.
+

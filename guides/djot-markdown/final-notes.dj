@@ -1,0 +1,13 @@
+# Miscellaneous notes
+
+[T]{custom-style=Initial}[his section]{.smallcaps} contains some tips and tricks to help you get the most out of the converter.
+It is the place where some less obvious features are documented.
+It also intends at answering some frequently asked questions, so feel free to ask for more information if you feel something is missing.
+
+{#final-notes-units}
+## Regarding width and height attributes
+
+Most of the time, the converter does not check the validity of the key-value attributes passed to the SILE underlying commands, and it is their responsibility to do so.
+
+However, for convenience, width and height attributes can be expressed in percentages, and the converter will automatically convert them to SILE's line and frame relative units, respectively.
+(E.g., `width=50%` becomes `width=0.5%lw`, and `height=50%` becomes `height=0.5%fh`.)

@@ -1,0 +1,59 @@
+```=sile
+% Quick and dirty definition of new custom styles
+% using some "resilient" styling feature.
+%
+\define[command=customframe]{\center{\roughbox[bordercolor=#66a0b3,
+  fillcolor=220,padding=15pt, enlarge=true]{\parbox[width=90%lw, minimize=true]{\process}}}}
+\define[command=customblockframe]{\center{\framebox[bordercolor=#66a0b3,
+  shadow=true,
+  fillcolor=250,
+  padding=4pt,
+  shadowcolor=220]{\parbox[width=90%lw]{\process}}}}
+```
+
+```=sile-lua
+-- Tapping into the internal scratch variable of the resilient.styles
+-- package is not a good practice.
+SILE.scratch.styles.alignments["fancy-framed"] = "customframe"
+local class = SILE.documentState.documentClass
+class:registerStyle("FramedPara", {}, {
+  paragraph = {
+    before = { skip = "medskip" },
+    after = { skip = "medskip" },
+    align = "fancy-framed"
+  }
+})
+
+SILE.scratch.styles.alignments["shadow-framed"] = "customblockframe"
+local class = SILE.documentState.documentClass
+class:registerStyle("CodeBlock", {}, {
+  paragraph = {
+    before = { skip = "smallskip" },
+    after = { skip = "smallskip" },
+    align = "shadow-framed"
+  }
+})
+
+local class = SILE.documentState.documentClass
+class:registerCommand("Ean13", function (_, content)
+  local code = content[1]
+  -- Markdown parser may interpret a dash between digits as smart typography for en-dash.
+  -- Let's remove those.
+  code = code:gsub("–","")
+  SILE.call("ean13", { code = code })
+end)
+
+class:registerCommand("Initial", function (_, content)
+  if type(content) ~= "table" then SU.error("Expected a table content in dropcap environment") end
+  if #content ~= 1 then SU.error("Expected a single letter in dropcap environment") end
+  local letter = content[1]
+
+  -- discardable style
+  local dropcapSty = class.styles and class.styles:resolveStyle("CustomDroppedInitial", true) or {}
+  local family = dropcapSty.font and dropcapSty.font.family or "Zallman Caps"
+  local lines = dropcapSty.special and dropcapSty.special.lines or 3
+  local color = dropcapSty.color
+
+  SILE.call("dropcap", { lines = lines, family = family, color = color, join = true }, { letter })
+end)
+```

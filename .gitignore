@@ -47,9 +47,11 @@ luac.out
 *.debug
 **/converted/*
 **/embedded/*
+
+# I often have crappy test files here
 temp/*
 
-# LDoc if ran locally
+# LDoc artifacts if ran locally
 doc/*
 ldoc/*
 public/*
@@ -57,8 +59,3 @@ public/*
 # Stuff copied or linked from lua_libraries/ to sile/
 # for hacking (as those files from lua_libraries/ are not in the sile namespace)
 sile/*
-
-# LDoc artifacts
-ldoc/
-doc/
-public/

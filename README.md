@@ -16,7 +16,9 @@ It offers a wide range of features, including:
   - Highly configurable table of contents, headers, footers, footnotes and sectioning environments,
   - More book divisions (front matter, main matter, back matter) and subdivisions (appendices)…
   - And other useful features, from cross-references to advanced captioned figure and table environments, and more…
-  - A great parity with Markdown, including many Pandoc-like extensions, and with Djot.
+- Native support for Markdown and Djot as input formats:
+  - A great parity with Markdown, including many Pandoc-like extensions,
+  - Djot support with powerful extensions and nicely integrated capabilities.
 
 Whether you are a seasoned typist or a beginner, the _re·sil·ient_ collection aims at making the process of creating beautiful books as simple as possible, from front cover to back cover, using a lightweight markup language for most of the content, if not all of it.
 
@@ -41,7 +43,7 @@ For advanced users, developers and contributors, some technical documentation is
 
 ## Installation
 
-These packages require SILE v0.15.12 or v0.15.13.
+These packages require SILE v0.15.13.
 
 Installation relies on the **luarocks** package manager.
 See its installation instructions on the [LuaRocks](https://luarocks.org/) website.
@@ -58,7 +60,7 @@ For more detailed instructions and recommendations, see also the dedicated [READ
 
 ## See also
 
-This collection also imports several modules also provided separately, would you find them useful on their own:
+This collection imports several modules also provided separately, would you find them useful on their own:
 
 - [Paragraph boxes, framed boxes and tables](https://github.com/Omikhleia/ptable.sile)
 - [Cross-references](https://github.com/Omikhleia/labelrefs.sile)
@@ -67,11 +69,8 @@ This collection also imports several modules also provided separately, would you
 - [QR codes](https://github.com/Omikhleia/qrcode.sile)
 - [Couyards](https://github.com/Omikhleia/couyards.sile) (typographic ornaments)
 - [Textual graphics embedders](https://github.com/Omikhleia/embedders.sile) (support for Graphviz, Lilypond, &c)
-- [Markdown](https://github.com/Omikhleia/markdown.sile) (support for Markdown, Djot etc.)
 - [Pie charts](https://github.com/Omikhleia/piecharts.sile) (support for pie charts)
 - [Code syntax highlighting](https://github.com/Omikhleia/highlighter.sile)
-
-When used with this collection, the Markdown/Djot packages are leveraged with additional capabilities.
 
 ## Historical note
 
@@ -82,11 +81,11 @@ Besides all the changes from SILE v0.12 to v0.14, and its new package and class 
 It therefore comes under a new name (also used as a namespace here and there), **resilient**.
 The name is a pun on “SILE” (as, after all, the initial target was always on redoing a book class that would satisfy my requirements), but there is a bit more to it than that, which might become more visible when the collection expands.
 
-Note that while this module was originally designed for SILE v0.14, the collection now requires SILE v0.15.12.
+Note that while this module was originally designed for SILE v0.14, the collection now requires SILE v0.15.13.
 
 ## License
 
-The code in this repository is released under the MIT license, (c) 2021-2025 Omikhleia.
+The code in this repository is released under the MIT license, (c) 2021-2026 Omikhleia.
 
 The documentation is under CC-BY-SA 2.0.
 
@@ -99,8 +98,16 @@ It should go without saying, but the above licenses apply to the source code and
 Documents composed using this solution remain subject to the terms and conditions set forth by respective copyright holders, i.e. the copyright holders of the original material (documents and assets)
 
 The outputs of the typesetting process encompass several generated files, besides the final PDF document (or other output format that SILE can produce).
-They include converted images, temporary files indexes and table of contents, etc.
+They include converted images, temporary files for indexes and table of contents, etc.
 In particular, style definition files are also generated, with a content varying depending on the packages and classes used.
 Such generated files are also outside the scope of the source code license, and are not covered by it.
 
 Would you want to credit this collection in your works, you are free to do so, but it is not required in any way.
+
+### Vendored libraries
+
+Modified subsets of the following Lua libraries are distributed alongside this collection, in the `lua-libraries` folder:
+
+ - [lunamark](https://github.com/jgm/lunamark), released under the MIT license, (c) 2009 John MacFarlane, _et al._
+ - [djot.lua](https://github.com/jgm/djot.lua), released under the MIT license, (c) 2022 John MacFarlane.
+ - tinyyaml.lua, released under the MIT license, (c) 2017 peposso and others.

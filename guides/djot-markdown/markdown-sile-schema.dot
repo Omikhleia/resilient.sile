@@ -1,0 +1,101 @@
+digraph omikhleia {
+  rankdir=RL;
+  compound=true;
+  edge [
+    arrowhead="vee"
+  ];
+
+  subgraph cluster_couyards {
+    label = "couyards.sile";
+
+    couyards [shape=component,style=filled,fillcolor=aliceblue]
+  }
+
+  subgraph cluster_piecharts {
+    label = "piecharts.sile";
+
+    piecharts [shape=component,style=filled,fillcolor=aliceblue]
+  }
+
+  subgraph cluster_ptable {
+    label = "ptable.sile";
+
+    ptable [shape=component,style=filled,fillcolor=aliceblue]
+  }
+
+  subgraph cluster_embedders {
+    label = "embedders.sile";
+
+    embedders [shape=component,style=filled,fillcolor=aliceblue]
+    dot [style=filled,fillcolor=aliceblue]
+
+    embedders -> dot
+  }
+
+  subgraph cluster_textsubsuper {
+    label = "textsubsuper.sile";
+
+    textsubsuper [shape=component,style=filled,fillcolor=aliceblue]
+  }
+
+  subgraph cluster_smartquotes {
+    label = "smartquotes.sile";
+
+    smartquotes [shape=component,style=filled,fillcolor=aliceblue]
+
+  }
+
+  subgraph cluster_labelrefs {
+    label = "labelrefs.sile";
+
+    labelrefs [shape=component,style=filled,fillcolor=aliceblue]
+  }
+
+  subgraph cluster_highlighter {
+    label = "highlighter.sile";
+
+    highlighter [shape=component,style=filled,fillcolor=aliceblue]
+  }
+
+  subgraph cluster_x {
+    label = "resilient.sile";
+
+    subgraph cluster_resilient {
+      label = "book support";
+  
+      book [shape=component,style=filled,fillcolor=aliceblue,label="resilient.book"]
+      poetry [shape=component,style=filled,fillcolor=aliceblue,label="resilient.poetry"]
+      defn [shape=component,style=filled,fillcolor=aliceblue,label="resilient.defn"]
+      epigraph [shape=component,style=filled,fillcolor=aliceblue,label="resilient.epigraph"]
+    }
+  
+    subgraph cluster_markdown {
+      label = "lightweight markup support";
+  
+      markdown [shape=component,style=filled,fillcolor=lightyellow]
+      pandocast [shape=component,style=filled,fillcolor=lightyellow]
+      djot [shape=component,style=filled,fillcolor=lightyellow]
+  
+      mrkcmd [shape=component,label="markdown.commands",style=filled,fillcolor=linen]
+  
+      markdown -> mrkcmd
+      pandocast -> mrkcmd
+      djot -> mrkcmd
+  
+      mrkcmd -> embedders
+      mrkcmd -> labelrefs
+      mrkcmd -> ptable
+      mrkcmd -> smartquotes
+      mrkcmd -> textsubsuper
+      mrkcmd -> highlighter
+      mrkcmd -> couyards [style=dashed]
+      mrkcmd -> piecharts [style=dashed]
+    }
+  }
+
+  mybook [shape = circle, label="Markdown\n& Djot\nfor\nSILE", fontsize="25"]
+  mybook -> markdown
+  mybook -> pandocast
+  mybook -> djot
+  mybook -> book
+}

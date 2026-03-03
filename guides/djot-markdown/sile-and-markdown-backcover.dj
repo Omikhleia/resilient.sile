@@ -1,0 +1,27 @@
+_Using the Djot or Markdown lightweight markup languages to generate great-looking PDF documents with SILE has never been easier._
+
+```=sile-lua
+SILE.call("medskip")
+```
+
+Have you ever dreamt of authoring a book in Markdown or Djot, and then generate a beautiful PDF?
+Sure, there are a few existing tools out there that can do that... Last time you checked, how good did they perform?
+
+The *resilient.sile* collection is a 3rd-party module for the SILE typesetting system.
+It provides several components for processing Markdown files, with a great set of Pandoc-like extensions and plenty of extra goodies.
+
+Djot, a recent experimental but serious contender to Markdown, is also supported, with additional features too. And there is more than we can list here on a back cover!
+
+```=sile-lua
+SILE.call("medskip")
+```
+
+With Djot and Markdown being made first-class citizens in SILE, you can now write your documents in these lightweight markup languages.
+You do not have to learn SILE's default language or Lua programming, although both are still available under the hood if you really want, for the best of several worlds.
+
+Discover the capabilities of this collection in this manual, and start authoring your own _perfect_ book today!
+
+{custom-style=CoverCredit}
+:::
+Cover image: Derived from [peoplecreations on Freepik](https://www.freepik.com/free-photo/bicycle-gears-floor_1008751.htm).
+:::

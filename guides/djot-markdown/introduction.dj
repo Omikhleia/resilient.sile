@@ -1,0 +1,138 @@
+# Introduction
+
+[T]{custom-style=Initial}[his]{.smallcaps} collection of modules for the [SILE](https://github.com/sile-typesetter/sile) typesetting system provides a complete redesign of its former native Markdown support.
+Most of the content you are reading right now is written in either Djot or Markdown, and processed using the converters offered by this collection:
+
+ - *djot* inputter and package: native Djot support,
+ - *markdown* inputter and package: native Markdown support,
+ - *pandocast* package: native support of Pandoc JSON AST files.
+
+For casual readers, this collection notably aims at easily converting Djot or Markdown documents to print-quality PDFs.
+
+With Djot and Markdown being made first-class citizens in SILE, you can now write your documents in these lightweight markup languages.
+There is actually more than one solution to achieve great results in that direction:
+
+ 1. Directly using the native converter packages,
+ 1. Using the Pandoc software to generate an output suitable for SILE.
+
+![Supported routes from input to output.](./markdown-sile-overview.dot){width="96%fw"}
+
+The Markdown converter offers a great set of Pandoc-like extensions, and the Djot converter provides additional features as well.
+Whether you favor Djot, a recent but serious contender to Markdown, or the more traditional Markdown, there is no need for you to delve into SILE's default language[^sile-default-language] or Lua programming.
+Yet, these options remain available under the hood for those seeking a blend of possibilities.
+
+[^sile-default-language]: That is, the SIL language, whether in its TeX-like syntax or XML flavor.
+
+
+## Installation
+
+### Standard installation
+
+This module collection requires SILE v0.15 (recommended: v0.15.13).
+
+Installation relies on the *luarocks* package manager.
+To install the latest version, you may use the provided “rockspec”:
+
+{custom-style=CodeBlock}
+:::
+```bash
+luarocks install resilient.sile
+```
+:::
+
+Refer to the SILE manual for more detailed 3rd-party package installation information.
+
+{#recommended-additional-software}
+### Recommended additional software
+
+This module also installs the [*embedders.sile*](https://github.com/Omikhleia/embedders.sile) collection, a general framework for embedding images from textual representations, performing their on-the-fly conversion via shell commands.
+
+These require additional software to be installed on your host system, to invoke the necessary conversion commands.
+Please refer to its documentation for more information.
+Typically, this manual illustrates the use of the Graphviz collection of tools to render graphs in the DOT language.
+
+As with anything that relies on invoking external programs on your host system, please be aware of potential security concerns.
+Be cautious with the source of the elements you include in your documents!
+
+
+## Usage
+
+### Usage from command line
+
+The following chapters describe the packages' features, and how to use them within existing documents (themselves in SIL, Djot or Markdown syntax).
+It's perfectly possible, though, to perform direct conversion from the command line.
+For instance, here is how it may be done for Markdown document...
+
+{custom-style=CodeBlock}
+:::
+```bash
+sile -u inputters.markdown somefile.md
+```
+:::
+
+... Or for a Djot document.
+
+{custom-style=CodeBlock}
+:::
+```bash
+sile -u inputters.djot somefile.dj
+```
+:::
+
+This method directly produces a PDF from the input file.[^intro-book-class]
+
+[^intro-book-class]: Under the hood, it uses a *markdown* class derived from the *resilient.book* class and loading the required modules.
+You don't really have to know that, unless you intend to invoke SILE with the `-c` option to specify another class of your choice; in that case you will need to load additional modules explicitly---unless it is a resilient class, of course.
+
+A "resilient style file" is also generated.
+It can be modified to change many styling decisions and adapt the output at convenience.
+
+### Advanced usage from existing documents
+
+While direct conversion from the command line may be adequate for very simple workflows, there are a number of things usually best addressed by using some kind of "wrapper" document.
+
+The resilient collection introduces a "master document" format, streamlining several usual tasks. Give it a chance, and you may even end up producing a book with SILE from front cover to back cover, without a single statement in SIL.
+
+This package collection provides several ways for including Markdown or Djot content in documents written in SIL syntax.
+Once you have loaded the *djot* or *markdown* package, the `\autodoc:command{\include[src=<file>]}`{=sile} command supports reading a Djot or Markdown file.
+Let's illustrate this for Djot, but the same applies to Markdown.
+
+{custom-style=CodeBlock}
+:::
+```sil
+\use[module=packages.djot]
+\include[src=somefile.dj]
+```
+:::
+
+Embedding raw Djot content from within a SIL document is also possible.
+Again, the same applies to Markdown.
+
+{custom-style=CodeBlock}
+:::
+```sil
+\begin[type=djot]{raw}
+Some *Djot* content
+\end{raw}
+```
+:::
+
+
+## Credits
+
+We owe a lot to John MacFarlane, for the *djot* and *lunamark* Lua libraries which empower this collection of packages.
+Additional thanks go to:
+
+- Simon Cozens, _et al._ concerned, for the early attempts at using *lunamark* with SILE.
+- Vít Novotný, for the good work on lunamark, and the impressive [*witiko/markdown*](https://github.com/Witiko/markdown) package for (La)TeX---a great source of inspiration and a goal of excellence.
+- Caleb Maclennan, for his early work on a Pandoc-to-SILE converter which, though on different grounds, indirectly gave me the idea of the Pandoc AST alternative approach proposed here.
+
+{.dinkus}
+---
+
+{custom-style=FramedPara}
+:::
+Thank you for your attention, gentle reader.
+We wish you a very pleasant journey through the rest of this manual.
+Don't hesitate to provide feedback and help pushing this collection forward.
+:::

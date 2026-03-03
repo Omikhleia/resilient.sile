@@ -1,0 +1,72 @@
+# Alternative route: SILE and Pandoc
+
+> "If you need to convert files from one markup format into another, Pandoc is your swiss-army knife."
+^ From the [Pandoc website](https://pandoc.org/).
+
+[P]{custom-style=Initial}[andoc]{.smallcaps} is a free-software document converter, created by the same John MacFarlane who initiated the *lunamark* and *djot* libraries which empower our native Djot and Mardown packages.
+The latter, though, do not offer as many options and extensions as Pandoc does, for advanced typesetting.
+
+In the event where the native solution would fall short for you --- _e.g._ would you need some extension or feature it doesn't yet support --- you may want to use Pandoc directly for converting your document to an output suitable for SILE.
+
+The following solution is still an experimental proof-of-concept, but you may give it a chance, and help us fill the gaps.
+
+## Prerequisites
+
+Obviously, you need to have the Pandoc software installed on your system.
+You also need a JSON parser, and this collection comes by default with the *lunajson* module as pre-installed dependency.
+It is a Lua-only module, with no external dependencies, so it works out of the box.
+
+Another option is to use the *luajson* module, which is an LPeg-based parser, and might (or not) be more efficient in some cases.
+On some systems, it may however require the LPeg library to be compiled and installed.
+Luarocks{.nobreak} should take care of that for you, but it then assumes you have the necessary development tools on your system.
+Moreover, as of 2024, the current release version of the module has some issues, so we recommend using the development version instead:
+
+{custom-style=CodeBlock}
+:::
+```bash
+luarocks install --dev luajson
+```
+:::
+
+If you have *luajson* installed, it is used instead of the default *lunajson* dependency.
+
+## Using Pandoc's AST with the pandocast package
+
+The experimental *pandocast* package allows you to use Pandoc’s JSON AST as an input format for documents.
+You can obtain an AST output from Pandoc for any supported source format. Keeping the focus on Markdown here:
+
+{custom-style=CodeBlock}
+:::
+```bash
+pandoc -t json somefile.md -f markdown -o somefile.pandoc
+```
+:::
+
+Once the package is loaded, the `\autodoc:command{\include[src=<file>]}`{=sile} command supports reading and processing such a Pandoc AST file from a document in SIL syntax, assuming the `.pandoc` extension or specifying the `format=pandocast` parameter:
+
+{custom-style=CodeBlock}
+:::
+```sil
+\use[module=packages.pandocast]
+\include[src=somefile.pandoc]
+```
+:::
+
+This package supports the same advanced features as the native Markdown solution, e.g. the ability to use custom styles, to pass native content through to SILE, etc.
+
+The `shift_headings` option is also available, as with the Markdown and Djot solutions.
+
+There is a small _caveat_, though: one must use a version of Pandoc which generates an AST compatible with our input handler ("inputter").
+While the Pandoc AST is somewhat stable, it may change when new features are introduced in the software.
+
+## Advanced tables with pandocast
+
+While our native packages accept so-called "pipe tables" only, Pandoc supports the standard "simple tables" from original Markdown, and also extends Markdown with several other methods for declaring tables.
+Would you have a document containing such tables, then *pandocast* should be able to render them. Above, we just described that package briefly.
+It's now showcase time!
+
+Obviously, it is mostly a question of input syntax, and the converter shouldn't actually have to bother, since the hard work parsing these tables is done by Pandoc itself, generating a generic JSON AST representation.[^pandoc-ast-caution]
+
+[^pandoc-ast-caution]: Some Pandoc AST structures address advanced table features from other document formats than Markdown.
+While such documents can be converted to a Pandoc JSON AST, our package might not support them well.
+Its main focus is on Markdown parity with Pandoc.
