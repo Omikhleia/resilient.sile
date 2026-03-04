@@ -79,11 +79,16 @@ local styleAwareVariant = {
 -- We enforce loading the resilient style-aware variant instead, assuming
 -- compatibility (though we cannot fully guarantee it).
 --
--- @tparam string packname Package name
+-- @tparam string|table packname Package name or package instance
 -- @tparam table options Package options
 function class:loadPackage (packname, options)
-  if styleAwareVariant[packname] then
-    SU.debug("resilient", "Loading the resilient variant of package", packname, "=", styleAwareVariant[packname],
+  -- Darn. SILE is weird as hell sometimes.
+  -- "packname" can be a string, but it can also be a package instance.
+  -- If this isn't being defective by design, I don't know what is.
+  local name = type(packname) == "string" and packname or packname._name
+    or SU.error("Invalid package name " .. tostring(packname))
+  if styleAwareVariant[name] then
+    SU.debug("resilient", "Loading the resilient variant of package", name, "=", styleAwareVariant[name],
     [[
 
 This should be compatible, but there might be differences such as hooks not

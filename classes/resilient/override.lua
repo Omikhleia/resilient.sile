@@ -54,6 +54,12 @@ local forbiddenPackages = {
    retrograde = true,
 }
 
+-- Vendored variants of standard SILE packages:
+-- For resilient, we use our own versions of these packages
+local dissilientPackages = {
+   bibtex = true, -- SILE 0.15.13 + upstreamed PR 2294 in August 2025 + additional changes in 2026
+}
+
 --- (Constructor) Initialize the class.
 --
 -- It enforces the use for the sile·nt typesetter.
@@ -123,13 +129,27 @@ end
 --
 -- In brief: we cancel the multiple package instantiation.
 --
--- @tparam string packname Package name
+-- @tparam string|table packname Package name or package instance
 -- @tparam table options Package options
 function class:loadPackage (packname, options)
-   local pack
-   if forbiddenPackages[packname] then
-      SU.error(("Package '%s' is forbidden in resilient documents."):format(packname))
+   -- Darn. SILE is weird as hell sometimes.
+   -- "packname" can be a string, but it can also be a package instance.
+   -- If this isn't being defective by design, I don't know what is.
+   local name = type(packname) == "string" and packname or packname._name
+     or SU.error("Invalid package name " .. tostring(packname))
+   if forbiddenPackages[name] then
+      SU.error(("Package '%s' is forbidden in resilient documents."):format(name))
    end
+   if dissilientPackages[name] then
+      SU.debug("resilient.override", "Loading the dissilient variant of package", name,
+    [[
+
+This should be compatible with your expectations, but resilient uses its own
+variant of the package.
+]])
+      packname = "dissilient." .. name
+   end
+   local pack
    if type(packname) == "table" then
       pack, packname = packname, packname._name
    elseif type(packname) == "nil" or packname == "nil" or pl.stringx.strip(packname) == "" then
