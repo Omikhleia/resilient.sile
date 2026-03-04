@@ -142,8 +142,7 @@ function package:_init (_)
   -- Only load low-level packages (= utilities)
   -- The class should be responsible for loading the appropriate higher-level
   -- constructs, see fallback commands further below for more details.
-  self:loadPackage("bibtex")
-  SILE.settings:set("bibtex.style", "csl") -- The future is CSL (active by default since SILE 0.15.10)
+  self:loadPackage("dissilient.bibtex")
   self:loadPackage("color")
   self:loadPackage("embedders")
   self:loadPackage("highlighter")

@@ -11,6 +11,9 @@ file = {
    "pagebuilders",
    "resilient",
    "typesetters",
+   exclude = {
+      "packages/dissilient"
+   }
 }
 dir = "public"
 style = "!new"

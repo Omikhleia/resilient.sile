@@ -94,7 +94,7 @@ function class:_init (options)
   -- Once Djot is loaded, we can register custom pre-defined symbols
   local mdc = self.packages["markdown.commands"]
   mdc:registerSymbol("_BIBLIOGRAPHY_", true, function (opts)
-    if not self.packages.bibtex then
+    if not self.packages.bibtex and not self.packages["dissilient.bibtex"] then
       SU.warn("Bibliography support is not available")
       return {}
     end
