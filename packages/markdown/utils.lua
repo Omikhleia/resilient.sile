@@ -104,15 +104,33 @@ end
 -- We only support a very simple syntax for now: `@key[, ]+[locator]`,
 -- where the unique locator consists of a name and a value separated by spaces.
 --
+-- Standard citation `@...`  e.g. "(Smith, 2026)" is a "cite".
+--
+-- No citation `!@...` is a "nocite".
+--
+-- Author-suppressed citation `-@...` is a "cite" with an additional "author=false" option, e.g. "(2026)".
+--
+-- Integral citation `+@...` e.g. "Smith (2026)" is a "citeintegral" but (for now) there can only be one of these in a citation string.
+--
 -- @tparam string str Citation string
 -- @tparam[opt] table pos Position in the source (for error reporting)
 -- @treturn table AST for the citation command
 local function naiveCitations (str, pos)
+  local isLiteral = str:match("^%+@")
   local refs = pl.stringx.split(str, ";")
-  pl.tablex.transform(function (ref)
-    local key, locator = ref:match("^[%s]*@([^%s,]+)[, ]*(.*)$")
+  if isLiteral then
+    if #refs > 1 then
+      -- Rationale:
+      -- Our support for integral citations in the bibtex package uses different CSL-like styles
+      -- for the names and citation in the "citeintegral" command,
+      -- Not sure how to properly handle multiple integral citations in the same string, and what
+      -- would be the expected output.
+      SU.warn("Multiple citation references found in literal citation '" .. str .. "'. Only the first one will be used.")
+    end
+    local ref = refs[1]
+    local key, locator = ref:match("^%+@([^%s,]+)[, ]*(.*)$")
     if not key or key == "" then
-      SU.warn("Skipping citation reference '" .. ref .. "'")
+      SU.warn("Skipping citation literal '" .. ref .. "'")
       return {}
     end
     if locator and locator ~= "" then
@@ -120,10 +138,29 @@ local function naiveCitations (str, pos)
       if locnname and locnvalue then
         -- Remove trailing periods in locname if any
         locnname = locnname:gsub("%.+$", "")
-        return createCommand("cite", { key = key, [locnname] = locnvalue })
+        return createCommand("citeintegral", { key = key, [locnname] = locnvalue }, nil, pos)
       end
     end
-    return createCommand("cite", { key = key }, nil, pos)
+    return createCommand("citeintegral", { key = key }, nil, pos)
+  end
+  -- Not a literal citation, we can have multiple references.
+  pl.tablex.transform(function (ref)
+    local kind, key, locator = ref:match("^[%s]*([!%-]?)@([^%s,]+)[, ]*(.*)$")
+    if not key or key == "" then
+      SU.warn("Skipping citation reference '" .. ref .. "'")
+      return {}
+    end
+    local cmd = kind == "!" and "nocite" or "cite"
+    local authorFlag = kind == '-' and "false" or nil
+    if locator and locator ~= "" then
+      local locnname, locnvalue = locator:match("^([^%s]+)[%s]+(.+)$")
+      if locnname and locnvalue then
+        -- Remove trailing periods in locname if any
+        locnname = locnname:gsub("%.+$", "")
+        return createCommand(cmd, { key = key, [locnname] = locnvalue, author = authorFlag }, nil, pos)
+      end
+    end
+    return createCommand(cmd, { key = key, author = authorFlag }, nil, pos)
   end, refs)
   if #refs == 0 then
     SU.warn("No valid citation reference found in '" .. str .. "'")
