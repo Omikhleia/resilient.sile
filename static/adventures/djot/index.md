@@ -2,7 +2,7 @@
 
 _Going on an adventure with re·sil·ient #2_
 
-Authored 02/12/2025 (aligned with _re·sil·ient_ v3.x), revised 13/12/2025 (some insights on v4.x plans)
+Authored 02/12/2025 (aligned with _re·sil·ient_ v3.x), revised 13/12/2025 (some insights on v4.x plans), revised 04/03/2026 (more bibliography extensions)
 
 In our series of "Going on an Adventure", we'll explore below the Djot syntax extensions and specific interpretations of [Djot](https://djot.net/) constructs implemented in _[re·sil·ient](https://github.com/Omikhleia/resilient.sile),_ our collection of [SILE](https://sile-typesetter.org/) add-on modules.
 
@@ -19,7 +19,7 @@ The target audience is therefore more technical, and the document is oriented to
 
 We are well aware that extensions beyond any "standard" are always a delicate matter, as they may lead to fragmentation of the ecosystem, with different implementations supporting different sets of extensions. This is what happened with Markdown, and its many "flavors" over the years.
 
-Nevertheless, these extensions and interpretations are the result of **practical needs** encountered while developing _re·sil·ient_ and its book class, over the last few years, composing a few documents and published books with it, and trying to solve actual typesetting problems while keeping a "lightweight" markup approach.
+Nevertheless, these extensions and interpretations are the result of **practical needs** encountered while developing _re·sil·ient_ and its book class, over the last few years, composing a few documents and publishing books with it, and trying to solve actual typesetting problems while keeping a "lightweight" markup approach.
 Therefore, they are shared for documentation purposes, but also to help other Djot enthusiasts interested in similar features, as challenges faced by _re·sil·ient_ and how they were addressed. We hope they may be useful to others, and possibly inspire future discussions.
 
 ## Syntax extensions
@@ -81,7 +81,7 @@ When both symbols are defined, one would get the following type of output.
 
 While it only offers a very simple and basic templating capability, the adavantages, of course, are that the same Djot template file will work for documents with or without titles and ISBNs, and that the Djot structure is entirely preserved.
 
-Here is another example, extracted from the default template for the verso page the title page in a book.
+Here is another example, extracted from the default template for the verso of the title page in a book.
 Depending on whether the `pubdate-year` and `publisher` symbols are defined, different copyright lines will be rendered.
 
 ```
@@ -165,27 +165,55 @@ The Djot inline syntax is extended with a citation syntax.
 
 It allows to reference bibliographic entries in the text flow, by their unique keys, and an optional locator.
 
-The supported syntax is a simplified subset of the Pandoc citation syntax.
+The supported syntax is a simplified subset of the Pandoc citation syntax and follows one of the proposals made on te Djot discussion forum.
+The rationale for using a naive simplified citation syntax derives from the fact that CSL 1.0.2 does not really address in a clear way prefixes and additional suffixes for citations, not to say multiple locators per citation.
+The supported syntax in _re·sil·ient_ is therefore limited to basic citations with optional locators, as described below.
 
-A citation element starts with `[@` and ends with `]`.
-
-In that element, multiple citations can be grouped together, separated by semicolons.
+A standard citation element starts with `[@` and ends with `]`.
+In that inline element, multiple citations can be grouped together, separated by semicolons.
 Each citation can optionally include a locator after the key, separated by a comma (or spaces).
 The locator consists of a name and a value, separated by spaces.
-
 In _re·sil·ient_, locators must match CSL locator types, or some usual abbreviations (with or without trailing dot) for convenience.
 
-Here are some examples of valid citation syntax.
-
-- `[@doe2020]` is a citation to the bibliographic entry with key `doe2020`.
-- `[@doe2020, chapter 5]` is the same citation, with a chapter locator.
-- `[@doe2020 chap. 5; @smith2019, chap. 3]` is a grouped citation to two entries, `doe2020` and `smith2019`, both with chapter locators, using an abbreviation for that locator.
-
 How the bibliography references are provided to the document, and how the citations are rendered, is outside the scope of this specification.
-In _re·sil·ient,_ there are ways to declare bibliography files (e.g. in BibLaTeX-like format), and rendering rules (e.g. according to some Citation Style Language (CSL) style), but these are implementation details not covered here. For details, refer to _The re·sil·ient collection of classes & packages for SILE; User Guide_ document.
+In _re·sil·ient,_ there are ways to declare bibliography files (e.g. in BibLaTeX-like format), and rendering rules (i.e. according to a given Citation Style Language (CSL) style), but these are implementation details not covered here. For details, refer to _The re·sil·ient collection of classes & packages for SILE — User Guide._
 
-The rationale for using a naive simplified citation syntax derives from the fact that CSL 1.0.2 does not really address in a clear way prefixes and additional suffixes for citations (not to say multiple locators per citation), or author suppression, etc.
-The supported syntax in _re·sil·ient_ is therefore limited to basic citations with optional locators, as described above.
+Here are some examples of valid citation syntax, with the rendered output in Chicago author-date style.
+
+| Citation syntax                        | Rendered                                                  |
+|:---------------------------------------|:----------------------------------------------------------|
+| `[@doe2020]`                           | A simple citation (Doe 2020).                             |
+| `[@doe2020, chapter 5]`                | A citation with a locator (Doe 2020, chap. 5).            |
+| `[@doe2020; @smith2019]`               | Multiple citations (Doe 2020; Smith 2019).                |
+
+
+But a few other features are available, via modifiers before the `@` sign.
+
+| Description         | Example       | Rendered output (Chicago author-date style)                  |
+| ------------------- | ------------- | ------------------------------------------------------------ |
+| No-cite             | `[!@doe2020]` | _Bibliography only_                                          |
+| Author suppression  | `[-@doe2020]` | Citation with author suppressed (2020)                       |
+| Integral citation   | `[+@doe2020]` | Integral citation: Doe (2020) argued...                      |
+
+The "no-cite" syntax is useful to include works in the bibliography _as if they were cited._
+Obviously, content around the citation element is rendered as usual, so be aware that spaces etc. may need to be adjusted accordingly.
+
+The "author suppression" syntax is useful to suppress the author part of a citation, which is also a common need, especially when the author name is already mentioned in the text, one way or another.
+Obviously, with styles with a different citation format (e.g. numeric), author suppression may not make much sense, but the syntax is still accepted and processed, even if it doesn't have any visible effect in that case.
+
+The "integral citation" (a.k.a. "narrative") syntax is useful to integrate the citation, but let the engine format the author name, in a sentence flow.
+For instance "`[+@doe2020] argues that...`" may render as "Doe (2020) argues that..." in Chicago author-date style,
+or as "Doe [1] argues that..." in a numeric style.
+Wait a minute, you may say, how is the name supposed to be formatted in the sentence flow, in a consistent form with how such things should appear there, independently from the citation style being used?
+
+After all, some styles may use numeric citations, and one cannot trust either the bibliography format, which may capitalize names or do other things to them.
+One wouldn't want to have "DOE, John (2020) argues that..." in the text, just because the bibliography entry is in uppercase, right?
+Moreover, in bibliographies, some name particles can be "demoted" (for sort or display), multiple authors can be collapsed into "et al.", substitutions might be used... and so on. So the name formatting from either the bibliography or the in-text citation is not convenient for use in a sentence, really!
+
+In _re·sil·ient,_ the formatting of names in integral citations is handled via a dedicated CSL-like style subset.
+It can be customized separately, so the user can define how the author name is supposed to be formatted in the sentence flow, and how to handle multiple authors, name particles, etc. without depending on the main bibliography style, while at the same time benefiting from the CSL localization and other features.
+So it is for instance possible to consistently obtain "Jan de Vries (1961)..." or "Jan de Vries [1]..." in the text (here, with the first name, particle and last name all appearing in the text flow in a regular order).
+But for that reason too (at least for now, to keep things simple) in _re·sil·ient,_ the integral citation syntax is only supported with one citation item at a time, not mixed with any other citation forms in a grouped citation element.
 
 ### Block element syntax extensions
 
@@ -193,7 +221,7 @@ The supported syntax in _re·sil·ient_ is therefore limited to basic citations 
 
 The Djot syntax is extended to allow legends on any block element, with the same syntax as for tables.
 
-For the reminder, in standard Djot, captions are only supported for tables, and ignored on other block elements.
+For the reminder, in standard Djot, captions are only supported on tables, and ignored on other block elements.
 
 ```
 | Header 1 | Header 2 |
@@ -290,7 +318,7 @@ As mentioned earlier, figures are sectioning elements in _re·sil·ient,_ so the
 
 This specification does not try to clarify how captions on images are handled for images on their own paragraph, but in a captioned div block.
 It's left unspecified here, but this author will note that the "implicit figure" interpretation and the actual syntax for images, being reminiscent of Markdown and Pandoc's implicit figures, might however not be perfectly aligned with the more general Djot philosophy.
-While Djot improves on Markdown in several ways (incl. generalized attributes on block and inline elements), it keeeps some Markdown-isms that may not be fully consistent with the rest of the specification (like captions on tables being done in one way, and in another way for images if used as implicit figures, and not offered on other block elements in standard Djot).
+While Djot improves on Markdown in several ways (incl. generalized attributes on block and inline elements), it keeps some Markdown-isms that may not be fully consistent with the rest of the specification (like captions on tables being done in one way, and in another way for images if used as implicit figures, and not offered on other block elements in standard Djot).
 
 ### Empty internal links as cross-references
 
@@ -444,11 +472,12 @@ In other words, straight quote marks are converted to language-appropriate openi
 For most languages, paired `"` and `'` are interpreted as mapping to the primary and secondary quotations marks, respectively.
 
 For instance, take `"..."` and `'...'`:
- - In US English, they become “...” and ‘...’
- - In German, they become „...“ and ‚...‘
- - In French (France), « ... » (with appropriate non-breaking spaces) and “like this”
- - In Russian, «...» and „...“
- - And so on for other (supported) languages.
+
+- In US English, they become “...” and ‘...’
+- In German, they become „...“ and ‚...‘
+- In French (France), « ... » (with appropriate non-breaking spaces) and “...”
+- In Russian, «...» and „...“
+- And so on for other (supported) languages.
 
 Note that some languages use them the other way round for primary and secondary quotation marks.
 UK English, Scottish Gaelic etc. use ‘...’ and “...” as primary and secondary quotation marks, respectively.
@@ -482,18 +511,20 @@ Whether to use a specific syntax for that purpose (e.g. `^^` as a secondary capt
 When dealing with poetry, this author had to used transcluded Markdown (which _re·sil·ient_ also supports via annotated code blocks) to get proper line breaks, stanzas, etc. — then relying on Markdown's extended "line block" syntax.
 
 A few other approaches were considered.
- - Using explicit Djot line breaks (`\`) at the end of each line. Though it makes the intent clear, it quickly becomes tedious to write, error-prone
- and not very readable in the source. The renderer would also have to split verses at "hard break" nodes, and re-structure the content accordingly.
- - Using Djot div blocks with some specific class attribute. The rendererer also has to split verses on "soft line" nodes, re-structuring the content accordingly. Moreover, the semantics becomes a bit fuzzy, without a clear distinction between "line-obeying" blocks and regular div blocks.
+
+- Using explicit Djot line breaks (`\`) at the end of each line. Though it makes the intent clear, it quickly becomes tedious to write, error-prone
+  and not very readable in the source. The renderer would also have to split verses at "hard break" nodes, and re-structure the content accordingly.
+- Using Djot div blocks with some specific class attribute. The rendererer also has to split verses on "soft line" nodes, re-structuring the content accordingly. Moreover, the semantics becomes a bit fuzzy, without a clear distinction between "line-obeying" blocks and regular div blocks.
 
 It is felt that Djot could benefit from a dedicated block-level syntax for switching to "line-obeying" mode, for poetry and other similar constructs.
 
 A strategy could be to introduce a specific block-level marker, say `~~|` to start and end a line-obeying block (and either the same closing marker, or the symmetrical `|~~`, or plain `~~`).
 
 This syntax might be generalized to support other types line/space-preserving blocks:
- - `~~~` is already supported (so not clearly documented) as an alternative code block marker (preserving line breaks, spaces, etc., — but also without any markup processing inside the code block).
- - `~~|` could be used for line-obeying blocks as proposed above.
- - `~~/` could be used for space-preserving and line-obeying blocks (i.e. combining the features of code blocks and line-obeying blocks, but still processing markup inside).
+
+- `~~~` is already supported (so not clearly documented) as an alternative code block marker (preserving line breaks, spaces, etc., — but also without any markup processing inside the code block).
+- `~~|` could be used for line-obeying blocks as proposed above.
+- `~~/` could be used for space-preserving and line-obeying blocks (i.e. combining the features of code blocks and line-obeying blocks, but still processing markup inside).
 
 Examples:
 
@@ -515,7 +546,6 @@ Typesetter line input
   But still processing *markup*.
 ~~~
 ```
-
 
 ### Document-level metadata declaration syntax
 
@@ -571,8 +601,8 @@ sile:
 The content section of a "master document" in _re·sil·ient_ lists the source files (Djot, Markdown, SIL, XML, etc.) to be included in the document, in a hierarchical way.
 While not applicable here for a standalone Djot self-contained document, some of its features may have to be considered:
 
- - Parsing options -- We have none at the moment for Djot, but this might change in the future for compatibility with other set of extensions, as with Markdown, where one can enable or disable some (Pandoc-style) features, to acccomodate different "flavors".
- - Header shifting (i.e. how heading levels are adjusted when including a document) -- In a master document, the hierarchical structure dictates how heading levels are automatically shifted when including a document; for a standalone document, some way to specify that might be useful so a document can be re-used in different contexts without having to edit its heading levels manually.
+- Parsing options — We have none at the moment for Djot, but this might change in the future for compatibility with other set of extensions, as with Markdown, where one can enable or disable some (Pandoc-style) features, to acccomodate different "flavors".
+- Header shifting (i.e. how heading levels are adjusted when including a document) — In a master document, the hierarchical structure dictates how heading levels are automatically shifted when including a document; for a standalone document, some way to specify that might be useful so a document can be re-used in different contexts without having to edit its heading levels manually.
 
 The other way round, to allow the smooth inclusion of standalone documents with their embedded metadata in a larger master document, the specification would also have to clarify how metadata declared in the standalone document interact with elements declared in the master document.
 Some (e.g. fonts, bibliobraphy style, etc.) may be overridden by the master document.

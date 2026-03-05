@@ -521,7 +521,8 @@ A footnote call[^djot-some-fn] is marked...
 ### Bibliographic citations
 
 Djot does not officially support citations at the moment.
-This implementation, however, recognizes a simplified subset of the Pandoc citation syntax.
+This implementation, however, supports a simple syntax for bibliographic citations.
+For more details, see also page [](#final-notes-citations){.page}.
 
 {custom-style=CodeBlock}
 :::

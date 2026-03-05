@@ -11,3 +11,54 @@ Most of the time, the converter does not check the validity of the key-value att
 
 However, for convenience, width and height attributes can be expressed in percentages, and the converter will automatically convert them to SILE's line and frame relative units, respectively.
 (E.g., `width=50%` becomes `width=0.5%lw`, and `height=50%` becomes `height=0.5%fh`.)
+
+{#final-notes-citations}
+## Regarding bibliographic citations
+
+A standard citation element starts with `[@` and ends with `]`. 
+In that inline element, multiple citations can be grouped together, separated by semicolons.
+Each citation can optionally include a locator after the key, separated by a comma (or spaces).
+The locator consists of a name and a value, separated by spaces.
+In _re·sil·ient,_ locators must match CSL locator types, or some usual abbreviations (with or without trailing dot) for convenience.
+
+How the bibliography references are provided to the document, and how the citations are rendered, is outside the scope of this manual.
+In _re·sil·ient,_ there are ways to declare bibliography files (e.g. in BibLaTeX-like format), and rendering rules (i.e. according to a given Citation Style Language (CSL) style). For details, refer to _The re·sil·ient collection of classes & packages for SILE — User Guide._
+
+Here are some examples of valid citation syntax, with the rendered output in Chicago author-date style.
+
+| Citation syntax                        | Rendered                                                  |
+|:---------------------------------------|:----------------------------------------------------------|
+| `[@sile]`                              | A simple citation [@sile].                                |
+| `[@sile, chapter 5]`                   | A citation with a locator [@sile, chapter 5].             |
+| `[@sile; @sile:willis2024]`            | Multiple citations [@sile; @sile:willis2024].             |
+^ Simple bibilographic citations.
+
+
+A few other features are available, via modifiers before the `@` sign.
+
+| Description         | Example       | Rendered                                                     |
+|:--------------------|:--------------|:-------------------------------------------------------------|
+| No-cite             | `[!@sile]`    | _Bibliography only._                                         |
+| Author suppression  | `[-@sile]`    | Citation with author suppressed [-@sile].                    |
+| Integral citation   | `[+@sile]`    | Integral citation: [+@sile] argued...                        |
+^ Extended citation syntax.
+
+The "no-cite" syntax is useful to include works in the bibliography _as if they were cited._
+Obviously, content around the citation element is rendered as usual, so be aware that spaces or punctuations may need to be adjusted accordingly.
+
+The "author suppression" syntax is useful to suppress the author part of a citation, which is also a common need, especially when the author name is already mentioned in the text, one way or another.
+Obviously, with styles with a different citation format (e.g. numeric), author suppression may not make much sense, but the syntax is still accepted and processed, even if it doesn't have any visible effect in that case.
+
+The "integral citation" (a.k.a. "narrative") syntax is useful to integrate the citation, but let the engine format the author name, in a sentence flow.
+For instance "`[+@doe2020] argues that...`" may render as "Doe (2020) argues that..." in Chicago author-date style,
+or as "Doe [1] argues that..." in a numeric style.
+
+Wait a minute, you may say, how is the name supposed to be formatted in the sentence flow, in a consistent form with how such things should appear there, independently from the citation style being used?
+After all, some styles may use numeric citations, and one cannot trust either the bibliography format, which may capitalize names or do other things to them.
+One wouldn't want to have "DOE, John (2020) argues that..." in the text, just because the bibliography entry is in uppercase, right?
+Moreover, in bibliographies, some name particles can be "demoted" (for sort or display), multiple authors can be collapsed into "et al.", substitutions might be used... and so on. So the name formatting from either the bibliography or the in-text citation is not convenient for use in a sentence, really!
+
+In _re·sil·ient,_ the formatting of names in integral citations is handled via a dedicated CSL-like style subset.
+It can be customized separately, so the user can define how the author name is supposed to be formatted in the sentence flow, and how to handle multiple authors, name particles, etc. without depending on the main bibliography style, while at the same time benefiting from the CSL localization and other features.
+So it is for instance possible to consistently obtain "Jan de Vries (1961)..." or "Jan de Vries [1]..." in the text (here, with the first name, particle and last name all appearing in the text flow in a regular order).
+But for that reason too (at least for now, to keep things simple) in _re·sil·ient,_ the integral citation syntax is only supported with one citation item at a time, not mixed with any other citation forms in a grouped citation element.
