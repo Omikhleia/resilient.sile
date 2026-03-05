@@ -78,6 +78,38 @@ local function toDate (year, month)
    }
 end
 
+local function toLongTitle (bibtex, titlefield, subtitlefield, titleaddonfield)
+   -- CSL 1.0.2 is a bit of a mess here, and CSL-JSON is not much better:
+   -- Variables are supposed to possibly have a "short" form.
+   -- E.g. CSL 1.0.2 Appendix IV "Variables" mentions title-short and container-title-short,
+   -- as deprecated in favor of the form="short" attribute.
+   -- Fair enough for CSL itself, but how this should be represented in CSL-JSON?
+   -- There's no mention of short forms in the CSL-JSON specification at this date.
+   -- Moreover, besides title and container-title, short forms could exist for
+   -- many other variables as well, such as original-title, etc.
+   --
+   -- So it's a leap of faith, when it comes to mapping the concepts from BibTeX to CSL-JSON.
+   --
+   -- We are going to assume that the titlefield alone is the short form (as minimal).
+   -- We build the full form with the subtitlefield and titleaddonfield if any, since these
+   -- otherwise would be lost in CSL.
+   -- It quite makes sense:
+   --  - The addon is useful for a case like "Lembas Extra 1993/1994" where one wants the
+   --    journal to be "Lembas Extra" in short form, but the long form used in references
+   --    should include the addon (here "1993/1994").
+   --  - The subtitle is useful in bibliographies (references) as well.
+   -- Clearly, CSL not having specific variables the subtitle is a limitation.
+   -- In most styles, the subtitle is introduced by a colon, but some would recommend using
+   -- a period. Hard-coding a colon seems to be the best we can do here, though not ideal.
+   local title = bibtex[titlefield]
+   local subtitle = bibtex[subtitlefield]
+   local titleaddon = bibtex[titleaddonfield]
+   if title then
+      local titlefull = titleaddon and (title .. " " .. titleaddon) or title
+      return subtitle and (titlefull .. ": " .. subtitle) or titlefull
+   end
+end
+
 --- Convert a BibTeX entry to a CSL item.
 -- @tparam table entry The BibTeX entry
 -- @treturn table The CSL item
@@ -191,22 +223,12 @@ local function bib2csl (entry)
 
    -- journaltitle / booktitle
    if bibtex.journaltitle then
-      -- Leap of faith, assuming the journaltitle is the short form (minimal)
       csl["container-title-short"] = bibtex.journaltitle
-      -- But then build the full form with the subtitle and addon if any, since these otherwise would be lost in CSL 1.0.2.
-      -- It quite makes sense nevertheless:
-      --   - The addon is useful for a case like "Lembas Extra 1993/1994" where one wants the journal to be "Lembas Extra"
-      --     but the long form used in references to include the addon.
-      --   - The subtitle is useful in bibliographies (references) as well.
-      local titlefull = bibtex.journaltitleaddon and (bibtex.journaltitle .. " " .. bibtex.journaltitleaddon) or bibtex.journaltitle
-      csl["container-title"] = bibtex.journalsubtitle
-         and (titlefull .. ": " .. bibtex.journalsubtitle) or titlefull
+      csl["container-title"] = toLongTitle(bibtex, "journaltitle", "journalsubtitle", "journaltitleaddon")
    elseif bibtex.booktitle then
       -- Adopt the same logic for booktitle
       csl["container-title-short"] = bibtex.booktitle
-      local titlefull = bibtex.booktitleaddon and (bibtex.booktitle .. " " .. bibtex.booktitleaddon) or bibtex.booktitle
-      csl["container-title"] = bibtex.booksubtitle
-         and (titlefull .. ": " .. bibtex.booksubtitle) or titlefull
+      csl["container-title"] = toLongTitle(bibtex, "booktitle", "booksubtitle", "booktitleaddon")
    end
 
    -- publisher / institution / school / organization
@@ -220,7 +242,10 @@ local function bib2csl (entry)
 
    -- title / chapter
    if bibtex.title then
-      csl.title = bibtex.title
+      csl["title-short"] = bibtex.title
+      csl.title = toLongTitle(bibtex, "title", "subtitle", "titleaddon")
+      -- Unfornately, in Bib(La)TeX, the chapter field can either be a literal string or a number...
+      -- and CSL doesn't seem to have a specific variable for a chapter title.
       if bibtex.chapter and tonumber(bibtex.chapter) then
          csl['chapter-number'] = bibtex.chapter
       end
@@ -229,7 +254,12 @@ local function bib2csl (entry)
    end
    -- BibLaTeX origtitle
    if bibtex.origtitle then
-      csl["original-title"] = bibtex.origtitle
+      csl["original-title-short"] = bibtex.origtitle
+      -- Make it generic, but note that BibLaTeX 3.21 doesn't mention origsubtitle and origtitleaddon.
+      -- Well it even says that origtitle is "not used by the standard bibliography styles".
+      -- Still, they have documented origtitle nevertheless, so why shouldn't it have the same
+      -- possibilities as the title?
+      csl["original-title"] = toLongTitle(bibtex, "origtitle", "origsubtitle", "origtitleaddon")
    end
    return csl
 end
