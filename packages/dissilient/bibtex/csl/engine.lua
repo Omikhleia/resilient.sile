@@ -535,7 +535,15 @@ function CslEngine:_text (options, content, entry)
       t = self.locale:term(options.term, options.form, SU.boolean(options.plural, false))
    elseif options.variable then
       variable = options.variable
-      t = entry[variable]
+      if options.form == "short" then
+         -- CSL 1.0.2 states:
+         -- "If the “short” form is selected but unavailable, the “long” form is rendered instead."
+         -- CSL and CSL-JSON do not say how the short forms are supposed to be provided to the engine.
+         -- In our mappings from BibLaTeX to CSL, we opted for suffixing the variable name with "-short".
+         t = entry[variable .. "-short"] or entry[variable]
+      else
+         t = entry[variable]
+      end
       self:_addGroupVariable(variable, t)
       if variable == "locator" then
          variable = t and t.label
@@ -551,13 +559,6 @@ function CslEngine:_text (options, content, entry)
          -- of the number.
          t = luautf8.gsub(t, "([%-–—])", "%1" .. luautf8.char(0x200B)) -- zero-width space to enforce word boundaries
       end
-
-      -- FIXME NOT IMPLEMENTED:
-      -- "May be accompanied by the form attribute to select the “long”
-      -- (default) or “short” form of a variable (e.g. the full or short
-      -- title). If the “short” form is selected but unavailable, the
-      -- “long” form is rendered instead."
-      -- But CSL-JSON etc. do not seem to have standard provision for it.
    elseif options.value then
       t = options.value
    else
