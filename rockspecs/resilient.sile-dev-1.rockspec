@@ -187,6 +187,9 @@ build = {
       ["sile.templates.title-verso"]     = "templates/title-verso.djt",
       ["sile.templates.endpaper-recto"]  = "templates/endpaper-recto.djt",
       ["sile.templates.endpaper-verso"]  = "templates/endpaper-verso.djt",
+
+      ["sile.csl.names.long"]            = "csl/names/long.csl",
+      ["sile.csl.names.short"]           = "csl/names/short.csl",
     }
   }
 }
