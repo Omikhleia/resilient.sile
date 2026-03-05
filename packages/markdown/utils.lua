@@ -116,21 +116,21 @@ end
 -- @tparam[opt] table pos Position in the source (for error reporting)
 -- @treturn table AST for the citation command
 local function naiveCitations (str, pos)
-  local isLiteral = str:match("^%+@")
+  local isIntegral = str:match("^%+@")
   local refs = pl.stringx.split(str, ";")
-  if isLiteral then
+  if isIntegral then
     if #refs > 1 then
       -- Rationale:
       -- Our support for integral citations in the bibtex package uses different CSL-like styles
       -- for the names and citation in the "citeintegral" command,
       -- Not sure how to properly handle multiple integral citations in the same string, and what
       -- would be the expected output.
-      SU.warn("Multiple citation references found in literal citation '" .. str .. "'. Only the first one will be used.")
+      SU.warn("Multiple citation references found in integral citation '" .. str .. "'. Only the first one will be used.")
     end
     local ref = refs[1]
     local key, locator = ref:match("^%+@([^%s,]+)[, ]*(.*)$")
     if not key or key == "" then
-      SU.warn("Skipping citation literal '" .. ref .. "'")
+      SU.warn("Skipping integral citation '" .. ref .. "'")
       return {}
     end
     if locator and locator ~= "" then
@@ -143,7 +143,7 @@ local function naiveCitations (str, pos)
     end
     return createCommand("citeintegral", { key = key }, nil, pos)
   end
-  -- Not a literal citation, we can have multiple references.
+  -- Not an integral citation, we can have multiple references.
   pl.tablex.transform(function (ref)
     local kind, key, locator = ref:match("^[%s]*([!%-]?)@([^%s,]+)[, ]*(.*)$")
     if not key or key == "" then

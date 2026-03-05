@@ -326,6 +326,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "names": {
+          "description": "The style for names in integral (a.k.a. narrative) citations, ex. short",
+          "type": "string"
+        },
         "style": {
           "description": "The bibliography style (Citation Style Language or CSL), ex. chicago-author-date",
           "type": "string"

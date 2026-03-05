@@ -132,6 +132,7 @@ local BookSchema = {
 local BibliographySchema = {
   type = "object",
   properties = {
+    names = { type = "string" },
     style = { type = "string" },
     language = { type = "string" },
     files = {

@@ -352,7 +352,7 @@ Some precedence rules apply here: user-defined > metadata-originated > programma
 The _res·sil·ient_ implementation comes with a set of predefined symbols: `:U+xxxx:` is interpreted as a Unicode character, where `xxxx` is a hexadecimal value in upper case.
 For instance, `:U+2122:` gives the trademark symbol (™).
 
-It's a "convenience" feature, since users could as well enter Unicode characters directly in the source text, but it may be useful in some contexts, esp. for characters not easily typable on a keyboard, or not easily available on your system (and/or text editor).
+It's a "convenience" feature, since users can as well enter Unicode characters directly in the source text, but it may be useful in some contexts, esp. for characters not easily typable on a keyboard, or not easily available on your system (and/or text editor).
 
 #### Programmatically-registered symbols
 
@@ -411,7 +411,7 @@ It's not really a syntax extension, since it uses standard Djot footnote syntax,
 
 When the symbol is used in the text flow (`:symbol:`), the associated content is rendered in place, with appropriate rendering (or error handling) depending on whether the substitution content is block or inline.
 
-One could regard this way to define custom symbols as "pseudo-footnotes" as some sort of hack, or as a clever reuse of existing syntax with an additional level of namespacing.
+One can regard this way to define custom symbols as "pseudo-footnotes" as some sort of hack, or as a clever reuse of existing syntax with an additional level of namespacing.
 
 This specification does not even forbid the use of the "pseudo-footnote" syntax for actual footnotes (that is, called from the text flow using the standard Djot footnote syntax, as in `... some content[^:footnote:] ...`), though whether it's a good idea or not is another matter.
 
@@ -566,7 +566,7 @@ metadata declarations
 ```
 
 In _re·sil·ient,_ it could accept a subset of the "master document" format (more or less everything but the content inclusion directives).
-Here is an example (not exhautive) of what such a metadata block could look like.
+Here is an example (not exshautive) of what such a metadata block could look like.
 
 ```
 +++ application/yaml urn:example:omikhleia:resilient:document:v1
@@ -585,6 +585,7 @@ font:
 language: en-US
 bibliography:
   style: chicago-author-date
+  names: long
   files:
     - typography.bib
 sile:
