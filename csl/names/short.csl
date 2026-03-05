@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A simple style for formatting names in integral citations in a subset of the CSL syntax.
+     Short form
+     With "and" term between the first two names if there are 2 names
+     With "et al." after the first name if there are 3 or more names, and the "et al." term is in italic
+     If there are no authors, the editor names are used instead, with the same formatting rules
+-->
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0">
+  <macro name="contributors">
+    <names form="short" variable="author">
+      <name and="text"/>
+      <et-al font-style="italic"/>
+      <substitute>
+        <names variable="editor"/>
+      </substitute>
+    </names>
+  </macro>
+  <citation et-al-min="3" et-al-use-first="1">
+    <layout delimiter="; ">
+       <text macro="contributors"/>
+    </layout>
+  </citation>
+</style>

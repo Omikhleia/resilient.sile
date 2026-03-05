@@ -89,13 +89,8 @@ function package:registerCommands ()
          breakISBN = SU.boolean(options.breakISBN, true),
       })
 
-      local nameStyle = options.names or "short"
-      if nameStyle ~= "short" and nameStyle ~= "long" then
-         SU.error("Invalid value for names option in bibliographystyle: " .. nameStyle)
-      end
-      self._processor:setNameStyle(
-         nameStyle == "short"
-      )
+      local names = options.names or "short"
+      self._processor:setNameStyle(names)
    end, "Set the bibliography style and locale for citations and references.")
 
    -- Citation commands

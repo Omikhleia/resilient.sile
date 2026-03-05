@@ -46,7 +46,21 @@ local function loadCslStyle (name)
    end
    local style, err = CslStyle.read(filename)
    if not style then
-      SU.error("Could not open CSL style '" .. name .. "'': " .. err)
+      SU.error("Could not open CSL style '" .. name .. "': " .. err)
+      return
+   end
+   return style
+end
+local function loadCslNameStyle (name)
+   local filename = resolveFile("csl/names/" .. name .. ".csl")
+      or resolveFile("packages/bibtex/csl/names/" .. name .. ".csl")
+      or cslStyleLoader("packages.bibtex.csl.names." .. name)
+   if not filename then
+      SU.error("Could not find CSL name style '" .. name .. "'")
+   end
+   local style, err = CslStyle.read(filename)
+   if not style then
+      SU.error("Could not open CSL name style '" .. name .. "': " .. err)
       return
    end
    return style
@@ -199,7 +213,7 @@ end
 
 function CslProcessor:getCslNameEngine ()
    if not self._nameengine then
-      self:setNameStyle(true)
+      self:setNameStyle("short")
    end
    return self._nameengine
 end
@@ -247,36 +261,12 @@ end
 
 --- Set the style for names in integral citations.
 --
--- @tparam boolean short Whether to use the short or long form of names (default: false)
-function CslProcessor:setNameStyle (short)
+-- @tparam string stylename Name of the CSL style to use
+function CslProcessor:setNameStyle (stylename)
    if not self._engine then
       self:setBibliographyStyle('chicago-author-date', 'en-US')
    end
-   local s = SU.boolean(short, false)
-   -- We use a custom style for names, to control a consistent format outside of citations, whatever citation style is used.
-   -- TODO:
-   -- We could load it, to allow for more flexibility.
-   local namestyle, err = CslStyle.parse([[
-<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0">
-  <macro name="contributors">
-    <names form="]] .. (s and "short" or "long") .. [[" variable="author">
-      <name and="text"/>
-      <et-al font-style="italic"/>
-      <substitute>
-        <names variable="editor"/>
-      </substitute>
-    </names>
-  </macro>
-  <citation et-al-min="3" et-al-use-first="1">
-    <layout delimiter="; ">
-       <text macro="contributors"/>
-    </layout>
-  </citation>
-</style>
-]])
-   if not namestyle then
-      SU.error("Could not parse CSL style for names: " .. err)
-   end
+   local namestyle = loadCslNameStyle(stylename)
    local locale = self._engine.locale
    self._namestyle = namestyle
    self._nameengine = CslEngine(namestyle, locale)
