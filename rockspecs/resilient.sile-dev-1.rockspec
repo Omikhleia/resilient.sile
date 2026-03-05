@@ -155,6 +155,21 @@ build = {
     ["sile.djot.html"]                = "lua-libraries/djot/html.lua",
     ["sile.djot.ast"]                 = "lua-libraries/djot/ast.lua",
     ["sile.djot.filter"]              = "lua-libraries/djot/filter.lua",
+
+    ["sile.packages.dissilient.bibtex.csl.engine"]             = "packages/dissilient/bibtex/csl/engine.lua",
+    ["sile.packages.dissilient.bibtex.csl.locale"]             = "packages/dissilient/bibtex/csl/locale.lua",
+    ["sile.packages.dissilient.bibtex.csl.processor"]          = "packages/dissilient/bibtex/csl/processor.lua",
+    ["sile.packages.dissilient.bibtex.csl.style"]              = "packages/dissilient/bibtex/csl/style.lua",
+    ["sile.packages.dissilient.bibtex.csl.utils.casing"]       = "packages/dissilient/bibtex/csl/utils/casing.lua",
+    ["sile.packages.dissilient.bibtex.csl.utils.superfolding"] = "packages/dissilient/bibtex/csl/utils/superfolding.lua",
+    ["sile.packages.dissilient.bibtex.csl.utils.xmlparser"]    = "packages/dissilient/bibtex/csl/utils/xmlparser.lua",
+    ["sile.packages.dissilient.bibtex"]                        = "packages/dissilient/bibtex/init.lua",
+    ["sile.packages.dissilient.bibtex.support.bib2csl"]        = "packages/dissilient/bibtex/support/bib2csl.lua",
+    ["sile.packages.dissilient.bibtex.support.bibmaps"]        = "packages/dissilient/bibtex/support/bibmaps.lua",
+    ["sile.packages.dissilient.bibtex.support.bibparser"]      = "packages/dissilient/bibtex/support/bibparser.lua",
+    ["sile.packages.dissilient.bibtex.support.isodatetime"]    = "packages/dissilient/bibtex/support/isodatetime.lua",
+    ["sile.packages.dissilient.bibtex.support.locators"]       = "packages/dissilient/bibtex/support/locators.lua",
+    ["sile.packages.dissilient.bibtex.support.nbibtex"]        = "packages/dissilient/bibtex/support/nbibtex.lua",
   },
   install = {
     lua = {
