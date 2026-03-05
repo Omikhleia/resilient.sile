@@ -269,18 +269,18 @@ InlineParser.matchers = {
         self:add_match(pos, ep, "footnote_reference")
         return ep + 1
       else
-        -- BEGIN EXTENSION DIDIER 20241214
-        -- [@...] is interpreted as a citation reference
-        -- In-text citations and author-suppressed citations are not well-defined
-        -- in CSL as far as I can tell, so we'll pass on those for now.
-        -- So this is for "normal" citations, only, and the reference parsing is
-        -- left to the renderer.
-        sp, ep = bounded_find(self.subject, "^%@([^]]+)%]", pos + 1, endpos)
+        -- BEGIN EXTENSION DIDIER 20241214 20250303
+        -- [@...]  citation reference e.g. "(Smith, 2026)"
+        -- [!@...] no citation, but add to bibliography
+        -- [-@...] author-suppressed citation e.g. "(2026)""
+        -- [+@...] integral citation, e.g. "Smith (2026)"
+        -- For now we just capture the content, exact reference parsing is left to the renderer.
+        sp, ep = bounded_find(self.subject, "^[!+%-]?%@[^]]+%]", pos + 1, endpos)
         if sp then -- citation ref
           self:add_match(pos, ep, "naive_citations")
           return ep + 1
         end
-        -- END EXTENSION DIDIER 20241214
+        -- END EXTENSION DIDIER 20241214 20250303
         self:add_opener("[", pos, pos)
         self:add_match(pos, pos, "str")
         return pos + 1

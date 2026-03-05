@@ -327,14 +327,16 @@ function inputter:parse (doc)
         bibfiles = { bibfiles }
       end
       content[#content+1] = SU.ast.createCommand("use", {
-        module = "packages.bibtex"
+        module = "packages.dissilient.bibtex"
       })
       if #bibfiles > 0 then
         local lang = master.bibliography.language or master.language or "en-US"
         local style = master.bibliography.style or "chicago-author-date"
+        local names = master.bibliography.names or "short"
         content[#content+1] = SU.ast.createCommand("bibliographystyle", {
           style = style,
-          lang = lang
+          lang = lang,
+          names = names
         })
         for _, bibfile in ipairs(bibfiles) do
           content[#content+1] = SU.ast.createCommand("loadbibliography", {

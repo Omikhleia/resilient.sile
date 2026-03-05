@@ -504,7 +504,8 @@ They are introduced with directly with the caret `^`, immediately followed by th
 
 ### Bibliographic citations
 
-This implementation recognizes a simplified subset of the Pandoc citation syntax, aligned with what we also support in Djot.
+This implementation supports a simple syntax for bibliographic citations, aligned with what we also support in Djot.
+For more details, see also page [](#final-notes-citations){.page}.
 
 ::: {custom-style=CodeBlock}
 ```

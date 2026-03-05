@@ -384,9 +384,17 @@ local function customSyntax (writer, options)
                       end
                    + syntax.Smart
     end
-    -- Override the citation syntax to use our own raw citations writer
+    -- Override the citation syntax to use our own "naive" raw citations writer
+    -- Support corresponds to the syntax we also support in Djot, an "adaptation" of the Pandoc-style citations,
+    -- but with different specifiers before the @ sign:
+    --  - Normal citations: [@doe2020 ...]
+    --  - Author suppression: [-@doe2020 ...]
+    --  - Integral citation: [+@doe2020 ...]
+    --  - No-cite: [!@doe2020 ...]
+    -- We just capture the raw content and pass it to a custom writer, delegating the exact parsing
+    -- logic to it (multiple citations, locators, etc.).
     syntax.Citations = lpeg.P("[")
-                     * lpeg.C(lpeg.P("@") *(lpeg.P(1) - lpeg.P("]"))^1)
+                     * lpeg.C((lpeg.S("+-!")^-1) * lpeg.P("@") *(lpeg.P(1) - lpeg.P("]"))^1)
                      * lpeg.P("]")  / writer.naive_citations
     return syntax
   end
