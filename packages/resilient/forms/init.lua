@@ -95,6 +95,8 @@ function package:_init (options)
   --     kids = PdfArray,
   --     type = "checkbox" | "radio" | "text" | "choice"
   --     flags = integer
+  --     selected = string (for radio buttons, the selected value, e.g., "Option1")
+  --     values = pl.Set of options (for radio buttons, to check unicity of option values)
   --   }
   self._parents = pl.Map()
   self._objectsToRelease = {} -- List of PDF objects to release at end
@@ -142,7 +144,7 @@ function package:_init (options)
       -- Pre-computed values for radius 60 centered at (70, 70):
       --   103.13708 = 70 + 60 * k
       --    36.86291 = 70 - 60 * k
-      -- (Rounded to 5 decimal dogits, Annex C.1 of the PDF 1.7 spec.)
+      -- (Rounded to 5 decimal digits, Annex C.1 of the PDF 1.7 spec.)
 [[9 w
 130 70 m
 130 103.13708 103.13708 130 70 130 c
@@ -608,6 +610,22 @@ end
 function package:_createRadioWidgetAnnotation (name, options, x0, y0, x1, y1)
   SU.debug("resilient.forms", "Creating radio button widget annotation for field", name)
   local value = assertNameValidity(SU.required(options, "value", "Radio button option must have a value"))
+  local selected = SU.boolean(options.selected, false)
+
+  local parent = self:_getParentRadioField(name, options)
+  parent.values = parent.values or pl.Set()
+
+  -- Check that the value is not already used.
+  if parent.values[value] then
+    SU.error("Duplicate radio button option value: " .. value .. " for radio '" .. name .. "'")
+  end
+  parent.values[value] = true
+
+  -- Check that only one widget is selected for the same radio button (group).
+  if selected and parent.selected then
+    SU.error("Multiple radio button widgets are selected for radio '" .. name .. "'")
+  end
+
   -- <<
   --   /Type /Annot          % Annotation
   --   /Subtype /Widget      % Widget annotation
@@ -633,7 +651,16 @@ function package:_createRadioWidgetAnnotation (name, options, x0, y0, x1, y1)
   local annotDict = pdf.parse(annotSpec)
   self:_addAppearanceDict(annotDict, "circle", "/" .. value, "/Off")
 
-  local parent = self:_getParentRadioField(name, options)
+  if selected then
+    parent.selected = value
+    local onValue = "/" .. value
+    -- Set /AS in the widget annotation
+    pdf.add_dict(annotDict, pdf.parse("/AS"), pdf.parse(onValue))
+    -- Set /V and /DV in the parent field dictionary
+    pdf.add_dict(parent.fieldDict, pdf.parse("/V"), pdf.parse(onValue))
+    pdf.add_dict(parent.fieldDict, pdf.parse("/DV"), pdf.parse(onValue))
+  end
+
   self:_registerOnParentAndInsetInPage(annotDict, parent)
 end
 
@@ -998,7 +1025,7 @@ The experimental \autodoc:package{resilient.forms} package allows the creation o
 
 \noindent\autodoc:command{\checkbox[name=<name>, checked=<false|true>]}
 
-\noindent\autodoc:command{\radiobutton[name=<name>, value=<option>]}
+\noindent\autodoc:command{\radiobutton[name=<name>, value=<option>, selected=<false|true>]}
 
 \noindent\autodoc:command{\textfield[name=<name>, text=<default text>, password=<false|true>]}
 
@@ -1011,7 +1038,7 @@ Common additional options for all commands are \autodoc:parameter{readonly=<fals
 \checkbox[name=agree, checked=true] I like the \em{re·sil·ient} forms package.
 
 \smallskip
-\radiobutton[name=user, value=User] I am a simple user.
+\radiobutton[name=user, value=User, selected=true] I am a simple user.
 
 \radiobutton[name=user, value=Developer] I am a developer.
 

@@ -359,20 +359,29 @@ function Renderer:list (node)
   local sty = node.style
   if sty == "*" or sty == "+" or sty == "-" then
     local content = self:render_children(node)
-    for i = 1, #content do
-      if content[i].command ~= "item" then
-        content[i] = createCommand("item", {}, content[i], pos)
-      end
+    if content.command then
+      -- We have only one item so the AST got simplified
+      content = { content }
     end
     return createStructuredCommand("itemize", {}, content, pos)
   end
 
-  if sty == "X" then
+  if sty == "X" or sty == "O" then
+    local options = node.attr or {}
+    local name
+    if utils.hasClass(options, "form") then
+      self.taskListItem = self.taskListItem or 0
+      self.taskListItem = self.taskListItem + 1
+      name = (sty == "X" and "checkbox" or "radio") .. self.taskListItem
+    end
     local content = self:render_children(node)
+    if content.command then
+      -- We have only one item so the AST got simplified
+      content = { content }
+    end
     for i = 1, #content do
-      if content[i].command ~= "item" then
-        content[i] = createCommand("item", {}, content[i], pos)
-      end
+      content[i].options.form = name
+      content[i].options.readonly = SU.boolean(options.readonly, false)
     end
     return createStructuredCommand("itemize", {}, content, pos)
   end
@@ -423,6 +432,9 @@ function Renderer:list_item (node)
   local options = {}
   local bullet = ((node.checkbox == "checked") and "☑")
     or ((node.checkbox == "unchecked") and "☐")
+    or ((node.radio == "checked") and "◉")
+    or ((node.radio == "unchecked") and "○")
+    or nil
   options.bullet = bullet
 
   local content = self:render_children(node)
@@ -848,8 +860,7 @@ function inputter:parse (doc)
     })
     djot.filter.apply_filter(djast, filter)
   end
-
-  local renderer = Renderer(self.options, doc)
+  local renderer = Renderer(self.options)
   local tree = renderer:render(djast)
 
   -- The "writer" returns a SILE AST.

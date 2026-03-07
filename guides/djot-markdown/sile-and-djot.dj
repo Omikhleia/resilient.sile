@@ -868,6 +868,32 @@ A bullet list item that begins with `[ ]`, `[X]`, or `[x]` followed by a space i
  - [ ] Unchecked item
  - [x] Checked item
 
+ This renderer extends the Djot specification by also supporting exclusive options, with `( )` for unselected and `(X)` or `(x)` for selected options.
+
+ {custom-style=CodeBlock}
+:::
+```
+ - ( ) Unchecked option
+ - (x) Checked option
+```
+:::
+
+ - ( ) Unchecked option
+ - (x) Checked option
+
+As shown here, these are rendered using appropriate character glyphs in the text flow.
+
+Moreover, if a `.form` class is applied to the list, these elements are rendered as actual interactive form elements in the output PDF.
+A "readonly" boolean attribute is also supported, to make the form non-interactive, while still rendering the checkboxes and radio buttons as form elements.
+
+ {.form readonly=true}
+ - [ ] Unchecked form item
+ - [x] Checked form item
+
+ {.form readonly=true}
+ - ( ) Unchecked form option
+ - (x) Checked form option
+
 {#djot-footnotes}
 ### Footnote references
 
