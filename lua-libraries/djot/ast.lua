@@ -792,15 +792,22 @@ local function to_ast(parser, sourcepos)
           if node.style_marker == "|:" then
             make_definition_list_item(node)
           end
-
-          if node.style_marker == "|X" and has_children(node) then
+          -- BEGIN EXTENSION DIDIER 20250301 add |O for radio buttons (Djot non-standard extension)
+          if (node.style_marker == "|X" or node.style_marker == "|O") and has_children(node) then
             if node.c[1].t == "checkbox_checked" then
               node.checkbox = "checked"
               table.remove(node.c, 1)
             elseif node.c[1].t == "checkbox_unchecked" then
               node.checkbox = "unchecked"
               table.remove(node.c, 1)
+            elseif node.c[1].t == "radio_checked" then
+              node.radio = "checked"
+              table.remove(node.c, 1)
+            elseif node.c[1].t == "radio_unchecked" then
+              node.radio = "unchecked"
+              table.remove(node.c, 1)
             end
+            -- END EXTENSION DIDIER 20250301
           end
 
           node.style_marker = nil

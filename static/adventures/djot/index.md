@@ -2,7 +2,7 @@
 
 _Going on an adventure with re·sil·ient #2_
 
-Authored 02/12/2025 (aligned with _re·sil·ient_ v3.x), revised 13/12/2025 (some insights on v4.x plans), revised 04/03/2026 (more bibliography extensions)
+Authored 02/12/2025 (aligned with _re·sil·ient_ v3.x), revised 13/12/2025 (some insights on future plans), revised 04/03/2026 (more bibliography extensions), revised 07/03/2026 (task list extensions).
 
 In our series of "Going on an Adventure", we'll explore below the Djot syntax extensions and specific interpretations of [Djot](https://djot.net/) constructs implemented in _[re·sil·ient](https://github.com/Omikhleia/resilient.sile),_ our collection of [SILE](https://sile-typesetter.org/) add-on modules.
 
@@ -45,7 +45,7 @@ Conditionals allow to render content depending on whether a symbol is defined or
 Conditions work on block and inline elements alike.
 This author, however, ended up using them mostly on block elements.
 
-In _re·sil·ient_, they only apply to user-defined symbols (defined as pseudo-footnotes) and contextual metadata symbols (set by the calling context).
+In _re·sil·ient,_ they only apply to user-defined symbols (defined as pseudo-footnotes) and contextual metadata symbols (set by the calling context).
 
 Before using a symbol in the text flow (`:symbol:`), one can thus test for its existence.
 Compared to a more general templating logic (that would take place outside the Djot source), it allows to express conditional rendering directly in the Djot document, respecting the structure of block and inline elements.
@@ -163,7 +163,7 @@ In _re·sil·ient,_ there are ways to generate indexes from the collected entrie
 
 The Djot inline syntax is extended with a citation syntax.
 
-It allows to reference bibliographic entries in the text flow, by their unique keys, and an optional locator.
+It allows to reference bibliographic entries in the text flow, by their unique keys, with an optional locator.
 
 The supported syntax is a simplified subset of the Pandoc citation syntax and follows one of the proposals made on te Djot discussion forum.
 The rationale for using a naive simplified citation syntax derives from the fact that CSL 1.0.2 does not really address in a clear way prefixes and additional suffixes for citations, not to say multiple locators per citation.
@@ -173,10 +173,10 @@ A standard citation element starts with `[@` and ends with `]`.
 In that inline element, multiple citations can be grouped together, separated by semicolons.
 Each citation can optionally include a locator after the key, separated by a comma (or spaces).
 The locator consists of a name and a value, separated by spaces.
-In _re·sil·ient_, locators must match CSL locator types, or some usual abbreviations (with or without trailing dot) for convenience.
+In _re·sil·ient,_ locators must match CSL locator types, or some usual abbreviations (with or without trailing dot) for convenience.
 
 How the bibliography references are provided to the document, and how the citations are rendered, is outside the scope of this specification.
-In _re·sil·ient,_ there are ways to declare bibliography files (e.g. in BibLaTeX-like format), and rendering rules (i.e. according to a given Citation Style Language (CSL) style), but these are implementation details not covered here. For details, refer to _The re·sil·ient collection of classes & packages for SILE — User Guide._
+In _re·sil·ient,_ there are ways to declare bibliography files (e.g. in BibLaTeX-like format), and rendering rules (i.e. according to a given Citation Style Language CSL style), but these are implementation details not covered here. For details, refer to _The re·sil·ient collection of classes & packages for SILE — User Guide._
 
 Here are some examples of valid citation syntax, with the rendered output in Chicago author-date style.
 
@@ -195,7 +195,7 @@ But a few other features are available, via modifiers before the `@` sign.
 | Author suppression  | `[-@doe2020]` | Citation with author suppressed (2020)                       |
 | Integral citation   | `[+@doe2020]` | Integral citation: Doe (2020) argued...                      |
 
-The "no-cite" syntax is useful to include works in the bibliography _as if they were cited._
+The "no-cite" syntax is useful to include works in the bibliography _as if they were cited,_ but without actually rendering a citation in the text flow.
 Obviously, content around the citation element is rendered as usual, so be aware that spaces etc. may need to be adjusted accordingly.
 
 The "author suppression" syntax is useful to suppress the author part of a citation, which is also a common need, especially when the author name is already mentioned in the text, one way or another.
@@ -230,7 +230,7 @@ For the reminder, in standard Djot, captions are only supported on tables, and i
 ^ This is a standard table caption.
 ```
 
-In _re·sil·ient_, captions on other blocks are interpreted in several ways.
+In _re·sil·ient,_ captions on other blocks are interpreted in several ways.
 
 On a block quote, the block is rendered as an epigraph (in a broad sense), with the caption content used as its "source".
 
@@ -273,6 +273,38 @@ This specification does not forbid it.
 The _re·sil·ient_ book class however does not currently support this feature, but it could be implemented in the future.
 It's a limitation of the book class, not of the proposed Djot syntax extension itself.
 
+#### Interactive forms and radio buttons
+
+Standard Djot supports GFM-style task lists, with checkboxes:
+
+```
+- [ ] An unchecked task
+- [x] A checked task
+```
+
+In _re·sil·ient,_ the syntax for task lists is extended to support radio buttons.
+
+```
+- ( ) A non-selected option
+- (x) A selected option
+```
+
+By default, these are rendered using appropriate character glyphs (☐, ☑, ○, ◉) in the text flow.
+
+Moreover, if a `.form` class is applied to the list, these elements are rendered as actual interactive form elements in the output PDF.
+A "readonly" boolean attribute is also supported, to make the form non-interactive, while still rendering the checkboxes and radio buttons as form elements.
+
+```
+{.form readonly=true|false}
+- ( ) A non-selected radio button
+- (x) A selected radio button
+```
+
+Obviously, for radio buttons, only one list item at most should be selected at a time.
+(For the record, in _re·sil·ient,_ it is only checked at the point of rendering, and only enforced when forms are rendered as interactive elements; but this is just a practical design choice.)
+
+![Interactive forms](forms.png)
+
 ## Interpretations beyond standard Djot
 
 This section describes specific interpretations of Djot constructs in _re·sil·ient_.
@@ -286,7 +318,7 @@ For the reminder, in standard Djot, an image is encoded as follows:
 ![This man is Gutenberg.](gutenberg.jpg){width="3cm"}
 ```
 
-In _re·sil·ient_, by default, an image with a nonempty caption (as above), occurring alone by itself in a paragraph, is interpreted as a figure with a caption.
+In _re·sil·ient,_ by default, an image with a nonempty caption (as above), occurring alone by itself in a paragraph, is interpreted as a figure with a caption.
 Otherwise, when used as an inline element surrounded by other inline content, the caption is ignored.
 
 ![Implicit figure example](implicit-figure.png)
@@ -337,7 +369,7 @@ Standard Djot, as well as Markdown, do not provide any syntax for cross-referenc
 
 As noted earlier, in standard Djot, symbols are entered in the text flow using the syntax `:symbol:` but their use is not further specified.
 
-In _re·sil·ient_, symbols are used as a generic leaf-extension mechanism.
+In _re·sil·ient,_ symbols are used as a generic leaf-extension mechanism.
 They come in different flavors:
 
 - Predefined symbols;
@@ -566,7 +598,7 @@ metadata declarations
 ```
 
 In _re·sil·ient,_ it could accept a subset of the "master document" format (more or less everything but the content inclusion directives).
-Here is an example (not exshautive) of what such a metadata block could look like.
+Here is an example (not exhaustive) of what such a metadata block could look like.
 
 ```
 +++ application/yaml urn:example:omikhleia:resilient:document:v1
@@ -608,5 +640,5 @@ While not applicable here for a standalone Djot self-contained document, some of
 The other way round, to allow the smooth inclusion of standalone documents with their embedded metadata in a larger master document, the specification would also have to clarify how metadata declared in the standalone document interact with elements declared in the master document.
 Some (e.g. fonts, bibliobraphy style, etc.) may be overridden by the master document.
 Others (e.g. bibliography files) may have to be merged.
-Somr (e.g. title, author, etc.) may have to be scoped to the included document only (for metadata-originated symbols), and overridden by the master document in the global context.
+Some (e.g. title, author, etc.) may have to be scoped to the included document only (for metadata-originated symbols), and overridden by the master document in the global context.
 Finally, a few (e.g. language) may imply the implicit addition of div blocks with appropriate attributes around the content of the included document.

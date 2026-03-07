@@ -23,6 +23,10 @@ local function get_list_styles(marker)
     return {marker}
   elseif find(marker, "^[+*-] %[[Xx ]%]") then
     return {"X"} -- task list
+  -- BEGIN EXTENSION DIDIER 20250301 add radio buttons (non-standard extension)
+  elseif find(marker, "^[+*-] %([Xx ]%)") then
+    return {"O"}
+  -- END EXTENSION DIDIER 20250301
   elseif find(marker, "^[(]?%d+[).]") then
     return {(marker:gsub("%d+","1"))}
   -- in ambiguous cases we return two values
@@ -335,9 +339,15 @@ function Parser:specs()
         end
         local marker = sub(self.subject, sp, ep - 1)
         local checkbox = nil
+        local radio = nil -- EXTENSION DIDIER 20250301
         if self:find("^[*+-] %[[Xx ]%]%s", sp + 1) then -- task list
           marker = sub(self.subject, sp, sp + 4)
           checkbox = sub(self.subject, sp + 3, sp + 3)
+        -- BEGIN EXTENSION DIDIER 20250301
+        elseif self:find("^[*+-] %([Xx ]%)%s", sp + 1) then -- task list with parentheses = radio buttons
+          marker = sub(self.subject, sp, sp + 4)
+          radio = sub(self.subject, sp + 3, sp + 3)
+        -- END EXTENSION DIDIER 20250301
         end
         -- some items have ambiguous style
         local styles = get_list_styles(marker)
@@ -362,6 +372,16 @@ function Parser:specs()
           end
           self.pos = sp + 5
         end
+        -- BEGIN EXTENSION DIDIER 20250301
+        if radio then
+          if radio == " " then
+            self:add_match(sp + 2, sp + 4, "radio_unchecked")
+          else
+            self:add_match(sp + 2, sp + 4, "radio_checked")
+          end
+          self.pos = sp + 5
+        end
+        -- END EXTENSION DIDIER 20250301
         return true
       end,
       close = function(_container)

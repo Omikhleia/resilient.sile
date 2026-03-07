@@ -3,11 +3,11 @@
 -- Following the resilient styling paradigm.
 --
 -- This a replacement to the "lists" package introduced in SILE,
--- with (expectedly) the same user API but with additiona features and styling
+-- with (expectedly) the same user API but with additional features and styling
 -- methods.
 --
 -- @license MIT
--- @copyright (c) 2021-2025 Omikhleia / Didier Willis
+-- @copyright (c) 2021-2026 Omikhleia / Didier Willis
 -- @module packages.resilient.lists
 
 -- NOTE: Though not described explicitly in the documentation, the package supports
@@ -130,7 +130,23 @@ function package:doItem (options, content)
         text = bullet
       end
     end
-    SILE.call("style:apply", { name = styleName }, { text })
+    if options.form then
+      local name = options.form
+      local readonly = SU.boolean(options.readonly, false)
+      if text == "☐" then
+        self:doCheckbox(name, false, readonly)
+      elseif text == "☑" then
+        self:doCheckbox(name, true, readonly)
+      elseif text == "○" then
+        self:doRadioButton(name, false, readonly)
+      elseif text == "◉" then
+        self:doRadioButton(name, true, readonly)
+      else
+        SILE.call("style:apply", { name = styleName }, { text })
+      end
+    else
+      SILE.call("style:apply", { name = styleName }, { text })
+    end
   end)
 
   local stepback
@@ -268,11 +284,38 @@ function package:doNestedList (listType, options, content)
   end
 end
 
+--- (Internal) Render a checkbox form element.
+--
+-- @tparam string name Form name
+-- @tparam boolean checked Whether the checkbox is checked or not
+-- @tparam boolean readonly Whether the checkbox is read-only or not
+function package:doCheckbox (name, checked, readonly)
+  self._checkboxForm = self._checkboxForm or {}
+  self._checkboxForm[name] = self._checkboxForm[name] or { counter = 0 }
+  self._checkboxForm[name].counter = self._checkboxForm[name].counter + 1
+  name = name .. "-" .. self._checkboxForm[name].counter
+  SILE.call("checkbox", { name=name, checked = checked, readonly = readonly })
+end
+
+--- (Internal) Render a radio button form element.
+--
+-- @tparam string name Form name
+-- @tparam boolean selected Whether the radio button is selected or not
+-- @tparam boolean readonly Whether the radio button is read-only or not
+function package:doRadioButton (name, selected, readonly)
+  self._radioForm = self._radioForm or {}
+  self._radioForm[name]  = self._radioForm[name] or { counter = 0 }
+  self._radioForm[name].counter = self._radioForm[name].counter + 1
+  local value = "value" .. self._radioForm[name].counter
+  SILE.call("radiobutton", { name=name, value=value, selected = selected, readonly = readonly })
+end
+
 --- (Constructor) Initialize the package.
 -- @tparam table options Package options
 function package:_init (options)
   base._init(self, options)
   self:loadPackage("counters")
+  self:loadPackage("resilient.forms")
 end
 
 --- (Override) Declare all settings provided by this package.
@@ -623,6 +666,17 @@ of the \autodoc:setting{lists.parskip} setting.
 Do not expect these fragile lists to work in any way in centered or ragged-right environments, or
 with fancy line-breaking features such as hanged or shaped paragraphs.
 Please be a good typographer. Also, these lists have not been experimented yet in right-to-left or vertical writing direction.
+
+When bullets are one of U+2610, U+2611, U+25CB, or U+25C9 (ballot box, ballot box with check, white circle, or fisheye),  and the \autodoc:parameter{form=<name>} option is specified on an item in the \autodoc:environment{itemize} environment, the item is rendered as a checkbox or radio button form element, with the corresponding checked/selected state.
+An additional option, \autodoc:parameter{readonly}, can be set to true to make the form element read-only.
+
+\begin{itemize}
+ \item[bullet=U+2610, form=check1, readonly=true]{Unchecked read-only checkbox}
+ \item[bullet=U+2611, form=check1, readonly=true]{Checked read-only checkbox}
+\end{itemize}
+
+This feature is somewhat internal at the moment, and subject to change.
+(It was implemented to support an extension of the Djot lightweight markup language, and relies on the \autodoc:package{resilient.forms} package.)
 
 \end{document}]]
 
