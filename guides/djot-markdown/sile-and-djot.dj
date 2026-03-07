@@ -958,11 +958,21 @@ In this version, this is equivalent to specifying a pseudo-class attribute in a 
 The content of the code block is passed through to the converter, which is responsible for interpreting it.
 In most cases, the content is rendered as verbatim text, with some exceptions detailed below, for "recognized" formats.
 
-#### Lua code blocks
+#### Syntax-highlighting
 
 Code blocks are rendered as verbatim text, with syntax highlighting when possible.
 For instance, the following code block...
 
+```lua
+function fib (n)
+  -- Fibonacci numbers
+  if n < 2 then return 1 end
+  return fib(n - 2) + fib(n - 1)
+end
+```
+
+... was obtained with:
+
 {custom-style=CodeBlock}
 :::
 ````
@@ -975,23 +985,32 @@ end
 ```
 ````
 :::
-
-... is rendered as:
-
-{custom-style=CodeBlock}
-:::
-```lua
-function fib (n)
-  -- Fibonacci numbers
-  if n < 2 then return 1 end
-  return fib(n - 2) + fib(n - 1)
-end
-```
-:::
-^ An example of a syntax-highlighted Lua code snippet.
-
 
 Syntax-highlighting is applied to languages recognized by Scintillua.
+
+{#djot-captioned-listings}
+#### Captioned code blocks
+
+As already noted, standard Djot only honors captions on tables.
+This converter, however, also supports captions on code blocks, using the same syntax.
+
+```lua
+print("Hello, world!")
+```
+^ An example of a captioned code block.
+
+{custom-style=CodeBlock}
+::::
+````
+```lua
+print("Hello, world!")
+```
+^ An example of a div used as captioned figure.
+````
+::::
+
+With default styles, captioned code blocks are numbered, and added to the list of listings.
+You can specify `.unnumbered`, and `.notoc` respectively, to prevent this behavior.
 
 #### Rendered code blocks
 
@@ -1107,7 +1126,6 @@ The `render` attribute can be set to `false` to prevent this behavior, and enfor
     :::
     ^ An example of a rendered pie chart.
 
-
 ### Content container divisions (divs)
 
 A div begins with a line of three or more consecutive colons, optionally followed by white space and a class name (but nothing else). It ends with a line of consecutive colons at least as long as the opening fence, or with the end of the document or containing block.
@@ -1122,6 +1140,7 @@ This converter recognizes a few specific attributes on divs:
  - The `custom-style` attribute, see §[](#djot-custom-styles)
  - The `lang` attribute, see §[](#djot-language-changes)
 
+{#djot-captioned-figures}
 #### Generic captioned figures
 
 Standard Djot only honors captions on tables, and ignores them on other block elements.
@@ -1502,6 +1521,44 @@ As above, multiple indexes are possible too:
 ```
 :::
 
+## Generalized captions and legends
+
+As already noted, in standard Djot, captions are only supported on tables, and there can only be one caption line.
+
+In _re·sil·ient,_ not only are captions supported on more block elements, but also multiple caption lines are accepted, and interpreted as a main caption line followed by one or more "secondary" caption lines, assembled as paragraphs in a "legend".
+
+:::
+{height=6em gradient=true percentage=true}
+```piechart
+Browser,Users
+Firefox,250
+Chrome,200
+Safari,50
+```
+:::
+^ A pie chart.
+
+^ This is the legend.
+
+^ And even more legend content.
+
+This feature applies to tables (§[](#djot-tables)), figures (§[](#djot-captioned-figures)) and listings (§[](#djot-captioned-listings)).
+Such "long captions" are not uncommon in books, and often obey different rules than the main caption line.
+As already stated too, the latter may be numbered automatically, and appear in lists of tables, figures or listings, while the legend is just additional information displayed below the main caption line, possibly with a distinct style.
+
+{custom-style=CodeBlock}
+::::
+````
+:::
+...
+:::
+^ A pie chart.
+
+^ This is a legend.
+
+^ And even more legend content.
+````
+::::
 
 {#djot-configuration}
 ## Configuration

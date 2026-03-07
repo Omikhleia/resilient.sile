@@ -603,6 +603,17 @@ function class:registerStyles ()
                       reference ="listing-caption-ref-number"
                     } },
   })
+  self:registerStyle("listing-caption-legend", { inherit = "listing-caption" }, {
+    -- Caption when there's also a legend:
+    -- Kill the skip, but forbid the break, to keep the caption and legend together.
+    paragraph = { after = { skip = "0", vbreak = false } }
+  })
+  self:registerStyle("listing-legend", {}, {
+    font = { size = "0.95em" },
+    paragraph = { before = { indent = false, vbreak = false },
+                  align = "center",
+                  after = { skip = "medskip" } },
+  })
   self:registerStyle("listing-caption-base-number", {}, {})
   self:registerStyle("listing-caption-main-number", { inherit = "listing-caption-base-number" }, {
     numbering = { before = { text = "Listing " },
@@ -961,10 +972,17 @@ function class:registerCommands ()
   self:registerCommand("captioned-listing", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in listing environment") end
     local caption = SU.ast.removeFromTree(content, "caption")
+    local legend = SU.ast.removeFromTree(content, "legend")
 
-    options.style = "listing-caption"
     SILE.call("style:apply:paragraph", { name = "listing" }, content)
-    if caption then
+    if caption and legend then
+      options.style = "listing-caption-legend"
+      SILE.call("sectioning", options, caption)
+      if legend then
+        SILE.call("style:apply:paragraph", { name = "listing-legend" }, legend)
+      end
+    elseif caption then
+      options.style = "listing-caption"
       SILE.call("sectioning", options, caption)
     else
       -- It's bad to use the table environment without caption, it's here for that.

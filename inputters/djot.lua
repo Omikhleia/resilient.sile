@@ -294,9 +294,15 @@ function Renderer:code_block (node)
   local out
   out = createCommand("markdown:internal:codeblock", options, node.s, pos)
   if node.caption then
-    -- Potential Djot extension (but not yet -- explicit wrapping in a div block might
-    -- be sufficient for now. TODO)
-    SU.warn("Caption on code block is not supported (ignored)")
+    local caption, legend = self:extract_captions(node.caption)
+    local content = {
+        out,
+        createCommand("caption", {}, caption, pos)
+    }
+    if legend then
+      content[#content + 1] = createCommand("legend", {}, legend, pos)
+    end
+    out = createStructuredCommand("markdown:internal:captioned-listing", node.attr or {}, content, pos)
   end
   return out
 end
