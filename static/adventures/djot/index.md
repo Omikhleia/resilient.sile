@@ -2,7 +2,7 @@
 
 _Going on an adventure with re·sil·ient #2_
 
-Authored 02/12/2025 (aligned with _re·sil·ient_ v3.x), revised 13/12/2025 (some insights on future plans), revised 04/03/2026 (more bibliography extensions), revised 07/03/2026 (task list extensions).
+Authored 02/12/2025 (aligned with _re·sil·ient_ v3.x), revised 13/12/2025 (some insights on future plans), revised 04/03/2026 (more bibliography extensions), revised 07/03/2026 (task list extensions, multiple captions).
 
 In our series of "Going on an Adventure", we'll explore below the Djot syntax extensions and specific interpretations of [Djot](https://djot.net/) constructs implemented in _[re·sil·ient](https://github.com/Omikhleia/resilient.sile),_ our collection of [SILE](https://sile-typesetter.org/) add-on modules.
 
@@ -273,6 +273,31 @@ This specification does not forbid it.
 The _re·sil·ient_ book class however does not currently support this feature, but it could be implemented in the future.
 It's a limitation of the book class, not of the proposed Djot syntax extension itself.
 
+#### Secondary captions (legends)
+
+In standard Djot, there can only be one caption line (on a table).
+More precisely, the Djot parser accepts multiple caption lines, but only the last one is used, and the others are ignored.
+
+In _re·sil·ient,_ multiple caption lines are supported, and interpreted as a main caption line followed by one or more "secondary" caption lines, assembled as paragraphs in a "legend".
+
+This feature applies to tables, figures and listings.
+
+Such "long captions" are not uncommon in books, and often obey different rules than the main caption line.
+As noted, the latter may be numbered automatically, and appear in lists of tables, figures or listings, while the legend is just additional information displayed below the main caption line, possibly with a distinct style.
+
+```
+:::
+_Some complex figure or diagram here._
+:::
+^ Some caption.
+
+^ We can have multiple caption lines, which are then considered as a legend.
+
+^ Each extra caption line is rendered as a separate paragraph in the legend.
+```
+
+![Caption and legend example](caption-and-legend.png)
+
 #### Interactive forms and radio buttons
 
 Standard Djot supports GFM-style task lists, with checkboxes:
@@ -527,16 +552,6 @@ How the global default document language is set is outside the scope of this doc
 These are being considered for future versions of _re·sil·ient,_ but not yet implemented at the time of writing.
 
 They are mentioned here for documentation purposes, without commitment to follow through with these preliminary proposals.
-
-### Secondary captions
-
-In standard Djot, captions are limited to a single line.
-
-It could be useful to allow multi-line "long" captions, for tables, figures, listings, and other block elements supporting captions.
-In books, long captions are not uncommon, and often obey different rules than the main caption line.
-As noted, the latter may be numbered automatically, and appear in lists of tables, figures or listings, while the long caption is just additional information displayed below the main caption line, sometimes with a distinct style.
-
-Whether to use a specific syntax for that purpose (e.g. `^^` as a secondary caption marker), or to allow multiple caption lines (e.g. with the current parser, multiple `^` lines after a block), is still an open question.
 
 ### Line-obeying blocks & poetry
 

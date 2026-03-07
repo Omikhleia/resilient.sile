@@ -520,6 +520,17 @@ function class:registerStyles ()
                       reference ="figure-caption-ref-number"
                     } },
   })
+  self:registerStyle("figure-caption-legend", { inherit = "figure-caption" }, {
+    -- Caption when there's also a legend:
+    -- Kill the skip, but forbid the break, to keep the caption and legend together.
+    paragraph = { after = { skip = "0", vbreak = false } }
+  })
+  self:registerStyle("figure-legend", {}, {
+    font = { size = "0.95em" },
+    paragraph = { before = { indent = false, vbreak = false },
+                  align = "center",
+                  after = { skip = "medskip" } },
+  })
   self:registerStyle("figure-caption-base-number", {}, {})
   self:registerStyle("figure-caption-main-number", { inherit = "figure-caption-base-number" }, {
     numbering = { before = { text = "Figure " },
@@ -550,6 +561,17 @@ function class:registerStyles ()
                       main = "table-caption-main-number",
                       reference = "table-caption-ref-number",
                     } }
+  })
+  self:registerStyle("table-caption-legend", { inherit = "table-caption" }, {
+    -- Caption when there's also a legend:
+    -- Kill the skip, but forbid the break, to keep the caption and legend together.
+    paragraph = { after = { skip = "0", vbreak = false } }
+  })
+  self:registerStyle("table-legend", {}, {
+    font = { size = "0.95em" },
+    paragraph = { before = { indent = false, vbreak = false },
+                  align = "center",
+                  after = { skip = "medskip" } },
   })
   self:registerStyle("table-caption-base-number", {}, {})
   self:registerStyle("table-caption-main-number", { inherit = "table-caption-base-number" }, {
@@ -895,10 +917,17 @@ function class:registerCommands ()
   self:registerCommand("captioned-figure", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in figure environment") end
     local caption = SU.ast.removeFromTree(content, "caption")
+    local legend = SU.ast.removeFromTree(content, "legend")
 
-    options.style = "figure-caption"
     SILE.call("style:apply:paragraph", { name = "figure" }, content)
-    if caption then
+    if caption and legend then
+      options.style = "figure-caption-legend"
+      SILE.call("sectioning", options, caption)
+      if legend then
+        SILE.call("style:apply:paragraph", { name = "figure-legend" }, legend)
+      end
+    elseif caption then
+      options.style = "figure-caption"
       SILE.call("sectioning", options, caption)
     else
       -- It's bad to use the figure environment without caption, it's here for that.
@@ -910,10 +939,17 @@ function class:registerCommands ()
   self:registerCommand("captioned-table", function (options, content)
     if type(content) ~= "table" then SU.error("Expected a table content in table environment") end
     local caption = SU.ast.removeFromTree(content, "caption")
+    local legend = SU.ast.removeFromTree(content, "legend")
 
-    options.style = "table-caption"
     SILE.call("style:apply:paragraph", { name = "table" }, content)
-    if caption then
+    if caption and legend then
+      options.style = "table-caption-legend"
+      SILE.call("sectioning", options, caption)
+      if legend then
+        SILE.call("style:apply:paragraph", { name = "table-legend" }, legend)
+      end
+    elseif caption then
+      options.style = "table-caption"
       SILE.call("sectioning", options, caption)
     else
       -- It's bad to use the table environment without caption, it's here for that.

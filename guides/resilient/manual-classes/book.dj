@@ -74,6 +74,7 @@ Notably, the class also defines a few commands currenty used as hooks in some of
 The class provides three environnments, `\autodoc:environment{figure}`{=sile}, `\autodoc:environment{table}`{=sile}, and `\autodoc:environment{listing}`{=sile}, for captioned figures, tables, and listings, respectively.
 They can contain arbitrary contents and a `\autodoc:command[check=false]{\caption{<text>}}`{=sile} element.
 The latter, when present, is extracted and displayed below the contents.
+An optional `\autodoc:command[check=false]{\legend{<text>}}`{=sile} element can also be used to specify a legend, which is displayed below the caption.
 By default, the figure and table environments show their contents centered, with a numbered caption.
 The listing environment does not center its content, but otherwise behaves the same.
 Each of them has its own distinct counter.
@@ -83,6 +84,8 @@ The figure environment is (normally) intended to be used around an illustration.
 |:-------------------------------------------------|:-------------|
 | `figure`                                         | Style applied to the figure content (not including the caption). |
 | `figure-caption`                                 | (Sectioning) style applied to the figure caption. |
+| `figure-caption-legend`                          | (Sectioning) style applied to the figure caption when followed by a legend. |
+| `figure-legend`                                  | Style applied to the figure legend (secondary captions). |
 ^ Styles used for figures.
 
 The table environment is (normally) intended to be used around… tables, you would have guessed it.
@@ -91,6 +94,8 @@ The table environment is (normally) intended to be used around… tables, you wo
 |:-------------------------------------------------|:-------------|
 | `table`                                          | Style applied to the table content (not including the caption). |
 | `table-caption`                                  | (Sectioning) style applied to the table caption. |
+| `table-caption-legend`                           | (Sectioning) style applied to the table caption when followed by a legend. |
+| `table-legend`                                   | Style applied to the table legend (secondary captions). |
 ^ Styles used for tables.
 
 The listing environment is (normally) intended to be used around blocks of code, or similar.
