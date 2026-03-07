@@ -187,17 +187,34 @@ function Renderer:para (node)
   return createCommand("markdown:internal:paragraph", {}, content, pos)
 end
 
+function Renderer:extract_captions (captions)
+  if not captions or #captions == 0 then
+    return nil, nil
+  end
+  -- Multiple captions on the same element is a Djot extension.
+  -- The first caption is the main one, the others are secondary captions, collated into a legend.
+  local caption = self:render_children(captions[1])
+  local secondary = {}
+  for i = 2, #captions do
+    secondary[#secondary + 1] = createCommand("markdown:internal:paragraph", {}, self:render_children(captions[i]))
+  end
+  return caption, #secondary > 0 and secondary or nil
+end
+
 function Renderer:blockquote (node)
   local content = self:render_children(node)
   local pos = node_pos(node)
   local out
   if node.caption then
     -- Djot extension: caption supported on blockquotes
-    local caption = self:render_children(node.caption)
+    local caption, legend = self:extract_captions(node.caption)
     out = createStructuredCommand("markdown:internal:captioned-blockquote", node.attr or {}, {
       content,
       createCommand("caption", {}, caption)
     }, pos)
+    if legend then
+      SU.warn("Secondary captions (legend) are not supported and ignored on blockquotes (epigraphs)")
+    end
   else
     out = createCommand("blockquote", node.attr or {}, content, pos)
   end
@@ -216,11 +233,15 @@ function Renderer:div (node)
   -- Djot extension: caption supported on div blocks
   out = createCommand("markdown:internal:div", options, content, pos)
   if node.caption then
-    local caption = self:render_children(node.caption)
-    out = createStructuredCommand("markdown:internal:captioned-figure", node.attr or {}, {
-      out,
-      createCommand("caption", {}, caption)
-    }, pos)
+    local caption, legend = self:extract_captions(node.caption)
+    out = {
+        out,
+        createCommand("caption", {}, caption, pos)
+    }
+    if legend then
+      out[#out + 1] = createCommand("legend", {}, legend, pos)
+    end
+    out = createStructuredCommand("markdown:internal:captioned-figure", node.attr or {}, out, pos)
   end
   return out
 end
@@ -273,9 +294,15 @@ function Renderer:code_block (node)
   local out
   out = createCommand("markdown:internal:codeblock", options, node.s, pos)
   if node.caption then
-    -- Potential Djot extension (but not yet -- explicit wrapping in a div block might
-    -- be sufficient for now. TODO)
-    SU.warn("Caption on code block is not supported (ignored)")
+    local caption, legend = self:extract_captions(node.caption)
+    local content = {
+        out,
+        createCommand("caption", {}, caption, pos)
+    }
+    if legend then
+      content[#content + 1] = createCommand("legend", {}, legend, pos)
+    end
+    out = createStructuredCommand("markdown:internal:captioned-listing", node.attr or {}, content, pos)
   end
   return out
 end
@@ -286,19 +313,8 @@ function Renderer:table (node)
     SU.error("Table without content (should not occur)")
   end
   local pos = node_pos(node)
-  -- extract caption, check rows
-  local rows = {}
-  local caption
-  for _, v in ipairs(node.c) do
-    if v.t == "caption" then
-      caption = self:render_children(v)
-    elseif v.t == "row" then
-      rows[#rows+1] = v
-    else
-      SU.error("Unexpected element in table: "..v.t)
-    end
-  end
-  node.c = rows
+  local rows = node.c or {}
+  local caption, legend = self:extract_captions(node.caption) -- Djot extension: caption supported on tables, with multiple captions as legends
 
   local row = rows[1]
   local numberOfCols = #row.c
@@ -320,7 +336,11 @@ function Renderer:table (node)
      header = SU.boolean(row.head, false),
   }, self:render_children(node), pos)
 
-  local wrapped = caption and {
+  local wrapped = caption and legend and {
+    ptable,
+    createCommand("caption", {}, caption, pos),
+    createCommand("legend", {}, legend, pos)
+  } or caption and {
     ptable,
     createCommand("caption", {}, caption, pos)
   } or { ptable }

@@ -317,6 +317,14 @@ figure-caption:
 figure-caption-base-number:
   style:
 
+figure-caption-legend:
+  inherit: "figure-caption"
+  style:
+    paragraph:
+      after:
+        skip: "0"
+        vbreak: false
+
 figure-caption-main-number:
   inherit: "figure-caption-base-number"
   style:
@@ -335,6 +343,18 @@ figure-caption-ref-number:
     numbering:
       before:
         text: "fig. "
+
+figure-legend:
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        vbreak: false
 
 folio-backmatter:
   style:
@@ -641,6 +661,14 @@ listing-caption:
 listing-caption-base-number:
   style:
 
+listing-caption-legend:
+  inherit: "listing-caption"
+  style:
+    paragraph:
+      after:
+        skip: "0"
+        vbreak: false
+
 listing-caption-main-number:
   inherit: "listing-caption-base-number"
   style:
@@ -659,6 +687,18 @@ listing-caption-ref-number:
     numbering:
       before:
         text: "listing "
+
+listing-legend:
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        vbreak: false
 
 lists-enumerate-alternate1:
   inherit: "lists-enumerate-base"
@@ -1101,6 +1141,14 @@ table-caption:
 table-caption-base-number:
   style:
 
+table-caption-legend:
+  inherit: "table-caption"
+  style:
+    paragraph:
+      after:
+        skip: "0"
+        vbreak: false
+
 table-caption-main-number:
   inherit: "table-caption-base-number"
   style:
@@ -1119,6 +1167,18 @@ table-caption-ref-number:
     numbering:
       before:
         text: "table "
+
+table-legend:
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        vbreak: false
 
 toc:
   style:

@@ -635,6 +635,17 @@ function package:registerCommands ()
     SILE.call("captioned-figure", figopts, content)
   end, "Captioned figure in Markdown (internal)")
 
+  self:registerCommand("markdown:internal:captioned-listing", function (options, content)
+    local listopts = {}
+    if hasClass(options, "unnumbered") then
+      listopts.numbering = false
+    end
+    if hasClass(options, "notoc") then
+      listopts.toc = false
+    end
+    SILE.call("captioned-listing", listopts, content)
+  end, "Captioned listing in Markdown (internal)")
+
   -- Code blocks
 
   self:registerCommand("markdown:internal:codeblock", function (options, content)

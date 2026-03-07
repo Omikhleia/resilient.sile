@@ -853,17 +853,14 @@ local function to_ast(parser, sourcepos)
         elseif tag == "caption" then
           local tip = containers[#containers]
           local prevnode = has_children(tip) and tip.c[#tip.c]
-          if prevnode and prevnode.t == "table" then
-            -- move caption in table node
-            table.insert(prevnode.c, 1, node)
           -- BEGIN EXTENSION DIDIER 20230523
           -- Accept caption on other elements (Djot non-standard extension)
-          elseif prevnode then
-            if prevnode.caption then
-              warn({ message = "Ignoring multiple caption",
-                     pos = startpos })
+          if prevnode then
+            if prevnode.caption then -- EXTENSION DIDIER 20260307 Accept multiple captions on same element.
+              table.insert(prevnode.caption, { c = node.c })
+            else
+              prevnode.caption = {{ c = node.c }}
             end
-            prevnode.caption = { c = node.c }
           else
             warn({ message = "Ignoring caption without preceding content",
                    pos = startpos })
