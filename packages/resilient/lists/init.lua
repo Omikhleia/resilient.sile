@@ -294,7 +294,7 @@ function package:doCheckbox (name, checked, readonly)
   self._checkboxForm[name] = self._checkboxForm[name] or { counter = 0 }
   self._checkboxForm[name].counter = self._checkboxForm[name].counter + 1
   name = name .. "-" .. self._checkboxForm[name].counter
-  SILE.call("checkbox", { name=name, checked = checked, readonly = readonly })
+  SILE.call("checkbox", { name = name, checked = checked, readonly = readonly })
 end
 
 --- (Internal) Render a radio button form element.
@@ -307,7 +307,7 @@ function package:doRadioButton (name, selected, readonly)
   self._radioForm[name]  = self._radioForm[name] or { counter = 0 }
   self._radioForm[name].counter = self._radioForm[name].counter + 1
   local value = "value" .. self._radioForm[name].counter
-  SILE.call("radiobutton", { name=name, value=value, selected = selected, readonly = readonly })
+  SILE.call("radiobutton", { name = name, value = value, selected = selected, readonly = readonly })
 end
 
 --- (Constructor) Initialize the package.

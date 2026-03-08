@@ -267,7 +267,7 @@ This converter also recognizes the following pseudo-classes on spans:
 The three last ones are equivalent to the `{+...+}` and `{-...-}` syntaxes, and the `{=...=}` syntax, respectively.
 In other term, these Djot inline elements are mere shortcuts for the corresponding spans.
 
-Moreover, if used within in a *resilient* class, the converter uses the `md-underline`, `md-strikethrough`, `md-insertion`, `md-deletion` and `md-mark` styles, respectively, if they are defined in your style file.
+Moreover, the converter uses the `md-underline`, `md-strikethrough`, `md-insertion`, `md-deletion` and `md-mark` styles, respectively, if they are defined in your style file.
 Another way to put it is that the converter then does the same thing as a `{custom-style="..."}` attribute (see §[](#djot-custom-styles)).
 You can style and fine-tune these elements as you wish, and even use them for other purposes than their original intent.[^djot-spans-hook]
 
@@ -395,7 +395,7 @@ the [SILE website](https://sile-typesetter.org/){.underline}.[^djot-link-attribu
 ```
 :::
 
-[^djot-link-attributes]: Within a *resilient* class, we'd possibly rather recommend using a style to color links, etc.
+[^djot-link-attributes]: But we'd rather recommend using a style to color links, etc.
 
 There are actually two kinds of links, inline links and reference links.
 Both start with the link text (which may contain arbitrary inline formatting) inside `[`...`]` delimiters.
@@ -853,6 +853,7 @@ As an example, let's say you have a "Custom" variant with an _ad hoc_ style.
 [^djot-defn-variant]: Within *resilient*, you can fully customize the styles used for definition terms and definitions.
 The `variant` option is intended to switch to a different style, when you need more than one for different purposes in the same document.
 
+{#djot-task-lists}
 #### Task lists
 
 A bullet list item that begins with `[ ]`, `[X]`, or `[x]` followed by a space is a task list item, either unchecked (`[ ]`) or checked (`[X]` or `[x]`).
@@ -883,8 +884,8 @@ A bullet list item that begins with `[ ]`, `[X]`, or `[x]` followed by a space i
 
 As shown here, these are rendered using appropriate character glyphs in the text flow.
 
-Moreover, if a `.form` class is applied to the list, these elements are rendered as actual interactive form elements in the output PDF.
-A "readonly" boolean attribute is also supported, to make the form non-interactive, while still rendering the checkboxes and radio buttons as form elements.
+Moreover, if a `.form` class is applied to the list, these elements are rendered as actual form elements in the output PDF.
+A "readonly" boolean attribute is also supported, to make the form non-interactive while still rendering checkboxes and radio buttons as form elements, with a proper appearance.
 
  {.form readonly=true}
  - [ ] Unchecked form item
@@ -1342,7 +1343,7 @@ The converter also supports the `{custom-style="..."}` attribute.
 It is inspired by the syntax proposed by Pandoc for Markdown, in its *docx* writer, to specify a specific, possibly user-defined, custom style name (in that case, a Word style, obviously).
 
 Here, if such a named style exists, it is applied. Erm. What does it mean?
-Well, in the default implementation, if used within in a *resilient* class and there is a corresponding style, the converter uses it.
+Well, in the default implementation, if there is a corresponding style, the converter uses it.
 Otherwise, if there is a corresponding SILE command by that name, the converter invokes it.
 Otherwise, it just ignores the style and processes the content as-is.
 Even if you do not use a resilient-compatible class, it thus allows you to use some interesting SILE features.
@@ -1521,7 +1522,7 @@ As above, multiple indexes are possible too:
 ```
 :::
 
-## Generalized captions and legends
+### Generalized captions and legends
 
 As already noted, in standard Djot, captions are only supported on tables, and there can only be one caption line.
 
@@ -1559,6 +1560,49 @@ As already stated too, the latter may be numbered automatically, and appear in l
 ^ And even more legend content.
 ````
 ::::
+
+### Interactive forms
+
+This converter also supports the `.form` pseudo-class, which causes the content to be rendered as an interactive form in the output PDF.
+
+For checkboxes and radio buttons, the syntax has already been shown in the section on task lists (§[](#djot-task-lists)).
+The pseudo-class can also be applied to span elements, to render them as interactive form elements such as text fields, and choice menus.
+A "readonly" boolean attribute is also supported, to make the element non-interactive.
+
+Note that the content of such form elements, if any, is ignored.
+It may still be useful, though, to provide some fallback content for other converters not supporting this feature.
+
+{custom-style=CodeBlock}
+:::
+```
+Name: []{.form}.
+
+Gender:
+
+ {.form}
+ - (X) Unspecified
+ - ( ) Male
+ - ( ) Female
+
+Language: []{.form choices="English, French, Other"}.
+
+```
+:::
+
+Name: []{.form}.
+
+Gender:
+
+ {.form}
+ - (X) Unspecified
+ - ( ) Male
+ - ( ) Female
+
+Language: []{.form choices="English, French, Other"}.
+
+As may be seen here, text fields and choice menus have a minimal width by default, but they expand to
+the full available line width.
+The converter underlines them by default, unless the `md-form` style is defined in your style file, in which case it is used instead, to possibly apply other decorations and effects.
 
 {#djot-configuration}
 ## Configuration

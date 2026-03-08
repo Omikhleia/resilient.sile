@@ -315,9 +315,10 @@ In _re·sil·ient,_ the syntax for task lists is extended to support radio butto
 ```
 
 By default, these are rendered using appropriate character glyphs (☐, ☑, ○, ◉) in the text flow.
+Whether these look good or not depends on the current font being used.
 
 Moreover, if a `.form` class is applied to the list, these elements are rendered as actual interactive form elements in the output PDF.
-A "readonly" boolean attribute is also supported, to make the form non-interactive, while still rendering the checkboxes and radio buttons as form elements.
+A "readonly" boolean attribute is also supported, to make the form non-interactive, while still rendering the checkboxes and radio buttons as form elements, with a proper appearancce.
 
 ```
 {.form readonly=true|false}
@@ -326,9 +327,10 @@ A "readonly" boolean attribute is also supported, to make the form non-interacti
 ```
 
 Obviously, for radio buttons, only one list item at most should be selected at a time.
-(For the record, in _re·sil·ient,_ it is only checked at the point of rendering, and only enforced when forms are rendered as interactive elements; but this is just a practical design choice.)
 
 ![Interactive forms](forms.png)
+
+For the mere record, in _re·sil·ient,_ this condition is currently checked at the point of rendering, and only enforced when radios are rendered as form elements; but this is just a practical design choice. Finally, the `.form` class also be applied on span elements (to render other form elements, such as text fields or choice menus), but this is not a syntax extension of Djot _per se,_ and is therefore not covered here.
 
 ## Interpretations beyond standard Djot
 
