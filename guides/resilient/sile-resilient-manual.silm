@@ -105,3 +105,4 @@ content:
         appendices:
           - manual-appendices/biblio.dj
           - manual-appendices/resume-class.dj
+          - manual-appendices/fancytoc.dj

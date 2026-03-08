@@ -11,7 +11,7 @@ invoice:
   # The note is an optional free text field that will be presented in the invoice PDF, not included in Factur-X.
   note: |
     Thank you for your purchase.
-    We hope you are plaintly satisfied with our services.
+    We hope you are plainly satisfied with our services.
     Please make the payment by the due date. — The Sherlock Holmes Company
 
   seller:

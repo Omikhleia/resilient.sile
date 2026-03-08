@@ -146,21 +146,6 @@ This package is part of the *labelrefs.sile* collection.
 \package-documentation{resilient.fancytoc}
 ```
 
-Here it is at work for the current document with default parameters.
-Since our book class supports parts at level 0, we get the parts
-and chapters.
-
-``` =sile
-\fancytableofcontents
-\bigskip
-```
-
-And here it is stating at level 1, i.e. chapters and sections.
-
-``` =sile
-\fancytableofcontents[start=1]
-```
-
 ## Enhanced footnotes
 
 ``` =sile
