@@ -207,7 +207,7 @@ function package:registerCommands ()
       category = "toc",
       value = {
         label = SU.ast.subContent(SU.ast.stripContentPos(content)),
-        level = (options.level or 1),
+        level = SU.cast("integer", options.level or 1),
         number = options.number,
         link = dest
       }
