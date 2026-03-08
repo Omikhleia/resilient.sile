@@ -26,6 +26,7 @@ end
 local function loadCslLocale (name)
    local filename = resolveFile("csl/locales/" .. name .. ".xml")
       or resolveFile("packages/bibtex/csl/locales/locales-" .. name .. ".xml")
+      or cslLocaleLoader("csl.locales." .. name)
       or cslLocaleLoader("packages.bibtex.csl.locales.locales-" .. name)
    if not filename then
       SU.error("Could not find CSL locale '" .. name .. "'")
@@ -40,6 +41,7 @@ end
 local function loadCslStyle (name)
    local filename = resolveFile("csl/styles/" .. name .. ".csl")
       or resolveFile("packages/bibtex/csl/styles/" .. name .. ".csl")
+      or cslStyleLoader("csl.styles." .. name)
       or cslStyleLoader("packages.bibtex.csl.styles." .. name)
    if not filename then
       SU.error("Could not find CSL style '" .. name .. "'")
@@ -54,6 +56,7 @@ end
 local function loadCslNameStyle (name)
    local filename = resolveFile("csl/names/" .. name .. ".csl")
       or resolveFile("packages/bibtex/csl/names/" .. name .. ".csl")
+      or cslStyleLoader("csl.names." .. name)
       or cslStyleLoader("packages.bibtex.csl.names." .. name)
    if not filename then
       SU.error("Could not find CSL name style '" .. name .. "'")
@@ -234,8 +237,10 @@ end
 --    This allows users to put their own CSL files in a simple place
 --  - Then in `packages/bibtex/csl/locales/` (ibid.)
 --    This allows users to put their own CSL files e.g. in a local copy of the package, following its structure
+--  - Then in `csl.locales` (ibid.)
+--    This allows users to use CSL files from the (extended) Lua path, e.g. from a module
 --  - Then in `packages.bibtex.csl.locales.locales` (ibid.)
---    This allows users to use CSL files from the (extended) Lua path, e.g. from a module.
+--    This allows users to use CSL files from the (extended) Lua path, e.g. from a module, following the package structure
 --
 -- @tparam string stylename Name of the CSL style to use
 -- @tparam string lang Language code for the locale (e.g., "en-US")
@@ -260,6 +265,9 @@ function CslProcessor:setBibliographyStyle (stylename, lang, options)
 end
 
 --- Set the style for names in integral citations.
+--
+-- The name style is searched in the same way as the bibliography style, but in the `csl/names/` subdirectory
+-- etc.
 --
 -- @tparam string stylename Name of the CSL style to use
 function CslProcessor:setNameStyle (stylename)
