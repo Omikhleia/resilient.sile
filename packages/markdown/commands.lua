@@ -58,9 +58,9 @@ local CommandCascade = pl.class({
   end,
 })
 
-local function hasLinkContent(tree)
+local function hasSomeContent(tree)
   if type(tree) == "table" then
-    return #tree > 1 or hasLinkContent(tree[1])
+    return #tree > 1 or hasSomeContent(tree[1])
   end
   if type(tree) == "string" and tree ~= "" then
     return true
@@ -159,6 +159,7 @@ function package:_init (_)
 
   self:loadPackage("resilient.epigraph")
   self:loadPackage("resilient.defn")
+  self:loadPackage("resilient.forms")
 
   -- Do those at the end so the resilient versions may possibly override things.
   self:loadAltPackage("resilient.lists", "lists")
@@ -410,6 +411,36 @@ function package:registerCommands ()
   end, "Formats a (number) content string as decimal (internal)")
 
   self:registerCommand("markdown:internal:span", function (options, content)
+    if hasClass(options, "form") then
+      if hasSomeContent(content) then
+        -- Don't reject content, that might allow people to have a fallback
+        -- in Djot implementations that do not support forms.
+        SU.debug("markdown.commands", "Ignoring content in a form field")
+      end
+      self._textfieldCounter = (self._textfieldCounter or 0) + 1
+      local name = "field" .. self._textfieldCounter
+      local readonly = SU.boolean(options.readonly, false)
+      if options.choices then
+        content = createCommand("choicemenu", {
+          name = name,
+          choices = options.choices,
+          readonly = readonly,
+        })
+      else
+        content = createCommand("textfield", {
+          name = name,
+          readonly = readonly,
+        })
+      end
+      SILE.process({
+        createCommand("markdown:custom-style:hook", {
+          name = "md-form",
+          alt = "underline",
+          scope = "inline"
+        }, content)
+      })
+      return -- Bypass usual span logic.
+    end
     if hasClass(options, "decimal") then
       content = self.class.packages.inputfilter:transformContent(content, decimalFilter)
     end
@@ -524,7 +555,7 @@ function package:registerCommands ()
     if uri:sub(1,1) == "#" then
       -- local hash link
       local dest = uri:sub(2)
-      if hasLinkContent(content) then
+      if hasSomeContent(content) then
         content = wrapLinkContent(options, content)
         -- HACK. We use the target of a `\label`, knowing it is
         -- internally prefixed by "ref:" in the labelrefs package.
@@ -540,7 +571,7 @@ function package:registerCommands ()
         SILE.call("ref", { marker = dest, type = reftype })
       end
     else
-      if hasLinkContent(content) then
+      if hasSomeContent(content) then
         content = wrapLinkContent(options, content)
         SILE.call("href", { src = uri }, content)
       else
