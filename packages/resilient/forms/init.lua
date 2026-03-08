@@ -471,7 +471,7 @@ end
 -- @tparam table options Field options
 -- @treturn table Field entry (PdfDict dictionary, PdfArray kids, string type, number flags)
 function package:_getParentChoiceField (name, options)
-  -- FIXME if not combo, how to reserve the space?
+  -- FIXME if not combo, how to reserve the space? And evince behaves very weirdly.
   local combo = true and 131072 or 0 -- Bit 18
   -- How to handle multiselect properly? Esp. know the space to reserve?
   -- local multiselect = SU.boolean(options.multiselect, false) and 262144 or 0 -- Bit 19
@@ -480,21 +480,20 @@ function package:_getParentChoiceField (name, options)
   local btype = combo -- + multiselect
   local flags = getFieldFlags(options, btype)
 
-  -- options.choices is a list of space separated choices
+  -- options.choices is a list of space separated choices, possibly containing UTF-8 characters.
   local opts = pl.stringx.split(options.choices, ",")
-  local optsSpec = table.concat(
-    pl.tablex.map(function (v)
-      return string.format("(%s)", assertNameValidity(v))
-    end, opts)
-  )
+  opts = pl.tablex.map(function (v)
+    return string.format("<%s>", SU.utf8_to_utf16be_hexencoded(pl.stringx.strip(v)))
+  end, opts)
+  local optsSpec = table.concat(opts, " ")
 
   -- <<
   --   /FT /Ch                  % Mandatory field type = choice
   --   /T (name)                % Mandatory field name
   --   /Ff 0                    % flags: bit 18 = combo, bit 19 = multi-select, etc. Table 228 (many others)
-  --   /V (...)                 % Current value
-  --   /DV (...)                % Default value (value when form is reset)
-  --   /Opt [(...) (...), ...]  % Array of available option values (e.g., [(Choice1) (Choice2) ...])
+  --   /V <value>               % Current value (UTF-16BE hex encoded)
+  --   /DV <value>              % Default value (value when form is reset, UTF-16BE hex encoded)
+  --   /Opt [<...> <...> ...]   % Array of available option values (UTF-16BE hex encoded)
   --   /Kids [ ... ]            % Mandatory array of widget annotations (references)
   -- >>
   return self:_getFieldDictionary(function ()
@@ -502,8 +501,8 @@ function package:_getParentChoiceField (name, options)
         /FT /Ch
         /T (%s)
         /Ff %d
-        /V (%s)
-        /DV (%s)
+        /V %s
+        /DV %s
         /Opt [ %s ]
       >>]],
       name,
