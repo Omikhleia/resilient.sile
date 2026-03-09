@@ -214,11 +214,25 @@ function CslProcessor:getCslEngine ()
    return self._engine
 end
 
+--- Retrieve the CSL engine used to process names in integral citations.
+-- If the name engine is not set yet, it will initialize it with a default name style
+-- @treturn CslEngine CSL engine instance for names
 function CslProcessor:getCslNameEngine ()
    if not self._nameengine then
       self:setNameStyle("short")
    end
    return self._nameengine
+end
+
+--- Check whether the style is an "in-text" or "note" citation style.
+--
+-- The calling context may need to know this to adapt the citation processing,
+-- e.g. to suppress the author, wrap the citation in a footnote, etc.
+--
+-- @treturn boolean True if the style is a note style, false otherwise
+function CslProcessor:isNoteStyle ()
+   local engine = self:getCslEngine()
+   return engine.style.globalOptions.class == "note"
 end
 
 ---- Set the bibliography style and locale for the CSL engine.
