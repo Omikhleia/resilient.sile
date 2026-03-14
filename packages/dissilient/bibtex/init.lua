@@ -67,6 +67,27 @@ function package:_getCitationKey (options, content)
    return SU.ast.contentToString(content)
 end
 
+--- (Internal) Get the context for a citation.
+
+-- This is used to determine whether the citation is being processed in a note, and whether the
+-- citation style is a note style, which may affect the rendering of the citation.
+function package:_getCitationContext ()
+   return {
+      inNoteStyle = self._processor:isNoteStyle(),
+      -- FIXME HACK.
+      -- Having to deduce whether we are in a note from the typesetter frame is really a poor
+      -- design choice.
+      -- It will work with core SILE book, by chance, with default settings.
+      -- It will work with re·sil·ient for now, by luck too.
+      -- It will severaly break however with any custom settings, or whenever we start handling
+      -- multiple footnote frames, e.g. in a multi-column layout...
+      -- So it is really not a good solution.
+      -- Tapping into "scratch" variables from the footnote package wouldn't be much better,
+      -- and a bad separation of concerns anyway.
+      inNote = SILE.typesetter.frame.id == "footnotes",
+   }
+end
+
 function package:registerCommands ()
    -- Bibliography loading
 
@@ -102,10 +123,33 @@ function package:registerCommands ()
 
    self:registerCommand("cite", function (options, content)
       local key = self:_getCitationKey(options, content)
+      local context = self:_getCitationContext()
+      local isNoteStyle = context.inNoteStyle
+      local isInNote = context.inNote
       options.key = key
       local cite = self._processor:cite(options)
       if cite then
-         SILE.processString(("<sile>%s</sile>"):format(cite), "xml")
+         if isNoteStyle then
+            if not isInNote then
+               -- In note styles, citations in the main text shall be rendered as footnotes:
+               -- perform the implicit wrapping in a footnote.
+               SILE.processString(("<sile><footnote>%s</footnote></sile>"):format(cite), "xml")
+            else
+               -- In note styles, citations in notes are as-is.
+               -- FIXME: Pandoc does this if the citation comes first, but wraps it in parentheses
+               -- it if it comes after some text...
+               -- We'd need to track positions from the input format to do that properly, or at least
+               -- to know whether the citation has preceding siblings in the content.
+               -- Tracking content positions in the SILE AST would be a good idea in general, that's
+               -- also something I often needed in XML processing, and having to walk the parent content
+               -- tree to reconstruct the information is really not ideal.
+               -- It would be quite gory in the current implementation, for an edge case.
+               -- Not bothering for now, but it is a caveat to be aware of when using "note" styles.
+               SILE.processString(("<sile>%s</sile>"):format(cite), "xml")
+            end
+         else
+            SILE.processString(("<sile>%s</sile>"):format(cite), "xml")
+         end
       end
    end, "Produce a single citation.")
 
@@ -113,6 +157,9 @@ function package:registerCommands ()
       if type(content) ~= "table" then
          SU.error("Table content expected in \\cites")
       end
+      local context = self:_getCitationContext()
+      local isNoteStyle = context.inNoteStyle
+      local isInNote = context.inNote
       -- Extract sub-commands
       local children = {}
       for _, child in ipairs(content) do
@@ -132,7 +179,16 @@ function package:registerCommands ()
       end
       local cite = self._processor:cites(children)
       if cite then
-         SILE.processString(("<sile>%s</sile>"):format(cite), "xml")
+         if isNoteStyle then
+            -- As for cite, with same caveats.
+            if not isInNote then
+               SILE.processString(("<sile><footnote>%s</footnote></sile>"):format(cite), "xml")
+            else
+               SILE.processString(("<sile>%s</sile>"):format(cite), "xml")
+            end
+         else
+            SILE.processString(("<sile>%s</sile>"):format(cite), "xml")
+         end
       end
    end, "Produce a group of citations.")
 
@@ -185,20 +241,41 @@ function package:registerCommands ()
 
    self:registerCommand("citeintegral", function (options, content)
       -- Combination of \citeauthor and \cite:
-      -- equivalent to \citeauthor[key=mykey] \cite[author=false, key=mykey, ...]
+      -- More or less equivalent to \citeauthor[key=mykey] \cite[author=false, key=mykey, ...]
+      -- (with conditions on author suppression however depending on the context, see below)
       -- Example use:
       --   \citeintegral[key=mykey] argues...
+      local context = self:_getCitationContext()
+      local isNoteStyle = context.inNoteStyle
+      local isInNote = context.inNote
       local key = self:_getCitationKey(options, content)
-      local author = self._processor:citeauthor(key)
-      if not author then
-         SU.error("No author found for entry with key " .. key)
-         return
-      end
       options.key = key
-      options.author = false
+
+      -- Author-suppression (author=false) depends on the context and the citation style.
+      -- Non-note style: author suppressed.
+      -- Note style in main text: author included in the note.
+      -- Note style in note: author suppressed since we are already in a note.
+      options.author = isNoteStyle and not isInNote
+
       local cite = self._processor:cite(options)
       if cite then
-         SILE.processString(("<sile>%s %s</sile>"):format(author, cite), "xml")
+         local author = self._processor:citeauthor(key)
+         if not author then
+            SU.error("No author found for entry with key " .. key)
+            return
+         end
+         if isNoteStyle then
+            if not isInNote then
+               -- in sentence, in main text, e.g. "Doe¹ argues that..."
+               SILE.processString(("<sile>%s<footnote>%s</footnote></sile>"):format(author, cite), "xml")
+            else
+               -- in sentence, in note, e.g. "Doe ("title of the work"...) argues that..."
+               SILE.processString(("<sile>%s (%s)</sile>"):format(author, cite), "xml")
+            end
+         else
+            -- in sentence, e.g. "Doe (1982) argues that..." (wether in main text or in note)
+            SILE.processString(("<sile>%s %s</sile>"):format(author, cite), "xml")
+         end
       end
    end, "Produce an integral citation")
 
@@ -351,7 +428,8 @@ For instance, \autodoc:command{\cite[author=false]{<key>}} may produce something
 
 The \autodoc:command{\citeauthor{<key>}} command produces only the name of the author(s) of the cited work.
 
-Combining author suppression and the previous command, the \autodoc:command{\citeintegral{<key>}} command is a convenience wrapper for producing an integral citation, as in “Jones (1982) argues that…”
+The \autodoc:command{\citeintegral{<key>}} command produces an integral citation, as in “Jones (1982) argues that…”
+It combines the author and a regular citation, with author suppression depending on the context and the citation style.
 
 To mark an entry as cited without actually producing a citation, use \autodoc:command{\nocite{<key>}}.
 This is useful when you want to include an entry in the bibliography without citing it in the text.

@@ -35,7 +35,7 @@ The Djot attribute syntax is extended with conditionals on symbols.
 For the reminder, in standard Djot, a symbol is entered in the text flow using the syntax `:symbol:`.
 
 Initially, it was intended for emojis, but the specification now leaves it open to other uses.
-We will have more to say about that later, for now let's just assume that some symbols may be available in your document context...
+We will have more to say about that later, for now let's just assume that some symbols may be available in your document context…
 
 Conditionals allow to render content depending on whether a symbol is defined or not.
 
@@ -178,6 +178,8 @@ In _re·sil·ient,_ locators must match CSL locator types, or some usual abbrevi
 How the bibliography references are provided to the document, and how the citations are rendered, is outside the scope of this specification.
 In _re·sil·ient,_ there are ways to declare bibliography files (e.g. in BibLaTeX-like format), and rendering rules (i.e. according to a given Citation Style Language CSL style), but these are implementation details not covered here. For details, refer to _The re·sil·ient collection of classes & packages for SILE — User Guide._
 
+##### Citation syntax
+
 Here are some examples of valid citation syntax, with the rendered output in Chicago author-date style.
 
 | Citation syntax                        | Rendered                                                  |
@@ -189,11 +191,11 @@ Here are some examples of valid citation syntax, with the rendered output in Chi
 
 But a few other features are available, via modifiers before the `@` sign.
 
-| Description         | Example       | Rendered output (Chicago author-date style)                  |
-| ------------------- | ------------- | ------------------------------------------------------------ |
-| No-cite             | `[!@doe2020]` | _Bibliography only_                                          |
-| Author suppression  | `[-@doe2020]` | Citation with author suppressed (2020)                       |
-| Integral citation   | `[+@doe2020]` | Integral citation: Doe (2020) argued...                      |
+| Description         | Example                 | Rendered output (Chicago author-date style)        |
+| ------------------- | ----------------------- | -------------------------------------------------- |
+| No-cite             | `[!@doe2020]`           | _Bibliography only_                                |
+| Author suppression  | `[-@doe2020]`           | (2020)                                             |
+| Integral citation   | `[+@doe2020]` argued... | Doe (2020) argued…                                 |
 
 The "no-cite" syntax is useful to include works in the bibliography _as if they were cited,_ but without actually rendering a citation in the text flow.
 Obviously, content around the citation element is rendered as usual, so be aware that spaces etc. may need to be adjusted accordingly.
@@ -202,18 +204,48 @@ The "author suppression" syntax is useful to suppress the author part of a citat
 Obviously, with styles with a different citation format (e.g. numeric), author suppression may not make much sense, but the syntax is still accepted and processed, even if it doesn't have any visible effect in that case.
 
 The "integral citation" (a.k.a. "narrative") syntax is useful to integrate the citation, but let the engine format the author name, in a sentence flow.
-For instance "`[+@doe2020] argues that...`" may render as "Doe (2020) argues that..." in Chicago author-date style,
+For instance "`[+@doe2020] argues that...`" may render as "Doe (2020) argues that…" in Chicago author-date style,
 or as "Doe [1] argues that..." in a numeric style.
 Wait a minute, you may say, how is the name supposed to be formatted in the sentence flow, in a consistent form with how such things should appear there, independently from the citation style being used?
 
 After all, some styles may use numeric citations, and one cannot trust either the bibliography format, which may capitalize names or do other things to them.
-One wouldn't want to have "DOE, John (2020) argues that..." in the text, just because the bibliography entry is in uppercase, right?
+One wouldn't want to have "DOE, John (2020) argues that…" in the text, just because the bibliography entry is in uppercase, right?
 Moreover, in bibliographies, some name particles can be "demoted" (for sort or display), multiple authors can be collapsed into "et al.", substitutions might be used... and so on. So the name formatting from either the bibliography or the in-text citation is not convenient for use in a sentence, really!
 
 In _re·sil·ient,_ the formatting of names in integral citations is handled via a dedicated CSL-like style subset.
 It can be customized separately, so the user can define how the author name is supposed to be formatted in the sentence flow, and how to handle multiple authors, name particles, etc. without depending on the main bibliography style, while at the same time benefiting from the CSL localization and other features.
-So it is for instance possible to consistently obtain "Jan de Vries (1961)..." or "Jan de Vries [1]..." in the text (here, with the first name, particle and last name all appearing in the text flow in a regular order).
+So it is for instance possible to consistently obtain "Jan de Vries (1961)…" or "Jan de Vries [1]…" in the text (here, with the first name, particle and last name all appearing in the text flow in a regular order).
 But for that reason too (at least for now, to keep things simple) in _re·sil·ient,_ the integral citation syntax is only supported with one citation item at a time, not mixed with any other citation forms in a grouped citation element.
+
+##### In-text vs. note citations
+
+In some citation styles, references appear in the text (in numeric or author-date style), while in others they appear as footnotes.
+The syntax is the same for both, but how they are rendered depends on the chosen style.
+
+For in-text citation styles, you should place the citation where you want it to appear within the sentence.
+
+| In-text citation                             | Rendered                                            |
+| -------------------------------------------- | --------------------------------------------------- |
+| `Some text [@doe2020].`                      | Some text (Doe 2020).                               |
+| `[+@doe2020] argues that...`                 | Doe (2020) argues that…                             |
+
+For note-based styles, the engine will automatically wrap citations in footnotes when required.
+In the main text, you should therefore place the citation where a footnote call is expected.
+In English, footnotes are typically placed at the end of a clause, after the punctuation.
+In other languages, authors should follow the appropriate typographic conventions.
+
+| Note citation in main text                   | Rendered                                            |
+| -------------------------------------------- | --------------------------------------------------- |
+| `Some text.[@doe2020] `                      | Some text.ⁿ                                         |
+| `[+@doe2020] argues that...`                 | Doeⁿ argues that…                                   |
+
+However, if you place a citation _inside_ a footnote, it will be rendered in-text, since nested footnotes are not allowed.
+
+| Note citation in footnote                    | Rendered                                            |
+|:---------------------------------------------|:----------------------------------------------------|
+| `[@doe2020].`                                | Doe, J. "An interesting article," 2020.             |
+| `[+@doe2020] argues that...`                 | Doe ("An interesting article," 2020) argues that…   |
+
 
 ### Block element syntax extensions
 
@@ -381,7 +413,7 @@ While Djot improves on Markdown in several ways (incl. generalized attributes on
 
 ### Empty internal links as cross-references
 
-In standard Djot, an empty internal link syntax, such as `[](#some-id)`, is not forbidden, and may even generate something in the rendered output... but without text, it's not very useful!
+In standard Djot, an empty internal link syntax, such as `[](#some-id)`, is not forbidden, and may even generate something in the rendered output… but without text, it's not very useful!
 
 In _re·sil·ient,_ empty internal links are interpreted as cross-references to the target element with the specified identifier, and replaced by the closest applicable numbering of that element.
 
@@ -519,7 +551,7 @@ But one at least is worth mentioning here for its practical usefulness.
 Small caps are often used in book authoring.
 Using a custom-style construct is possible, and the _re·sil·ient_ styling paradigm allows to define such styles, but having a dedicated syntax makes it easier and clearer to use: `[text]{.smallcaps}`.
 
-One could expect Djot to eventually specify a shortcut syntax for small caps... But as of now, no consensus has emerged on what that syntax should be (and it's not easy to think of anything that would remain intuitive).
+One could expect Djot to eventually specify a shortcut syntax for small caps… But as of now, no consensus has emerged on what that syntax should be (and it's not easy to think of anything that would remain intuitive).
 
 ### Language attribute & smart quotes
 
@@ -532,15 +564,15 @@ For most languages, paired `"` and `'` are interpreted as mapping to the primary
 
 For instance, take `"..."` and `'...'`:
 
-- In US English, they become “...” and ‘...’
-- In German, they become „...“ and ‚...‘
-- In French (France), « ... » (with appropriate non-breaking spaces) and “...”
-- In Russian, «...» and „...“
+- In US English, they become “…” and ‘…’
+- In German, they become „…“ and ‚…‘
+- In French (France), « … » (with appropriate non-breaking spaces) and “…”
+- In Russian, «…» and „…“
 - And so on for other (supported) languages.
 
 Note that some languages use them the other way round for primary and secondary quotation marks.
-UK English, Scottish Gaelic etc. use ‘...’ and “...” as primary and secondary quotation marks, respectively.
-In that case, the user's input is respected, so that `"..."` and `'...'` still become and “...” and ‘...’.
+UK English, Scottish Gaelic etc. use ‘…’ and “…” as primary and secondary quotation marks, respectively.
+In that case, the user's input is respected, so that `"..."` and `'...'` still become and “…” and ‘…’.
 In other words, paired `"` and `'` are replaced by the primary and secondary quotation marks for most languages, or by the secondary and primary quotation marks for languages where that is the convention.
 
 Also note that some languages (as French and Russian in the examples above) use _double_ marks for secondary quotations.
