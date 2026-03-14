@@ -24,6 +24,8 @@ In _re·sil·ient,_ locators must match CSL locator types, or some usual abbrevi
 How the bibliography references are provided to the document, and how the citations are rendered, is outside the scope of this manual.
 In _re·sil·ient,_ there are ways to declare bibliography files (e.g. in BibLaTeX-like format), and rendering rules (i.e. according to a given Citation Style Language (CSL) style). For details, refer to _The re·sil·ient collection of classes & packages for SILE — User Guide._
 
+### Citation syntax
+
 Here are some examples of valid citation syntax, with the rendered output in Chicago author-date style.
 
 | Citation syntax                        | Rendered                                                  |
@@ -36,11 +38,11 @@ Here are some examples of valid citation syntax, with the rendered output in Chi
 
 A few other features are available, via modifiers before the `@` sign.
 
-| Description         | Example       | Rendered                                                     |
-|:--------------------|:--------------|:-------------------------------------------------------------|
-| No-cite             | `[!@sile]`    | _Bibliography only._                                         |
-| Author suppression  | `[-@sile]`    | Citation with author suppressed [-@sile].                    |
-| Integral citation   | `[+@sile]`    | Integral citation: [+@sile] argued...                        |
+| Description         | Example                | Rendered                                            |
+|:--------------------|:-----------------------|:----------------------------------------------------|
+| No-cite             | `[!@sile]`             | _Bibliography only._                                |
+| Author suppression  | `[-@sile]`             | [-@sile].                                           |
+| Integral citation   | `[+@sile]` argued...   | [+@sile] argued...                                  |
 ^ Extended citation syntax.
 
 The "no-cite" syntax is useful to include works in the bibliography _as if they were cited._
@@ -62,3 +64,38 @@ In _re·sil·ient,_ the formatting of names in integral citations is handled via
 It can be customized separately, so the user can define how the author name is supposed to be formatted in the sentence flow, and how to handle multiple authors, name particles, etc. without depending on the main bibliography style, while at the same time benefiting from the CSL localization and other features.
 So it is for instance possible to consistently obtain "Jan de Vries (1961)..." or "Jan de Vries [1]..." in the text (here, with the first name, particle and last name all appearing in the text flow in a regular order).
 But for that reason too (at least for now, to keep things simple) in _re·sil·ient,_ the integral citation syntax is only supported with one citation item at a time, not mixed with any other citation forms in a grouped citation element.
+
+### In-text vs. note citations
+
+In some citation styles, references appear in the text (in numeric or author-date style), while in others they appear as footnotes.
+The syntax is the same for both, but how they are rendered depends on the chosen style.
+
+For in-text citation styles, you should place the citation where you want it to appear within the sentence.
+
+| In-text citation                             | Rendered                                            |
+|:---------------------------------------------|:----------------------------------------------------|
+| `Some text [@doe2020].`                      | Some text (Doe 2020).                               |
+| `[+@doe2020] argues that...`                 | Doe (2020) argues that...                           |
+^ Citations with in-text styles.
+
+^ (Whether in the main text or in a footnote.)
+
+For note-based styles, the engine will automatically wrap citations in footnotes when required.
+In the main text, you should therefore place the citation where a footnote call is expected.[^citation-placement]
+
+| Note citation in main text                   | Rendered                                            |
+|:---------------------------------------------|:----------------------------------------------------|
+| `Some text.[@doe2020] `                      | Some text.^n^                                       |
+| `[+@doe2020] argues that...`                 | Doe^n^ argues that...                               |
+^ Citations with note-based styles, in main text.
+
+However, if you place a citation _inside_ a footnote, it will be rendered in-text, since nested footnotes are not allowed.
+
+| Note citation in footnote                    | Rendered                                            |
+|:---------------------------------------------|:----------------------------------------------------|
+| `[@doe2020].`                                | Doe{.smallcaps}, J. "An interesting article," 2020. |
+| `[+@doe2020] argues that...`                 | Doe ("An interesting article," 2020) argues that... |
+^ Citations with note-based styles, in footnotes
+
+[^citation-placement]: In English, footnotes are typically placed at the end of a clause, after the punctuation.
+In other languages, authors should follow the appropriate typographic conventions.
