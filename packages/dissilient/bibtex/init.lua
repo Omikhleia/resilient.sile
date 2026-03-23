@@ -444,7 +444,7 @@ After printing the bibliography, the list of cited entries will be cleared. This
 If you want to include all entries in the bibliography, not just those that have been cited, set the option \autodoc:parameter{cited} to false.
 
 In that case, the \autodoc:parameter{filter} option can be used to filter the entries to be included in the bibliography.
-It accepts list of space-separated filters, such as \code{type-book} or \code{not-type-book}, or \code{keyword-foo} or \code{not-keyword-foo}, \code{issued-2020} or \code{issued-2023-2025}.
+It accepts list of space-separated filters, such as \code{type-book} or \code{not-type-book}, or \code{keyword-foo} or \code{not-keyword-foo}, \code{issued-2020} or \code{issued-2023-2025}, \code{language-en} or \code{not-language-fr}.
 
 You can also use the \autodoc:parameter{related=true} option to include related entries in a smaller section after a main entry.
 The may be useful when, for reviews of a work, which you may find interesting to have directly after the main entry for that work.
