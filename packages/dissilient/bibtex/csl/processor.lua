@@ -72,9 +72,11 @@ end
 local OP = {
    EQ = 0,
    IN = 1,
+   STARTS_WITH = 2,
 }
 
 local CSLVAR = {
+   language = OP.STARTS_WITH,
    ["type"] = OP.EQ,
    keyword = OP.IN,
 }
@@ -86,6 +88,8 @@ local function isMatching (entry, var, val)
       return entry[var] == val
    elseif CSLVAR[var] == OP.IN then
       return entry[var]:contains(val)
+   elseif CSLVAR[var] == OP.STARTS_WITH then
+      return entry[var]:match("^" .. val)
    end
    SU.error("Unsupported CSL variable " .. var .. " in filter")
 end
@@ -563,6 +567,8 @@ end
 --  - `not-type-x`: entries that are not of the given type
 --  - `keyword-x`: entries that have the given keyword
 --  - `not-keyword-x`: entries that do not have the given keyword
+--  - `language-xx`: entries whose language code starts with x (e.g. "en" for English entries)
+--  - `not-language-xx`: entries whose language code does not start with x
 --
 -- @tparam {cited=boolean,filter=string,related=boolean} options Options for the bibliography
 -- @treturn string Formatted bibliography string

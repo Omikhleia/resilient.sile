@@ -68,6 +68,17 @@ local BIBTEX2CSL_TYPES = {
    video = "motion_picture", -- (2)
 }
 
+-- CSL wants an ISO 639-1 two-letter language code (optionally with a two-letter locale code)
+-- BibLaTeX uses identifiers, see Table 2 (a totally insane list...)
+local BIBTEX2CSL_LANGUAGES = {
+   english = "en",
+   french = "fr",
+   german = "de",
+   spanish = "es",
+   italian = "it",
+   -- FIXME: There are many more.
+}
+
 local function toDate (year, month)
    if not month and not year then
       return nil
@@ -210,7 +221,6 @@ local function bib2csl (entry)
    csl.abstract = bibtex.abstract
    csl.annote = bibtex.annote
    csl.keyword = bibtex.keywords
-   -- csl.language = entry.language -- FIXME language/langid weirdness
    csl.note = bibtex.note
    csl.status = bibtex.status
    csl.ISSN = bibtex.issn
@@ -218,6 +228,17 @@ local function bib2csl (entry)
    csl.DOI = bibtex.doi
    csl.URL = bibtex.url
 
+   -- Language in BibLaTeX is either in the language field or in the langid field.
+   -- They have (slightly) different semantics, quite confusingly.
+   -- CSL language is "the language in which the item is written"
+   -- We assume that the BibLaTeX language field is more appropriate for this...
+   if bibtex.language then
+      csl.language = BIBTEX2CSL_LANGUAGES[bibtex.language:lower()]
+      if not csl.language then
+         SU.warn(("No CSL language mapping for BibTeX language '%s', using 'en'"):format(bibtex.language))
+         csl.language = "en"
+      end
+   end
    -- Pages
    csl.page = bibtex.pages
 
