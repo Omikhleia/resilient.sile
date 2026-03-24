@@ -430,7 +430,7 @@ function inputter:parse (doc)
   end
 
   -- Document wrap-up
-  local options = sile.options or {}
+  local options = sile.options or { class = "resilient.book" }
   local classopts = isRoot and {
       class = options.class,
       papersize = options.papersize,

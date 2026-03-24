@@ -763,6 +763,7 @@ function class:registerCommands ()
     -- Always start on an odd page, so as to be consistent with the folio numbering
     -- in case it is reset.
     SILE.call("open-on-odd-page")
+    local previous = self.resilientState.division
     self.resilientState.division = division
     -- Previous section titles (in technical mode) or chapter title (in novel mode)
     -- is no longer valid (and in none mode, it's not valid anyway).
@@ -779,7 +780,14 @@ function class:registerCommands ()
     local folioSty = self:resolveStyle("folio-" .. DIVISIONNAME[division])
     local display = folioSty.numbering and folioSty.numbering.display or "arabic"
     if current.display ~= display then
-      SILE.call("set-counter", { id = "folio", display = display, value = 1 })
+      -- Normally, pages preceding the first division should not have a folio
+      -- (e.g. cover, title page, etc.) but count in the numbering.
+      -- So in that case, we do not reset the counter, but just change the
+      -- numbering display.
+      -- That will work with resilient master documents, and we aren't going
+      -- to do anything smarter for users not using a master document, but
+      -- having a few numbered pages before the first division...
+      SILE.call("set-counter", { id = "folio", display = display, value = previous and 1 or nil })
     end
   end)
 
