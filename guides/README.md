@@ -23,7 +23,7 @@ You need to have the following tools installed and configured on your system.
 
 You are on your own checking that you have the right versions of the dependencies and a proper working installation.
 
- - [**SILE**](https://github.com/sile-typesetter/sile) 0.15.**12** or 0.15.**13**.
+ - [**SILE**](https://github.com/sile-typesetter/sile)
 
    See installation instructions on the SILE website.
 
@@ -48,7 +48,7 @@ You are on your own checking that you have the right versions of the dependencie
    luarocks install resilient.sile
    ```
 
-   Be sure to upgrade to the latest version (_minimaly_ to **3.1.0**).
+   Be sure to upgrade to the latest version.
 
  - Several fonts: Libertinus, EB Garamond, Zallman Caps, Lato, Hack, Symbola.
 
@@ -76,7 +76,7 @@ alias resilient='docker run -it --rm --volume "$(pwd):/data" --user "$(id -u):$(
 
 Where `silex` is the name of the Docker image you built. Adjust the command if you used a different name for the image.
 
-## Building the User Guide
+## Building the User Guides
 
 All commands below are assumed to be run from the root of the repository.
 
@@ -86,7 +86,7 @@ First, build the "resume" sample, which is included as PDF in the User Guide.
 resilient guides/resilient/resume-sample.sil
 ```
 
-It should generate a 2-page PDF file named `guides/resilient/resume-sample.pdf`.
+It generates a 2-page PDF file named `guides/resilient/resume-sample.pdf`.
 
 Next, build the "The re·sil·ient collection of classes & packages for SILE" user guide itself.
 

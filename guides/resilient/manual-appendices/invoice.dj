@@ -1,0 +1,34 @@
+# Making Factur-X/ZUGFeRD invoices
+
+The _re·sil·ient_ collection is not limited to book production.
+It also includes components for generating invoices from a YAML source file, with embedded Factur-X XML and other attachments in the PDF.
+
+Factur-X 1.07.2 (also known as ZUGFeRD 2.3.2 in Germany) is one of the most widely used standards for electronic invoicing in Europe.
+In September 2026, the European Union will make electronic invoicing mandatory between businesses and public administrations, based on the EN 16931 standard, of which Factur-X/ZUGFeRD is an implementation.
+
+Factur-X invoices are hybrid documents, meaning they combine a human-readable PDF representation with a machine-readable XML representation of the invoice data, embedded in the PDF as an attachment.
+This allows for both easy human consumption and automated processing by accounting software, ensuring interoperability across different systems.
+The SILE typesetting system has some support for reading and processing XML files, but authoring an invoice directly in Factur-X XML format is not user-friendly, and error-prone.
+
+Therefore, this collection defines the invoice data in a simple YAML file, which is more human-friendly.
+It is capable of producing a PDF invoice directly from this YAML source file, with embedded Factur-X XML, and other attachments, such as the original YAML source file, and the seller and/or buyer logo image(s).
+
+We are not going to detail the YAML structure here, but you can find an example invoice YAML file, fully commented, in the _re·sil·ient_ repository.
+It should be quite self-explanatory, and you can easily adapt it to your own needs.
+
+When generating the invoice PDF from the YAML source file, besides the nicely formatted output, the PDF will also include several embedded files as attachments:
+
+  - a Factur-X XML file,
+  - the original YAML source file,
+  - (if declared in the invoice) the seller and/or buyer logo image(s),
+  - (if existing or after a re-run) the style file used for the invoice generation.
+
+The inclusion of the YAML source file and the seller logo image means than whenever you receive this invoice PDF, you can extract the original data and re-generate the invoice if needed.
+This is a great way to ensure long-term accessibility of your invoices.
+With such a self-contained PDF invoice, you have the best of three worlds:
+
+ - A human-readable and nicely formatted PDF invoice,
+ - A machine-readable Factur-X XML file for automated processing by accounting software supporting this standard,
+ - The original source files for any future needs.
+
+![A sample invoice.](images/invoice-preview.png){width="60%"}

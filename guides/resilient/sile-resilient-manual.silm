@@ -104,5 +104,6 @@ content:
       - file: manual-parts/part-appendices.dj
         appendices:
           - manual-appendices/biblio.dj
+          - manual-appendices/invoice.dj
           - manual-appendices/resume-class.dj
           - manual-appendices/fancytoc.dj
