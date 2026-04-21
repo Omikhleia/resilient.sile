@@ -123,9 +123,10 @@ local function compatibilityHackV42 (style)
   -- Transitional compatibility adapter for alignments (block, quotation, poetry)
   -- Removed in v4.2, but keeping compatibility.
   -- Note the bad separation of concerns:
-  --  - block, quotation are declared in the resilient.book class and based on a book.blockquote.margin setting
-  --  - poetry is declared in the resilient.poetry package and based on a poetry.margin setting
-  --  - noparindent is declared in the resilient.bookmatters package.
+  --  - block, quotation were declared in the resilient.book class and based on a book.blockquote.margin setting
+  --  - poetry was declared in the resilient.poetry package and based on a poetry.margin setting
+  --  - noparindent was declared in the resilient.bookmatters package.
+  --  - obeylines was declared in the resilient.verbatim package.
   -- We are not querying those settings here, but just applying their defaults.
   if style.paragraph and style.paragraph.align then
     if style.paragraph.align == "block" then
@@ -155,6 +156,14 @@ local function compatibilityHackV42 (style)
       style.paragraph.indent = false
       SILE.scratch.styles.needCompatibility = true
     end
+  end
+  -- Transitional compatibility adapter for sectioning "open" pagestyle
+  -- Also a bad separation of concerns, the support is from the resilient.sectioning package.
+  if style.sectioning and style.sectioning.settings and style.sectioning.settings.open then
+    style.sectioning.pagestyle = style.sectioning.pagestyle or {}
+    style.sectioning.pagestyle.open = style.sectioning.settings.open
+    style.sectioning.settings.open = nil
+    SILE.scratch.styles.needCompatibility = true
   end
 end
 
@@ -226,8 +235,8 @@ function package.writeStyles () -- NOTE: Not called as a package method (invoked
   local styfile, err = io.open(fname, "w")
   if not styfile then return SU.error(err) end
   styfile:write([[
-# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
-# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v4.2.0/schemas/stylefile.json
+# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v4.2.0/schemas/stylefile.json
 ]])
   styfile:write(stydata)
   styfile:close()

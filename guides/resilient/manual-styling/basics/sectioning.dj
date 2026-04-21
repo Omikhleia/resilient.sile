@@ -23,6 +23,7 @@ With these first assumptions in mind, let’s summarize the requirements:
  - Sections going into a table of contents may as well possibly go in the PDF bookmarks
    (outline).
  - Sections may trigger a page break and may even need to open on an odd page.
+   When they do, a background color or image can be set for the page they start on.
  - Sections, especially those who do not cause a (forced) page break, may recommmend
    allowing a page break before them (so usual that it should default to true).
  - Sections can be interdependent, in the sense that some of them may reset the counters
@@ -53,8 +54,12 @@ Here is, therefore, the style specification.
       settings:
         toclevel: ⟨integer⟩
         bookmark: true|false
-        open: "unset|any|odd"
         goodbreak: true|false
+      pagestyle:
+        open: "unset|any|odd"
+        background:
+          color: "⟨color specification⟩"
+          image: "⟨string⟩" | ⟨image specification⟩
       numberstyle:
         main: "⟨number style name⟩"
         header: "⟨number style name⟩"
@@ -65,7 +70,30 @@ Here is, therefore, the style specification.
 That’s a lot of fields. However, many have default values and the simple
 inheritance mechanism provided by the styles also allows one to reuse existing
 base specifications. In this author’s opinion, it is quite flexible and clear.
-The two last options, however, may require a clarification.
+The three last options, however, may require a clarification.
+
+The `pagestyle` specification defines the page break behavior of the section, and the background to be applied to the page it starts on, if any.
+If the `open` property is set to "any" or "odd", the section will cause a page break.
+In that case, the `background` specification will be applied to the new page it starts on.
+It can consist in a color, an image, or both.
+The color will be applied as a background color to the page, while the image will be placed on top of it, with the specified scaling and anchoring.
+
+The image, when set, can be specified as a simple string, in which case it will be used as is, scaled and anchored to the center of the page.
+Alternatively, it can be specified with more options, as follows:
+
+```yaml
+image:
+  src: "⟨string⟩"
+  scale: true|false
+  preserve-aspect: false|true
+  anchor: "center|n|e|e|se|s|sw|w|nw"
+  page: ⟨integer⟩
+```
+
+It can also be anchored to a specific position on the page.
+If the image is a multi-page document, the `page` property can be used to specify which page to use (default is 1).
+New pages are typically used with parts and chapters.
+The background specification is then a nice way to set some visual distinction for these sections.
 
 The `numberstyle` specification defines which number style should be used for the section number, depending on the context where it appears (main text flow, running headers and cross-references).[^toc-numbering-incertain]
 Note that if a given context is absent, the section number will not be displayed.
