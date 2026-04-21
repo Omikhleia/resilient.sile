@@ -21,6 +21,7 @@ package._name = "resilient.sectioning"
 function package:_init (options)
   base._init(self, options)
   self:loadPackage("counters")
+  self:loadPackage("background")
 end
 
 local function hasContentInCurrentPage()
@@ -56,6 +57,26 @@ local function nameIfNotNull (name)
   SU.error("Invalid style name, expected a string or YAML null")
 end
 
+local function pageBackgroundOptions (options)
+  local pageOpts = {
+    allpages = false,
+    color = options.color,
+  }
+  local imageOpts = options.image
+  if imageOpts then
+    if type(imageOpts) == "table" then
+      pageOpts.src = imageOpts.src and tostring(imageOpts.src) or nil
+      pageOpts.scale = SU.boolean(imageOpts.scale, true)
+      pageOpts.preserveaspect = SU.boolean(imageOpts["preserve-aspect"], false)
+      pageOpts.page = imageOpts.page and SU.cast("integer", imageOpts.page) or nil
+      pageOpts.anchor = imageOpts.anchor
+    else
+      pageOpts.src = tostring(imageOpts)
+    end
+  end
+  return pageOpts
+end
+
 --- (Override) Register all commands provided by this package.
 function package:registerCommands ()
 
@@ -68,13 +89,25 @@ function package:registerCommands ()
         or SU.error("Sectioning style '"..name.."' must have a counter")
       styledef.sectioning.counter.level = styledef.sectioning.counter.level or 1
 
+      -- Apply pagestyle defaults
+      styledef.sectioning.pagestyle = styledef.sectioning.pagestyle or {}
+
       -- Apply settings defaults
       styledef.sectioning.settings = styledef.sectioning.settings or {}
-      -- styledef.sectioning.settings.open: if nil = do not open a page
       styledef.sectioning.settings.toclevel = styledef.sectioning.settings.toclevel
         and SU.cast("integer", styledef.sectioning.settings.toclevel)
       styledef.sectioning.settings.goodbreak = SU.boolean(styledef.sectioning.settings.goodbreak, true)
       styledef.sectioning.settings.bookmark = SU.boolean(styledef.sectioning.settings.bookmark, true)
+      -- Compatibility between style v2.8 and v4.2
+      if styledef.sectioning.settings.open then
+        SU.warn("Style '" .. name .. "' is using legacy sectioning.settings.open field, please migrate to sectioning.pagestyle.open")
+        styledef.sectioning.pagestyle = styledef.sectioning.pagestyle or {}
+        if styledef.sectioning.pagestyle.open then
+          SU.warn("Style '" .. name .. "' has both legacy sectioning.settings.open and newer sectioning.pagestyle.open field")
+        end
+        styledef.sectioning.pagestyle.open = styledef.sectioning.settings.open
+        styledef.sectioning.settings.open = nil
+      end
 
       -- Apply numberstyle defaults
       styledef.sectioning.numberstyle = styledef.sectioning.numberstyle or {}
@@ -99,9 +132,9 @@ function package:registerCommands ()
 
     -- Handle the page-break: opening page: "unset", "odd" or "any"
     -- (Would "even" be useful? I do not think is has any actual use)
-    if secStyle.settings.open and secStyle.settings.open ~= "unset" then
+    if secStyle.pagestyle.open and secStyle.pagestyle.open ~= "unset" then
       -- Sectioning style that causes a page-break.
-      if secStyle.settings.open == "odd" then
+      if secStyle.pagestyle.open == "odd" then
         SILE.call("open-on-odd-page")
       else -- Case: any
         SILE.call("open-on-any-page")
@@ -111,6 +144,14 @@ function package:registerCommands ()
         -- the page. Introduces a line, though. I haven't found how to avoid
         -- it :(
         SILE.typesetter:initline()
+      end
+      if secStyle.pagestyle and secStyle.pagestyle.background then
+        local opts = pageBackgroundOptions(secStyle.pagestyle.background)
+        if not(opts.color or opts.src) then
+          SU.warn("Sectioning style '" .. name .. "' has a pagestyle background without color or image source")
+        else
+          SILE.call("background", opts)
+        end
       end
     end
     -- N.B. for sectioning style that doesn't cause a forced page-break,

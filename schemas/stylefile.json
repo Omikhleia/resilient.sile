@@ -119,6 +119,10 @@
                     }
                   }
                 },
+                "pagestyle": {
+                  "description": "Page style properties for the sectioning style",
+                  "$ref": "#/$defs/PageStyleProperties"
+                },
                 "settings": {
                   "description": "Settings for the sectioning style",
                   "type": "object",
@@ -131,15 +135,6 @@
                     "bookmark": {
                       "description": "Whether to create a bookmark",
                       "type": "boolean"
-                    },
-                    "open": {
-                      "description": "Whether to start on an odd page, on any page, or unset",
-                      "type": "string",
-                      "enum": [
-                        "unset",
-                        "any",
-                        "odd"
-                      ]
                     },
                     "goodbreak": {
                       "description": "Whether a good break is considered good",
@@ -381,6 +376,81 @@
         "lines": {
           "description": "Number of drop cap lines",
           "type": "integer"
+        }
+      }
+    },
+    "PageBackgroundProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "description": "Background color of the page",
+          "$ref": "#/$defs/ColorSpecification"
+        },
+        "image": {
+          "oneOf": [
+            {
+              "description": "Background image of the page (file name)",
+              "type": "string"
+            },
+            {
+              "description": "Background image of the page (with options)",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "src": {
+                  "description": "Source of the background image",
+                  "type": "string"
+                },
+                "scale": {
+                  "description": "Whether to scale the background image to fit the page",
+                  "type": "boolean"
+                },
+                "preserve-aspect": {
+                  "description": "Whether to preserve the aspect ratio of the background image when scaling",
+                  "type": "boolean"
+                },
+                "anchor": {
+                  "description": "Anchor point for the background image (default: center)",
+                  "type": "string",
+                  "enum": [
+                    "center",
+                    "n",
+                    "ne",
+                    "e",
+                    "se",
+                    "s",
+                    "sw",
+                    "w",
+                    "nw"
+                  ]
+                },
+                "page": {
+                  "description": "page to use as background (default: 1) if the background image is a multi-page image (e.g. a PDF)",
+                  "type": "integer"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "PageStyleProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "open": {
+          "description": "Whether to start on an odd page, on any page, or unset",
+          "type": "string",
+          "enum": [
+            "unset",
+            "any",
+            "odd"
+          ]
+        },
+        "background": {
+          "description": "Page background properties (when open is not 'unset')",
+          "$ref": "#/$defs/PageBackgroundProperties"
         }
       }
     },
