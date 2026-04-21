@@ -336,9 +336,11 @@ function class:registerStyles ()
                   align = "center",
                   after = { skip = "bigskip" } },
     sectioning = {  counter = { id ="parts", level = 1 },
+                    pagestyle = {
+                      open = "odd"
+                    },
                     settings = {
                       toclevel = 0,
-                      open = "odd"
                     },
                     numberstyle= {
                       main = "sectioning-part-main-number",
@@ -352,9 +354,11 @@ function class:registerStyles ()
     paragraph = {  align = "left",
                    after = { skip = "bigskip" } },
     sectioning = { counter = { id = "sections", level = 1 },
+                    pagestyle = {
+                      open = "odd",
+                    },
                     settings = {
                       toclevel = 1,
-                      open = "odd"
                     },
                     numberstyle= {
                       main = "sectioning-chapter-main-number",

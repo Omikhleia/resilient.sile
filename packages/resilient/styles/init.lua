@@ -150,8 +150,8 @@ function package.writeStyles () -- NOTE: Not called as a package method (invoked
   local styfile, err = io.open(fname, "w")
   if not styfile then return SU.error(err) end
   styfile:write([[
-# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
-# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v4.2.0/schemas/stylefile.json
+# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v4.2.0/schemas/stylefile.json
 ]])
   styfile:write(stydata)
   styfile:close()
