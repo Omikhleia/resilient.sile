@@ -214,8 +214,26 @@
       "additionalProperties": false,
       "properties": {
         "enabled": {
-          "description": "Whether the book matters and covers are enabled by default",
-          "type": "boolean"
+          "oneOf": [
+            {
+              "type": "boolean",
+              "description": "Whether the book matters and covers are enabled by default"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cover": {
+                  "description": "Whether the covers are enabled by default",
+                  "type": "boolean"
+                },
+                "bookmatter": {
+                  "description": "Whether the book matters are enabled by default",
+                  "type": "boolean"
+                }
+              }
+            }
+          ]
         },
         "cover": {
           "description": "The cover configuration",

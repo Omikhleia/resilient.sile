@@ -54,7 +54,6 @@ By default, the following templates are used:
 
 ```yaml
 book:
-  enabled: true|false
   halftitle:
     recto: halftitle-recto
     verso: halftitle-verso
@@ -195,4 +194,22 @@ If your paper size is 6 per 9 inches (US trade book), for instance, you can prin
 
 ```bash
 sile -u inputters.silm[cropmarks=true] -O sheetsize=a4 mybook.silm
+```
+
+As stated earlier, the cover and book matter pages can also be enabled with individual options passed to the master document handler.
+You can set them in the `book` section of your master document file, so as to have them enabled by default.
+Either use a single option to enable them all at once...
+
+```yaml
+book:
+  enabled: false|true
+```
+
+Or, if you want to enable and disable them separately, you can use a nested structure:
+
+```yaml
+book:
+  enabled:
+    bookmatter: false|true
+    cover: false|true
 ```
