@@ -80,7 +80,17 @@ local ContentInPartSchema = {
 local BookSchema = {
   type = "object",
   properties = {
-    enabled = { type = "boolean" },
+    enabled = {
+      type = { -- oneOf
+        { type = "boolean" },
+        { type = "object",
+          properties = {
+            cover = { type = "boolean" },
+            bookmatter = { type = "boolean" },
+          }
+        }
+      }
+    },
     cover = {
       type = "object",
       properties = {
