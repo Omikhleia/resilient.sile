@@ -488,13 +488,13 @@ function class:registerStyles ()
   })
 
   -- quotes
-  SILE.scratch.styles.alignments["block"] = "blockindent"
-  SILE.scratch.styles.alignments["quotation"] = "quoteindent"
+  SILE.scratch.styles.alignments["block"] = "blockindent" -- FIXME DEPRECATED
+  SILE.scratch.styles.alignments["quotation"] = "quoteindent" -- FIXME DEPRECATED
 
   self:registerStyle("blockquote", {}, {
     font = { size = "0.95em" },
     paragraph = { before = { skip = "smallskip" },
-                  align = "block",
+                  margin = { left = "2em", right = "2em" },
                   after = { skip = "smallskip" } }
   })
 
@@ -693,7 +693,7 @@ function class:declareSettings ()
     parameter = "book.blockquote.margin",
     type = "measurement",
     default = SILE.types.measurement("2em"),
-    help = "Margin (indentation) for block quotes"
+    help = "Margin (indentation) for block quotes. DEPRECATED, use styles instead (paragraph margin)"
   })
 end
 
@@ -900,6 +900,9 @@ function class:registerCommands ()
 
   -- Quotes
 
+  -- FIXME: Deprecated, use styles instead (paragraph margin).
+  -- We warn in styles, so we don't need to do it here.
+  -- TO REMOVE IN A FUTURE REVISION.
   self:registerCommand("blockindent", function (_, content)
     SILE.settings:temporarily(function ()
       local indent = SILE.settings:get("book.blockquote.margin"):absolute()
@@ -910,8 +913,11 @@ function class:registerCommands ()
       SILE.process(content)
       SILE.call("par")
     end)
-  end, "Typeset its contents in a right and left indented block.")
+  end, "Typeset its contents in a right and left indented block. DEPRECATED, use styles instead (paragraph margin).")
 
+  -- FIXME: Deprecated, use styles instead (paragraph margin).
+  -- We warn in styles, so we don't need to do it here.
+  -- TO REMOVE IN A FUTURE REVISION.
   self:registerCommand("quoteindent", function (_, content)
     SILE.settings:temporarily(function ()
       local indent = SILE.settings:get("book.blockquote.margin"):absolute() * 0.875
@@ -922,7 +928,7 @@ function class:registerCommands ()
       SILE.process(content)
       SILE.call("par")
     end)
-  end, "Typeset its contents in a right and left indented block (variant).")
+  end, "Typeset its contents in a right and left indented block (variant). DEPRECATED, use styles instead (paragraph margin).")
 
   self:registerCommand("blockquote", function (options, content)
     local variant = options.variant and "blockquote-" .. options.variant or nil

@@ -41,6 +41,9 @@ function package:registerCommands ()
     end)
   end)
 
+  -- FIXME: Deprecated, use styles instead (paragraph line preserve).
+  -- We warn in styles, so we don't need to do it here.
+  -- TO REMOVE IN A FUTURE REVISION.
   self:registerCommand("verbatim:block", function (_, content)
     local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
     local rskip = SILE.settings:get("document.rskip") or SILE.types.node.glue()
@@ -72,11 +75,13 @@ end
 function package:registerStyles ()
   base.registerStyles(self)
 
-  SILE.scratch.styles.alignments["obeylines"] = "verbatim:block"
+  SILE.scratch.styles.alignments["obeylines"] = "verbatim:block" -- FIXME DEPRECATED
 
   self:registerStyle("verbatim", { inherit = "code" }, {
     paragraph = {
-      align = "obeylines",
+      lines = "preserve",
+      indent = false,
+      align = "left",
       --after = {
         -- FIXME
         -- Some weird skip occurs naturally in the resilient manual (djot and markdown content)

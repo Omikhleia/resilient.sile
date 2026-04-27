@@ -239,6 +239,9 @@ function package:registerCommands ()
   -- Book matter helpful default pseudo-styles
   -- (for easier Djot custom styling)
 
+  -- FIXME: Deprecated, use styles instead.
+  -- We warn in styles, so we don't need to do it here.
+  -- TO REMOVE IN A FUTURE REVISION.
   self:registerCommand("noparindent", function (_, content)
     SILE.settings:temporarily(function ()
       SILE.settings:set("document.parindent", SILE.types.node.glue())
@@ -246,8 +249,7 @@ function package:registerCommands ()
       SILE.process(content)
       SILE.call("par")
     end)
-  end, "Typeset its contents without paragraph indentation.")
-
+  end, "Typeset its contents without paragraph indentation. Deprecated, use styles instead (paragraph.indent: false).")
   SILE.scratch.styles.alignments["noparindent"] = "noparindent"
 
   self:registerCommand("bookmatter-ean13", function (_, content)
@@ -372,7 +374,7 @@ function package:registerStyles ()
   -- Styles for (usually) title page recto
   self:registerStyle("bookmatter-copyright", {}, {
     paragraph = {
-      align = "noparindent"
+      indent = false,
     }
   })
   self:registerStyle("bookmatter-legal", {}, {

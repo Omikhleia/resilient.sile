@@ -87,7 +87,38 @@
               "properties": {
                 "align": {
                   "description": "Alignment of the paragraph",
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "left",
+                    "right",
+                    "center",
+                    "justify"
+                  ]
+                },
+                "indent": {
+                  "description": "Whether paragraphs should be indented (for all descendants)",
+                  "type": "boolean"
+                },
+                "margin": {
+                  "description": "Margins for the paragraph",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "left": {
+                      "description": "Left margin (in absolute or relative units)",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "right": {
+                      "description": "Right margin (in absolute or relative units)",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
                 },
                 "before": {
                   "description": "Properties before the paragraph",

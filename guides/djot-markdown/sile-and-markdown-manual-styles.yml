@@ -17,9 +17,9 @@ CoverCredit:
       size: "7pt"
       weight: 300
     paragraph:
-      align: "noparindent"
       before:
         skip: "bigskip"
+      indent: false
 
 CustomDroppedInitial:
   style:
@@ -56,9 +56,11 @@ blockquote:
     paragraph:
       after:
         skip: "smallskip"
-      align: "block"
       before:
         skip: "smallskip"
+      margin:
+        left: "2em"
+        right: "2em"
 
 bookmatter-author:
   inherit: "bookmatter-titlepage"
@@ -76,7 +78,7 @@ bookmatter-backcover:
 bookmatter-copyright:
   style:
     paragraph:
-      align: "noparindent"
+      indent: false
 
 bookmatter-cover-author:
   inherit: "bookmatter-coverpage"
@@ -867,9 +869,10 @@ poetry:
     paragraph:
       after:
         skip: "medskip"
-      align: "poetry"
       before:
         skip: "medskip"
+      margin:
+        left: "0.75em"
 
 poetry-prosody:
   style:
@@ -887,9 +890,10 @@ prosody:
     font:
       size: "0.95em"
     paragraph:
-      align: "poetry"
       before:
         skip: "smallskip"
+      margin:
+        left: "0.75em"
 
 sectioning-appendix:
   inherit: "sectioning-chapter"
@@ -1378,7 +1382,9 @@ verbatim:
     font:
       size: "0.7em"
     paragraph:
-      align: "obeylines"
+      align: "left"
       before:
         skip: "smallskip"
+      indent: false
+      lines: "preserve"
 
