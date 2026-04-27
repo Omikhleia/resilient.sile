@@ -157,6 +157,8 @@ function package.writeStyles () -- NOTE: Not called as a package method (invoked
   styfile:close()
 end
 
+local STANDARD_ALIGNMENTS = pl.Set { "center", "left", "right", "justify" }
+
 SILE.scratch.styles = {
   state = {
     locked = false
@@ -258,6 +260,8 @@ function package:hasStyle (name)
   return stylespec and true or false
 end
 
+local warnedUndefinedStyles = pl.Set()
+
 --- Resolve a paragraph style, applying defaults to missing fields.
 --
 -- @tparam string name Style name
@@ -267,6 +271,18 @@ function package:resolveParagraphStyle (name, discardable)
   local styledef = self:resolveStyle(name, discardable)
   -- Apply defaults
   styledef.paragraph = styledef.paragraph or {}
+  -- Compatibility between style v2.8 and v4.2
+  if styledef.paragraph.align and not STANDARD_ALIGNMENTS[styledef.paragraph.align] then
+      if not warnedUndefinedStyles[name] then
+        SU.warn("Paragraph style '" .. name .. "' has non-standard alignment '" .. styledef.paragraph.align .. "'\n" .. [[
+          Use paragraph.margin (right/left) to achieve the desired alignment margins,
+          and set paragraph.align to one of the standard values (center, left, right, justify).
+      ]])
+        warnedUndefinedStyles[name] = true
+      end
+      warnedUndefinedStyles[name] = true
+  end
+  styledef.paragraph.margin = styledef.paragraph.margin or {}
   styledef.paragraph.before = styledef.paragraph.before or {}
   styledef.paragraph.before.indent = SU.boolean(styledef.paragraph.before.indent, true)
   styledef.paragraph.before.vbreak = SU.boolean(styledef.paragraph.before.vbreak, true)
@@ -336,9 +352,37 @@ function package:registerCommands ()
     SILE.call("font", opts, content)
   end, "Applies a font, with additional support for relative sizes.")
 
-  -- Very naive cascading...
-  local function characterStyle (style, content, options)
-    options = options or {}
+    local function hackSubContent(content, name)
+    if type(content) == "table" then
+      if content.command or content.id then
+        -- We want to skip the calling content key values (id, command, etc.)
+        return SU.ast.subContent(content)
+      end
+      return content
+    end
+    if name ~= "footnote" then -- HACK: Could not avoid function call in resilient.footnotes...
+      SU.warn("Invocation of style '" .. name .. "'' with unexpected content ("
+        .. type(content) ..")" .. [[
+
+    For styles to apply correctly, the content should be an AST table.
+    Some constructs may fail or generate errors later (text case, position, etc.)
+]])
+    end
+    return content
+  end
+
+  local function characterStyleOther (style, content)
+    -- Naive cascading:
+    --   color?(
+    --     decoration?(
+    --       position?(
+    --         case?(
+    --          content
+    --         )
+    --       )
+    --     )
+    --
+    -- color(decoration(position(case(content))))
     if style.properties then
       local positionValue = propertyValueIfNotNull(style.properties.position)
       if positionValue and positionValue ~= "normal" then
@@ -371,72 +415,79 @@ function package:registerCommands ()
     if colorValue then
       content = SU.ast.createCommand("color", { color = colorValue }, content)
     end
-    if style.font and SU.boolean(options.font, true) then
-      content = SU.ast.createCommand("style:font", style.font, content)
-    end
     return content
   end
 
-  local function characterStyleNoFont (style, content)
-    return characterStyle(style, content, { font = false })
-  end
-
-  local function hackSubContent(content, name)
-    if type(content) == "table" then
-      if content.command or content.id then
-        -- We want to skip the calling content key values (id, command, etc.)
-        return SU.ast.subContent(content)
-      end
-      return content
-    end
-    if name ~= "footnote" then -- HACK: Could not avoid function call in resilient.footnotes...
-      SU.warn("Invocation of style '" .. name .. "'' with unexpected content ("
-        .. type(content) ..")" .. [[
-
-    For styles to apply correctly, the content should be an AST table.
-    Some constructs may fail or generate errors later (text case, position, etc.)
-]])
-    end
-    return content
-  end
-
-  local characterStyleFontOnly = function (style, content)
+  local function characterStyleFont (style, content)
     if style.font then
       content = SU.ast.createCommand("style:font", style.font, content)
     end
     return content
   end
 
-  local styleForAlignment = function (style, content, breakafter)
-    if style.paragraph and style.paragraph.align then -- FIXME: Code smell, re-tested below
-      if style.paragraph.align then
-        local alignCommand = SILE.scratch.styles.alignments[style.paragraph.align]
-        if not alignCommand then
-          SU.error("Invalid paragraph style alignment '"..style.paragraph.align.."'")
-        end
-        if not breakafter then SILE.call("novbreak") end
-        SILE.typesetter:leaveHmode()
-        -- Here we must apply the font, then the alignment, so that line heights are
-        -- correct even on the last paragraph. But the color introduces hboxes so
-        -- must be applied last, no to cause havoc with the noindent/indent and
-        -- centering etc. environments
-        local recontent = SU.ast.createCommand(alignCommand, {}, {
-          characterStyleNoFont(style, content),
-          not breakafter and SU.ast.createCommand("novbreak") or nil
-        })
-        if style.font then
-          recontent = characterStyleFontOnly(style, recontent)
-        end
-        SILE.process({ recontent })
-      else
-        SILE.process({ characterStyle(style, content) })
-        if not breakafter then SILE.call("novbreak") end
-        -- NOTE: SILE.call("par") would cause a parskip to be inserted.
-        -- Not really sure whether we expect this here or not.
-        SILE.typesetter:leaveHmode()
-      end
+      -- Very naive cascading...
+  local function characterStyle (style, content)
+    return characterStyleFont(style, characterStyleOther(style, content))
+  end
+
+  -- Alignment and margin logic
+  --
+  --  - no alignment and no margin
+  --      characterStyle(content)
+  --        == characterStyleFont(
+  --             characterStyleOther(content)
+  --           )
+  --  - otherwise
+  --      characterStyleFont(
+  --        align(
+  --          margin(
+  --            characterStyleOther(content)
+  --        )
+  --      )
+
+  local function styleForMargin (style, content, breakafter)
+    local lmargin = propertyValueIfNotNull(style.paragraph.margin.left)
+    local rmargin = propertyValueIfNotNull(style.paragraph.margin.right)
+    if lmargin or rmargin then
+      return SU.ast.createCommand("style:internal:margin", { left = lmargin, right = rmargin }, {
+        characterStyleOther(style, content),
+        not breakafter and SU.ast.createCommand("novbreak") or nil
+      })
     else
+      return content
+    end
+  end
+
+  local function styleForAlign (style, content, breakafter)
+    local align = propertyValueIfNotNull(style.paragraph.align)
+    local inner = styleForMargin(style, content, breakafter)
+    if align then
+      local alignCommand = SILE.scratch.styles.alignments[align]
+      if not alignCommand then
+        SU.error("Invalid paragraph style alignment '"..style.paragraph.align.."'")
+      end
+      return SU.ast.createCommand(alignCommand, {}, inner)
+    else
+      return inner
+    end
+  end
+
+  local styleForAlignment = function (style, content, breakafter)
+    local block = styleForAlign(style, content, breakafter)
+    if block == content then
+      -- No alignment and no margin wrapping occurred,
+      -- we can just apply the character style directly, without font separation
       SILE.process({ characterStyle(style, content) })
+    else
+      -- Some alignment or margin wrapping occurred.
+      -- Here we must apply the font, then the alignment, so that line heights are
+      -- correct even on the last paragraph. But the color introduces hboxes so
+      -- must be applied last, no to cause havoc with the noindent/indent and
+      -- centering etc. environments
+      if not breakafter then SILE.call("novbreak") end
+      SILE.typesetter:leaveHmode()
+      block = characterStyleFont(style, block)
+      SILE.process({ block })
     end
   end
 
@@ -563,6 +614,23 @@ function package:registerCommands ()
       if novbreak then SILE.call("novbreak") end
     end
   end
+
+  self:registerCommand("style:internal:margin", function (options, content)
+    local lmargin = SU.cast("measurement", options.left or 0)
+    local rmargin = SU.cast("measurement", options.right or 0)
+    local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
+    local rskip = SILE.settings:get("document.rskip") or SILE.types.node.glue()
+    SILE.settings:temporarily(function ()
+      if lmargin:tonumber() ~= 0 then
+         SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width:absolute() + lmargin:absolute()))
+      end
+      if rmargin:tonumber() ~= 0 then
+         SILE.settings:set("document.rskip", SILE.types.node.glue(rskip.width:absolute() + rmargin:absolute()))
+      end
+      SILE.process(content)
+      SILE.call("par")
+    end)
+  end, "Typeset its contents with additional left and right margins.")
 
   self:registerCommand("style:apply:paragraph", function (options, content)
     local name = SU.required(options, "name", "style:apply:paragraph")

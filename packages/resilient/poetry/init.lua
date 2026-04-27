@@ -279,6 +279,9 @@ function package:registerCommands ()
     SILE.call("par")
   end, "A single verse (theoretically an internal command).")
 
+  -- FIXME: Deprecated, use styles instead (paragraph margin).
+  -- We warn in styles, so we don't need to do it here.
+  -- TO REMOVE IN A FUTURE REVISION.
   self:registerCommand("poetryindent", function (_, content)
     SILE.settings:temporarily(function ()
       local indent = SILE.settings:get("poetry.margin"):absolute()
@@ -287,7 +290,7 @@ function package:registerCommands ()
       SILE.process(content)
       SILE.call("par")
     end)
-  end, "Special poetry block alignment.")
+  end, "Special poetry block alignment. DEPRECATED, use styles instead (paragraph margin).")
   -- HACK.
   -- This poetry "alignment" is lame, but the real thing is hard!
   -- See the discussion (esp. the "extra bonus"):
@@ -316,7 +319,7 @@ function package:declareSettings ()
     parameter = "poetry.margin",
     type = "measurement",
     default = SILE.types.measurement("0.75em"),
-    help = "Left margin (indentation) for poetry"
+    help = "Left margin (indentation) for poetry. DEPRECATED, use styles instead (paragraph margin)."
   })
 end
 
@@ -336,7 +339,9 @@ function package:registerStyles ()
   self:registerStyle("prosody", {}, {
     font = { size = "0.95em" },
     paragraph = {
-      align = "poetry",
+      margin = {
+        left = "0.75em",
+      },
       before = {
         skip = "smallskip"
       },
@@ -351,7 +356,9 @@ function package:registerStyles ()
       before = {
         skip = "medskip"
       },
-      align = "poetry",
+      margin = {
+        left = "0.75em",
+      },
       after = {
         skip = "medskip"
       },
