@@ -127,35 +127,33 @@ local function compatibilityHackV42 (style)
   --  - poetry is declared in the resilient.poetry package and based on a poetry.margin setting
   --  - noparindent is declared in the resilient.bookmatters package.
   -- We are not querying those settings here, but just applying their defaults.
-  if SILE.resilient.forceCompatibility then
-    if style.paragraph and style.paragraph.align then
-      if style.paragraph.align == "block" then
-        style.paragraph.align = nil
-        style.paragraph.margin = style.paragraph.margin or {}
-        style.paragraph.margin.left = style.paragraph.margin.left or "2em"
-        style.paragraph.margin.right = style.paragraph.margin.right or "2em"
-        SILE.scratch.styles.needCompatibility = true
-      elseif style.paragraph.align == "quotation" then
-        style.paragraph.align = nil
-        style.paragraph.margin = style.paragraph.margin or {}
-        style.paragraph.margin.left = style.paragraph.margin.left or "1.75em"
-        style.paragraph.margin.right = style.paragraph.margin.right or "0.875em"
-        SILE.scratch.styles.needCompatibility = true
-      elseif style.paragraph.align == "poetry" then
-        style.paragraph.align = nil
-        style.paragraph.margin = style.paragraph.margin or {}
-        style.paragraph.margin.left = style.paragraph.margin.left or "0.75em"
-        SILE.scratch.styles.needCompatibility = true
-      elseif style.paragraph.align == "noparindent" then
-        style.paragraph.align = nil
-        style.paragraph.indent = false
-        SILE.scratch.styles.needCompatibility = true
-      elseif style.paragraph.align == "obeylines" then
-        style.paragraph.align = "left"
-        style.paragraph.lines = "preserve"
-        style.paragraph.indent = false
-        SILE.scratch.styles.needCompatibility = true
-      end
+  if style.paragraph and style.paragraph.align then
+    if style.paragraph.align == "block" then
+      style.paragraph.align = nil
+      style.paragraph.margin = style.paragraph.margin or {}
+      style.paragraph.margin.left = style.paragraph.margin.left or "2em"
+      style.paragraph.margin.right = style.paragraph.margin.right or "2em"
+      SILE.scratch.styles.needCompatibility = true
+    elseif style.paragraph.align == "quotation" then
+      style.paragraph.align = nil
+      style.paragraph.margin = style.paragraph.margin or {}
+      style.paragraph.margin.left = style.paragraph.margin.left or "1.75em"
+      style.paragraph.margin.right = style.paragraph.margin.right or "0.875em"
+      SILE.scratch.styles.needCompatibility = true
+    elseif style.paragraph.align == "poetry" then
+      style.paragraph.align = nil
+      style.paragraph.margin = style.paragraph.margin or {}
+      style.paragraph.margin.left = style.paragraph.margin.left or "0.75em"
+      SILE.scratch.styles.needCompatibility = true
+    elseif style.paragraph.align == "noparindent" then
+      style.paragraph.align = nil
+      style.paragraph.indent = false
+      SILE.scratch.styles.needCompatibility = true
+    elseif style.paragraph.align == "obeylines" then
+      style.paragraph.align = "left"
+      style.paragraph.lines = "preserve"
+      style.paragraph.indent = false
+      SILE.scratch.styles.needCompatibility = true
     end
   end
 end
@@ -208,17 +206,18 @@ function package.writeStyles () -- NOTE: Not called as a package method (invoked
   for _ in pairs(diffs) do
     count = count + 1
   end
-  if count == 0 then
-    if SILE.resilient.forceCompatibility and SILE.scratch.styles.needCompatibility then
-      SU.warn("Regenerating style file with compatibility adjustments.\n" .. [[
+  local needCompatibility = SILE.scratch.styles.needCompatibility
+  if needCompatibility then
+    SU.warn("Regenerating style file with compatibility adjustments.\n" .. [[
   If you style file is managed by version control, please review carefully the
   changes.
   Note that the previous implementation used settings for some values, which
-  are NOT taken into account, so you may want to adjust your style file accordingly.
+  are NOT taken into account, so you may want to adjust your style file
+  accordingly.
 ]])
-    else
-      return SU.debug("resilient.styles", "No new styles, no need to write style file")
-    end
+  end
+  if count == 0 and not needCompatibility then
+    return SU.debug("resilient.styles", "No new styles, no need to write style file")
   end
 
   local stydata = tableToYaml(SILE.scratch.styles.specs)
@@ -742,7 +741,7 @@ function package:registerCommands ()
       SILE.call("language", { main = "und" })
       SILE.process(content)
       SILE.typesetter:leaveHmode(1)
-    end)    
+    end)
   end, "(INTERNAL) Preserve line breaks and spaces in the content")
 
   self:registerCommand("style:apply:paragraph", function (options, content)
@@ -774,11 +773,11 @@ function package:registerCommands ()
     SILE.process(block)
 
     local ba = SU.boolean(parSty.after.vbreak, true)
-    if not ba then 
+    if not ba then
       SILE.call("novbreak")
     end
-    -- NOTE: SILE.call("par") would cause a parskip to be inserted.
-    -- Not really sure whether we expect this here or not.
+    -- FIXME NOTE: SILE.call("par") would cause a parskip to be inserted.
+    -- Not really sure whether we expect this here or not ???
     -- SILE.call("par")
 
     styleForAfterSkip(name, parSty)

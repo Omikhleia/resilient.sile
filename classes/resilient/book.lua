@@ -488,9 +488,6 @@ function class:registerStyles ()
   })
 
   -- quotes
-  SILE.scratch.styles.alignments["block"] = "blockindent" -- FIXME DEPRECATED
-  SILE.scratch.styles.alignments["quotation"] = "quoteindent" -- FIXME DEPRECATED
-
   self:registerStyle("blockquote", {}, {
     font = { size = "0.95em" },
     paragraph = { before = { skip = "smallskip" },
@@ -689,12 +686,6 @@ end
 function class:declareSettings ()
   base.declareSettings(self)
 
-  SILE.settings:declare({
-    parameter = "book.blockquote.margin",
-    type = "measurement",
-    default = SILE.types.measurement("2em"),
-    help = "Margin (indentation) for block quotes. DEPRECATED, use styles instead (paragraph margin)"
-  })
 end
 
 --- (Override) Register class commands.
@@ -899,36 +890,6 @@ function class:registerCommands ()
   end, "Begin a new subsubsection.")
 
   -- Quotes
-
-  -- FIXME: Deprecated, use styles instead (paragraph margin).
-  -- We warn in styles, so we don't need to do it here.
-  -- TO REMOVE IN A FUTURE REVISION.
-  self:registerCommand("blockindent", function (_, content)
-    SILE.settings:temporarily(function ()
-      local indent = SILE.settings:get("book.blockquote.margin"):absolute()
-      local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
-      local rskip = SILE.settings:get("document.rskip") or SILE.types.node.glue()
-      SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width:absolute() + indent))
-      SILE.settings:set("document.rskip", SILE.types.node.glue(rskip.width:absolute() + indent))
-      SILE.process(content)
-      SILE.call("par")
-    end)
-  end, "Typeset its contents in a right and left indented block. DEPRECATED, use styles instead (paragraph margin).")
-
-  -- FIXME: Deprecated, use styles instead (paragraph margin).
-  -- We warn in styles, so we don't need to do it here.
-  -- TO REMOVE IN A FUTURE REVISION.
-  self:registerCommand("quoteindent", function (_, content)
-    SILE.settings:temporarily(function ()
-      local indent = SILE.settings:get("book.blockquote.margin"):absolute() * 0.875
-      local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
-      local rskip = SILE.settings:get("document.rskip") or SILE.types.node.glue()
-      SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width:absolute() + indent))
-      SILE.settings:set("document.rskip", SILE.types.node.glue(rskip.width:absolute() + indent * 0.5))
-      SILE.process(content)
-      SILE.call("par")
-    end)
-  end, "Typeset its contents in a right and left indented block (variant). DEPRECATED, use styles instead (paragraph margin).")
 
   self:registerCommand("blockquote", function (options, content)
     local variant = options.variant and "blockquote-" .. options.variant or nil

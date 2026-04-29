@@ -279,24 +279,6 @@ function package:registerCommands ()
     SILE.call("par")
   end, "A single verse (theoretically an internal command).")
 
-  -- FIXME: Deprecated, use styles instead (paragraph margin).
-  -- We warn in styles, so we don't need to do it here.
-  -- TO REMOVE IN A FUTURE REVISION.
-  self:registerCommand("poetryindent", function (_, content)
-    SILE.settings:temporarily(function ()
-      local indent = SILE.settings:get("poetry.margin"):absolute()
-      local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
-      SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width.length + indent))
-      SILE.process(content)
-      SILE.call("par")
-    end)
-  end, "Special poetry block alignment. DEPRECATED, use styles instead (paragraph margin).")
-  -- HACK.
-  -- This poetry "alignment" is lame, but the real thing is hard!
-  -- See the discussion (esp. the "extra bonus"):
-  -- https://github.com/sile-typesetter/sile/discussions/1602
-  SILE.scratch.styles.alignments["poetry"] = "poetryindent"
-
 end
 
 --- (Override) Declare all settings provided by this package.
@@ -315,12 +297,6 @@ function package:declareSettings ()
     help = "Length (height) of the prodosy annotation line."
   })
 
-  SILE.settings:declare({
-    parameter = "poetry.margin",
-    type = "measurement",
-    default = SILE.types.measurement("0.75em"),
-    help = "Left margin (indentation) for poetry. DEPRECATED, use styles instead (paragraph margin)."
-  })
 end
 
 --- (Override) Register all styles provided by this package.

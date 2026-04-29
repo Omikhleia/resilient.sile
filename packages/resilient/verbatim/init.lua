@@ -41,30 +41,6 @@ function package:registerCommands ()
     end)
   end)
 
-  -- FIXME: Deprecated, use styles instead (paragraph line preserve).
-  -- We warn in styles, so we don't need to do it here.
-  -- TO REMOVE IN A FUTURE REVISION.
-  self:registerCommand("verbatim:block", function (_, content)
-    local lskip = SILE.settings:get("document.lskip") or SILE.types.node.glue()
-    local rskip = SILE.settings:get("document.rskip") or SILE.types.node.glue()
-    SILE.typesetter:leaveHmode()
-    SILE.settings:temporarily(function()
-      SILE.settings:set("typesetter.parseppattern", "\n")
-      SILE.settings:set("typesetter.obeyspaces", true) -- FIXME Dubious setting
-      -- We handle the fixed part of right and left skip to support nesting.
-      -- We use use a true left alignment (= infinite right stretchability).
-      SILE.settings:set("document.lskip", SILE.types.node.glue(lskip.width.length))
-      SILE.settings:set("document.rskip", SILE.types.node.hfillglue(rskip.width.length))
-      SILE.settings:set("document.parindent", SILE.types.node.glue())
-      SILE.settings:set("current.parindent", SILE.types.node.glue())
-      SILE.settings:set("document.spaceskip", SILE.types.length("1spc"))
-      SILE.settings:set("shaper.variablespaces", false)
-      SILE.call("language", { main = "und" })
-      SILE.process(content)
-      SILE.typesetter:leaveHmode()
-    end)
-  end, "Typesets its contents in a left-aligned block honoring spaces and line-breaks.")
-
   self:registerCommand("verbatim", function (_, content)
     SILE.call("style:apply:paragraph", { name = "verbatim" }, content)
   end, "Typesets its contents styled as 'verbatim'.")
@@ -74,8 +50,6 @@ end
 --- (Override) Register all styles provided by this package.
 function package:registerStyles ()
   base.registerStyles(self)
-
-  SILE.scratch.styles.alignments["obeylines"] = "verbatim:block" -- FIXME DEPRECATED
 
   self:registerStyle("verbatim", { inherit = "code" }, {
     paragraph = {
