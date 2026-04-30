@@ -168,7 +168,7 @@ so the `\autodoc:command{\noheaders}`{=sile}, `\autodoc:command{\noheaderthispag
 The class provides the `\autodoc:environment{blockquote}`{=sile} environment to typeset simple block-indented paragraphs.
 Indented quotes can be nested.
 
-The environment relies on the same-named style for its styling and on the `\autodoc:setting{book.blockquote.margin}`{=sile} setting for its indentation (defaults to 2em).
+The environment relies on the same-named style for its styling.
 
 The environment also accepts a `\autodoc:parameter{variant}`{=sile} option, to switch to an alternate style, assumed to be named `blockquote-⟨variant⟩`.
 

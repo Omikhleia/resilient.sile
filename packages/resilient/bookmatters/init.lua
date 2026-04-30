@@ -239,17 +239,6 @@ function package:registerCommands ()
   -- Book matter helpful default pseudo-styles
   -- (for easier Djot custom styling)
 
-  self:registerCommand("noparindent", function (_, content)
-    SILE.settings:temporarily(function ()
-      SILE.settings:set("document.parindent", SILE.types.node.glue())
-      SILE.settings:set("current.parindent", SILE.types.node.glue())
-      SILE.process(content)
-      SILE.call("par")
-    end)
-  end, "Typeset its contents without paragraph indentation.")
-
-  SILE.scratch.styles.alignments["noparindent"] = "noparindent"
-
   self:registerCommand("bookmatter-ean13", function (_, content)
     local code = content[1]
     -- Markdown/Djot parser may interpret a dash between digits as smart typography for en-dash.
@@ -372,7 +361,7 @@ function package:registerStyles ()
   -- Styles for (usually) title page recto
   self:registerStyle("bookmatter-copyright", {}, {
     paragraph = {
-      align = "noparindent"
+      indent = false,
     }
   })
   self:registerStyle("bookmatter-legal", {}, {
