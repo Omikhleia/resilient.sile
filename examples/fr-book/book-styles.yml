@@ -1,5 +1,5 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
-# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v4.2.0/schemas/stylefile.json
+# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v4.2.0/schemas/stylefile.json
 
 Author:
   style:
@@ -28,9 +28,11 @@ blockquote:
     paragraph:
       after:
         skip: "smallskip"
-      align: "quotation"
       before:
         skip: "smallskip"
+      margin:
+        left: "1.75em"
+        right: "0.875em"
 
 bookmatter-author:
   inherit: "bookmatter-titlepage"
@@ -48,7 +50,7 @@ bookmatter-backcover:
 bookmatter-copyright:
   style:
     paragraph:
-      align: "noparindent"
+      indent: false
 
 bookmatter-cover-author:
   inherit: "bookmatter-coverpage"
@@ -250,6 +252,14 @@ figure-caption:
 figure-caption-base-number:
   style:
 
+figure-caption-legend:
+  inherit: "figure-caption"
+  style:
+    paragraph:
+      after:
+        skip: "0"
+        vbreak: false
+
 figure-caption-main-number:
   inherit: "figure-caption-base-number"
   style:
@@ -268,6 +278,18 @@ figure-caption-ref-number:
     numbering:
       before:
         text: "fig. "
+
+figure-legend:
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        vbreak: false
 
 folio-backmatter:
   style:
@@ -575,6 +597,14 @@ listing-caption:
 listing-caption-base-number:
   style:
 
+listing-caption-legend:
+  inherit: "listing-caption"
+  style:
+    paragraph:
+      after:
+        skip: "0"
+        vbreak: false
+
 listing-caption-main-number:
   inherit: "listing-caption-base-number"
   style:
@@ -593,6 +623,18 @@ listing-caption-ref-number:
     numbering:
       before:
         text: "listing "
+
+listing-legend:
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        vbreak: false
 
 lists-enumerate-alternate1:
   inherit: "lists-enumerate-base"
@@ -811,8 +853,9 @@ sectioning-chapter:
         header: "sectioning-chapter-head-number"
         main: "sectioning-chapter-main-number"
         reference: "sectioning-chapter-ref-number"
-      settings:
+      pagestyle:
         open: "odd"
+      settings:
         toclevel: 1
 
 sectioning-chapter-base-number:
@@ -873,8 +916,9 @@ sectioning-part:
         header: "sectioning-part-head-number"
         main: "sectioning-part-main-number"
         reference: "sectioning-part-ref-number"
-      settings:
+      pagestyle:
         open: "odd"
+      settings:
         toclevel: 0
 
 sectioning-part-base-number:
@@ -1010,6 +1054,14 @@ table-caption:
 table-caption-base-number:
   style:
 
+table-caption-legend:
+  inherit: "table-caption"
+  style:
+    paragraph:
+      after:
+        skip: "0"
+        vbreak: false
+
 table-caption-main-number:
   inherit: "table-caption-base-number"
   style:
@@ -1028,6 +1080,18 @@ table-caption-ref-number:
     numbering:
       before:
         text: "table "
+
+table-legend:
+  style:
+    font:
+      size: "0.95em"
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "center"
+      before:
+        indent: false
+        vbreak: false
 
 toc:
   style:
@@ -1224,7 +1288,9 @@ verbatim:
   inherit: "code"
   style:
     paragraph:
-      align: "obeylines"
+      align: "left"
       before:
         skip: "smallskip"
+      indent: false
+      lines: "preserve"
 
