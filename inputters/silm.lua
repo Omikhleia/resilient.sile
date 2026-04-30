@@ -349,42 +349,52 @@ function inputter:parse (doc)
 
   local metadataOptions = handleDjotMetadata(metadata)
 
-  local bookmatter = master.book or {}
-  bookmatter = {
-    halftitle = bookmatter.halftitle or {},
-    title = bookmatter.title or {},
-    endpaper = bookmatter.endpaper or {},
-    cover = bookmatter.cover,
-    enabled = SU.boolean(bookmatter.enabled, false)
+  local book = master.book or {}
+  if type(book.enabled) == "boolean" then
+    book.enabled = {
+      cover = SU.boolean(book.enabled, false),
+      bookmatter = SU.boolean(book.enabled, false),
+    }
+  else
+    book.enabled = book.enabled or {}
+    book.enabled.cover = SU.boolean(book.enabled.cover, false)
+    book.enabled.bookmatter = SU.boolean(book.enabled.bookmatter, false)
+  end
+  book = {
+    halftitle = book.halftitle or {},
+    title = book.title or {},
+    endpaper = book.endpaper or {},
+    cover = book.cover,
+    enabled = book.enabled
   }
-  local enabledBook = isRoot and SU.boolean(self.options.bookmatter, bookmatter.enabled)
-  local enabledCover = isRoot and SU.boolean(self.options.cover, bookmatter.enabled)
+  local enabledBookMatter = isRoot and SU.boolean(self.options.bookmatter, book.enabled.bookmatter)
+  local enabledCover = isRoot and SU.boolean(self.options.cover, book.enabled.cover)
 
-  if enabledBook or enabledCover then
+  if enabledBookMatter or enabledCover then
     content[#content+1] = SU.ast.createCommand("use", {
       module = "packages.resilient.bookmatters"
     })
   end
 
-  if enabledCover and bookmatter.cover then
-    local cover = bookmatter.cover.front
+  if enabledCover and book.cover then
+    local cover = book.cover.front
     content[#content+1] = SU.ast.createCommand("bookmatters:front-cover", {
-      image = cover and cover.image or bookmatter.cover.image,
-      background = cover and cover.background or bookmatter.cover.background,
+      image = cover and cover.image or book.cover.image,
+      background = cover and cover.background or book.cover.background,
       template = cover and cover.template,
       metadata = metadataOptions
     })
   end
 
-  if enabledBook then
+  if enabledBookMatter then
     content[#content+1] = SU.ast.createCommand("bookmatters:template", {
-      recto = bookmatter.halftitle.recto or "halftitle-recto",
-      verso = bookmatter.halftitle.verso or "halftitle-verso",
+      recto = book.halftitle.recto or "halftitle-recto",
+      verso = book.halftitle.verso or "halftitle-verso",
       metadata = metadataOptions
     })
     content[#content+1] =  SU.ast.createCommand("bookmatters:template", {
-      recto = bookmatter.title.recto or "title-recto",
-      verso = bookmatter.title.verso or "title-verso",
+      recto = book.title.recto or "title-recto",
+      verso = book.title.verso or "title-verso",
       metadata = metadataOptions
     })
   end
@@ -403,19 +413,19 @@ function inputter:parse (doc)
     doDivisionContent(content, master, baseShiftHeadings, metadataOptions)
   end
 
-  if enabledBook then
+  if enabledBookMatter then
     content[#content+1] = SU.ast.createCommand("bookmatters:template", {
-      recto = bookmatter.endpaper.recto or "endpaper-recto",
-      verso = bookmatter.endpaper.verso or "endpaper-verso",
+      recto = book.endpaper.recto or "endpaper-recto",
+      verso = book.endpaper.verso or "endpaper-verso",
       metadata = metadataOptions
     })
   end
-  if enabledCover and bookmatter.cover then
-    local cover = bookmatter.cover.back
-    local background = cover and cover.background or bookmatter.cover.background
+  if enabledCover and book.cover then
+    local cover = book.cover.back
+    local background = cover and cover.background or book.cover.background
     local coverContent = cover and cover.content or nil
     content[#content+1] = SU.ast.createCommand("bookmatters:back-cover", {
-      image = cover and cover.image or bookmatter.cover.image,
+      image = cover and cover.image or book.cover.image,
       background = background,
       bgcontent = cover and cover["content-background"] or background,
       metadata = metadataOptions
