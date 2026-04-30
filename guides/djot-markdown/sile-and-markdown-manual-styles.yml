@@ -21,14 +21,6 @@ CoverCredit:
         skip: "bigskip"
       indent: false
 
-CustomDroppedInitial:
-  style:
-    color: "#66a0b3"
-    font:
-      family: "Zallman Caps"
-    special:
-      lines: 3
-
 Difference:
   style:
     font:
@@ -214,10 +206,11 @@ defn-term-Custom:
 
 dropcap:
   style:
+    color: "#66a0b3"
     font:
       family: "Zallman Caps"
     special:
-      lines: 2
+      lines: 3
 
 epigraph:
   style:

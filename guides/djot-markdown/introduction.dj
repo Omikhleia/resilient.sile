@@ -1,6 +1,6 @@
 # Introduction
 
-[T]{custom-style=Initial}[his]{.smallcaps} collection of modules for the [SILE](https://github.com/sile-typesetter/sile) typesetting system provides a complete redesign of its former native Markdown support.
+[T]{custom-style="initial-joined"}[his]{.smallcaps} collection of modules for the [SILE](https://github.com/sile-typesetter/sile) typesetting system provides a complete redesign of its former native Markdown support.
 Most of the content you are reading right now is written in either Djot or Markdown, and processed using the converters offered by this collection:
 
  - *djot* inputter and package: native Djot support,

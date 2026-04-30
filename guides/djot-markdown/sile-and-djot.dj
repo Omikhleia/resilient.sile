@@ -6,7 +6,7 @@
 > It is also much fuller-featured (...)"
 ^ From the [Djot website](https://djot.net/).
 
-D{custom-style=Initial}[jot]{.smallcaps} is a fairly recent markup syntax, proposed by John MacFarlane in 2022.
+D{custom-style="initial-joined"}[jot]{.smallcaps} is a fairly recent markup syntax, proposed by John MacFarlane in 2022.
 It derives from (Common) Markdown, solving a lot of its complex syntax pitfalls, and also extending it on various aspects.
 Since mosts concepts are similar, it initially felt rather natural to include it in this collection, so that authors interested in Markdown could give it a try.
 

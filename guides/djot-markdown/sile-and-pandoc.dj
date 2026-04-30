@@ -3,7 +3,7 @@
 > "If you need to convert files from one markup format into another, Pandoc is your swiss-army knife."
 ^ From the [Pandoc website](https://pandoc.org/).
 
-[P]{custom-style=Initial}[andoc]{.smallcaps} is a free-software document converter, created by the same John MacFarlane who initiated the *lunamark* and *djot* libraries which empower our native Djot and Mardown packages.
+[P]{custom-style="initial-joined"}[andoc]{.smallcaps} is a free-software document converter, created by the same John MacFarlane who initiated the *lunamark* and *djot* libraries which empower our native Djot and Mardown packages.
 The latter, though, do not offer as many options and extensions as Pandoc does, for advanced typesetting.
 
 In the event where the native solution would fall short for you --- _e.g._ would you need some extension or feature it doesn't yet support --- you may want to use Pandoc directly for converting your document to an output suitable for SILE.

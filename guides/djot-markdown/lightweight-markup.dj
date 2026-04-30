@@ -1,6 +1,6 @@
 # General considerations
 
-[O]{custom-style=Initial}[ne]{.smallcaps} of the primary motivations behind the development of the components provided in this module was the ability to typeset an entire book "from front cover to back cover," using text files written in a lightweight markup language.
+[O]{custom-style="initial-joined"}[ne]{.smallcaps} of the primary motivations behind the development of the components provided in this module was the ability to typeset an entire book "from front cover to back cover," using text files written in a lightweight markup language.
 
 My response to this challenge was the _re·sil·ient_ collection of classes and packages for SILE.
 It includes master documents, book matters, a robust book class, and a neat styling paradigm.
