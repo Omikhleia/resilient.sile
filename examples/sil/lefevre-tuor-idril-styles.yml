@@ -17,9 +17,11 @@ blockquote:
     paragraph:
       after:
         skip: "smallskip"
-      align: "quotation"
       before:
         skip: "smallskip"
+      margin:
+        left: "1.75em"
+        right: "0.875em"
 
 code:
   style:
@@ -1174,7 +1176,9 @@ verbatim:
   inherit: "code"
   style:
     paragraph:
-      align: "obeylines"
+      align: "left"
       before:
         skip: "smallskip"
+      indent: false
+      lines: "preserve"
 

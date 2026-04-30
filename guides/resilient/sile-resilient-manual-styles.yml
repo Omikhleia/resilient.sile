@@ -250,7 +250,7 @@ figure-caption:
       align: "center"
       before:
         indent: false
-        skip: "medskip"
+        skip: "smallskip"
         vbreak: false
     sectioning:
       counter:
@@ -1336,7 +1336,9 @@ verbatim:
     paragraph:
       after:
         skip: "smallskip"
-      align: "obeylines"
+      align: "left"
       before:
         skip: "smallskip"
+      indent: false
+      lines: "preserve"
 
