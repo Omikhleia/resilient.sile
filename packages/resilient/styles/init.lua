@@ -585,7 +585,7 @@ function package:registerCommands ()
     local withIndent = styleForIndent(style, withAlign)
     local withFont = characterStyleFont(style, withIndent)
 
-    -- We never know for suree if some of the above introduced a "par"
+    -- We never know for sure if some of the above introduced a "par"
     -- possibly a parskip.
     local block = wrapContentInNovbreak(style, withFont)
     return block
@@ -760,13 +760,22 @@ function package:registerCommands ()
 
     content = hackSubContent(content, name) -- HACK: see above
 
+    -- FIXME
+    -- This whole logic is still a mix of AST manipulation and direct typesetter calls, and is quite messy.
+    --  - Leaveing hmode vs. calling "par" is a mess
+    --  - However many dubious attempts at inserting "novbreak" to avoid unwanted page breaks,
+    --    there are still some cases where unwanted breaks can occur ?!
+    --    E.g. between a figure and its caption
     local bb = SU.boolean(parSty.before.vbreak, true)
-    if #SILE.typesetter.state.nodes then
-      if not bb then
-        SILE.call("novbreak")
-      else
-        SILE.typesetter:leaveHmode()
-      end
+
+    -- Close previous paragraph if any.
+    -- FIXME: We should use a "par" to insert a parskip if needed.
+    -- But we currently have an issue with multiple consecutive "parskips"...
+    --SILE.call("par") -- Close previous paragraph
+    SILE.typesetter:leaveHmode()
+
+    if not bb then
+      SILE.call("novbreak")
     end
 
     styleForBeforeSkip(name, parSty, styledef)
@@ -785,11 +794,14 @@ function package:registerCommands ()
     if not ba then
       SILE.call("novbreak")
     end
-    -- FIXME NOTE: SILE.call("par") would cause a parskip to be inserted.
-    -- Not really sure whether we expect this here or not ???
-    -- SILE.call("par")
+    -- Close this paragraph block
+    -- FIXME: We should use a "par" to insert a parskip if needed.
+    -- But we currently have an issue with multiple consecutive "parskips"...
+    --SILE.call("par") -- Close previous paragraph
+    SILE.typesetter:leaveHmode()
 
     styleForAfterSkip(name, parSty)
+
     if parSty.after.indent then
       SILE.call("indent")
     else
