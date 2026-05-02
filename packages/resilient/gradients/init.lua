@@ -160,7 +160,7 @@ end
 -- @tparam number y0 Start Y coordinate
 -- @tparam number x1 End X coordinate
 -- @tparam number y1 End Y coordinate
-function package:_createG (gradient, x0, y0, x1, y1)
+function package:_createG (gradient, x0, y0, x1, _) -- FIXME y1 unused for now, see TODO
   local shadingFunction = self:_buildShadingFunction(gradient)
 
   -- 1. Define the shading dictionary.
@@ -177,7 +177,10 @@ function package:_createG (gradient, x0, y0, x1, y1)
     /ColorSpace /DeviceRGB
     /Coords [%f %f %f %f]
   >>]],
-    0, 0, x1 - x0, 0 -- For horizontal gradient (see TODO)
+     0, 0, x1 - x0, 0 -- For horizontal gradient (see TODO)
+     -- FIXME
+     -- Seems to work, but I am bad at coordinates transformations
+     -- and how to tweak the matrix in the pattern dictionary to get the right orientation and positioning of the gradient.
   )
   local shaderDict = pdf.parse(shadingDictSpec)
   pdf.add_dict(shaderDict, pdf.parse("/Function"), pdf.reference(shadingFunction))
