@@ -103,11 +103,17 @@ function package:_init (options)
 
   if SILE.outputter._name ~= "libtexpdf" then
     SU.warn("The resilient.forms package only does something with the libtexpdf backend.")
+    print(SILE.outputter._name)
     self._hasFormSupport = false
   else
-    self._hasFormSupport = true
-    self:_hackOutputterLinkAnnotations() -- HACK
     pdf = require("justenoughlibtexpdf")
+    if not pdf.add_page_annotation then
+      SU.warn("The resilient.forms package requires a recent version of SILE.")
+      self._hasFormSupport = false
+    else
+      self._hasFormSupport = true
+      SU.debug("resilient.forms", "PDF outputter supports forms, package enabled.")
+    end
   end
   local this = self
   SILE.outputter:registerHook("prefinish", function ()
@@ -287,14 +293,8 @@ function package:_registerOnParentAndInsetInPage (annotDict, parent)
   pdf.push_array(parent.kids, pdf.reference(annotDict))
 
   -- Add the annotation to the page's /Annots array
-  local page = pdf.get_dictionary("@THISPAGE")
-  local annots = pdf.lookup_dictionary(page, "Annots")
-  if not annots then
-    SU.debug("resilient.forms", "Creating /Annots array on current page")
-    annots = pdf.parse("[]")
-    pdf.add_dict(page, pdf.parse("/Annots"), annots)
-  end
-  pdf.push_array(annots, pdf.reference(annotDict))
+  -- We use a special method so that it plays well with libtexpdf's internal states
+  pdf.add_page_annotation(pdf.reference(annotDict))
   pdf.release(annotDict) -- Release the annotation object, no longer needed
 end
 
@@ -561,6 +561,9 @@ end
 -- @tparam number x1 End X coordinate
 -- @tparam number y1 End Y coordinate
 function package:_createCheckboxWidgetAnnotation (name, options, x0, y0, x1, y1)
+  if not self._hasFormSupport then
+    return
+  end
   SU.debug("resilient.forms", "Creating checkbox widget annotation for field", name)
   local value = SU.boolean(options.checked, false) and "/Yes" or "/Off"
   -- <<
@@ -607,6 +610,9 @@ end
 -- @tparam number x1 End X coordinate
 -- @tparam number y1 End Y coordinate
 function package:_createRadioWidgetAnnotation (name, options, x0, y0, x1, y1)
+  if not self._hasFormSupport then
+    return
+  end
   SU.debug("resilient.forms", "Creating radio button widget annotation for field", name)
   local value = assertNameValidity(SU.required(options, "value", "Radio button option must have a value"))
   local selected = SU.boolean(options.selected, false)
@@ -678,6 +684,9 @@ end
 -- @tparam number y1 End Y coordinate
 -- @tparam number fontSize Font size
 function package:_createTextWidgetAnnotation (name, options, x0, y0, x1, y1, fontSize)
+  if not self._hasFormSupport then
+    return
+  end
   SU.debug("resilient.forms", "Creating text widget annotation for field", name)
   -- <<
   --   /Type /Annot          % Annotation
@@ -741,6 +750,9 @@ end
 -- @tparam number y1 End Y coordinate
 -- @tparam number fontSize Font size
 function package:_createChoiceWidgetAnnotation (name, options, x0, y0, x1, y1, fontSize)
+  if not self._hasFormSupport then
+    return
+  end
   SU.debug("resilient.forms", "Creating choice widget annotation for field", name)
   -- <<
   --   /Type /Annot          % Annotation
@@ -779,10 +791,6 @@ end
 function package:registerCommands ()
 
   self:registerCommand("checkbox", function (options, _)
-    if not self._hasFormSupport then
-      SU.warn("The resilient.forms package requires the libtexpdf outputter to create PDF forms.")
-      return
-    end
     local name = assertNameValidity(SU.required(options, "name", "checkbox"))
     SILE.typesetter:pushHbox({
       value = nil,
@@ -806,10 +814,6 @@ function package:registerCommands ()
   end)
 
   self:registerCommand("radiobutton", function (options, _)
-    if not self._hasFormSupport then
-      SU.warn("The resilient.forms package requires the libtexpdf outputter to create PDF forms.")
-      return
-    end
     local name = assertNameValidity(SU.required(options, "name", "radiobutton"))
     SILE.typesetter:pushHbox({
       value = nil,
@@ -833,10 +837,6 @@ function package:registerCommands ()
   end)
 
   self:registerCommand("textfield", function (options, _)
-    if not self._hasFormSupport then
-      SU.warn("The resilient.forms package requires the libtexpdf outputter to create PDF forms.")
-      return
-    end
     local name = assertNameValidity(SU.required(options, "name", "textfield"))
 
     -- Quite empirical, attempt to have a reasonable height/depth
@@ -870,10 +870,6 @@ function package:registerCommands ()
   end)
 
   self:registerCommand("choicemenu", function (options, _)
-    if not self._hasFormSupport then
-      SU.warn("The resilient.forms package requires the libtexpdf outputter to create PDF forms.")
-      return
-    end
     local name = assertNameValidity(SU.required(options, "name", "choicemenu"))
 
     -- Quite empirical, attempt to have a reasonable height/depth
@@ -940,83 +936,6 @@ function package:registerCommands ()
   --  - Firefox replaces all interactive form fields with its own widgets, ignoring the appearance streams.
   --  - Chromium seems shows the appearance streams properly.
   -- PDF is a complicated format and form support is spotty in many viewers.
-end
-
--- HACK
--- Copied from the internals (locals) of the libtexpdf outputter.
-
-local function borderColor (color)
-   if color then
-      if color.r then
-         return "/C [" .. color.r .. " " .. color.g .. " " .. color.b .. "]"
-      end
-      if color.c then
-         return "/C [" .. color.c .. " " .. color.m .. " " .. color.y .. " " .. color.k .. "]"
-      end
-      if color.l then
-         return "/C [" .. color.l .. "]"
-      end
-   end
-   return ""
-end
-local function borderStyle (style, width)
-   if style == "underline" then
-      return "/BS<</Type/Border/S/U/W " .. width .. ">>"
-   end
-   if style == "dashed" then
-      return "/BS<</Type/Border/S/D/D[3 2]/W " .. width .. ">>"
-   end
-   return "/Border[0 0 " .. width .. "]"
-end
-
-function package:_hackOutputterLinkAnnotations ()
-  SILE.outputter.endLink = function (_, dest, opts, x0, y0, x1, y1)
-    local bordercolor = borderColor(opts.bordercolor)
-    local borderwidth = SU.cast("integer", opts.borderwidth)
-    local borderstyle = borderStyle(opts.borderstyle, borderwidth)
-    local target = opts.external and "/Type/Action/S/URI/URI" or "/S/GoTo/D"
-    local d = "<</Type/Annot/Subtype/Link" .. borderstyle .. bordercolor .. "/A<<" .. target .. "(" .. dest .. ")>>>>"
-    -- BEGIN HACK
-    -- pdf.end_annotation(
-    --    d,
-    --    trueXCoord(x0),
-    --    trueYCoord(y0 - opts.borderoffset),
-    --    trueXCoord(x1),
-    --    trueYCoord(y1 + opts.borderoffset)
-    -- )
-    --
-    -- Add the annotation to the page's /Annots array manually, not using pdf.end_annotation().
-    --
-    -- pdf.end_annotation() called in the original outputter code does add the annotation to the page,
-    -- but the libtexpdf internal logic uses a page->annots pointer to store it.
-    -- It then creates the dictionary without checking for its existence, so we have a conflict between
-    -- the two logics.
-    --
-    -- Let's bypass the libtexpdf logic for now.
-    -- We cannot use it for our forms, as justenoughlibtexpdf expects a string, not a parsed dictionary with
-    -- references...
-    -- Another option would be to extend the justenoughlibtexpdf package to provide a proper API to handle our
-    -- different cases (links, form fields, etc.), but this would need hacking into the C code...
-    -- And the libtexpdf module is a mess full of internal state, global variables, and side effects, which
-    -- do not help. Understandably, since it wasn't supposed to be used this way originally, but still...
-    --
-    -- There's still a problem if links are used on a page before loading the resilient.forms package,
-    -- but let's assume that this won't be the case for now, i.e. that the package will be loaded early
-    -- enough in the document...
-    local annotDict = pdf.parse(d)
-    local page = pdf.get_dictionary("@THISPAGE")
-    local annots = pdf.lookup_dictionary(page, "Annots")
-    local rect = string.format("[%f %f %f %f]", trueXCoord(x0), trueYCoord(y0 - opts.borderoffset), trueXCoord(x1), trueYCoord(y1 + opts.borderoffset))
-    pdf.add_dict(annotDict, pdf.parse("/Rect"), pdf.parse(rect))
-    if not annots then
-      SU.debug("resilient.forms", "Creating /Annots array on current page for link annotation")
-      annots = pdf.parse("[]")
-      pdf.add_dict(page, pdf.parse("/Annots"), annots)
-    end
-    pdf.push_array(annots, pdf.reference(annotDict))
-    pdf.release(annotDict) -- Release the annotation object, no longer needed
-    -- END HACK
-  end
 end
 
 package.documentation = [[\begin{document}
