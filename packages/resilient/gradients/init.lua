@@ -302,7 +302,7 @@ local GRADIENTS = {
     Color("#b5aa73"), Color("#b6ab73"), Color("#b7ac72"), Color("#b8ad72"), Color("#baae72"), Color("#bbae71"),
     Color("#bcaf71"), Color("#bdb070"), Color("#beb170"), Color("#bfb26f"), Color("#c1b36f"), Color("#c2b46e"),
     Color("#c3b56d"), Color("#c4b56d"), Color("#c5b66c"), Color("#c7b76c"), Color("#c8b86b"), Color("#c9b96a"),
-    Color("#caba6a"), Color("#ccbb69"), Color("#cdcc68"), Color("#cebc68"), Color("#cfbd67"), Color("#d1be66"),
+    Color("#caba6a"), Color("#ccbb69"), Color("#cdbc68"), Color("#cebc68"), Color("#cfbd67"), Color("#d1be66"),
     Color("#d2bf66"), Color("#d3c065"), Color("#d4c164"), Color("#d6c263"), Color("#d7c363"), Color("#d8c462"),
     Color("#d9c561"), Color("#dbc660"), Color("#dcc660"), Color("#ddc75f"), Color("#dec85e"), Color("#e0c95d"),
     Color("#e1ca5c"), Color("#e2cb5c"), Color("#e3cc5b"), Color("#e4cd5a"), Color("#e6ce59"), Color("#e7cf58"),
@@ -333,7 +333,9 @@ local GRADIENTS = {
     Color("#e16462"), Color("#f1834b"), Color("#fca636"), Color("#fccd25"), Color("#f0f921")
   },
   rocket = {
-    Color("#100b23"), Color("#110c24"), Color("#130d25"), Color("#140e26"), Color("#160e27"),
+    Color("#03051a"), Color("#04051a"), Color("#05061b"), Color("#06071c"), Color("#07071d"), Color("#08081e"),
+    Color("#0a091f"), Color("#0b0920"), Color("#0d0a21"), Color("#0e0b22"), Color("#100b23"), Color("#110c24"),
+    Color("#130d25"), Color("#140e26"), Color("#160e27"),
     Color("#170f28"), Color("#180f29"), Color("#1a102a"), Color("#1b112b"), Color("#1d112c"), Color("#1e122d"),
     Color("#20122e"), Color("#211330"), Color("#221331"), Color("#241432"), Color("#251433"), Color("#271534"),
     Color("#281535"), Color("#2a1636"), Color("#2b1637"), Color("#2d1738"), Color("#2e1739"), Color("#30173a"),
@@ -376,8 +378,51 @@ local GRADIENTS = {
     Color("#f9e2d0"), Color("#f9e3d2"), Color("#f9e5d4"), Color("#fae6d6"), Color("#fae8d8"), Color("#fae9da"),
     Color("#faebdd")
   },
-
-
+  mako = {
+    Color("#0b0405"), Color("#0d0406"), Color("#0e0508"), Color("#0f0609"), Color("#10060a"), Color("#11070c"),
+    Color("#12080d"), Color("#13090f"), Color("#140910"), Color("#150a12"), Color("#160b13"), Color("#170c15"),
+    Color("#180d16"), Color("#190e18"), Color("#1a0e19"), Color("#1b0f1a"), Color("#1c101c"), Color("#1d111d"),
+    Color("#1e111f"), Color("#1f1220"), Color("#201322"), Color("#211423"), Color("#221425"), Color("#231526"),
+    Color("#241628"), Color("#251729"), Color("#26172b"), Color("#27182d"), Color("#28192e"), Color("#291930"),
+    Color("#291a31"), Color("#2a1b33"), Color("#2b1c35"), Color("#2c1c36"), Color("#2d1d38"), Color("#2e1e39"),
+    Color("#2e1e3b"), Color("#2f1f3d"), Color("#30203e"), Color("#312140"), Color("#312142"), Color("#322243"),
+    Color("#332345"), Color("#342447"), Color("#342548"), Color("#35254a"), Color("#35264c"), Color("#36274d"),
+    Color("#37284f"), Color("#372851"), Color("#382953"), Color("#382a54"), Color("#392b56"), Color("#3a2c58"),
+    Color("#3a2c59"), Color("#3b2d5b"), Color("#3b2e5d"), Color("#3b2f5f"), Color("#3c3060"), Color("#3c3162"),
+    Color("#3d3164"), Color("#3d3266"), Color("#3e3367"), Color("#3e3469"), Color("#3e356b"), Color("#3f366d"),
+    Color("#3f366f"), Color("#3f3770"), Color("#403872"), Color("#403974"), Color("#403a76"), Color("#403b78"),
+    Color("#403c79"), Color("#413d7b"), Color("#413e7d"), Color("#413e7f"), Color("#413f80"), Color("#414082"),
+    Color("#414184"), Color("#414285"), Color("#414387"), Color("#414488"), Color("#40468a"), Color("#40478b"),
+    Color("#40488d"), Color("#40498e"), Color("#3f4a8f"), Color("#3f4b90"), Color("#3f4c92"), Color("#3e4d93"),
+    Color("#3e4f94"), Color("#3e5095"), Color("#3d5195"), Color("#3d5296"), Color("#3c5397"), Color("#3c5598"),
+    Color("#3b5698"), Color("#3b5799"), Color("#3b589a"), Color("#3a599a"), Color("#3a5b9b"), Color("#3a5c9b"),
+    Color("#395d9c"), Color("#395e9c"), Color("#385f9c"), Color("#38619d"), Color("#38629d"), Color("#38639d"),
+    Color("#37649e"), Color("#37659e"), Color("#37669e"), Color("#37689f"), Color("#36699f"), Color("#366a9f"),
+    Color("#366b9f"), Color("#366ca0"), Color("#366da0"), Color("#366fa0"), Color("#3670a0"), Color("#3671a0"),
+    Color("#3572a1"), Color("#3573a1"), Color("#3574a1"), Color("#3575a1"), Color("#3576a2"), Color("#3578a2"),
+    Color("#3579a2"), Color("#357aa2"), Color("#357ba3"), Color("#357ca3"), Color("#357da3"), Color("#357ea4"),
+    Color("#347fa4"), Color("#3480a4"), Color("#3482a4"), Color("#3483a5"), Color("#3484a5"), Color("#3485a5"),
+    Color("#3486a5"), Color("#3487a6"), Color("#3488a6"), Color("#3489a6"), Color("#348ba6"), Color("#348ca7"),
+    Color("#348da7"), Color("#348ea7"), Color("#348fa7"), Color("#3490a8"), Color("#3491a8"), Color("#3492a8"),
+    Color("#3493a8"), Color("#3495a9"), Color("#3496a9"), Color("#3497a9"), Color("#3498a9"), Color("#3499aa"),
+    Color("#349aaa"), Color("#359baa"), Color("#359caa"), Color("#359eaa"), Color("#359fab"), Color("#35a0ab"),
+    Color("#35a1ab"), Color("#36a2ab"), Color("#36a3ab"), Color("#36a4ab"), Color("#37a5ac"), Color("#37a6ac"),
+    Color("#37a8ac"), Color("#38a9ac"), Color("#38aaac"), Color("#39abac"), Color("#39acac"), Color("#3aadac"),
+    Color("#3aaead"), Color("#3bafad"), Color("#3cb1ad"), Color("#3cb2ad"), Color("#3db3ad"), Color("#3eb4ad"),
+    Color("#3fb5ad"), Color("#3fb6ad"), Color("#40b7ad"), Color("#41b8ad"), Color("#42b9ad"), Color("#43baad"),
+    Color("#44bcad"), Color("#45bdad"), Color("#46bead"), Color("#47bfad"), Color("#48c0ad"), Color("#49c1ad"),
+    Color("#4bc2ad"), Color("#4cc3ad"), Color("#4dc4ad"), Color("#4fc5ad"), Color("#50c6ad"), Color("#52c7ad"),
+    Color("#53c9ad"), Color("#55caad"), Color("#57cbad"), Color("#59ccad"), Color("#5bcdad"), Color("#5ecdad"),
+    Color("#60ceac"), Color("#62cfac"), Color("#65d0ad"), Color("#68d1ad"), Color("#6ad2ad"), Color("#6dd3ad"),
+    Color("#70d4ad"), Color("#73d4ad"), Color("#76d5ae"), Color("#79d6ae"), Color("#7cd6af"), Color("#7fd7af"),
+    Color("#82d8b0"), Color("#85d9b1"), Color("#88d9b1"), Color("#8bdab2"), Color("#8edbb3"), Color("#91dbb4"),
+    Color("#94dcb5"), Color("#96ddb5"), Color("#99ddb6"), Color("#9cdeb7"), Color("#9edfb8"), Color("#a1dfb9"),
+    Color("#a4e0bb"), Color("#a6e1bc"), Color("#a9e1bd"), Color("#abe2be"), Color("#aee3c0"), Color("#b0e4c1"),
+    Color("#b2e4c2"), Color("#b5e5c4"), Color("#b7e6c5"), Color("#b9e6c7"), Color("#bbe7c8"), Color("#bee8ca"),
+    Color("#c0e9cc"), Color("#c2e9cd"), Color("#c4eacf"), Color("#c6ebd1"), Color("#c8ecd2"), Color("#caedd4"),
+    Color("#ccedd6"), Color("#ceeed7"), Color("#d0efd9"), Color("#d2f0db"), Color("#d4f1dc"), Color("#d6f1de"),
+    Color("#d8f2e0"), Color("#daf3e1"), Color("#dcf4e3"), Color("#def5e5")
+  },
   vlag = {
     Color("#2369bd"), Color("#266abd"), Color("#296cbc"), Color("#2c6dbc"), Color("#2f6ebc"), Color("#316fbc"),
     Color("#3470bc"), Color("#3671bc"), Color("#3972bc"), Color("#3b73bc"), Color("#3d74bc"), Color("#3f75bc"),
@@ -512,7 +557,19 @@ local GRADIENTS = {
     Color("#2a3c77"), Color("#2a3b76"), Color("#2b3b76"), Color("#2b3a76"), Color("#2b3975"), Color("#2b3875"),
     Color("#2b3875"), Color("#2b3774"), Color("#2b3674"), Color("#2c3574"), Color("#2c3573"), Color("#2c3473"),
     Color("#2c3373"), Color("#2c3272"), Color("#2c3172"), Color("#2c3172")
-  }
+  },
+  -- My own personal gradients, because I like them.
+  --  - omissible is a set of grayish gradients with a bit of blue for a more "industrial" look in UI elements.
+  --  - metallic is a set of gradients with a more "metallic" look, with grays and some cyanish colors for highlights.
+  omissible = {
+     Color("#4a545f"), Color("#5b6673"), Color("#8f9aa6"), Color("#b8c2cb"), Color("#e6e9ed"),
+     Color("#ffffff"), Color("#cfd6dd"), Color("#9aa4b2")
+  },
+  metallic = {
+    Color("#4a545f"), Color("#5b6673"), Color("#8f9aa6"), Color("#b8c2cb"), Color("#e6e9ed"),
+    Color("#e6e9ed"), Color("#c4e7e1"), Color("#afccc7"), Color("#92a7a6"), Color("#748183"), Color("#555b5f"),
+    Color("#36353b")
+  },
 }
 
 --- (Override) Register all commands provided by this package.
@@ -563,6 +620,7 @@ function package:registerCommands ()
     local nbGradients = 0
     for _ in pairs(GRADIENTS) do nbGradients = nbGradients + 1 end
     for name, stops in pairs(GRADIENTS) do
+      print("Creating gradient box with gradient " .. name)
       local gradient = {
         name = name,
         stops = stops,
@@ -571,7 +629,35 @@ function package:registerCommands ()
       SILE.typesetter:pushHbox({
         value = nil,
         width = SILE.types.length("80%lw") / nbGradients,
-        height = SILE.types.length("25em"),
+        height = SILE.types.length("20em"),
+        depth = SILE.types.length("0pt"),
+        outputYourself = function (this, typesetter)
+          local x0 = typesetter.frame.state.cursorX:tonumber()
+          local y0 = typesetter.frame.state.cursorY:tonumber()
+
+          self:_createG(gradient, x0, y0 - this.depth:tonumber(), x0 + this.width:tonumber(), y0 + this.height:tonumber())
+
+          local rect = string.format("/Pattern cs /%s scn /Pattern CS /%s SCN 0 0 %f %f re 0.5 w B", gradient.name, gradient.name, this.width:tonumber(), this.height:tonumber())
+
+          SILE.outputter:drawSVG(rect,
+            x0, y0, this.width:tonumber(), this.height:tonumber(), 1)
+          typesetter.frame:advanceWritingDirection(this.width)
+        end,
+      })
+      SILE.call("hfill")
+    end
+    SILE.call("smallskip")
+    for name, stops in pairs(GRADIENTS) do
+      print("Creating gradient box with gradient " .. name)
+      local gradient = {
+        name = name .. "-vertical",
+        stops = stops,
+        angle = 0,
+      }
+      SILE.typesetter:pushHbox({
+        value = nil,
+        width = SILE.types.length("80%lw") / nbGradients,
+        height = SILE.types.length("3em"),
         depth = SILE.types.length("0pt"),
         outputYourself = function (this, typesetter)
           local x0 = typesetter.frame.state.cursorX:tonumber()
