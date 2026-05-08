@@ -21,7 +21,7 @@ package._name = "resilient.sectioning"
 function package:_init (options)
   base._init(self, options)
   self:loadPackage("counters")
-  self:loadPackage("background")
+  self:loadPackage("resilient.background")
 end
 
 local function hasContentInCurrentPage()

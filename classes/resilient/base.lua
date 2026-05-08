@@ -63,20 +63,24 @@ function class:_init (options)
   self:registerStyles()
 end
 
-local styleAwareVariant = {
+local alternateVariant = {
+  -- These have style-aware resilient variants and extra features
   lists = "resilient.lists",
   verbatim = "resilient.verbatim",
   tableofcontents = "resilient.tableofcontents",
   footnotes = "resilient.footnotes",
+  -- The following one is not really style-aware but has a resilient variant
+  -- with extra features, used (and documented) in the resilient styling paradigm.
+  background = "resilient.background",
 }
 
---- (Override) Load a package, using a style-aware alternative if available.
+--- (Override) Load a package, using a resilient alternative if available.
 --
--- Some core or 3rd-party packages may load a non-style-aware variant of
+-- Some core or 3rd-party packages may load a non-resilient variant of
 -- another package, and this would cause issues with the commands being
--- redefined to the non-style-aware variant.
+-- redefined to the non-resilient variant.
 --
--- We enforce loading the resilient style-aware variant instead, assuming
+-- We enforce loading the alternative resilient variant instead, assuming
 -- compatibility (though we cannot fully guarantee it).
 --
 -- @tparam string|table packname Package name or package instance
@@ -87,15 +91,16 @@ function class:loadPackage (packname, options)
   -- If this isn't being defective by design, I don't know what is.
   local name = type(packname) == "string" and packname or packname._name
     or SU.error("Invalid package name " .. tostring(packname))
-  if styleAwareVariant[name] then
-    SU.debug("resilient", "Loading the resilient variant of package", name, "=", styleAwareVariant[name],
+  if alternateVariant[name] then
+    SU.debug("resilient", "Loading the resilient variant of package", name, "=", alternateVariant[name],
     [[
 
 This should be compatible, but there might be differences such as hooks not
-being available, as the resilient version use styles instead.
+being available (as the resilient version may use styles instead), or commands
+having different options.
 Please consider using resilient-compatible style-aware packages when available!
 ]])
-    packname = styleAwareVariant[packname]
+    packname = alternateVariant[packname]
   end
   return parent.loadPackage(self, packname, options)
 end
