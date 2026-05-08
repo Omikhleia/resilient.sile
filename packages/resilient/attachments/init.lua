@@ -52,6 +52,7 @@ function package:_init (options)
     -- Use a closure to access 'this', check support and output attachments on the proper instance.
     if this._hasAttachmentSupport then
       this:_outputAttachments()
+      this._attachments = nil -- Clear attachments after output, for safety (should not be used after this point)
     end
   end)
 end
