@@ -197,6 +197,13 @@ function package:_releasePdfObjects ()
   for _, entry in self._parents:iter() do
     pdf.release(entry.fieldDict)
   end
+
+  -- CODE SMELL
+  -- We don't expect the method to be called multiple times,
+  -- but with SILE's plain class (i.e. not in resilient, which cancels "multiple" package re-loads),
+  -- this is possible... So we clear our list of objects to release, just in case.
+  self._objectsToRelease = {}
+  self._parents = pl.Map()
 end
 
 --- (Private) Create an appearance stream XObject.
