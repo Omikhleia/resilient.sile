@@ -1,4 +1,3 @@
-
 --- Re-implementation of the background package for re·sil·ient.
 --
 -- Version based on my PR https://github.com/sile-typesetter/sile/pull/2346
@@ -12,6 +11,9 @@
 -- Extends `packages.base`.
 --
 -- @type packages.resilient.background
+
+local PathRenderer = require("grail.renderer")
+local Color = require("grail.color")
 
 local base = require("packages.base")
 local package = pl.class(base)
@@ -31,14 +33,21 @@ local outputBackground = function ()
    -- The image may not fully cover the area (depending on scaling
    -- and aspect ratio preservation), and may anyway have transparent areas.
    if background.bg then
-      SILE.outputter:pushColor(background.bg)
-      SILE.outputter:drawRule(
-         pagea:left() - offset,
-         pagea:top() - offset,
-         pagea:width() + 2 * offset,
-         pagea:height() + 2 * offset
-      )
-      SILE.outputter:popColor()
+      local painter = PathRenderer()
+      local path, grad
+      local x0 = (pagea:left() - offset):tonumber()
+      local y0 = (pagea:top() - offset):tonumber()
+      local w = (pagea:width() + 2 * offset):tonumber()
+      local h = (pagea:height() + 2 * offset):tonumber()
+
+      path, grad = painter:rectangle(0, 0, w, -h, {
+        fill = background.bg, stroke = "none"
+      })
+
+      SILE.outputter:drawSVG(path, x0, y0, w, -h, 1)
+      if grad and #grad > 0 then
+         SILE.documentState.documentClass.packages["resilient.gradients"]:outputGradient(grad[1], x0, y0, w, -h)
+      end
    end
 
    if background.src then
@@ -117,6 +126,7 @@ end
 -- @tparam table options Package options (none currently).
 function package:_init ()
    base._init(self)
+   self:loadPackage("resilient.gradients")
    self.class:registerHook("newpage", outputBackground)
 end
 
@@ -134,7 +144,7 @@ function package:registerCommands ()
       end
       local allpages = SU.boolean(options.allpages, true)
       local pageno = SU.cast("integer", options.page or 1)
-      local color = options.color and SILE.types.color(options.color)
+      local color = options.color and Color(options.color)
       local src = options.src
 
       background.pageno = pageno
@@ -154,7 +164,7 @@ function package:registerCommands ()
       else
          SU.error("background requires at least a color or an image option")
       end
-      -- Changing the background immediately on the cuurrent page is what one may
+      -- Changing the background immediately on the current page is what one may
       -- expect. But note that it may result in the previous background having been
       -- already output on that page (via the newpage hook), esp. when allpages=true
       -- (but also when the command is invoked multiple times on the same page).
