@@ -78,7 +78,7 @@ function package:_init (options)
 
   self:loadPackage("barcodes.ean13")
   self:loadPackage("qrcode")
-  self:loadPackage("background")
+  self:loadPackage("resilient.background")
   self:loadPackage("parbox")
   self:loadPackage("framebox")
   -- There are other package assumptions for some commands,

@@ -121,6 +121,12 @@ This package is part of the *piecharts.sile* collection.
 \package-documentation{piecharts}
 ```
 
+## Page background color
+
+``` =sile
+\package-documentation{resilient.background}
+```
+
 # Book parts and utilities
 
 ## Cross-references
