@@ -297,15 +297,15 @@ The experimental \autodoc:package{resilient.gradients} package allows the creati
 
 It does not proivide any user-level command, but other packages need it to actually insert gradients into the PDF document.
 
-For instance, packages \autodoc:package{framebox} and \autodoc:package{resilient.background} also accept a gradient name in all their color-accepting options.
+For instance, packages \autodoc:package{framebox} and \autodoc:package{resilient.background} accept a gradient name in all their color-accepting options.
 
 Named gradients provided out of the box include:
 \begin{itemize}
 \item{Some usual gradients
   (\code{viridis}, \code{cividis}, \code{inferno}, \code{magma}, \code{plasma}, \code{spectral},
   \code{turbo}, \code{rocket}, \code{flare}, \code{crest}, \code{mako}, \code{vlag}),}
-\item{The plural form of a CSS named color
-  (e.g. \code{goldenrods}, \code{steelblues}, \code{orangereds}, \code{forestgreens}…) as 2-stop gradients that go from a slightly lighter to a darker shade of the corresponding color,}
+\item{The plural form of a named color
+  (ex. \language[main=und]{\code{goldenrods}, \code{steelblues}, \code{orangereds}, \code{forestgreens}…}) as 2-stop gradients that go from a slightly darker to a lighter shade of the corresponding color,}
 \item{This authors’s own gradients (\code{omissible}, \code{metallic}),}
 \end{itemize}
 

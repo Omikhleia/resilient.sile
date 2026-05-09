@@ -178,12 +178,13 @@ end
 package.documentation = [[
 \begin{document}
 The \autodoc:package{resilient.background} package is a re-implementation of the default \autodoc:package{background} package from SILE.
+This alternate implementation accepts both color specifications and gradient names as color values.
 
 As its name implies, the package allows you to set the color of the page canvas background or to use a background image extending to the full page width and height.
 
 The package provides a \autodoc:command{\background} command which usually requires at least one of the following parameters:
 \begin{itemize}
-\item{\autodoc:parameter{color=<color specification>} sets the background of the current and all following pages to that color. The color specification has the same syntax as specified in the \autodoc:package{color} package.}
+\item{\autodoc:parameter{color=<color specification|gradient name>} sets the background of the current and all following pages to that color.}
 \item{\autodoc:parameter{src=<file>} sets the background of the current and all following pages to the specified image. The latter will be scaled to the target dimension.}
 \end{itemize}
 
