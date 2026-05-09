@@ -49,7 +49,7 @@ The ⟨decoration specification⟩ is an object which can contain any of the fol
 ```yaml
 decoration:
   line: "underline|strikethrough|redacted|mark"
-  color: "⟨color specification⟩"
+  color: "⟨color specification|gradient name⟩"
   thickness: "⟨dimen⟩"
   rough: true|false
   fillstyle: "hachure|solid|zigzag|cross-hatch|dashed|zigzag-line"
