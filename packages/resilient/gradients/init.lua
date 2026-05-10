@@ -259,19 +259,16 @@ function package:registerCommands ()
     self:loadPackage("leaders")
     self:loadPackage("struts")
     self:loadPackage("parbox")
-    local GRADIENTS = {
-      "viridis", "cividis",
-      "plasma", "inferno", "magma", "rocket",
-      "turbo", "spectral", "vlag",
-      "crest",
-      "flare", "mako",
-      "goldenrods", "steelblues", "forestgreens",
-      "omissible", "metallic",
-    }
     SILE.call("smallskip")
     SILE.call("noindent")
     SILE.call("raggedleft", {}, function ()
-      for _, name in ipairs(GRADIENTS) do
+      for _, name in ipairs({
+          "viridis", "cividis",
+          "plasma", "inferno", "magma", "rocket",
+          "turbo", "spectral", "vlag",
+          "crest",
+          "flare", "mako",
+        }) do
         SILE.typesetter:typeset(" ")
         SILE.call("framebox", { fillcolor = name, padding = "0.8em" }, function ()
           SILE.call("parbox", { width = "25%lw" }, function ()
@@ -284,7 +281,42 @@ function package:registerCommands ()
       end
       SILE.call("smallskip")
       SILE.call("noindent")
-      for _, name in ipairs({ "omissible", "metallic" }) do
+      for _, name in ipairs({
+          "firebricks", "forestgreens", "steelblues"
+        }) do
+        SILE.typesetter:typeset(" ")
+        SILE.call("framebox", { fillcolor = name, padding = "0.8em" }, function ()
+          SILE.call("parbox", { width = "25%lw" }, function ()
+            SILE.call("center", {}, function ()
+              SILE.call("font", { size = "0.8em", family = "Libertinus Sans" }, { name })
+              SILE.call("strut")
+            end)
+          end)
+        end)
+      end
+      SILE.call("smallskip")
+      SILE.call("noindent")
+      for _, name in ipairs({
+          "omissible", "omissiblesilver", "omissiblegold",
+          "omissiblecopper", "omissiblebrass", "omissiblebronze",
+          "omissibleruby", "omissibleemerald", "omissiblesapphire"
+        }) do
+        SILE.typesetter:typeset(" ")
+        SILE.call("framebox", { fillcolor = name .. " 90", padding = "0.8em" }, function ()
+          SILE.call("parbox", { width = "25%lw" }, function ()
+            SILE.call("center", {}, function ()
+              SILE.call("font", { size = "0.8em", family = "Libertinus Sans" }, { name })
+              SILE.call("strut")
+            end)
+          end)
+        end)
+      end
+      SILE.call("smallskip")
+      SILE.call("noindent")
+      for _, name in ipairs({
+            "metallicsteel", "metallicsilver", "metallicgold",
+            "metalliccopper", "metallicbrass", "metallicbronze"
+        }) do
         SILE.typesetter:typeset(" ")
         SILE.call("framebox", { fillcolor = name .. " 90", padding = "0.8em" }, function ()
           SILE.call("parbox", { width = "25%lw" }, function ()
@@ -303,27 +335,22 @@ end
 
 
 package.documentation = [[\begin{document}
-The experimental \autodoc:package{resilient.gradients} package allows the creation of gradients in PDF documents.
+The experimental \autodoc:package{resilient.gradients} package allows the creation of color gradients in PDF documents.
 
-It does not proivide any user-level command, but other packages need it to actually insert gradients into the PDF document.
-
+It does not provide any user-level command, but other packages can rely on it.
 For instance, packages \autodoc:package{framebox} and \autodoc:package{resilient.background} accept a gradient name in all their color-accepting options.
 
 Named gradients provided out of the box include:
 \begin{itemize}
-\item{Some usual gradients
-  (\code{viridis}, \code{cividis}, \code{inferno}, \code{magma}, \code{plasma}, \code{spectral},
-  \code{turbo}, \code{rocket}, \code{flare}, \code{crest}, \code{mako}, \code{vlag}),}
-\item{The plural form of a named color
-  (ex. \language[main=und]{\code{goldenrods}, \code{steelblues}, \code{orangereds}, \code{forestgreens}…}) as 2-stop gradients that go from a slightly darker to a lighter shade of the corresponding color,}
-\item{This authors’s own gradients (\code{omissible}, \code{metallic}),}
+\item{Some usual gradients (\code{viridis}, etc.),}
+\item{The plural form of a named color as 2-stop gradients that go from a slightly darker to a lighter shade of the corresponding color,}
+\item{This authors’s own gradient families.}
 \end{itemize}
 
 The gradient name may be suffixed with an angle (e.g. \code{omissible 90}). Currently only angles of 0 and 90 degrees are supported.
 
 \gradients:demo
 
-\medskip
 Note that gradients are only supported with SILE’s \code{libtexpdf} outputter, and are ignored otherwise.
 
 \end{document}]]
