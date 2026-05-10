@@ -25,7 +25,8 @@ local pdf -- Loaded later only if needed
 function package:_init (options)
   base._init(self, options)
 
-  self._objectsToRelease = {} -- List of PDF objects to release at end
+  self._shadingFunctions = {} -- Cache of shading functions for gradients
+  self._objectsToRelease = {} -- List of lingering PDF objects to release at end
 
   if SILE.outputter._name ~= "libtexpdf" then
     SU.warn("The resilient.forms package only does something with the libtexpdf backend.")
@@ -42,7 +43,7 @@ function package:_init (options)
   end
   local this = self
   SILE.outputter:registerHook("prefinish", function ()
-    -- Use a closure to access 'this', check support and release PDF objects.
+    -- Use a closure to access 'this', check support and release lingering PDF objects.
     if this._hasGradientsSupport then
       this:_releasePdfObjects()
     end
@@ -51,13 +52,15 @@ end
 
 --- (Private) Release PDF objects that were kept until the end.
 --
--- Some objects (appearances, parent field dictionaries) need to be
--- released after the PDF is finished:
--- They are only referenced indirectly in other objects as we build
--- them one by one.
+-- Some re-usable objects need to be kept alive until the end of the document,
+-- and released after the PDF is finished.
+-- In this implementation, these are the shading functions, which we also keep
+-- cached for reuse, but for separation of concerns, we keep a list of objects
+-- to release in the order they were created.
+-- (The order doesn't really matter, but it makes debugging easier.)
 --
 function package:_releasePdfObjects ()
-  SU.debug("resilient.gradients", "Releasing", #self._objectsToRelease, "PDF objects (gradients)")
+  SU.debug("resilient.gradients", "Releasing", #self._objectsToRelease, "lingering PDF objects")
   for _, obj in ipairs(self._objectsToRelease) do
     pdf.release(obj)
   end
@@ -68,11 +71,11 @@ function package:_releasePdfObjects ()
   self._objectsToRelease = {}
 end
 
---- (Private) Insert pattern dictionary in the current page
+--- (Private) Insert a pattern dictionary in the current page.
 --
 -- @tparam PdfDict patternDict Pattern dictionary to insert
--- @tparam Gradient gradient Gradient definition (with a name)
-function package:_InsertInPage (patternDict, gradient)
+-- @tparam GradientRef gradient Grail gradient reference
+function package:_insertPatternInPage (patternDict, gradient)
   local resources = pdf.get_page_resources()
   local patterns = pdf.lookup_dictionary(resources, "Pattern")
   if not patterns then
@@ -89,19 +92,20 @@ end
 
 --- (Private) Build the shading function for a gradient.
 --
--- The Gradient definition is expected to have a "stops" field, which is an array of `{r, g, b}` color stops
--- with values between 0 and 1, and at least two stops.
+-- Shading functions are coordinate-independent, so we can build them once per gradient
+-- and reuse them for multiple insertions.
 --
--- @tparam Gradient gradient Gradient definition
+-- @tparam GradientRef gradient Grail gradient reference
 function package:_buildShadingFunction (gradient)
+  if self._shadingFunctions[gradient.gradient.name] then
+    SU.debug("resilient.gradients", "Using cached shading function for gradient", gradient.gradient.name)
+    return self._shadingFunctions[gradient.gradient.name]
+  end
+
   local n = #gradient.gradient.stops - 1
   if n < 1 then
     SU.error("Gradient definition must have at least two color stops.")
   end
-
-  -- TODO FIXME:
-  -- The shading function should be memoized, as the same gradient may be used multiple times in the document,
-  -- and only the shading pattern dictionary needs to be created multiple times (with different coordinates and/or angles).
 
   local functionRefs = pdf.parse("[]")
 
@@ -160,10 +164,16 @@ function package:_buildShadingFunction (gradient)
   pdf.add_dict(shadingFunction, pdf.parse("/Functions"), functionRefs)
 
   table.insert(self._objectsToRelease, shadingFunction)
+  SU.debug("resilient.gradients", "Created shading function for gradient", gradient.gradient.name)
+  self._shadingFunctions[gradient.gradient.name] = shadingFunction
   return shadingFunction
 end
 
--- @tparam Gradient gradient Gradient definition
+--- Output a gradient in the PDF document.
+--
+-- This is the public-facing method that other packages can call to insert a gradient.
+--
+-- @tparam GradientRef gradient Grail gradient reference
 -- @tparam number x0 Start X coordinate
 -- @tparam number y0 Start Y coordinate
 -- @tparam number x1 End X coordinate
@@ -213,7 +223,7 @@ function package:outputGradient (gradient, x0, y0, x1, y1)
   --                           %   e, f = translation (x0, y0)
   -- >>
 
-  -- Frame coordinates are relative to the page area (a.k.a paper),
+  -- SILE frame coordinates are relative to the page area (a.k.a paper),
   -- but the PDF coordinates needs to be relative to the actual media (print sheet).
   local deltaX = SILE.documentState.sheetSize and (SILE.documentState.sheetSize[1] - SILE.documentState.paperSize[1]) / 2 or 0
   local deltaY = SILE.documentState.sheetSize and (SILE.documentState.sheetSize[2] - SILE.documentState.paperSize[2]) / 2 or 0
@@ -233,7 +243,7 @@ function package:outputGradient (gradient, x0, y0, x1, y1)
   pdf.release(shaderDict)
 
   -- 3. Insert the pattern in the page resources and release the pattern dictionary.
-  self:_InsertInPage(patternDict, gradient)
+  self:_insertPatternInPage(patternDict, gradient)
 end
 
 --- (Override) Register all commands provided by this package.
