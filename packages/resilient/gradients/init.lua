@@ -185,21 +185,39 @@ function package:outputGradient (gradient, x0, y0, x1, y1)
   -- 1. Define the shading dictionary.
   -- <<
   --   /ShadingType 2          % Type 2 = axial shading (linear gradient)
-  --   /Extend[true true]      % Whether to extend the shading past the start and ending points.
+  --   /Extend[true true]      % Whether to extend the shading past the start and ending points
   --   /ColorSpace /DeviceRGB  % Color space for the gradient
-  --   /Coords [X0 Y0 X1 Y1]   % Coordinates defining the gradient vector.
+  --   /Coords [X0 Y0 X1 Y1]   % Coordinates defining the gradient vector
   --   /Function REF           % Reference to the shading function
   -- >>
-  local angle = gradient.angle or 0
-  local coords =
-    angle == 0 and {0, 0, x1 - x0, 0} or
-    angle == 90 and {0, 0, 0, y1 - y0} or
-    SU.error("Only angles of 0 and 90 degrees are currently supported for gradients.\n" .. [[
-  I am a bit lost at /Coords, /Matrix, the cm matrix that ends up where the
-  drawing is inserted, and how to do rotations...
-  If this is something you need, please study the code, the PDF specification,
-  and consider contributing a patch to support other angles and/or radial gradients.
-]])
+
+  -- Handle the gradient vector:
+  -- The rectangle defined by (x0, y0) and (x1, y1) in global (print sheet) coordinates,
+  -- but /Coords is in local coordinates (assumiing, as does the outputter, that the shapes are
+  -- positionned xith a cm transformation matrix.
+  -- CAVEAT: This author has a hard time with rotation matrices and coordinate spaces.
+  -- This does seem correct, but it would be good to have a second pair of eyes on this.
+  local angle = (gradient.angle or 0) % 360
+  local width  = x1 - x0
+  local height = y1 - y0
+  -- Center in local coordinates
+  local cx, cy = width * 0.5, height * 0.5
+  -- Half-dimensions of the rectangle
+  local hx, hy = math.abs(width) * 0.5, math.abs(height) * 0.5
+  -- Unit vector in the direction of the gradient
+  local dx = math.cos(math.rad(angle))
+  local dy = math.sin(math.rad(angle))
+  -- Avoid division by zero on straight gradients angles
+  local tx = (dx ~= 0) and (hx / math.abs(dx)) or nil
+  local ty = (dy ~= 0) and (hy / math.abs(dy)) or nil
+  -- Distance from the center to the intersection with the rectangle edge along the gradient direction
+  local t = (tx and ty) and math.min(tx, ty) or (tx or ty)
+  -- Gradient vector coordinates in local space, relative to the rectangle center
+  local coords = {
+    cx - t * dx, cy - t * dy,
+    cx + t * dx, cy + t * dy
+  }
+
   local shadingDictSpec = string.format([[<<
     /ShadingType 2
     /Extend [true true]
@@ -347,7 +365,7 @@ Named gradients provided out of the box include:
 \item{This authors’s own gradient families.}
 \end{itemize}
 
-The gradient name may be suffixed with an angle (e.g. \code{omissible 90}). Currently only angles of 0 and 90 degrees are supported.
+The gradient name may be suffixed with an angle (e.g. \code{omissible 90}).
 
 \gradients:demo
 
