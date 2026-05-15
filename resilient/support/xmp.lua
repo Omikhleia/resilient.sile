@@ -159,7 +159,7 @@ local XMPTemplateFacturX = [[
                   <pdfaProperty:name>DocumentFileName</pdfaProperty:name>
                   <pdfaProperty:valueType>Text</pdfaProperty:valueType>
                   <pdfaProperty:category>external</pdfaProperty:category>
-                  <pdfaProperty:description>name of the embedded XML invoice file</pdfaProperty:description>
+                  <pdfaProperty:description>The name of the embedded XML invoice file</pdfaProperty:description>
                 </rdf:li>
                 <rdf:li rdf:parseType="Resource">
                   <pdfaProperty:name>DocumentType</pdfaProperty:name>
@@ -251,7 +251,7 @@ local function xmpMetadata (documentKey, part, conformance, _, isFacturX)
       <fx:DocumentType>INVOICE</fx:DocumentType>
       <fx:DocumentFileName>factur-x.xml</fx:DocumentFileName>
       <fx:Version>1.0</fx:Version>
-      <fx:ConformanceLevel>BASIC</fx:ConformanceLevel>]])
+      <fx:ConformanceLevel>EN 16931</fx:ConformanceLevel>]])
     xmpContent = string.format(
       XMPTemplateFacturX,
       xmpPDFAidSnippet,
