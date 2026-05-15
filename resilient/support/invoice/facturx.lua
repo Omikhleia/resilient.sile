@@ -114,8 +114,11 @@ local function TradeContact (it)
   end
   return table.concat({
     '<ram:DefinedTradeContact>',
-      xmlTagHelper("ram:PersonName", {}, it.name),
-      xmlTagHelper("ram:DepartmentName", {}, it.department),
+      -- [CII-SR-465] Only one BT-41 element is allowed on an invoice / [CII-SR-466] Only one BT-56 element is allowed on an invoice.
+      -- It excludes having both a department and a person name, so we prioritize the department if both are present.
+      it.department
+        and xmlTagHelper("ram:DepartmentName", {}, it.department)
+        or xmlTagHelper("ram:PersonName", {}, it.name),
       -- TypeCode
       it.phone
         and table.concat({
@@ -134,6 +137,20 @@ local function TradeContact (it)
   })
 end
 
+local function SpecifiedLegalOrganization (it)
+  -- A bit lame / ad hoc for now, we could want to support other legal organization identifiers
+  -- in the future, such as GLN (Global Location Number = 0088), etc.
+  -- But in France, mention of SIRET is mandatory for companies, so we want to support it at least.
+  if not it.siret then
+    return ""
+  end
+  return table.concat({
+    '<ram:SpecifiedLegalOrganization>',
+      xmlTagHelper("ram:ID", { schemeID = "0009" }, it.siret), -- SIRET with ISO 6523 ICD code as schemeID
+    '</ram:SpecifiedLegalOrganization>'
+  })
+end
+
 local function TradeParty (it)
   return table.concat({
     -- ID
@@ -141,7 +158,7 @@ local function TradeParty (it)
     xmlTagHelper("ram:Name", {}, it.name),
     -- RoleCode
     -- Description
-    -- SpecifiedLegalOrganization
+    SpecifiedLegalOrganization(it),
     TradeContact(it.contact),
     PostalTradeAddress(it.address),
     -- [BR-CL-25] - Endpoint identifier scheme identifier MUST belong to the CEF EAS code list
@@ -391,6 +408,17 @@ local function SpecifiedTradeSettlementPaymentMeans (it)
   return table.concat(entries)
 end
 
+local function InvoiceReferencedDocument (it)
+  if not it["order-id"] then
+    return ""
+  end
+  return table.concat({
+    '<ram:InvoiceReferencedDocument>',
+      xmlTagHelper("ram:IssuerAssignedID", {}, it["order-id"]),
+    '</ram:InvoiceReferencedDocument>'
+  })
+end
+
 local function ApplicableHeaderTradeSettlement (it)
   local paymentMeans = SpecifiedTradeSettlementPaymentMeans(it)
   return table.concat({
@@ -420,7 +448,7 @@ local function ApplicableHeaderTradeSettlement (it)
         -- DirectDebitMandateID
       '</ram:SpecifiedTradePaymentTerms>',
       SpecifiedTradeSettlementHeaderMonetarySummation(it), -- mandatory
-      -- InvoiceReferencedDocument
+      InvoiceReferencedDocument(it),
       -- ReceivableSpecifiedTradeAccountingAccount
       -- SpecifiedAdvancePayment
     '</ram:ApplicableHeaderTradeSettlement>'

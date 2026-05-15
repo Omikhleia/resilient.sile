@@ -5,6 +5,7 @@ return {
   invoice_delivery_date = "Lieferdatum",
   invoice_due_date = "Fälligkeitsdatum",
   invoice_due_terms = "Zahlbar innerhalb von {days} {day_terms}",
+  purchase_order_reference = "Auftragsbestätigung",
   line_id = "ID",
   line_description = "Beschreibung",
   line_quantity = "Menge",

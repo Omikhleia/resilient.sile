@@ -5,6 +5,7 @@ return {
   invoice_delivery_date = "Data di Consegna",
   invoice_due_date = "Data di Scadenza",
   invoice_due_terms = "Pagamento entro {days} {day_terms}",
+  purchase_order_reference = "Ordine di Acquisto",
   line_id = "ID",
   line_description = "Descrizione",
   line_quantity = "Quantità",

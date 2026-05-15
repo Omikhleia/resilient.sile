@@ -414,6 +414,7 @@ end
 local function tradePartyBox (it)
   return Box(
     Box(Style("invoice-company", it.name)),
+    it.siret and Box("SIRET: " .. it.siret, CreateCommand("smallskip")),
     postalTradeAddress(it.address),
     it.uri and Style("invoice-website", Link(it.uri)),
     it.contact and Style("invoice-contact",
@@ -711,7 +712,8 @@ local function mainInvoiceBox (invoice)
       CreateCommand("center", {}, {
         Box(
           Span(Style("invoice-date-label", I18n("invoice_issue_date") .. ":"), Date(invoice["issue-date"])),
-          invoice["delivery-date"] and Span(Style("invoice-date-label", I18n("invoice_delivery_date") .. ":"), Date(invoice["delivery-date"]))
+          invoice["delivery-date"] and Span(Style("invoice-date-label", I18n("invoice_delivery_date") .. ":"), Date(invoice["delivery-date"])),
+          invoice["order-id"] and Span(Style("invoice-date-label", I18n("purchase_order_reference") .. ":"), invoice["order-id"])
         ),
       }),
       Skip(),
@@ -849,7 +851,6 @@ function inputter:parse (doc)
 
    -- Load needed packages
   local neededPackages = {
-    "packages.background",
     "packages.framebox",
     "packages.image",
     "packages.ptable",

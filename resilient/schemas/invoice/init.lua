@@ -64,6 +64,7 @@ local TradePartySchema = {
     logo = { type = "string" },
     uri = { type = "string" },
     ["tax-registration"] = { type = "string" },
+    siret = { type = "string" },
     address = PostalTradeAddressSchema,
     contact = DefinedTradeContactSchema,
   },
@@ -133,6 +134,12 @@ local InvoiceContentSchema = {
       default = "en",
     },
     note = { type = "string" }, -- Not from Factur-X, but free text note for presentation
+    ["order-id"] = {
+      type = { -- oneOf
+        { type = "string" },
+        { type = "number" },
+      },
+    },
     ["issue-date"] = DateSchema,
     ["due-date"] = { type = {
         DateSchema,
