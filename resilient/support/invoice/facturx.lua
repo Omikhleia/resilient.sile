@@ -391,6 +391,17 @@ local function SpecifiedTradeSettlementPaymentMeans (it)
   return table.concat(entries)
 end
 
+local function InvoiceReferencedDocument (it)
+  if not it["order-id"] then
+    return ""
+  end
+  return table.concat({
+    '<ram:InvoiceReferencedDocument>',
+      xmlTagHelper("ram:IssuerAssignedID", {}, it["order-id"]),
+    '</ram:InvoiceReferencedDocument>'
+  })
+end
+
 local function ApplicableHeaderTradeSettlement (it)
   local paymentMeans = SpecifiedTradeSettlementPaymentMeans(it)
   return table.concat({
@@ -420,7 +431,7 @@ local function ApplicableHeaderTradeSettlement (it)
         -- DirectDebitMandateID
       '</ram:SpecifiedTradePaymentTerms>',
       SpecifiedTradeSettlementHeaderMonetarySummation(it), -- mandatory
-      -- InvoiceReferencedDocument
+      InvoiceReferencedDocument(it),
       -- ReceivableSpecifiedTradeAccountingAccount
       -- SpecifiedAdvancePayment
     '</ram:ApplicableHeaderTradeSettlement>'

@@ -133,6 +133,12 @@ local InvoiceContentSchema = {
       default = "en",
     },
     note = { type = "string" }, -- Not from Factur-X, but free text note for presentation
+    ["order-id"] = {
+      type = { -- oneOf
+        { type = "string" },
+        { type = "number" },
+      },
+    },
     ["issue-date"] = DateSchema,
     ["due-date"] = { type = {
         DateSchema,

@@ -5,6 +5,7 @@ return {
   invoice_delivery_date = "Leveringsdatum",
   invoice_due_date = "Vervaldatum",
   invoice_due_terms = "Betaling binnen {days} {day_terms}",
+  purchase_order_reference = "Inkooporder",
   line_id = "ID",
   line_description = "Beschrijving",
   line_quantity = "Aantal",

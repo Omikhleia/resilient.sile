@@ -5,6 +5,7 @@ return {
   invoice_delivery_date = "Дата поставки",
   invoice_due_date = "Срок оплаты",
   invoice_due_terms = "Оплатить в течение {days} {day_terms}",
+  purchase_order_reference = "Заказ на покупку",
   line_id = "ID",
   line_description = "Описание",
   line_quantity = "кол-во", -- "Количество" is too long for usual table columns

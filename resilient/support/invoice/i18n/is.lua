@@ -5,6 +5,7 @@ return {
   invoice_delivery_date = "Afhendingardagur",
   invoice_due_date = "Gjaldadagur",
   invoice_due_terms = "Greiðsla innan {days} {day_terms}",
+  purchase_order_reference = "Kauppöntun",
   line_id = "ID",
   line_description = "Lýsing",
   line_quantity = "Magn",
