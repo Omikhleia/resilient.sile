@@ -64,6 +64,7 @@ local TradePartySchema = {
     logo = { type = "string" },
     uri = { type = "string" },
     ["tax-registration"] = { type = "string" },
+    siret = { type = "string" },
     address = PostalTradeAddressSchema,
     contact = DefinedTradeContactSchema,
   },

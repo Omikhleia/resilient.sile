@@ -414,6 +414,7 @@ end
 local function tradePartyBox (it)
   return Box(
     Box(Style("invoice-company", it.name)),
+    it.siret and Box("SIRET: " .. it.siret, CreateCommand("smallskip")),
     postalTradeAddress(it.address),
     it.uri and Style("invoice-website", Link(it.uri)),
     it.contact and Style("invoice-contact",

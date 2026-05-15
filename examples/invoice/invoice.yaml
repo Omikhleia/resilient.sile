@@ -3,7 +3,7 @@ invoice:
   language:      en                          # Optional, BCP47 language code, default "en"
                                              # Used for localized strings in the PDF
   id:            EX-SILE2025-01              # Mandatory, number or string identifying the invoice
-  order-id:      PO-SILE2025-01              # Optional, number or string identifying the related purchase order
+  # order-id:      PO-XXX-01                   # Optional, number or string identifying the related purchase order
   issue-date:    2025-11-05                  # Mandatory, YYYY-MM-DD format
   due-date:      2025-12-24                  # Mandatory, either an explicit date or a number of days
   delivery-date: 2025-11-23                  # Optional
@@ -19,8 +19,9 @@ invoice:
     name: Holmes Brothers & Associates       # Mandatory
     logo: sherlock.png                       # Optional. Not used in Factur-X but rendered in the PDF
     uri: https://sile-typesetter.org         # Optional, Not used in Factur-X but rendered in the PDF
-    tax-registration: GB1234567              # Optional.
-                                             # If present, shall have an ISO 3166-1 alpha-2 country code prefix
+    tax-registration: GB1234567              # Optional. Shall have an ISO 3166-1 alpha-2 country code prefix when present
+    # siret: "12345678901234"                  # Optional. Should be present for French companies: SIRET number (14 digits)
+
     address:                                 # Optional
       postal-code: NW1 6XE                   # Optional
       location:                              # Up to 3 location lines are used in Factur-X

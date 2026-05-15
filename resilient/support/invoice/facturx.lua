@@ -137,6 +137,20 @@ local function TradeContact (it)
   })
 end
 
+local function SpecifiedLegalOrganization (it)
+  -- A bit lame / ad hoc for now, we could want to support other legal organization identifiers
+  -- in the future, such as GLN (Global Location Number = 0088), etc.
+  -- But in France, mention of SIRET is mandatory for companies, so we want to support it at least.
+  if not it.siret then
+    return ""
+  end
+  return table.concat({
+    '<ram:SpecifiedLegalOrganization>',
+      xmlTagHelper("ram:ID", { schemeID = "0009" }, it.siret), -- SIRET with ISO 6523 ICD code as schemeID
+    '</ram:SpecifiedLegalOrganization>'
+  })
+end
+
 local function TradeParty (it)
   return table.concat({
     -- ID
@@ -144,7 +158,7 @@ local function TradeParty (it)
     xmlTagHelper("ram:Name", {}, it.name),
     -- RoleCode
     -- Description
-    -- SpecifiedLegalOrganization
+    SpecifiedLegalOrganization(it),
     TradeContact(it.contact),
     PostalTradeAddress(it.address),
     -- [BR-CL-25] - Endpoint identifier scheme identifier MUST belong to the CEF EAS code list
