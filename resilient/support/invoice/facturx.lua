@@ -114,8 +114,11 @@ local function TradeContact (it)
   end
   return table.concat({
     '<ram:DefinedTradeContact>',
-      xmlTagHelper("ram:PersonName", {}, it.name),
-      xmlTagHelper("ram:DepartmentName", {}, it.department),
+      -- [CII-SR-465] Only one BT-41 element is allowed on an invoice / [CII-SR-466] Only one BT-56 element is allowed on an invoice.
+      -- It excludes having both a department and a person name, so we prioritize the department if both are present.
+      it.department
+        and xmlTagHelper("ram:DepartmentName", {}, it.department)
+        or xmlTagHelper("ram:PersonName", {}, it.name),
       -- TypeCode
       it.phone
         and table.concat({
