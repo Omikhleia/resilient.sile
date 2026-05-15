@@ -179,6 +179,10 @@ end
 -- @tparam number x1 End X coordinate
 -- @tparam number y1 End Y coordinate
 function package:outputGradient (gradient, x0, y0, x1, y1)
+  if not self._hasGradientsSupport then
+    SU.warn("Gradient '" .. gradient.gradient.name .. "' cannot be output (gradients not supported).")
+    return
+  end
   SILE.outputter:_ensureInit()
   local shadingFunction = self:_buildShadingFunction(gradient)
 
