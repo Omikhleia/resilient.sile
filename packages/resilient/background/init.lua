@@ -38,112 +38,115 @@ local outputBackground = function ()
    local offset = SILE.documentState.bleed / 2
 
    for frame, background in backgrounds:iter() do
-      local x, y, w, h
-      if frame == "page" then
-         -- Extend the whole background to the bleed area.
-         x = xp - offset
-         y = yp - offset
-         w = wp + 2 * offset
-         h = hp + 2 * offset
-      else
-         local framea = SILE.getFrame(frame)
-         x = framea:left():tonumber()
-         y = framea:top():tonumber()
-         w = framea:width():tonumber()
-         h = framea:height():tonumber()
-         -- If the frame overlaps the page area edges, extend these edges to the bleed area.
-         if x <= xp then
-            x = x - offset
-            w = w + offset
-         end
-         if y <= yp then
-            y = y - offset
-            h = h + offset
-         end
-         if x + w >= xp + wp then
-            w = w + offset
-         end
-         if y + h >= yp + hp then
-            h = h + offset
-         end
-      end
-
-      -- Background color first:
-      -- The image may not fully cover the area (depending on scaling
-      -- and aspect ratio preservation), and may anyway have transparent areas.
-      if background.bg then
-         local painter = PathRenderer()
-         local path, grad = painter:rectangle(0, 0, w, -h, {
-            fill = background.bg, stroke = "none"
-         })
-         SILE.outputter:drawSVG(path, x, y, w, -h, 1)
-         if grad and #grad > 0 then
-            SILE.documentState.documentClass.packages["resilient.gradients"]:outputGradient(grad[1], x, y, x + w, y - h)
-         end
-      end
-
-      if background.src then
-         local scale = background.scale
-         local preserveaspect = background.preserveaspect
-         local anchor = background.anchor
-
-         -- Determine target image width and height fitting the area.
-         local imgw, imgh = SILE.outputter:getImageSize(background.src, background.pageno)
-         local iw, ih
-         if scale then
-            local xratio = w / imgw
-            local yratio = h / imgh
-            if preserveaspect then
-               local scaleFactor = SU.min(xratio, yratio)
-               iw = imgw * scaleFactor
-               ih = imgh * scaleFactor
-            else
-               iw = imgw * xratio
-               ih = imgh * yratio
-            end
+      if background.bg or background.src then
+      print("Outputting background for frame "..frame)
+         local x, y, w, h
+         if frame == "page" then
+            -- Extend the whole background to the bleed area.
+            x = xp - offset
+            y = yp - offset
+            w = wp + 2 * offset
+            h = hp + 2 * offset
          else
-            iw = imgw
-            ih = imgh
-         end
-         -- Determine image position.
-         -- When not scaling or preserving aspect ratio, we default to top-left (x, y)
-         -- since it does not matter (and we can ignore the anchor).
-         -- Otherwise, we adjust the position based on the anchor.
-         if not scale or preserveaspect then
-            if anchor == "center" then
-               x = x + (w - iw) / 2
-               y = y + (h - ih) / 2
-            elseif anchor == "n" then
-               x = x + (w - iw) / 2
-            elseif anchor == "ne" then
-               x = x + (w - iw)
-            elseif anchor == "e" then
-               x = x + (w - iw)
-               y = y + (h - ih) / 2
-            elseif anchor == "se" then
-               x = x + (w - iw)
-               y = y + (h - ih)
-            elseif anchor == "s" then
-               x = x + (w - iw) / 2
-               y = y + (h - ih)
-            elseif anchor == "sw" then
-               y = y + (h - ih)
-            elseif anchor == "w" then
-               y = y + (h - ih) / 2
+            local framea = SILE.getFrame(frame)
+            x = framea:left():tonumber()
+            y = framea:top():tonumber()
+            w = framea:width():tonumber()
+            h = framea:height():tonumber()
+            -- If the frame overlaps the page area edges, extend these edges to the bleed area.
+            if x <= xp then
+               x = x - offset
+               w = w + offset
+            end
+            if y <= yp then
+               y = y - offset
+               h = h + offset
+            end
+            if x + w >= xp + wp then
+               w = w + offset
+            end
+            if y + h >= yp + hp then
+               h = h + offset
             end
          end
-         SILE.outputter:drawImage(
-            background.src,
-            x,
-            y,
-            iw,
-            ih,
-            background.pageno
-         )
-      end
-      if not background.allpages then
-         background.bg = nil
-         background.src = nil
+
+         -- Background color first:
+         -- The image may not fully cover the area (depending on scaling
+         -- and aspect ratio preservation), and may anyway have transparent areas.
+         if background.bg then
+            local painter = PathRenderer()
+            local path, grad = painter:rectangle(0, 0, w, -h, {
+               fill = background.bg, stroke = "none"
+            })
+            SILE.outputter:drawSVG(path, x, y, w, -h, 1)
+            if grad and #grad > 0 then
+               SILE.documentState.documentClass.packages["resilient.gradients"]:outputGradient(grad[1], x, y, x + w, y - h)
+            end
+         end
+
+         if background.src then
+            local scale = background.scale
+            local preserveaspect = background.preserveaspect
+            local anchor = background.anchor
+
+            -- Determine target image width and height fitting the area.
+            local imgw, imgh = SILE.outputter:getImageSize(background.src, background.pageno)
+            local iw, ih
+            if scale then
+               local xratio = w / imgw
+               local yratio = h / imgh
+               if preserveaspect then
+                  local scaleFactor = SU.min(xratio, yratio)
+                  iw = imgw * scaleFactor
+                  ih = imgh * scaleFactor
+               else
+                  iw = imgw * xratio
+                  ih = imgh * yratio
+               end
+            else
+               iw = imgw
+               ih = imgh
+            end
+            -- Determine image position.
+            -- When not scaling or preserving aspect ratio, we default to top-left (x, y)
+            -- since it does not matter (and we can ignore the anchor).
+            -- Otherwise, we adjust the position based on the anchor.
+            if not scale or preserveaspect then
+               if anchor == "center" then
+                  x = x + (w - iw) / 2
+                  y = y + (h - ih) / 2
+               elseif anchor == "n" then
+                  x = x + (w - iw) / 2
+               elseif anchor == "ne" then
+                  x = x + (w - iw)
+               elseif anchor == "e" then
+                  x = x + (w - iw)
+                  y = y + (h - ih) / 2
+               elseif anchor == "se" then
+                  x = x + (w - iw)
+                  y = y + (h - ih)
+               elseif anchor == "s" then
+                  x = x + (w - iw) / 2
+                  y = y + (h - ih)
+               elseif anchor == "sw" then
+                  y = y + (h - ih)
+               elseif anchor == "w" then
+                  y = y + (h - ih) / 2
+               end
+            end
+            SILE.outputter:drawImage(
+               background.src,
+               x,
+               y,
+               iw,
+               ih,
+               background.pageno
+            )
+         end
+         if not background.allpages then
+            background.bg = nil
+            background.src = nil
+         end
       end
    end
 end
@@ -175,11 +178,13 @@ function package:registerCommands ()
       end
 
       if SU.boolean(options.disable, false) then
+         print("=Disabling background for frame "..frame)
          -- This option is certainly better than enforcing a white color.
          background.bg = nil
          background.src = nil
          return
       end
+      print("=Setting background for frame "..frame)
 
       local allpages = SU.boolean(options.allpages, true)
       local pageno = SU.cast("integer", options.page or 1)
