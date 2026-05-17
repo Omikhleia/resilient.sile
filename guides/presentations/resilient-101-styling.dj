@@ -1,0 +1,70 @@
+DRAFT
+
+# The _re·sil·ient_ styling paradigm
+
+A different approach to styling a document.
+
+## Styling?
+
+![Lorem](guides/resilient/images/condottiere.png){width="40%"}
+
+
+## How to style a document?
+
+Several approaches to styling...
+
+ - Macros and hooks (TeX / LaTeX)
+
+    - macro-centric styling logic
+
+ - On-the-fly rules (Typst)
+
+    - style mixed with document logic
+
+ - CSS stylesheets (HTML)
+
+    - separate styling language
+
+ - ...
+
+
+{.pagebreak .none}
+---
+
+Several approaches to styling...  [(opinionated)]{custom-style=Commentary}
+
+ - Macros and hooks (TeX / LaTeX)
+
+    - [Not intuitive, not flexible]{custom-style=Commentary}
+
+ - On-the-fly rules (Typst)
+
+    - [Partial separation of concerns]{custom-style=Commentary}
+
+ - CSS stylesheets (HTML)
+
+    - [Complex cascade model]{custom-style=Commentary}
+
+ - ["I need something else!"]{custom-style=Commentary}
+
+{.pagebreak .none}
+---
+
+Several approaches to styling...
+
+ - [Macros and hooks (TeX / LaTeX)]{custom-style=Strike}
+
+    - [macro-centric styling logic]{custom-style=Strike}
+
+ - [On-the-fly rules (Typst)]{custom-style=Strike}
+
+    - [style mixed with document logic]{custom-style=Strike}
+
+ - [CSS stylesheets (HTML)]{custom-style=Strike}
+
+    - [separate styling language]{custom-style=Strike}
+
+ - *The _re·sil·ient_ styling paradigm*
+
+    - lightweight structural styling
+

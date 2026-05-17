@@ -268,7 +268,7 @@ function package:doNestedList (listType, options, content)
       --   such as "VG<text represention of the dimension>", possibly in a
       --   some relative unit ("non-absolutized").
       local prev = SILE.typesetter.state.outputQueue[#SILE.typesetter.state.outputQueue]
-      if prev:tostring() == SILE.settings:get("lists.parskip"):tostring() then
+      if prev and prev:tostring() == SILE.settings:get("lists.parskip"):tostring() then
         SU.debug("lists", "Replacing last lists.parskip by document.parskip")
         SILE.typesetter.state.outputQueue[#SILE.typesetter.state.outputQueue] = SILE.settings:get("document.parskip")
       else
