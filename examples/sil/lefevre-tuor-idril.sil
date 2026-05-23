@@ -1,7 +1,7 @@
 \begin[papersize=6in x 9in, class=resilient.book, layout=ateliers demiluxe, headers=novel]{document}
 \use[module=packages.resilient.epigraph]
 \use[module=packages.resilient.abbr]
-\use[module=packages.background]
+\use[module=packages.resilient.background]
 \use[module=packages.couyards]
 \use[module=packages.dropcaps]
 \use[module=packages.qrcode]
@@ -17,7 +17,7 @@
 \define[command=proper]{\hbox{\process}}
 \define[command=smallcaps]{\font[features=+smcp]{\process}}
 \define[command=foreign:en]{\em{\language[main=en]{\process}}}
-\define[command=foreign:gr]{\font[family=Libertinus Serif, style=italic, size=0.95em]{\language[main=und]{\process}}}
+\define[command=foreign:gr]{\font[family=Libertinus Serif, style=italic, adjust=ex-height]{\language[main=und]{\process}}}
 \define[command=JRR]{J.{\abbr:nbsp}R.{\abbr:nbsp}R}
 %
 % Wrapper around the dropcaps...

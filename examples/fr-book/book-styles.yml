@@ -19,7 +19,7 @@ Greek:
   style:
     font:
       family: "Libertinus Serif"
-      size: "0.95em"
+      adjust: "ex-height"
 
 blockquote:
   style:
