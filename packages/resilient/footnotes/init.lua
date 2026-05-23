@@ -61,7 +61,7 @@ function package:registerCommands ()
     local width = SU.cast("measurement", options.width or "20%fw") -- "Usually 1/5 of the text block"
     local beforeskipamount = SU.cast("vglue", options.beforeskipamount or "2ex")
     local afterskipamount = SU.cast("vglue", options.afterskipamount or "1ex")
-    local thickness = SU.cast("measurement", options.thickness or "0.5pt")
+    local thickness = SU.cast("measurement", options.thickness or "0.05em") -- 0.5pt at 10pt
     SILE.call("footnote:separator", {}, function ()
       SILE.call("noindent")
       SILE.typesetter:pushExplicitVglue(beforeskipamount)
