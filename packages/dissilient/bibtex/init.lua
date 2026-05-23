@@ -347,7 +347,7 @@ function package:registerCommands ()
       local n = content[1] and tonumber(content[1]) or 3
       local width = n .. "em"
       SILE.call("raise", { height = "0.4ex" }, function ()
-         SILE.call("hrule", { height = "0.4pt", width = width })
+         SILE.call("hrule", { height = "0.04em", width = width }) -- 0.4pt at 10pt
       end)
    end)
 

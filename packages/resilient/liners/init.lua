@@ -166,7 +166,7 @@ function package:registerCommands ()
     end
     paintOptions.stroke = 'none'
     paintOptions.fill = color
-    paintOptions.strokeWidth = SU.cast("measurement", options.thickness or "0.5pt"):tonumber()
+    paintOptions.strokeWidth = SU.cast("measurement", options.thickness or "0.05em"):tonumber()  -- 0.5pt at 10pt
 
     SILE.typesetter:liner("resilient:liner:redacted", content,
       function (box, typesetter, line)
@@ -204,7 +204,7 @@ function package:registerCommands ()
     end
     paintOptions.stroke = "none"
     paintOptions.fill = color
-    paintOptions.strokeWidth = SU.cast("measurement", options.thickness or "0.5pt"):tonumber()
+    paintOptions.strokeWidth = SU.cast("measurement", options.thickness or "0.05em"):tonumber() -- 0.5pt at 10pt
 
     SILE.typesetter:liner("resilient:liner:mark", content,
       function (box, typesetter, line)
