@@ -273,3 +273,10 @@ class writers.
 
 ``` =sile
 \package-documentation{resilient.gradients}
+```
+
+## PDF annotations
+
+``` =sile
+\package-documentation{resilient.annotations}
+```
