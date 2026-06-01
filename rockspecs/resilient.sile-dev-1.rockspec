@@ -78,6 +78,7 @@ build = {
     ["sile.packages.resilient.attachments"]     = "packages/resilient/attachments/init.lua",
     ["sile.packages.resilient.forms"]           = "packages/resilient/forms/init.lua",
     ["sile.packages.resilient.gradients"]       = "packages/resilient/gradients/init.lua",
+    ["sile.packages.resilient.annotations"]     = "packages/resilient/annotations/init.lua",
 
     ["sile.packages.resilient.invoice"]         = "packages/resilient/invoice/init.lua",
 
