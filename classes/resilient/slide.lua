@@ -199,14 +199,14 @@ class.h2Frameset = {
 
 class.h1Frameset = {
   title = {
-    left = "left(page) + 5%pw",
-    right = "right(page) - 30%pw",
+    left = "left(page) + 35%pw",
+    right = "right(page) - 10%pw",
     top = "top(page) + 20%ph",
     bottom = "top(page) + 50%ph"
   },
   content = {
-    left = "left(page) + 10%pw",
-    right = "right(page) - 5%pw",
+    left = "left(page) + 30%pw",
+    right = "right(page) - 10%pw",
     top = "bottom(title) + 1%ph",
     bottom = "top(footnotes)"
   },
@@ -242,21 +242,9 @@ function class:_init (options)
 
   self:loadPackage("struts")
 
-  -- Book-related packages
+  -- Document-related packages
 
-  self:loadPackage("resilient.tableofcontents")
-  self:loadPackage("labelrefs") -- Warning: must be loaded after resilient.tableofcontents
-                                -- and before any other packages that would load it too.
-  self:loadPackage("resilient.sectioning")
-  self:loadPackage("indexer", {
-    -- TODO: For now we go for default package options:
-    --   ["page-range-format"] = "expanded",
-    --   ["page-range-delimiter"] = "–",
-    --   ["page-delimiter"] = ", ",
-    --   filler = "dotfill"
-    -- Eventually we might want to customize them.
-    -- Should it be a special style or some other mechanism?
-  })
+  self:loadPackage("resilient.document")
 
   -- Page-related packages
 
@@ -279,142 +267,6 @@ function class:_init (options)
   })
   self:loadPackage("resilient.headers")
 
-  -- Advanced formating packages
-
-  self:loadPackage("markdown")
-  self:loadPackage("djot")
-  -- Once Djot is loaded, we can register custom pre-defined symbols
-  local mdc = self.packages["markdown.commands"]
-  mdc:registerSymbol("_BIBLIOGRAPHY_", true, function (opts)
-    if not self.packages.bibtex and not self.packages["dissilient.bibtex"] then
-      SU.warn("Bibliography support is not available")
-      return {}
-    end
-    return {
-      SU.ast.createCommand("printbibliography", opts)
-    }
-  end)
-  -- Our Djot/Markdown support already provides a _TOC_ symbol.
-  -- Here we can also provide _LISTOFFIGURES_, _LISTOFTABLES_, _LISTOFLISTINGS_.
-  -- And for the sake of consistency, we can also provide _TABLEOFCONTENTS_.
-  -- It is not exactly the same as _TOC_, which does additional things when used
-  -- outside resilient, with fallback to to SILE's default implementation, but it
-  -- is doesn't hurt to provide it here.
-  local extras = { "listoffigures", "listoftables", "listoflistings", "tableofcontents" }
-  for _, sym in ipairs(extras) do
-    mdc:registerSymbol("_" .. sym:upper() .. "_", true, function (opts)
-      return {
-        SU.ast.createCommand(sym, opts)
-      }
-    end)
-  end
-  mdc:registerSymbol("_FANCYTOC_", true, function (opts)
-    return {
-      SU.ast.createCommand("use", { module = "packages.resilient.fancytoc" }),
-      SU.ast.createCommand("fancytableofcontents", opts),
-    }
-  end)
-  mdc:registerSymbol("_INDEX_", true, function (opts)
-    return {
-      SU.ast.createCommand("printindex", opts),
-    }
-  end)
-
-  -- Override document.parindent default to this author's taste
-  SILE.settings:set("document.parindent", "1.25em", true)
-  -- Override with saner defaults:
-  -- Slightly prefer underfull lines over ugly overfull content
-  -- I used a more drastic value before, but realize it can have bad effects
-  -- too, so for a default value let's be cautious. It's still better then 0
-  -- in my opinion for the general usage.
-  SILE.settings:set("linebreak.emergencyStretch", "1em", true)
-  -- This should never have been 1.2 by default:
-  -- https://github.com/sile-typesetter/sile/issues/1371
-  -- Fixed in recent versions of SILE, but nothing prevents us to set it here
-  -- as well.
-  SILE.settings:set("shaper.spaceenlargementfactor", 1, true)
-
-  -- Command override from loaded packages.
-  -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
-  -- as packages are not loaded yet at that time.
-
-  -- Override the standard foliostyle hook to rely on styles
-  self:registerCommand("foliostyle", function (_, content)
-    local styleName = "folio-odd" 
-    local division = self.resilientState.division or 2
-    --SILE.call("background", { frame = "footer", allpages = false, color= "omissible 90" }) -- FIXME
-    SILE.call("style:apply:paragraph", { name = styleName }, {
-      -- Ensure proper baseline alignment with a strut rule.
-      -- The baseline placement depends on the line output algorithm, and we cannot
-      -- trust it if it just uses the line ascenders.
-      -- Typically, if folios use "old-style" numbers, 16 and 17 facing pages shall have
-      -- aligned folios, but the 1 is smaller than the 6 and 7, the former ascends above,
-      -- and the latter descends below the baseline).
-      SU.ast.createCommand("strut", { method = "rule"}),
-      SU.ast.createCommand("style:apply:number", {
-        name = "folio-" .. DIVISIONNAME[division],
-        text = SU.ast.contentToString(content),
-      })
-    })
-  end)
-
-  -- Override the standard urlstyle hook to rely on styles
-  -- N.B. Package "url" is loaded by the markdown package.
-  self:registerCommand("urlstyle", function (_, content)
-    SILE.call("style:apply", { name = "url" }, content)
-  end)
-
-  -- Override the standard math:numberingstyle hook to rely on styles,
-  -- and also to subscribe for cross-references.
-  -- N.B. Package "math" is loaded by the markdown package.
-  self:registerCommand("math:numberingstyle", function (opts, _)
-    local text
-    local stylename = "eqno"
-    if opts.counter then
-      local altname = "eqno-" .. opts.counter
-      local fnSty = self:resolveStyle(altname, true) -- discardable
-      if not next(fnSty) then
-        fnSty = self:resolveStyle(stylename) -- fallback
-      else
-        stylename = altname
-      end
-
-      local display = fnSty.numbering and fnSty.numbering.display or "arabic"
-      -- Enforce the display style for the counter
-      -- (which might be the default 'equation' counter, or a custom one)
-      SILE.call("set-counter", { id = opts.counter, display = display })
-      text = self.packages.counters:formatCounter(SILE.scratch.counters[opts.counter])
-    elseif opts.number then
-      text = opts.number
-    else
-      SU.error("No counter or number provided for math numbering")
-    end
-    -- Cross-ref support (from markdown, we can get an id, in most of our packages,
-    -- we can get a marker, play fair with all)
-    local mark = opts.id or opts.marker
-    if mark then
-      local labelRefs = self.packages.labelrefs
-      labelRefs:pushLabelRef(text)
-      SILE.call("style:apply:number", { name = stylename, text = text })
-      SILE.call("label", { marker = mark })
-      labelRefs:popLabelRef()
-    else
-      SILE.call("style:apply:number", { name = stylename, text = text })
-    end
-  end)
-
-  -- Override the indexer style hooks to rely on styles
-  self:registerCommand("index:entry:style", function (opts, content)
-    local name = "index-entry-" .. opts.index
-    local styleName = self:hasStyle(name) and name or "index-entry-main"
-    SILE.call("style:apply", { name = styleName }, content)
-  end)
-  self:registerCommand("index:pages:style", function (opts, content)
-    local name = "index-pages-" .. opts.index
-    local styleName = self:hasStyle(name) and name or "index-pages-main"
-    SILE.call("style:apply", { name = styleName }, content)
-  end)
-
   -- TRANSITIONAL:
   -- These packages should do it themselves eventually, with a proper interface
   -- to declare commands as contextual.
@@ -422,10 +274,6 @@ function class:_init (options)
   -- commands reset).
   -- We cancel reloading  in our override superclass, so we are safe.
   SILE.resilient.enforceContextualCommand("footnote")
-  SILE.resilient.enforceContextualCommand("label")
-  SILE.resilient.enforceContextualCommand("indexentry")
-  SILE.resilient.enforceContextChangingCommand("ref", "ref")
-  SILE.resilient.enforceContextChangingCommand("indexer", "printindex")
 
   -- FIXME NOT HERE
   SILE.call("font", { size = "4.5%ph", family = "Lato" })
@@ -447,30 +295,7 @@ end
 function class:declareOptions ()
   base.declareOptions(self)
 
-  self:declareOption("layout", function(_, value)
-    if value then
-      self.layout = value
-    end
-    return self.layout
-  end)
-
-  self:declareOption("offset", function(_, value)
-    if value then
-      self.offset = value
-    end
-    return self.offset
-  end)
-
-  self:declareOption("headers", function(_, value)
-    if value then
-      if not SILE.scratch.slide.headers[value] then
-        SU.warn("Unknown headers type '".. value .. "', switching to 'technical'")
-        value = "technical"
-      end
-      self.headers = value
-    end
-    return self.headers
-  end)
+  -- FIXME do we need options
 end
 
 --- (Override) Set class options.
@@ -484,28 +309,9 @@ end
 function class:setOptions (options)
   options = options or {}
   options.landscape = SU.boolean(options.landscape, true) -- Switch to landscape by default
-  options.layout = options.layout or "division"
-  options.headers = options.headers or "technical"
   base.setOptions(self, options) -- so that papersize etc. get processed...
 
-  local layout = layoutParser:match(options.layout)
-  if not layout then
-    SU.warn("Unknown page layout '".. options.layout .. "', switching to 'division'")
-    layout = layoutParser:match("division")
-  end
-
-  local offset = SU.cast("measurement", options.offset or "0")
-  layout:setOffset(offset)
-
-  -- Kind of a hack dues to restrictions with frame parsers.
-  layout:setPaperHack(SILE.documentState.paperSize[1], SILE.documentState.paperSize[2])
-
-  -- TRICKY, TO REMEMBER:
-  -- the default frameset has to be set *before* the completion of
-  -- the base (plain) class init, or it isn't applied on the first
-  -- page...
-  --self.oddFrameset, self.evenFrameset = layout:frameset()
-  self.defaultFrameset = self.h1Frameset -- just to be sure, it will be overridden by the masters anyway
+  self.defaultFrameset = self.h1Frameset --  FIXME just to be sure, it will be overridden by the masters anyway?
 end
 
 --- (Override) Register class styles.
@@ -515,23 +321,21 @@ end
 function class:registerStyles ()
   base.registerStyles(self)
 
-  -- Front, main, back matter
-  local divisionFolio = {
-    frontmatter = "roman",
-  }
-  for _, name in ipairs(DIVISIONNAME) do
-    self:registerStyle("folio-" .. name, {}, {
-      numbering = {
-        display = divisionFolio[name] or "arabic"
-      }
-    })
-  end
-
   -- Sectioning styles
   self:registerStyle("sectioning-base", {}, {
     paragraph = { before = { indent = false },
                   after = { indent = false } }
   })
+
+  self:registerStyle("slide-chapter", { inherit = "sectioning-base" }, {
+    font = { weight = 700 },
+    paragraph = {  align = "right" },
+  })
+  self:registerStyle("slide-section", { inherit = "sectioning-base" }, {
+    font = { weight = 700 },
+    paragraph = {  align = "center" },
+  })
+
   self:registerStyle("sectioning-part", { inherit = "sectioning-base" }, {
     font = { weight = 700, size = "1.6em" },
     paragraph = { before = { skip = "15%fh" },
@@ -693,14 +497,6 @@ function class:registerStyles ()
     paragraph = { align = "right" }
   })
 
-  -- quotes
-  self:registerStyle("blockquote", {}, {
-    font = { size = "0.95em" },
-    paragraph = { before = { skip = "smallskip" },
-                  margin = { left = "2em", right = "2em" },
-                  after = { skip = "smallskip" } }
-  })
-
   -- captioned elements
   self:registerStyle("figure", {}, {
     paragraph = { before = { skip = "smallskip", indent = false },
@@ -827,43 +623,6 @@ function class:registerStyles ()
     numbering = { before = { text = "listing " } }
   })
 
-  -- code
-  -- Default is similar to the original plain \code command, and quite as bad, but at
-  -- least uses a font-relative size.
-  self:registerStyle("code", {}, {
-    font = {
-      family = "Hack",
-      adjust = "ex-height",
-    }
-  })
-
-  -- url style
-  self:registerStyle("url", { inherit = "code"}, {
-  })
-
-  -- display math equation numberstyle
-  self:registerStyle("eqno", {}, {
-    numbering = {
-      before = { text = "(" },
-      display = "arabic",
-      after = { text = ")" }
-    }
-  })
-
-  -- Special non-standard style for dropcaps (for commands initial-joined and initial-unjoined)
-  self:registerStyle("dropcap", {}, {
-    font = { family = "Zallman Caps" },
-    special = {
-      lines = 2
-    }
-  })
-
-  -- index styles
-  self:registerStyle("index-entry-main", {}, {
-  })
-  self:registerStyle("index-pages-main", {}, {
-    font = { features = "+onum" }
-  })
 end
 
 --- Output the header content in the specified frame.
@@ -877,8 +636,8 @@ function class:_outputHeader (headerContent, frame)
   if headerFrame then
     SILE.typesetNaturally(headerFrame, function ()
 --        SILE.typesetter:typeset("frame " .. (self:currentMaster() or "none"))
-        print("Current master in header output:", self:currentMaster() or "none", headerContent)
-        if headerContent then
+      print("Current master in header output:", self:currentMaster() or "none", headerContent)
+      if headerContent then
         SILE.settings:pushState()
         -- Restore the settings to the top of the queue, which should be the document
         SILE.settings:toplevelState()
@@ -921,7 +680,7 @@ function class:endPage ()
     SILE.scratch.headers.even = SILE.scratch.info.thispage.headerEven[#SILE.scratch.info.thispage.headerEven]
   end
     self:_outputHeader(SILE.scratch.headers.odd)
-    self:_outputHeader(SILE.scratch.headers.odd, "title")
+    self:_outputHeader(SILE.scratch.headers.odd, "title") -- FIXME messy order
   --else
     --self:_outputHeader(SILE.scratch.headers.even)
   --end
@@ -963,27 +722,12 @@ end
 --
 function class:registerCommands ()
   base.registerCommands(self)
---  SILE.typesetNaturally(SILE.frames[options.frame], function ()
---          SILE.process(content)
---       end)
-  -- Running headers
-
-  self:registerCommand("book-title", function (_, content)
-    if self.headers == "novel" then
-      SILE.call("even-running-header", {}, content)
-    end
-  end, "Book title low-level command (for running headers depending on headers type)")
 
   self:registerCommand("odd-tracked-header", function (_, content)
     local headerContent = function ()
       SILE.typesetter:leaveHmode()
-      SILE.process({
-        SU.ast.createCommand("font", { size= "5%ph" }), -- FIXME THEME
-        SU.ast.createCommand("strut", { method = "rule"}),
-        SU.ast.createCommand("color", { color = contrastColor(Color("omissiblebronze")) }, -- FIXME THEME
-          SU.ast.subContent(content)
-        )
-      })
+      SILE.process(content)
+      
     end
     SILE.call("info", {
       category = "headerOdd",
@@ -992,18 +736,11 @@ function class:registerCommands ()
   end, "Text to appear on the top of odd pages, tracked via info node.")
 
   self:registerCommand("odd-running-header", function (_, content)
-      SILE.scratch.headers.odd = function ()
-        SILE.typesetter:leaveHmode()
-        SILE.process({
-          SU.ast.createCommand("font", { size= "5%ph" }), -- FIXME THEME
-          SU.ast.createCommand("strut", { method = "rule"}),
-          SU.ast.createCommand("color", { color = contrastColor(Color("omissiblebronze")) }, -- FIXME THEME
-            SU.ast.subContent(content)
-          )
-        })
+    SILE.scratch.headers.odd = function ()
+      SILE.typesetter:leaveHmode()
+      SILE.process(content) 
     end
   end, "Text to appear on the top odd pages.")
-
 
   self:registerCommand("part", function (options, content)
     -- FIXME TODO
@@ -1046,27 +783,42 @@ function class:registerCommands ()
           --SILE.call("background", { frame = "page", color = "omissiblebronze", allpages = false }) -- FIXME
         end
         end)
-    SILE.typesetter:leaveHmode()
-    SILE.call("goodbreak")
+    --SILE.typesetter:leaveHmode()
+
     SILE.call("open-on-any-page")
     self:switchMaster("slide-h1")
     
     --SILE.call("odd-tracked-header", {}, content)
-    SILE.call("odd-running-header", {}, content)
-    SILE.typesetNaturally(SILE.getFrame("title"), function ()
-      SILE.process(content)
-    end)
+    SILE.call("odd-running-header", {}, {
+      SU.ast.createStructuredCommand("style:apply:paragraph", { name = "slide-chapter" }, {
+            SU.ast.createCommand("font", { size= "5%ph" }), -- FIXME THEME
+            SU.ast.createCommand("strut", { method = "rule"}),
+            SU.ast.createCommand("color", { color = contrastColor(Color("omissiblebronze")) }, -- FIXME THEME
+              SU.ast.subContent(content)
+            )
+          })
+    })
+    -- SILE.typesetNaturally(SILE.getFrame("title"), function ()
+    --   pl.pretty.dump(content)
+    --   SU.error("EEK")
+    --   SILE.process({ "yolo" })
+    -- end)
   end, "Begin a new chapter.")
 
   self:registerCommand("section", function (options, content)
-    SILE.typesetter:leaveHmode()
-    SILE.call("goodbreak")  
+    --SILE.typesetter:leaveHmode()
     SILE.call("open-on-any-page")
     self:switchMaster("slide-h2")
 
     --SILE.call("odd-tracked-header", {}, {
     SILE.call("odd-running-header", {}, {
-      SU.ast.createCommand("center", {}, SU.ast.subContent(content))
+      SU.ast.createStructuredCommand("style:apply:paragraph", { name = "slide-section" }, {
+            SU.ast.createCommand("font", { size= "5%ph" }), -- FIXME THEME
+            SU.ast.createCommand("strut", { method = "rule"}),
+            SU.ast.createCommand("color", { color = contrastColor(Color("omissiblebronze")) }, -- FIXME THEME
+              SU.ast.subContent(content)
+            )
+          })
     })
     SILE.typesetter:leaveHmode()
   end, "Begin a new section.")
@@ -1082,14 +834,6 @@ function class:registerCommands ()
     -- options.style = "sectioning-subsubsection"
     -- SILE.call("sectioning", options, content)
   end, "Begin a new subsubsection.")
-
-  -- Quotes
-
-  self:registerCommand("blockquote", function (options, content)
-    local variant = options.variant and "blockquote-" .. options.variant or nil
-    local style = variant and self.styles:hasStyle(variant) and variant or "blockquote"
-    SILE.call("style:apply:paragraph", { name = style }, content)
-  end, "Typeset its contents in a styled blockquote.")
 
   -- Captioned elements
   -- N.B. Despite the similar naming to LaTeX, these are not "floats"
@@ -1198,46 +942,6 @@ function class:registerCommands ()
 
     SILE.call("tableofcontents", { start = start, depth = 0 })
   end, "Output the list of listings.")
-
-  -- Special dropcaps (provided as convenience)
-  -- Also useful as pseudo custom style in Markdown or Djot.
-
-  self:registerCommand("book:dropcap", function (options, content)
-    local join = SU.boolean(options.join, true)
-    local style = options.style or "dropcap"
-
-    if type(content) ~= "table" then SU.error("Expected a table content in dropcap environment") end
-    if #content ~= 1 then SU.error("Expected a single letter in dropcap environment") end
-    local letter = content[1]
-
-    local dropcapSty = self.styles:resolveStyle(style)
-    local lines = dropcapSty.special and dropcapSty.special.lines
-    if not lines then
-      -- Fallback to regular style
-      SILE.call('style:apply', { name = style }, { letter })
-    else
-      local color = dropcapSty.color
-      local family = dropcapSty.font and dropcapSty.font.family
-      if dropcapSty.properties or dropcapSty.decoration then
-        -- I am not convinced the extra complexity is worth it for such an edge case.
-        SU.warn("Dropcap style does not support properties and decoration")
-      end
-      SILE.call("use", { module = "packages.dropcaps" })
-      SILE.call("dropcap", { family = family, lines = lines, join = join, color = color }, { letter })
-    end
-  end, "Style-aware initial capital letter (normally and internal command)")
-
-  self:registerCommand("initial-joined", function (options, content)
-    SILE.call("book:dropcap", { style = options.style, join = true }, content)
-  end, "Style-aware initial capital letter, joined to the following text.")
-
-  self:registerCommand("initial-unjoined", function (options, content)
-    SILE.call("book:dropcap", { style = options.style, join = false }, content)
-  end, "Style-aware initial capital letter, not joined to the following text.")
-
-  self:registerCommand('code', function(_, content)
-    SILE.call('style:apply', { name = 'code' }, content)
-  end, "Style the content as code")
 end
 
 --- (Private) Enable slide presentation effects.

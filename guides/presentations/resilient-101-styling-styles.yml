@@ -3,16 +3,16 @@
 
 Commentary:
   style:
+    color: "darkblue"
     font:
-      adjust: cap-height
-      family: Mynerve
-    color: darkblue
+      adjust: "cap-height"
+      family: "Mynerve"
 
 Strike:
   style:
     decoration:
-      line: strikethrough
-      color: darkblue
+      color: "darkblue"
+      line: "strikethrough"
       rough: true
 
 blockquote:
@@ -107,6 +107,25 @@ eqno:
       before:
         text: "("
       display: "arabic"
+
+fancytoc-base:
+  style:
+
+fancytoc-level1:
+  inherit: "fancytoc-base"
+  style:
+    font:
+      features: "+smcp"
+
+fancytoc-level2:
+  inherit: "fancytoc-base"
+  style:
+
+fancytoc-pageno:
+  inherit: "fancytoc-base"
+  style:
+    font:
+      features: "+onum"
 
 figure:
   style:
@@ -908,6 +927,22 @@ sectioning-subsubsection:
         reference: "sectioning-other-number"
       settings:
         toclevel: 4
+
+slide-chapter:
+  inherit: "sectioning-base"
+  style:
+    font:
+      weight: 700
+    paragraph:
+      align: "right"
+
+slide-section:
+  inherit: "sectioning-base"
+  style:
+    font:
+      weight: 700
+    paragraph:
+      align: "center"
 
 table:
   style:
