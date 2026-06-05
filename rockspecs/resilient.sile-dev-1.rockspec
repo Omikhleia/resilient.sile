@@ -71,6 +71,7 @@ build = {
     ["sile.packages.resilient.background"]      = "packages/resilient/background/init.lua",
 
     ["sile.packages.resilient.plain"]           = "packages/resilient/plain/init.lua",
+    ["sile.packages.resilient.document"]        = "packages/resilient/document/init.lua",
 
     ["sile.packages.resilient.bible.usx"]       = "packages/resilient/bible/usx/init.lua",
     ["sile.packages.resilient.bible.tei"]       = "packages/resilient/bible/tei/init.lua",
