@@ -224,8 +224,11 @@ function class.newPar (typesetter)
 end
 
 -- WARNING: not called as class method
-function class.endPar (typesetter)
-   typesetter:pushVglue(SILE.settings:get("document.parskip"))
+-- First argument is the typesetter (not used here)
+function class.endPar (_)
+  -- BEGIN RESILIENT CONSECUTIVE PARSKIP COLLAPSING
+  --   (MOVED TO THE TYPESETTER)
+  -- END RESILIENT CONSECUTIVE PARSKIP COLLAPSING
   -- BEGIN SILEX/RESILIENT HANGED LINES
   --   (MOVED TO THE TYPESETTER)
   -- END SILEX/RESILIENT HANGED LINES
