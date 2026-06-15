@@ -11,6 +11,14 @@ local number = SILE.parserBits.number
 local measurement = SILE.parserBits.measurement
 local ws = P(":") + SILE.parserBits.ws
 
+-- A dimension accepted by the "geometry" layout. It may be a measurement with
+-- an explicit unit (e.g. "0.5in") or a unit-less numeric value, in which case
+-- it defaults to points (issue #205). The ordered choice mirrors the
+-- "measurement + number" idiom already used by the frame parser.
+local dimen = measurement + (number / function (n)
+  return SILE.types.measurement(tostring(n) .. "pt")
+end)
+
 local layoutParser = P{
   "layout",
   layout  = (V"none"
@@ -80,8 +88,8 @@ local layoutParser = P{
   rule = P"12e" + P"10e" + P"halt" + P"valt",
   geometry = P("geometry")
   * (
-    (ws * measurement * ws * measurement * ws * measurement * ws * measurement)
-    + (ws * measurement * ws * measurement)
+    (ws * dimen * ws * dimen * ws * dimen * ws * dimen)
+    + (ws * dimen * ws * dimen)
   ) / function (head, inner, foot, outer)
   local layout = require("resilient.layouts.geometry")
   return layout({ head = head, foot = foot or head, inner = inner, outer = outer or inner })
