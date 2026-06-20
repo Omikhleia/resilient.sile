@@ -13,11 +13,14 @@ local ws = P(":") + SILE.parserBits.ws
 
 -- A dimension accepted by the "geometry" layout. It may be a measurement with
 -- an explicit unit (e.g. "0.5in") or a unit-less numeric value, in which case
--- it defaults to points (issue #205). The ordered choice mirrors the
--- "measurement + number" idiom already used by the frame parser.
-local dimen = measurement + (number / function (n)
-  return SILE.types.measurement(tostring(n) .. "pt")
-end)
+-- it defaults to points (issue #205). This mirrors SILE's own parserBits
+-- `amount` idiom (measurement + number / inferpoints): both branches yield a
+-- { amount, unit } capture table, which the geometry layout consumes directly
+-- via SILE.types.measurement().
+local inferpoints = function (n)
+  return { amount = n, unit = "pt" }
+end
+local dimen = measurement + number / inferpoints
 
 local layoutParser = P{
   "layout",
