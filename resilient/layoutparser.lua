@@ -10,6 +10,7 @@ local P, C, V = lpeg.P, lpeg.C, lpeg.V
 local number = SILE.parserBits.number
 local measurement = SILE.parserBits.measurement
 local ws = P(":") + SILE.parserBits.ws
+local dimen = measurement + number -- measurement (with unit) or number (in points)
 
 local layoutParser = P{
   "layout",
@@ -80,8 +81,8 @@ local layoutParser = P{
   rule = P"12e" + P"10e" + P"halt" + P"valt",
   geometry = P("geometry")
   * (
-    (ws * measurement * ws * measurement * ws * measurement * ws * measurement)
-    + (ws * measurement * ws * measurement)
+    (ws * dimen * ws * dimen * ws * dimen * ws * dimen)
+    + (ws * dimen * ws * dimen)
   ) / function (head, inner, foot, outer)
   local layout = require("resilient.layouts.geometry")
   return layout({ head = head, foot = foot or head, inner = inner, outer = outer or inner })
