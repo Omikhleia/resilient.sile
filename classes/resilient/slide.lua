@@ -1,16 +1,109 @@
---- The re·sil·ient book document class.
+--- The re·sil·ient slide document class.
 --
--- Following the re·sil·ient styling paradigm, and providing way more features
--- then SILE's default "book" class.
+-- Following the re·sil·ient styling paradigm.
 --
 -- @license MIT
--- @copyright (c) 2021-2026 Omikhleia / Didier Willis
--- @module classes.resilient.book
+-- @copyright (c) 2025 Omikhleia / Didier Willis
+-- @module classes.resilient.slide
 
 local layoutParser = require("resilient.layoutparser")
 
-SILE.scratch.book = SILE.scratch.book or {}
-SILE.scratch.book.headers = {
+-- FIXME MOVED FROM BOOKMATTERS = MAKE IT UTILS
+
+local Color = require("grail.color")
+local getGradient = require("grail.gradient").getGradient
+
+--- Compute a weighted color distance in 3D space.
+--
+-- @tparam Color color Input color (RGB only for now)
+local function weightedColorDistanceIn3D (color)
+  -- Source: https://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
+  return math.sqrt(
+    (color.r * 255)^2 * 0.241
+    + (color.g * 255)^2 * 0.691
+    + (color.b * 255)^2 * 0.068
+  )
+end
+
+--- Compute the average color around the midpoint of a linear gradient.
+--
+-- We just pick the 2 or 3 stops around the midpoint, and average their RGB values.
+--
+-- @tparam string gradname Name of the gradient
+-- @treturn Color Average color around the midpoint of the gradient
+local function averageLinearGradientMidpointColors (gradname)
+  local grad = getGradient(gradname)
+  if not grad then
+    SU.error("Gradient '" .. gradname .. "' not found for average color computation")
+  end
+  local mid = math.ceil(#grad.stops / 2)
+  local prevstopindex = mid > 1 and (mid - 1) or mid
+  local nextstopindex = mid < #grad.stops and mid + 1 or mid
+  local r = 0
+  local g = 0
+  local b = 0
+  for k = prevstopindex, nextstopindex do
+    local stop = grad.stops[k]
+    r = r + stop.r
+    g = g + stop.g
+    b = b + stop.b
+  end
+  local n = nextstopindex - prevstopindex + 1
+  return { r = r / n, g = g / n, b = b / n } -- no need to cast as a Color object
+end
+
+--- Compute the average color around the midpoint of a linear gradient.
+--
+-- We just pick the 2 or 3 stops around the midpoint, and average their RGB values.
+--
+-- @tparam string gradname Name of the gradient
+-- @treturn Color Average color around the midpoint of the gradient
+local function averageLinearGradientMidpointColors (gradname)
+  local grad = getGradient(gradname)
+  if not grad then
+    SU.error("Gradient '" .. gradname .. "' not found for average color computation")
+  end
+  local mid = math.ceil(#grad.stops / 2)
+  local prevstopindex = mid > 1 and (mid - 1) or mid
+  local nextstopindex = mid < #grad.stops and mid + 1 or mid
+  local r = 0
+  local g = 0
+  local b = 0
+  for k = prevstopindex, nextstopindex do
+    local stop = grad.stops[k]
+    r = r + stop.r
+    g = g + stop.g
+    b = b + stop.b
+  end
+  local n = nextstopindex - prevstopindex + 1
+  return { r = r / n, g = g / n, b = b / n } -- no need to cast as a Color object
+end
+
+--- Compute the best contrast color (black or white) for a given background color.
+--
+-- If the background color is a gradient, there is no perfect solution, and we can compute an average color
+-- around the midpoint of the gradient.
+-- The implicit assumption is that the gradient is reasonably smooth, and that the midpoint is representative
+-- of the overall gradient for use with text content.
+-- This is certainly not perfect, but it seems to be a reasonable heuristic for most cases.
+--
+-- @tparam Color color Input color (RGB only for now)
+-- @treturn string "black" or "white"
+local function contrastColor(color)
+  if color.G then
+    color = averageLinearGradientMidpointColors(color.G)
+  end
+  if not color.r then
+    -- Not going to bother with other color schemes for now...
+    SU.error([[Background color for back cover must be in RGB.
+Feel free to propose a PR to the maintainer if you want it otherwise]])
+  end
+  print("weighted color distance for contrast color computation:", weightedColorDistanceIn3D(color))
+  return weightedColorDistanceIn3D(color) < 130 and "white" or "black"
+end
+
+SILE.scratch.slide = SILE.scratch.slide or {}
+SILE.scratch.slide.headers = {
   novel = true,
   technical = true,
   none = true
@@ -22,17 +115,114 @@ local DIVISIONNAME = {
   "backmatter"
 }
 
---- The resilient book class.
+-- HACK Just 'cause we don't want a warning when the frame isn't found.
+local getFrame = function (id)
+   if type(id) == "table" then
+      SU.error("Passed a table, expected a string", true)
+   end
+   local frame, last_attempt
+   while not frame do
+      frame = SILE.frames[id]
+      id = id:gsub("_$", "")
+      if id == last_attempt then
+         break
+      end
+      last_attempt = id
+   end
+   return frame -- or SU.warn("Couldn't find frame ID " .. id, true)
+end
+
+--- The resilient slide class.
 --
 -- Extends `classes.resilient.base`.
 --
--- @type classes.resilient.book
+-- @type classes.resilient.slide
 
 local base = require("classes.resilient.base")
 local class = pl.class(base)
-class._name = "resilient.book"
-class.firstContentFrame = "content" -- We'll define framesets later
-                                    -- but this remains true.
+class._name = "resilient.slide"
+class.firstContentFrame = "content"
+-- class.defaultFrameset = {
+--   content = {
+--     left = "left(page) + 5%pw",
+--     right = "right(page) - 5%pw",
+--     top = "top(page) + 15%ph",
+--     bottom = "top(footnotes)"
+--   },
+--   folio = { -- same as footer for now
+--     left = "left(page)",
+--     right = "right(page)",
+--     top = "bottom(page) - 15%ph",
+--     bottom = "bottom(page)",
+    
+--   },
+--   footnotes = {
+--     left = "left(content)",
+--     right = "right(content)",
+--     bottom = "bottom(page) - 15%ph",
+--     height = "0"
+--   }
+-- }
+
+class.h2Frameset = {
+  content = {
+    left = "left(page) + 5%pw",
+    right = "right(page) - 5%pw",
+    top = "top(page) + 15%ph",
+    bottom = "top(footnotes)",
+  },
+  folio = { -- same as footer for now
+    left = "left(page)",
+    right = "right(page)",
+    bottom = "bottom(page)",
+    height = "height(header)"
+  },
+  header = {
+    left = "left(page)",
+    right = "right(page)",
+    top = "top(page)",
+    bottom = "top(content)-5%ph"
+  },
+  footer = {
+    left = "left(page)",
+    right = "right(page)",
+    bottom = "bottom(page)",
+    height = "height(header)"
+  },
+  footnotes = {
+    left = "left(content)",
+    right = "right(content)",
+    bottom = "bottom(page) - 15%ph",
+    height = "0"
+  }
+}
+
+class.h1Frameset = {
+  title = {
+    left = "left(page) + 35%pw",
+    right = "right(page) - 10%pw",
+    top = "top(page) + 20%ph",
+    bottom = "top(page) + 50%ph"
+  },
+  content = {
+    left = "left(page) + 30%pw",
+    right = "right(page) - 10%pw",
+    top = "bottom(title) + 1%ph",
+    bottom = "top(footnotes)"
+  },
+  folio = { -- same as footer for now
+    left = "left(page)",
+    right = "right(page)",
+    bottom = "bottom(page)",
+    height = "15%ph"
+  },
+  footnotes = {
+    left = "left(content)",
+    right = "right(content)",
+    bottom = "bottom(page) - 15%ph",
+    height = "0"
+  }
+}
 
 --- (Constructor) Initialize the book class.
 --
@@ -46,7 +236,9 @@ function class:_init (options)
   base._init(self, options)
   self.resilientState = {}
 
-  -- Basic low-level packages used in this class
+  self:_enableSlideEffects()
+
+  -- Basic low-level packages
 
   self:loadPackage("struts")
 
@@ -59,44 +251,21 @@ function class:_init (options)
   self:loadPackage("folio")
   self:loadPackage("masters")
   self:defineMaster({
-    id = "right",
+    id = "slide-h1",
     firstContentFrame = self.firstContentFrame,
-    frames = self.oddFrameset
+    frames = self.h1Frameset
   })
   self:defineMaster({
-    id = "left",
+    id = "slide-h2",
     firstContentFrame = self.firstContentFrame,
-    frames = self.evenFrameset
+    frames = self.h2Frameset
   })
-  self:loadPackage("twoside", { oddPageMaster = "right", evenPageMaster = "left" })
+
   self:loadPackage("resilient.footnotes", {
     insertInto = "footnotes",
     stealFrom = { "content" }
   })
   self:loadPackage("resilient.headers")
-
-  -- Command override from loaded packages.
-  -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
-  -- as packages are not loaded yet at that time.
-
-  -- Override the standard foliostyle hook to rely on styles
-  self:registerCommand("foliostyle", function (_, content)
-    local styleName = SILE.documentState.documentClass:oddPage() and "folio-odd" or "folio-even"
-    local division = self.resilientState.division or 2
-    SILE.call("style:apply:paragraph", { name = styleName }, {
-      -- Ensure proper baseline alignment with a strut rule.
-      -- The baseline placement depends on the line output algorithm, and we cannot
-      -- trust it if it just uses the line ascenders.
-      -- Typically, if folios use "old-style" numbers, 16 and 17 facing pages shall have
-      -- aligned folios, but the 1 is smaller than the 6 and 7, the former ascends above,
-      -- and the latter descends below the baseline).
-      SU.ast.createCommand("strut", { method = "rule"}),
-      SU.ast.createCommand("style:apply:number", {
-        name = "folio-" .. DIVISIONNAME[division],
-        text = SU.ast.contentToString(content),
-      })
-    })
-  end)
 
   -- TRANSITIONAL:
   -- These packages should do it themselves eventually, with a proper interface
@@ -105,6 +274,14 @@ function class:_init (options)
   -- commands reset).
   -- We cancel reloading  in our override superclass, so we are safe.
   SILE.resilient.enforceContextualCommand("footnote")
+
+  -- FIXME NOT HERE
+  SILE.call("font", { size = "4.5%ph", family = "Lato" })
+  SILE.settings:set("document.parindent", nil)
+  SILE.settings:set("document.parskip", "0.5ex")
+  SILE.settings:set("document.baselineskip", "1.2em")
+  SILE.settings:set("document.lineskip", "0")
+  SILE.settings:set("lists.parskip", "0.5ex")
 end
 
 --- (Override) Declare class options.
@@ -118,30 +295,7 @@ end
 function class:declareOptions ()
   base.declareOptions(self)
 
-  self:declareOption("layout", function(_, value)
-    if value then
-      self.layout = value
-    end
-    return self.layout
-  end)
-
-  self:declareOption("offset", function(_, value)
-    if value then
-      self.offset = value
-    end
-    return self.offset
-  end)
-
-  self:declareOption("headers", function(_, value)
-    if value then
-      if not SILE.scratch.book.headers[value] then
-        SU.warn("Unknown headers type '".. value .. "', switching to 'technical'")
-        value = "technical"
-      end
-      self.headers = value
-    end
-    return self.headers
-  end)
+  -- FIXME do we need options
 end
 
 --- (Override) Set class options.
@@ -154,28 +308,10 @@ end
 -- @tparam table options Class options
 function class:setOptions (options)
   options = options or {}
-  options.layout = options.layout or "division"
-  options.headers = options.headers or "technical"
+  options.landscape = SU.boolean(options.landscape, true) -- Switch to landscape by default
   base.setOptions(self, options) -- so that papersize etc. get processed...
 
-  local layout = layoutParser:match(options.layout)
-  if not layout then
-    SU.warn("Unknown page layout '".. options.layout .. "', switching to 'division'")
-    layout = layoutParser:match("division")
-  end
-
-  local offset = SU.cast("measurement", options.offset or "0")
-  layout:setOffset(offset)
-
-  -- Kind of a hack dues to restrictions with frame parsers.
-  layout:setPaperHack(SILE.documentState.paperSize[1], SILE.documentState.paperSize[2])
-
-  -- TRICKY, TO REMEMBER:
-  -- the default frameset has to be set *before* the completion of
-  -- the base (plain) class init, or it isn't applied on the first
-  -- page...
-  self.oddFrameset, self.evenFrameset = layout:frameset()
-  self.defaultFrameset = self.oddFrameset
+  self.defaultFrameset = self.h1Frameset --  FIXME just to be sure, it will be overridden by the masters anyway?
 end
 
 --- (Override) Register class styles.
@@ -185,23 +321,21 @@ end
 function class:registerStyles ()
   base.registerStyles(self)
 
-  -- Front, main, back matter
-  local divisionFolio = {
-    frontmatter = "roman",
-  }
-  for _, name in ipairs(DIVISIONNAME) do
-    self:registerStyle("folio-" .. name, {}, {
-      numbering = {
-        display = divisionFolio[name] or "arabic"
-      }
-    })
-  end
-
   -- Sectioning styles
   self:registerStyle("sectioning-base", {}, {
     paragraph = { before = { indent = false },
                   after = { indent = false } }
   })
+
+  self:registerStyle("slide-chapter", { inherit = "sectioning-base" }, {
+    font = { weight = 700 },
+    paragraph = {  align = "right" },
+  })
+  self:registerStyle("slide-section", { inherit = "sectioning-base" }, {
+    font = { weight = 700 },
+    paragraph = {  align = "center" },
+  })
+
   self:registerStyle("sectioning-part", { inherit = "sectioning-base" }, {
     font = { weight = 700, size = "1.6em" },
     paragraph = { before = { skip = "15%fh" },
@@ -491,28 +625,91 @@ function class:registerStyles ()
 
 end
 
+--- Output the header content in the specified frame.
+--
+-- @tparam table headerContent AST content to be processed in the header
+-- @tparam[opt] string frame Target frame name (defaults to "header")
+function class:_outputHeader (headerContent, frame)
+  print("Outputting header content in frame '" .. (frame or "header") .. "'")
+  if not frame then frame = "header" end
+  local headerFrame = getFrame(frame)
+  if headerFrame then
+    SILE.typesetNaturally(headerFrame, function ()
+--        SILE.typesetter:typeset("frame " .. (self:currentMaster() or "none"))
+      print("Current master in header output:", self:currentMaster() or "none", headerContent)
+      if headerContent then
+        SILE.settings:pushState()
+        -- Restore the settings to the top of the queue, which should be the document
+        SILE.settings:toplevelState()
+        SILE.settings:set("current.parindent", SILE.types.node.glue())
+        SILE.settings:set("document.lskip", SILE.types.node.glue())
+        SILE.settings:set("document.rskip", SILE.types.node.glue())
+
+        -- Process the header content in a context where fragile commands are ignored.
+        SILE.resilient.cancelContextualCommands("header", function ()
+          SILE.process(headerContent)
+        end)
+
+        SILE.typesetter:leaveHmode()
+        SILE.settings:popState()
+      end
+    end)
+  end
+end
+
+function class:newPage (content)
+  print("--- New page", getFrame("header"), getFrame("footer"))
+  local x = base.newPage(self, content)
+
+  print("Current master in newPage:", self:currentMaster() or "none")
+  
+  
+  return x
+end
+
 --- (Override) End-of-page custom hook.
 --
 -- Outputs the running header according to the page type (odd or even).
 --
 function class:endPage ()
+  
   if SILE.scratch.info.thispage.headerOdd then
     SILE.scratch.headers.odd = SILE.scratch.info.thispage.headerOdd[#SILE.scratch.info.thispage.headerOdd]
   end
   if SILE.scratch.info.thispage.headerEven then
     SILE.scratch.headers.even = SILE.scratch.info.thispage.headerEven[#SILE.scratch.info.thispage.headerEven]
   end
-  if self:oddPage() then
-    self.packages["resilient.headers"]:outputHeader(SILE.scratch.headers.odd)
-  else
-    self.packages["resilient.headers"]:outputHeader(SILE.scratch.headers.even)
+    self:_outputHeader(SILE.scratch.headers.odd)
+    self:_outputHeader(SILE.scratch.headers.odd, "title") -- FIXME messy order
+  --else
+    --self:_outputHeader(SILE.scratch.headers.even)
+  --end
+  local pdf = require("justenoughlibtexpdf")
+  local pageLabels = pdf.lookup_dictionary(pdf.get_dictionary("Catalog"), "PageLabels")
+  if not pageLabels then
+    SU.debug("omipagelabeltest", "Creating /PageLabels dictionary in Catalog")
+    pageLabels = pdf.parse("<< >>")
+    pdf.add_dict(pdf.get_dictionary("Catalog"), pdf.parse("/PageLabels"), pageLabels)
+    end
+  local nums = pdf.lookup_dictionary(pageLabels, "Nums")
+  if not nums then
+    SU.debug("omipagelabeltest", "Creating /Nums array in /PageLabels")
+    nums = pdf.parse("[]")
+    pdf.add_dict(pageLabels, pdf.parse("/Nums"), nums)
   end
+  local pageLabel = self.packages.counters:formatCounter(SILE.scratch.counters.folio)
+  self._pageindex = self._pageindex or 0
+  pdf.push_array(nums, pdf.parse(self._pageindex))
+  pdf.push_array(nums, pdf.parse(string.format([[<< /P (%s) >>]], pageLabel))) -- DIRTY
+  self._pageindex = self._pageindex + 1
+
+
   return base.endPage(self)
 end
 
 --- (Override) Declare class settings.
 --
--- Declares the settings specific to the resilient book class.
+-- Declares the settings specific to the resilient slide class.
 --
 function class:declareSettings ()
   base.declareSettings(self)
@@ -521,38 +718,16 @@ end
 
 --- (Override) Register class commands.
 --
--- Registers the commands specific to the resilient book class.
+-- Registers the commands specific to the resilient slide class.
 --
 function class:registerCommands ()
   base.registerCommands(self)
 
-  -- Running headers
-
-  self:registerCommand("book-title", function (_, content)
-    if self.headers == "novel" then
-      SILE.call("even-running-header", {}, content)
-    end
-  end, "Book title low-level command (for running headers depending on headers type)")
-
-  self:registerCommand("even-tracked-header", function (_, content)
-    local headerContent = function ()
-      SILE.call("style:apply:paragraph", { name = "header-even" }, {
-        SU.ast.createCommand("strut", { method = "rule"}),
-        SU.ast.subContent(content)
-      })
-    end
-    SILE.call("info", {
-      category = "headerEven",
-      value = headerContent
-    })
-  end, "Text to appear on the top of even pages, tracked via info nodes.")
-
   self:registerCommand("odd-tracked-header", function (_, content)
     local headerContent = function ()
-      SILE.call("style:apply:paragraph", { name = "header-odd" }, {
-        SU.ast.createCommand("strut", { method = "rule"}),
-        SU.ast.subContent(content)
-      })
+      SILE.typesetter:leaveHmode()
+      SILE.process(content)
+      
     end
     SILE.call("info", {
       category = "headerOdd",
@@ -560,164 +735,104 @@ function class:registerCommands ()
     })
   end, "Text to appear on the top of odd pages, tracked via info node.")
 
-  self:registerCommand("even-running-header", function (_, content)
-    SILE.scratch.headers.even = function ()
-      SILE.call("style:apply:paragraph", { name = "header-even" }, {
-        SU.ast.createCommand("strut", { method = "rule"}),
-        SU.ast.subContent(content)
-      })
-    end
-  end, "Text to appear on the top of even pages.")
-
   self:registerCommand("odd-running-header", function (_, content)
     SILE.scratch.headers.odd = function ()
-      SILE.call("style:apply:paragraph", { name = "header-odd" }, {
-        SU.ast.createCommand("strut", { method = "rule"}),
-        SU.ast.subContent(content)
-      })
+      SILE.typesetter:leaveHmode()
+      SILE.process(content) 
     end
   end, "Text to appear on the top odd pages.")
 
-  -- front/main/back matter
-
-  self:registerCommand("internal:division", function (options, _)
-    local division = SU.required(options, "division", "internal:division")
-    -- Always start on an odd page, so as to be consistent with the folio numbering
-    -- in case it is reset.
-    SILE.call("open-on-odd-page")
-    local previous = self.resilientState.division
-    self.resilientState.division = division
-    -- Previous section titles (in technical mode) or chapter title (in novel mode)
-    -- is no longer valid (and in none mode, it's not valid anyway).
-    SILE.scratch.headers.odd = nil
-    if self.headers == "technical" then
-      -- In novel mode, the book title is in the even header, and is still valid
-      -- So we don't reset it.
-      -- But in technical mode, even headers contain the current chapter title,
-      -- invalid upon a new part.
-      SILE.scratch.headers.even = nil
-    end
-    -- Reset folio counter if needed (i.e. on display format change)
-    local current = self:getCounter("folio")
-    local folioSty = self:resolveStyle("folio-" .. DIVISIONNAME[division])
-    local display = folioSty.numbering and folioSty.numbering.display or "arabic"
-    if current.display ~= display then
-      -- Normally, pages preceding the first division should not have a folio
-      -- (e.g. cover, title page, etc.) but count in the numbering.
-      -- So in that case, we do not reset the counter, but just change the
-      -- numbering display.
-      -- That will work with resilient master documents, and we aren't going
-      -- to do anything smarter for users not using a master document, but
-      -- having a few numbered pages before the first division...
-      SILE.call("set-counter", { id = "folio", display = display, value = previous and 1 or nil })
-    end
-  end)
-
-  for div, name in ipairs(DIVISIONNAME) do
-    self:registerCommand(name, function (_, content)
-      if self.resilientState.division and self.resilientState.division >= div then
-        SU.error("\\" .. name .. " is not valid after a " .. DIVISIONNAME[self.resilientState.division])
-      end
-      SILE.call("internal:division", { division = div }, content)
-    end, "Switch to " .. DIVISIONNAME[div] .. " division.")
-  end
-
-  -- Sectioning hooks and commands
-
-  self:registerCommand("sectioning:part:hook", function (options, _)
-    local before = SU.boolean(options.before, false)
-    if before then
-      -- Parts cancel headers and folios
-      SILE.call("noheaderthispage")
-      SILE.call("nofoliothispage")
-      -- Previous section titles (in technical mode) or chapter title (in novel mode)
-      -- is no longer valid (and in none mode, it's not valid anyway).
-      SILE.scratch.headers.odd = nil
-      if self.headers == "technical" then
-        -- In novel mode, the book title is in the even header, and is still valid
-        -- So we don't reset it.
-        -- But in technical mode, even headers contain the current chapter title,
-        -- invalid upon a new part.
-        SILE.scratch.headers.even = nil
-      end
-      -- Parts reset footnotes and chapters
-      SILE.call("set-counter", { id = "footnote", value = 1 })
-      SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
-    end
-  end, "Apply part hooks (counter resets, footers and headers, etc.)")
-
-  self:registerCommand("sectioning:chapter:hook", function (options, content)
-    local before = SU.boolean(options.before, false)
-    if before then
-      -- Chapters re-enable folios, have no header, and reset the footnote counter.
-      SILE.call("noheaderthispage")
-      SILE.call("folios")
-      SILE.call("set-counter", { id = "footnote", value = 1 })
-    else
-      if self.headers == "novel" then
-        SILE.call("odd-tracked-header", {}, content)
-      elseif self.headers == "technical" then
-        SILE.call("even-tracked-header", {}, content)
-        -- In technical mode, the odd header contains a section title, and is
-        -- no longer valid upon a new chapter.
-        SILE.scratch.headers.odd = nil
-      end
-    end
-  end, "Apply chapter hooks (counter resets, footers and headers, etc.)")
-
-  self:registerCommand("sectioning:section:hook", function (options, content)
-    local before = SU.boolean(options.before, false)
-    if not before then
-      if self.headers == "technical" then
-        SILE.call("odd-tracked-header", {}, content)
-      end
-    end
-  end, "Applies section hooks (footers and headers, etc.)")
-
-  self:registerCommand("appendix", function (_, _)
-    if self.resilientState.appendix then
-      SU.error("Already in the \\appendix subdivision")
-    end
-    if self.resilientState.division and self.resilientState.division < 2 then
-      SU.error("\\appendix is not valid in " .. DIVISIONNAME[self.resilientState.division])
-    end
-    self.resilientState.appendix = true
-    SILE.call("set-multilevel-counter", { id = "sections", level = 1, value = 0 })
-  end, "Switch to appendix subdivision.")
-
   self:registerCommand("part", function (options, content)
-    if self.resilientState.division and self.resilientState.division ~= 2 then
-      -- By definition, parts are unnumbered in all divisions except the mainmatter
-      options.numbering = false
-    end
-    options.style = "sectioning-part"
-    -- Allow appendices again in a new part
-    self.resilientState.appendix = false
-    SILE.call("sectioning", options, content)
+    -- FIXME TODO
+    -- if self.resilientState.division and self.resilientState.division ~= 2 then
+    --   -- By definition, parts are unnumbered in all divisions except the mainmatter
+    --   options.numbering = false
+    -- end
+    -- options.style = "sectioning-part"
+    -- -- Allow appendices again in a new part
+    -- self.resilientState.appendix = false
+    -- SILE.call("sectioning", options, content)
   end, "Begin a new part.")
 
+
   self:registerCommand("chapter", function (options, content)
-    if not self.resilientState.appendix and self.resilientState.division and self.resilientState.division ~= 2 then
-      -- By definition, chapters are unnumbered in all divisions except the mainmatter
-      options.numbering = false
-    end
-    options.style = self.resilientState.appendix and "sectioning-appendix" or "sectioning-chapter"
-    SILE.call("sectioning", options, content)
+    SILE.typesetter:registerFrameBreakHook(function (_self, xx)
+      print("-----------Frame break:", self:currentMaster() or "none")
+      -- print("@@@@@@@@@@@ Frame break hook called", getFrame("header") ~= nil, getFrame("footer") ~= nil)
+      if not getFrame("header") and not getFrame("footer") then
+        SILE.call("background", { frame = "page", color = "omissiblesapphire", allpages = false }) -- FIXME
+      end
+      return xx
+      end)
+    SILE.typesetter:registerNewFrameHook(function ()
+        print("-----------New frame:", self:currentMaster() or "none")
+        print("@@@@@@@@@@@ New frame hook called", getFrame("header") ~= nil, getFrame("footer") ~= nil)
+        if not getFrame("header") and not getFrame("footer") then
+          --SILE.call("background", { frame = "page", color = "omissiblebronze", allpages = false }) -- FIXME
+        end
+        end)
+        SILE.typesetter:registerPageEndHook(function ()
+        print("Current master in page end ts hook:", self:currentMaster() or "none")
+        if getFrame("header") then
+        SILE.call("background", { frame = "header", allpages = false, color= "omissiblebronze" }) -- FIXME
+        end
+        if getFrame("footer") then
+         SILE.call("background", { frame = "footer", allpages = false, color= "omissible" }) -- FIXME
+        end
+        if not getFrame("header") and not getFrame("footer") then
+          --SILE.call("background", { frame = "page", color = "omissiblebronze", allpages = false }) -- FIXME
+        end
+        end)
+    --SILE.typesetter:leaveHmode()
+
+    SILE.call("open-on-any-page")
+    self:switchMaster("slide-h1")
+    
+    --SILE.call("odd-tracked-header", {}, content)
+    SILE.call("odd-running-header", {}, {
+      SU.ast.createStructuredCommand("style:apply:paragraph", { name = "slide-chapter" }, {
+            SU.ast.createCommand("font", { size= "5%ph" }), -- FIXME THEME
+            SU.ast.createCommand("strut", { method = "rule"}),
+            SU.ast.createCommand("color", { color = contrastColor(Color("omissiblebronze")) }, -- FIXME THEME
+              SU.ast.subContent(content)
+            )
+          })
+    })
+    -- SILE.typesetNaturally(SILE.getFrame("title"), function ()
+    --   pl.pretty.dump(content)
+    --   SU.error("EEK")
+    --   SILE.process({ "yolo" })
+    -- end)
   end, "Begin a new chapter.")
 
   self:registerCommand("section", function (options, content)
-    options.style = "sectioning-section"
-    SILE.call("sectioning", options, content)
+    --SILE.typesetter:leaveHmode()
+    SILE.call("open-on-any-page")
+    self:switchMaster("slide-h2")
+
+    --SILE.call("odd-tracked-header", {}, {
+    SILE.call("odd-running-header", {}, {
+      SU.ast.createStructuredCommand("style:apply:paragraph", { name = "slide-section" }, {
+            SU.ast.createCommand("font", { size= "5%ph" }), -- FIXME THEME
+            SU.ast.createCommand("strut", { method = "rule"}),
+            SU.ast.createCommand("color", { color = contrastColor(Color("omissiblebronze")) }, -- FIXME THEME
+              SU.ast.subContent(content)
+            )
+          })
+    })
+    SILE.typesetter:leaveHmode()
   end, "Begin a new section.")
 
   self:registerCommand("subsection", function (options, content)
-    options.style = "sectioning-subsection"
-    SILE.call("sectioning", options, content)
+    -- FIXME TODO
+    -- options.style = "sectioning-subsection"
+    -- SILE.call("sectioning", options, content)
   end, "Begin a new subsection.")
 
   self:registerCommand("subsubsection", function (options, content)
-    options.style = "sectioning-subsubsection"
-    SILE.call("sectioning", options, content)
+    -- FIXME TODO
+    -- options.style = "sectioning-subsubsection"
+    -- SILE.call("sectioning", options, content)
   end, "Begin a new subsubsection.")
 
   -- Captioned elements
@@ -827,52 +942,31 @@ function class:registerCommands ()
 
     SILE.call("tableofcontents", { start = start, depth = 0 })
   end, "Output the list of listings.")
+end
 
-  -- Layouts
+--- (Private) Enable slide presentation effects.
+--
+-- Set fullscreen mode by default, and add a fade-in transition to each page.
+--
+function class:_enableSlideEffects ()
+  if SILE.outputter._name ~= "libtexpdf" then
+    SU.warn("Slide effects are only supported with the libtexpdf PDF outputter")
+    return
+  end
+  local pdf = require("justenoughlibtexpdf")
 
-  self:registerCommand("showlayout", function (options, _)
-    local spec = SU.required(options, "layout", "layout")
-    local papersize = SU.required(options, "papersize", "layout")
-    local offset = SU.cast("measurement", options.offset or "0")
-    local layout = layoutParser:match(spec)
-    if not layout then
-      SU.error("Unrecognized layout '" .. spec .. "'")
-    end
-    local p = SILE.papersize(papersize)
-    local W = p[1]
-    local H = p[2]
-    layout:setOffset(offset)
-    layout:setPaperHack(W, H)
-    layout:draw(W, H, { ratio = options.ratio, rough = options.rough })
-  end, "Show a graphical representation of a page layout")
+  -- Set the PDF to open in fullscreen mode by default.
+  SILE.outputter:registerHook("prefinish", function ()
+    local catalog = pdf.get_dictionary("Catalog")
+    pdf.add_dict(catalog, pdf.parse("/PageMode"), pdf.parse("/FullScreen"))
+  end)
 
-  self:registerCommand("layout", function (options, _)
-    local spec = SU.required(options, "layout", "layout")
-    local layout = layoutParser:match(spec)
-    if not layout then
-      SU.error("Unknown page layout '".. spec .. "'")
-    end
-    local offset = SU.cast("measurement", self.options["offset"])
-    layout:setOffset(offset)
-    -- Kind of a hack dues to restrictions with frame parsers.
-    layout:setPaperHack(SILE.documentState.paperSize[1], SILE.documentState.paperSize[2])
-
-    SILE.call("open-on-any-page")
-
-    local oddFrameset, evenFrameset = layout:frameset()
-    self:defineMaster({
-      id = "right",
-      firstContentFrame = self.firstContentFrame,
-      frames = oddFrameset
-    })
-    self:defineMaster({
-      id = "left",
-      firstContentFrame = self.firstContentFrame,
-      frames = evenFrameset
-    })
-    self:switchMaster(self:oddPage() and "right" or "left")
-  end, "Set the page layout")
-
+  -- Add a fade-in transition to each page.
+  self:registerHook("newpage", function ()
+    local page = pdf.get_dictionary("@THISPAGE")
+    local fadeInDict = pdf.parse("<< /S /Fade /D 0.5 >>")
+    pdf.add_dict(page, pdf.parse("/Trans"), fadeInDict)
+  end)
 end
 
 return class
