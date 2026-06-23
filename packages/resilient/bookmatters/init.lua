@@ -11,6 +11,8 @@
 local layoutParser = require("resilient.layoutparser")
 local loadkit = require("loadkit")
 local templateLoader = loadkit.make_loader("djt")
+local Color = require("grail.color")
+local getGradient = require("grail.gradient").getGradient
 
 --- Resolve a template and prepare an include command specification.
 --
@@ -30,7 +32,7 @@ end
 
 --- Compute a weighted color distance in 3D space.
 --
--- @tparam SILE.types.color color Input color (RGB only for now)
+-- @tparam Color color Input color (RGB only for now)
 local function weightedColorDistanceIn3D (color)
   -- Source: https://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
   return math.sqrt(
@@ -40,11 +42,47 @@ local function weightedColorDistanceIn3D (color)
   )
 end
 
+--- Compute the average color around the midpoint of a linear gradient.
+--
+-- We just pick the 2 or 3 stops around the midpoint, and average their RGB values.
+--
+-- @tparam string gradname Name of the gradient
+-- @treturn Color Average color around the midpoint of the gradient
+local function averageLinearGradientMidpointColors (gradname)
+  local grad = getGradient(gradname)
+  if not grad then
+    SU.error("Gradient '" .. gradname .. "' not found for average color computation")
+  end
+  local mid = math.ceil(#grad.stops / 2)
+  local prevstopindex = mid > 1 and (mid - 1) or mid
+  local nextstopindex = mid < #grad.stops and mid + 1 or mid
+  local r = 0
+  local g = 0
+  local b = 0
+  for k = prevstopindex, nextstopindex do
+    local stop = grad.stops[k]
+    r = r + stop.r
+    g = g + stop.g
+    b = b + stop.b
+  end
+  local n = nextstopindex - prevstopindex + 1
+  return { r = r / n, g = g / n, b = b / n } -- no need to cast as a Color object
+end
+
 --- Compute the best contrast color (black or white) for a given background color.
 --
--- @tparam SILE.types.color color Input color (RGB only for now)
+-- If the background color is a gradient, there is no perfect solution, and we can compute an average color
+-- around the midpoint of the gradient.
+-- The implicit assumption is that the gradient is reasonably smooth, and that the midpoint is representative
+-- of the overall gradient for use with text content.
+-- This is certainly not perfect, but it seems to be a reasonable heuristic for most cases.
+--
+-- @tparam Color color Input color (RGB only for now)
 -- @treturn string "black" or "white"
 local function contrastColor(color)
+  if color.G then
+    color = averageLinearGradientMidpointColors(color.G)
+  end
   if not color.r then
     -- Not going to bother with other color schemes for now...
     SU.error([[Background color for back cover must be in RGB.
@@ -124,7 +162,7 @@ function package:registerCommands ()
     local backgroundColor = options.background
     local metadata = options.metadata or {} -- Unusual: table of metadata options
     local template = options.template
-    local textColor = contrastColor(SILE.types.color(backgroundColor or "white"))
+    local textColor = contrastColor(Color(backgroundColor or "white"))
 
     SILE.call("switch-master-one-page", { id = "bookmatters-front-cover" })
     SILE.call("hbox") -- To ensure some content
@@ -155,8 +193,9 @@ function package:registerCommands ()
     local image = options.image
     local metadata = options.metadata or {} -- Unusual: table of metadata options
     local backgroundColor = options.background
-    local backgroundContentColor = options.bgcontent or backgroundColor
-    local textColor = contrastColor(SILE.types.color(backgroundContentColor or "white"))
+     -- Things get messy with gradients, but this seems to be the sanest option
+    local backgroundContentColor = options.bgcontent or image and backgroundColor
+    local textColor = contrastColor(Color(backgroundContentColor or backgroundColor or "white"))
 
     SILE.call("open-on-even-page")
     SILE.call("switch-master-one-page", { id = "bookmatters-back-cover" })
