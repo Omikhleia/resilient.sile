@@ -32,6 +32,12 @@ Difference:
       before:
         skip: "smallskip"
 
+DifferenceHeader:
+  style:
+    paragraph:
+      after:
+       vbreak: false
+
 FramedPara:
   style:
     paragraph:

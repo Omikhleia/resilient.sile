@@ -75,7 +75,7 @@ mixin(typesetter, require("typesetters.mixins.totext"))
 
 -- This is the default typesetter. You are, of course, welcome to create your own.
 local inf_bad = 10000 -- CODE SMELL: VALUES REPEATED / USED AT SEVERAL PLACES
--- local eject_penalty = -inf_bad
+local eject_penalty = -inf_bad
 local supereject_penalty = 2 * -inf_bad
 -- local deplorable = 100000
 
@@ -361,10 +361,50 @@ function typesetter:pushExplicitVglue (spec)
    return self:pushVertical(node)
 end
 
+-- Check for a preceding penalty in the vertical list, and return it if found.
+function typesetter:_precedingVpenalty ()
+   for i = #self.state.outputQueue, 1, -1 do
+      local node = self.state.outputQueue[i]
+      -- We stop at the first vbox, and return the first penalty found (if any),
+      -- skipping over any other nodes, typically vglue, that may be in between.
+      if node.is_vbox then
+         return nil
+      elseif node.is_penalty then
+         return node, i
+      end
+   end
+   return nil
+end
+
 --- Push a penalty node into the current vertical list.
+--
+-- Consecutive penalties of the same value are ignored, and if a penalty is pushed
+-- after a penalty, the more severe one is kept.
+-- An exception is made for forced break penalties, which are always pushed.
 function typesetter:pushVpenalty (spec)
    local node = SU.type(spec) == "penalty" and spec or SILE.types.node.penalty(spec)
-   return self:pushVertical(node)
+   if node.penalty <= eject_penalty then
+      -- An eject or supereject penalty: always push the forced break penalty.
+      SU.debug("resilient.skips", "Pushing a forced break penalty", node.penalty)
+      self:pushVertical(node)
+   else
+      local preceding, i = self:_precedingVpenalty()
+      if preceding and preceding.penalty > eject_penalty then
+         if preceding.penalty == node.penalty then
+            SU.debug("resilient.skips", "Ignoring consecutive penalties of same value", node.penalty)
+            return -- Done
+         end
+         if preceding.penalty > node.penalty then
+            SU.debug("resilient.skips", "Ignoring less severe penalty", node.penalty, "after more severe penalty", preceding.penalty)
+            return -- Done
+         end
+         SU.debug("resilient.skips", "Replacing previous penalty", preceding.penalty, "with more severe penalty", node.penalty)
+         self.state.outputQueue[i] = node
+      else
+         SU.debug("resilient.skips", "Pushing vertical penalty", node.penalty)
+         self:pushVertical(node)
+      end
+   end
 end
 
 --- Split the input text into paragraphs, and push them to the current horizontal list.
@@ -437,6 +477,8 @@ end
 --- Leave horizontal mode and end the current paragraph.
 function typesetter:endline ()
    self:leaveHmode()
+   local vglue = SILE.settings:get("document.parskip")
+   self:pushCollapsibleVglue(vglue, "_parskip_") -- Not a style name
    SILE.documentState.documentClass.endPar(self)
 end
 
@@ -761,6 +803,80 @@ function typesetter:chuck () -- emergency shipout everything
       SU.debug("typesetter", "Emergency shipout", #self.state.outputQueue, "lines in frame", self.frame.id)
       self:outputLinesToPage(self.state.outputQueue)
       self.state.outputQueue = {}
+   end
+end
+
+-- Check for a preceding styling skip in the typesetter output queue.
+function typesetter:_prevCollapsibleSkipInQueue ()
+   for i = #self.state.outputQueue, 1, -1 do
+      local n = self.state.outputQueue[i]
+      if n.is_vbox then return nil end
+      if n.is_vglue and n._style_ then
+         return n, i
+      end
+   end
+   return nil
+end
+
+-- Return a cloned styling skip from the given glue.
+-- The reasons for cloning are multiple
+--  - Some glues (e.g. a medskip etc.) are always the same node but here we
+--    want to store the information about the style so we need a distinct
+--    node.
+--  - Also, being the same node implies then when made 'explicit' it applies
+--    to all subsequent use. Maybe that was on purpose, but we want to be
+--    able to control it.
+--  - We overload the output routine to add our own debug on these skips.
+function typesetter:_cloneCollapsibleSkip (vglue, id, color)
+   local output = vglue.outputYourself
+   vglue = pl.tablex.copy(vglue)
+   vglue._style_ = id
+   vglue.outputYourself = function (s, t, l)
+      if SU.debugging("resilient.skips") then
+         local X = t.frame.state.cursorX
+         local Y = t.frame.state.cursorY
+         local H = s.height:tonumber() + s.depth:tonumber() + s.adjustment:tonumber()
+         SILE.outputter:pushColor(SILE.types.color(color))
+         -- Show a box representing the skip
+         SILE.outputter:drawRule(X, Y, 0.4, H)
+         SILE.outputter:drawRule(X, Y, 30, 0.4)
+         SILE.outputter:drawRule(X + 29.6, Y, 0.4, H)
+         SILE.outputter:drawRule(X, Y + H, 30, 0.4)
+         -- And show its stretch/shrink adjustment
+         SILE.outputter:drawRule(X + 10, Y, 10, s.adjustment:tonumber())
+         SILE.outputter:popColor()
+      end
+      output(s, t, l)
+   end
+   -- Be sure not inheriting non-discardability and explicit flag from the
+   -- original glue.
+   vglue.explicit = false
+   vglue.discardable = true
+   return SILE.types.node.vglue(vglue)
+end
+
+-- Push or collapse a styling skip into the current vertical list.
+function typesetter:pushCollapsibleVglue (vglue, id)
+   local prevSkip, i = self:_prevCollapsibleSkipInQueue()
+   if prevSkip then
+      -- Collapse consecutive skips
+      if prevSkip.height:tonumber() < vglue.height:tonumber() then
+         SU.debug("resilient.skips", "Altering consecutive skip from", prevSkip._style_, "to", id)
+         vglue = self:_cloneCollapsibleSkip(vglue, id, "orange")
+          -- In-place replacement of the previous skip with the new one.
+          -- This is dubious, but perhaps less than altering the output queue
+          -- by removing the skip.
+         self.state.outputQueue[i] = SILE.types.node.vglue(0)
+         -- Push the larger skip, at the end of the output queue.
+         -- So penalties etc. are not affected by the skip replacement.
+         self:pushVglue(vglue)
+      else
+         SU.debug("resilient.skips", "Ignoring consecutive skip", id, "after", prevSkip._style_)
+      end
+   else
+      SU.debug("resilient.skips", "Inserting skip", id)
+      vglue = self:_cloneCollapsibleSkip(vglue, id, "blue")
+      self:pushVglue(vglue)
    end
 end
 

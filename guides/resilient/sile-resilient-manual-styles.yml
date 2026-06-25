@@ -1,6 +1,15 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v4.2.0/schemas/stylefile.json
 # $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v4.2.0/schemas/stylefile.json
 
+admon:
+  style:
+    paragraph:
+      after:
+        skip: "medskip"
+      align: "admon-framed"
+      before:
+        skip: "smallskip"
+
 blockquote:
   style:
     font:

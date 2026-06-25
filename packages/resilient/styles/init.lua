@@ -605,113 +605,46 @@ function package:registerCommands ()
 
   -- APPLY A PARAGRAPH STYLE
 
-  -- Check for a preceding styling skip in the typesetter output queue.
-  local function prevStyleSkipInQueue ()
-    for i = #SILE.typesetter.state.outputQueue, 1, -1 do
-      local n = SILE.typesetter.state.outputQueue[i]
-      if n.is_vbox then return nil end
-      if n.is_vglue and n._style_ then
-        return n, i
-      end
-    end
-    return nil
-  end
-
-  -- Return a cloned styling skip from the given glue.
-  -- The reasons for cloning are multiple
-  --  - Some glues (e.g. a medskip etc.) are always the same node but here we
-  --    want to store the information about the style so we need a distinct
-  --    node.
-  --  - Also, being the same node implies then when made 'explicit' it applies
-  --    to all subsequent use. Maybe that was on purpose, but we want to be
-  --    able to control it.
-  --  - We overload the output routine to add our own debug on these skips.
-  local function cloneStyleSkip (vglue, id)
-    local output = vglue.outputYourself
-    vglue = pl.tablex.copy(vglue)
-    vglue._style_ = id
-    vglue.outputYourself = function (s, t, l)
-      if SU.debugging("resilient.styles") then
-        local X = t.frame.state.cursorX
-        local Y = t.frame.state.cursorY
-        local H = s.height:tonumber() + s.depth:tonumber() + s.adjustment:tonumber()
-        SILE.outputter:pushColor(SILE.types.color("orange"))
-        -- Show a box representing the skip
-        SILE.outputter:drawRule(X, Y, 0.4, H)
-        SILE.outputter:drawRule(X, Y, 30, 0.4)
-        SILE.outputter:drawRule(X + 29.6, Y, 0.4, H)
-        SILE.outputter:drawRule(X, Y + H, 30, 0.4)
-        -- And show its stretch/shrink adjustment
-        SILE.outputter:drawRule(X + 10, Y, 10, s.adjustment:tonumber())
-        SILE.outputter:popColor()
-      end
-      output(s, t, l)
-    end
-    -- Be sure not inheriting non-discardability and explicit flag from the
-    -- original glue.
-    vglue.explicit = false
-    vglue.discardable = true
-    return SILE.types.node.vglue(vglue)
-  end
-
   local function styleForBeforeSkip(name, parSty, styledef)
-    local prevSkip, index = prevStyleSkipInQueue()
     local skip = parSty.before.skip
-    local vglue = skip and SILE.scratch.styles.skips[skip] or SU.cast("vglue", skip)
-    if prevSkip then
-      -- Collapse consecutive styling skips
-      if skip and prevSkip.height:tonumber() < vglue.height:tonumber() then
-        SU.debug("resilient.styles", "Changing", prevSkip._style_, "consecutive skip before", name)
-        vglue = cloneStyleSkip(vglue, name)
-        SILE.typesetter.state.outputQueue[index] = vglue
-      else
-        SU.debug("resilient.styles", "Ignoring", prevSkip._style_, "consecutive skip before", name)
-      end
-    else
-      local novbreak = not parSty.before.vbreak
-      if styledef.sectioning and styledef.sectioning.settings
-        and styledef.sectioning.settings and SU.boolean(styledef.sectioning.settings.goodbreak, true) then
-        SU.debug("resilient.styles", "Inserting goodbreak before", name)
-        SILE.call("goodbreak")
-        if novbreak then
-          SU.warn("Sectioning style '" .. name .. "' has inconsistent goodbreak and paragraph novbreak")
-        end
-      end
-      if skip then
-        SU.debug("resilient.styles", "Inserting skip before", name)
-        if novbreak then SILE.call("novbreak") end
-        vglue = cloneStyleSkip(vglue, name)
-        -- Not sure here whether it should be an explicit glue or not,
-        -- but it seems so to me...
-        SILE.typesetter:pushVglue(vglue)
-      end
-      if novbreak then SILE.call("novbreak") end
+    local novbreak = not parSty.before.vbreak
+    if novbreak then
+      SU.debug("resilient.skips", "Inserting novbreak before paragraph for style", name)
+      SILE.call("novbreak")
+    end
+    local goodbreak = styledef.sectioning and styledef.sectioning.settings
+      and styledef.sectioning.settings and SU.boolean(styledef.sectioning.settings.goodbreak, true)
+    if goodbreak and novbreak then
+       SU.warn("Sectioning style '" .. name .. "' has inconsistent goodbreak and paragraph before vbreak")
+    end
+    if goodbreak then
+      SU.debug("resilient.skips", "Inserting goodbreak before paragraph for style", name)
+      SILE.call("goodbreak")
+    end
+    if not skip then
+      return -- Done
+    end
+    local vglue = SILE.scratch.styles.skips[skip] or SU.cast("vglue", skip)
+    SILE.typesetter:pushCollapsibleVglue(vglue, name .. "_before")
+    if novbreak then
+      SILE.call("novbreak")
     end
   end
 
   local function styleForAfterSkip(name, parSty)
-    local prevSkip, index = prevStyleSkipInQueue()
     local skip = parSty.after.skip
-    local vglue = skip and SILE.scratch.styles.skips[skip] or SU.cast("vglue", skip)
-    if prevSkip then
-      -- Collapse consecutive styling skips
-      if skip and prevSkip.height:tonumber() < vglue.height:tonumber() then
-        SU.debug("resilient.styles", "Changing", prevSkip._style_, "consecutive skip after", name)
-        vglue = cloneStyleSkip(vglue, name, true, 120)
-        SILE.typesetter.state.outputQueue[index] = vglue
-      else
-        SU.debug("resilient.styles", "Ignoring", prevSkip._style_, "consecutive skip after", name)
-      end
-    else
-      local novbreak = not parSty.after.vbreak
-      if skip then
-        SU.debug("resilient.styles", "Inserting skip after", name)
-        if novbreak then SILE.call("novbreak") end
-        vglue = cloneStyleSkip(vglue, name, true, 30)
-        -- Not an explicit glue, so it can be cancelled at the bottom of a page!
-        SILE.typesetter:pushVglue(vglue)
-      end
-      if novbreak then SILE.call("novbreak") end
+    local novbreak = not parSty.after.vbreak
+    if novbreak then
+      SU.debug("resilient.skips", "Inserting novbreak after paragraph for style", name)
+      SILE.call("novbreak")
+    end
+    if not skip then
+      return -- Done
+    end
+    local vglue = SILE.scratch.styles.skips[skip] or SU.cast("vglue", skip)
+    SILE.typesetter:pushCollapsibleVglue(vglue, name .. "_after")
+    if novbreak then
+      SILE.call("novbreak")
     end
   end
 
@@ -728,7 +661,7 @@ function package:registerCommands ()
          SILE.settings:set("document.rskip", SILE.types.node.glue(rskip.width:absolute() + rmargin:absolute()))
       end
       SILE.process(content)
-      SILE.typesetter:leaveHmode(1)
+      SILE.call("par")
     end)
   end, "(INTERNAL) Typeset its contents with additional left and right margins.")
 
@@ -737,7 +670,7 @@ function package:registerCommands ()
       SILE.settings:set("document.parindent", SILE.types.node.glue())
       SILE.settings:set("current.parindent", SILE.types.node.glue())
       SILE.process(content)
-      SILE.typesetter:leaveHmode(1)
+      SILE.call("par")
     end)
   end, "(INTERNAL) Control whether paragraph indent should be applied to the content.")
 
@@ -749,7 +682,7 @@ function package:registerCommands ()
       SILE.settings:set("shaper.variablespaces", false)
       SILE.call("language", { main = "und" })
       SILE.process(content)
-      SILE.typesetter:leaveHmode(1)
+      SILE.call("par")
     end)
   end, "(INTERNAL) Preserve line breaks and spaces in the content")
 
@@ -762,17 +695,12 @@ function package:registerCommands ()
 
     -- FIXME
     -- This whole logic is still a mix of AST manipulation and direct typesetter calls, and is quite messy.
-    --  - Leaveing hmode vs. calling "par" is a mess
-    --  - However many dubious attempts at inserting "novbreak" to avoid unwanted page breaks,
-    --    there are still some cases where unwanted breaks can occur ?!
-    --    E.g. between a figure and its caption
+    -- However many dubious attempts at inserting "novbreak" to avoid unwanted page breaks,
+    -- there are still some cases where unwanted breaks can occur ?!
     local bb = SU.boolean(parSty.before.vbreak, true)
 
     -- Close previous paragraph if any.
-    -- FIXME: We should use a "par" to insert a parskip if needed.
-    -- But we currently have an issue with multiple consecutive "parskips"...
-    --SILE.call("par") -- Close previous paragraph
-    SILE.typesetter:leaveHmode()
+    SILE.call("par")
 
     if not bb then
       SILE.call("novbreak")
@@ -795,10 +723,7 @@ function package:registerCommands ()
       SILE.call("novbreak")
     end
     -- Close this paragraph block
-    -- FIXME: We should use a "par" to insert a parskip if needed.
-    -- But we currently have an issue with multiple consecutive "parskips"...
-    --SILE.call("par") -- Close previous paragraph
-    SILE.typesetter:leaveHmode()
+    SILE.call("par")
 
     styleForAfterSkip(name, parSty)
 
