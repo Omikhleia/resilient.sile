@@ -74,7 +74,12 @@ function package:registerCommands ()
   for k, _ in pairs(skips) do
     self:registerCommand(k .. "skip", function (_, _)
       SILE.typesetter:leaveHmode()
-      SILE.typesetter:pushExplicitVglue(SILE.settings:get("plain." .. k .. "skipamount"))
+      -- RESILIENT
+      -- In resilient, make these "predefined" skips collapsible
+      -- instead of explicit glues.
+      -- This does solve some issues (e.g. consecutive skips before/after a section)
+      -- but this may be very opinionated and introduce other concerns in some contexts.
+      SILE.typesetter:pushCollapsibleVglue(SILE.settings:get("plain." .. k .. "skipamount"))
     end, "Skip vertically by a " .. k .. " amount")
   end
 

@@ -1,5 +1,5 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
-# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v2.8.0/schemas/stylefile.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Omikhleia/resilient.sile/v4.2.0/schemas/stylefile.json
+# $schema: https://raw.githubusercontent.com/Omikhleia/resilient.sile/v4.2.0/schemas/stylefile.json
 
 lists-enumerate-alternate1:
   inherit: "lists-enumerate-base"
@@ -251,7 +251,9 @@ verbatim:
   inherit: "code"
   style:
     paragraph:
-      align: "obeylines"
+      align: "left"
       before:
         skip: "smallskip"
+      indent: false
+      lines: "preserve"
 

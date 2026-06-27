@@ -383,6 +383,18 @@ end
 -- An exception is made for forced break penalties, which are always pushed.
 function typesetter:pushVpenalty (spec)
    local node = SU.type(spec) == "penalty" and spec or SILE.types.node.penalty(spec)
+   node.outputYourself = function (s, t, _)
+      if SU.debugging("resilient.skips") then
+         local color = s.penalty >= 10000 and "red" -- red for novbreak
+            or s.penalty <= 0 and "green" -- green for negative penalties (incl. goodbreak etc.)
+            or "blue" -- blue for other penalties
+         local X = t.frame.state.cursorX
+         local Y = t.frame.state.cursorY
+         SILE.outputter:pushColor(SILE.types.color(color))
+         SILE.outputter:drawRule(X-5, Y, 5, 2)
+         SILE.outputter:popColor()
+      end
+   end
    if node.penalty <= eject_penalty then
       -- An eject or supereject penalty: always push the forced break penalty.
       SU.debug("resilient.skips", "Pushing a forced break penalty", node.penalty)
@@ -811,6 +823,12 @@ function typesetter:_prevCollapsibleSkipInQueue ()
    for i = #self.state.outputQueue, 1, -1 do
       local n = self.state.outputQueue[i]
       if n.is_vbox then return nil end
+      if n.is_penalty and n.penalty <= eject_penalty
+      then
+         -- A forced break penalty is found, we stop here, and don't collapse previous skips
+         -- over that boundary..
+         return nil
+      end
       if n.is_vglue and n._style_ then
          return n, i
       end
@@ -848,10 +866,6 @@ function typesetter:_cloneCollapsibleSkip (vglue, id, color)
       end
       output(s, t, l)
    end
-   -- Be sure not inheriting non-discardability and explicit flag from the
-   -- original glue.
-   vglue.explicit = false
-   vglue.discardable = true
    return SILE.types.node.vglue(vglue)
 end
 
@@ -863,10 +877,8 @@ function typesetter:pushCollapsibleVglue (vglue, id)
       if prevSkip.height:tonumber() < vglue.height:tonumber() then
          SU.debug("resilient.skips", "Altering consecutive skip from", prevSkip._style_, "to", id)
          vglue = self:_cloneCollapsibleSkip(vglue, id, "orange")
-          -- In-place replacement of the previous skip with the new one.
-          -- This is dubious, but perhaps less than altering the output queue
-          -- by removing the skip.
-         self.state.outputQueue[i] = SILE.types.node.vglue(0)
+         -- Remove the previous skip from the output queue
+         table.remove(self.state.outputQueue, i)
          -- Push the larger skip, at the end of the output queue.
          -- So penalties etc. are not affected by the skip replacement.
          self:pushVglue(vglue)
@@ -874,7 +886,7 @@ function typesetter:pushCollapsibleVglue (vglue, id)
          SU.debug("resilient.skips", "Ignoring consecutive skip", id, "after", prevSkip._style_)
       end
    else
-      SU.debug("resilient.skips", "Inserting skip", id)
+      SU.debug("resilient.skips", "Inserting skip", id or "xxx", "new skip", vglue)
       vglue = self:_cloneCollapsibleSkip(vglue, id, "blue")
       self:pushVglue(vglue)
    end
