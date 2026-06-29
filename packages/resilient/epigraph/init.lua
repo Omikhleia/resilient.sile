@@ -171,8 +171,7 @@ package.documentation = [[\begin{document}
 
 The \autodoc:package{resilient.epigraph} package for SILE can be used to typeset
 a relevant quotation or saying as an epigraph, usually at either the start or end of
-a section. Various handles are provided to tweak the appearance.\footnote{This is
-very loosely inspired from the LaTeX \code{epigraph} package.}
+a section. Various handles are provided to tweak the appearance.
 
 The \autodoc:environment{epigraph} environment typesets an epigraph using the provided text.
 An optional source (author, book name, etc.) can also be defined, with

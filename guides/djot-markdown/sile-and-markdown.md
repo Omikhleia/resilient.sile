@@ -1165,6 +1165,8 @@ As for raw inlines (§[](#markdown-raw-inlines)), this converter supports the `{
 Other annotations are ignored, and the block content is skipped.
 
 Let's combine several of the extensibility techniques we have seen so far, and do something cool.
+Why not "style" an EAN-13 ISBN as a nice barcode?
+
 
 ```{=sile}
 \use[module=packages.barcodes.ean13]
@@ -1178,8 +1180,6 @@ class:registerCommand("MyEan13b", function (_, content)
   SILE.call("ean13", { scale="SC0", code = code })
 end)
 ```
-
-Why not "style" an EAN-13 ISBN as a nice barcode?
 
 [[978-2-9539896-6-3]{custom-style=MyEan13b}]{custom-style=center}
 
