@@ -5,7 +5,7 @@ admon:
   style:
     paragraph:
       after:
-        skip: "medskip"
+        skip: "smallskip"
       align: "admon-framed"
       before:
         skip: "smallskip"
