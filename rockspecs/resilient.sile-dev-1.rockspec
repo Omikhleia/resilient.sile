@@ -71,12 +71,15 @@ build = {
     ["sile.packages.resilient.background"]      = "packages/resilient/background/init.lua",
 
     ["sile.packages.resilient.plain"]           = "packages/resilient/plain/init.lua",
+    ["sile.packages.resilient.document"]        = "packages/resilient/document/init.lua",
 
     ["sile.packages.resilient.bible.usx"]       = "packages/resilient/bible/usx/init.lua",
     ["sile.packages.resilient.bible.tei"]       = "packages/resilient/bible/tei/init.lua",
 
     ["sile.packages.resilient.attachments"]     = "packages/resilient/attachments/init.lua",
     ["sile.packages.resilient.forms"]           = "packages/resilient/forms/init.lua",
+    ["sile.packages.resilient.gradients"]       = "packages/resilient/gradients/init.lua",
+    ["sile.packages.resilient.annotations"]     = "packages/resilient/annotations/init.lua",
 
     ["sile.packages.resilient.invoice"]         = "packages/resilient/invoice/init.lua",
 

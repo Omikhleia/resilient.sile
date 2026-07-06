@@ -4,7 +4,7 @@
 -- then SILE's default "book" class.
 --
 -- @license MIT
--- @copyright (c) 2021-2025 Omikhleia / Didier Willis
+-- @copyright (c) 2021-2026 Omikhleia / Didier Willis
 -- @module classes.resilient.book
 
 local layoutParser = require("resilient.layoutparser")
@@ -46,25 +46,13 @@ function class:_init (options)
   base._init(self, options)
   self.resilientState = {}
 
-  -- Basic low-level packages
+  -- Basic low-level packages used in this class
 
   self:loadPackage("struts")
 
-  -- Book-related packages
+  -- Document-related packages
 
-  self:loadPackage("resilient.tableofcontents")
-  self:loadPackage("labelrefs") -- Warning: must be loaded after resilient.tableofcontents
-                                -- and before any other packages that would load it too.
-  self:loadPackage("resilient.sectioning")
-  self:loadPackage("indexer", {
-    -- TODO: For now we go for default package options:
-    --   ["page-range-format"] = "expanded",
-    --   ["page-range-delimiter"] = "–",
-    --   ["page-delimiter"] = ", ",
-    --   filler = "dotfill"
-    -- Eventually we might want to customize them.
-    -- Should it be a special style or some other mechanism?
-  })
+  self:loadPackage("resilient.document")
 
   -- Page-related packages
 
@@ -86,61 +74,6 @@ function class:_init (options)
     stealFrom = { "content" }
   })
   self:loadPackage("resilient.headers")
-
-  -- Advanced formating packages
-
-  self:loadPackage("markdown")
-  self:loadPackage("djot")
-  -- Once Djot is loaded, we can register custom pre-defined symbols
-  local mdc = self.packages["markdown.commands"]
-  mdc:registerSymbol("_BIBLIOGRAPHY_", true, function (opts)
-    if not self.packages.bibtex and not self.packages["dissilient.bibtex"] then
-      SU.warn("Bibliography support is not available")
-      return {}
-    end
-    return {
-      SU.ast.createCommand("printbibliography", opts)
-    }
-  end)
-  -- Our Djot/Markdown support already provides a _TOC_ symbol.
-  -- Here we can also provide _LISTOFFIGURES_, _LISTOFTABLES_, _LISTOFLISTINGS_.
-  -- And for the sake of consistency, we can also provide _TABLEOFCONTENTS_.
-  -- It is not exactly the same as _TOC_, which does additional things when used
-  -- outside resilient, with fallback to to SILE's default implementation, but it
-  -- is doesn't hurt to provide it here.
-  local extras = { "listoffigures", "listoftables", "listoflistings", "tableofcontents" }
-  for _, sym in ipairs(extras) do
-    mdc:registerSymbol("_" .. sym:upper() .. "_", true, function (opts)
-      return {
-        SU.ast.createCommand(sym, opts)
-      }
-    end)
-  end
-  mdc:registerSymbol("_FANCYTOC_", true, function (opts)
-    return {
-      SU.ast.createCommand("use", { module = "packages.resilient.fancytoc" }),
-      SU.ast.createCommand("fancytableofcontents", opts),
-    }
-  end)
-  mdc:registerSymbol("_INDEX_", true, function (opts)
-    return {
-      SU.ast.createCommand("printindex", opts),
-    }
-  end)
-
-  -- Override document.parindent default to this author's taste
-  SILE.settings:set("document.parindent", "1.25em", true)
-  -- Override with saner defaults:
-  -- Slightly prefer underfull lines over ugly overfull content
-  -- I used a more drastic value before, but realize it can have bad effects
-  -- too, so for a default value let's be cautious. It's still better then 0
-  -- in my opinion for the general usage.
-  SILE.settings:set("linebreak.emergencyStretch", "1em", true)
-  -- This should never have been 1.2 by default:
-  -- https://github.com/sile-typesetter/sile/issues/1371
-  -- Fixed in recent versions of SILE, but nothing prevents us to set it here
-  -- as well.
-  SILE.settings:set("shaper.spaceenlargementfactor", 1, true)
 
   -- Command override from loaded packages.
   -- TRICKY, TO REMEMBER: Such overrides cannot be done in registerCommands()
@@ -165,63 +98,6 @@ function class:_init (options)
     })
   end)
 
-  -- Override the standard urlstyle hook to rely on styles
-  -- N.B. Package "url" is loaded by the markdown package.
-  self:registerCommand("urlstyle", function (_, content)
-    SILE.call("style:apply", { name = "url" }, content)
-  end)
-
-  -- Override the standard math:numberingstyle hook to rely on styles,
-  -- and also to subscribe for cross-references.
-  -- N.B. Package "math" is loaded by the markdown package.
-  self:registerCommand("math:numberingstyle", function (opts, _)
-    local text
-    local stylename = "eqno"
-    if opts.counter then
-      local altname = "eqno-" .. opts.counter
-      local fnSty = self:resolveStyle(altname, true) -- discardable
-      if not next(fnSty) then
-        fnSty = self:resolveStyle(stylename) -- fallback
-      else
-        stylename = altname
-      end
-
-      local display = fnSty.numbering and fnSty.numbering.display or "arabic"
-      -- Enforce the display style for the counter
-      -- (which might be the default 'equation' counter, or a custom one)
-      SILE.call("set-counter", { id = opts.counter, display = display })
-      text = self.packages.counters:formatCounter(SILE.scratch.counters[opts.counter])
-    elseif opts.number then
-      text = opts.number
-    else
-      SU.error("No counter or number provided for math numbering")
-    end
-    -- Cross-ref support (from markdown, we can get an id, in most of our packages,
-    -- we can get a marker, play fair with all)
-    local mark = opts.id or opts.marker
-    if mark then
-      local labelRefs = self.packages.labelrefs
-      labelRefs:pushLabelRef(text)
-      SILE.call("style:apply:number", { name = stylename, text = text })
-      SILE.call("label", { marker = mark })
-      labelRefs:popLabelRef()
-    else
-      SILE.call("style:apply:number", { name = stylename, text = text })
-    end
-  end)
-
-  -- Override the indexer style hooks to rely on styles
-  self:registerCommand("index:entry:style", function (opts, content)
-    local name = "index-entry-" .. opts.index
-    local styleName = self:hasStyle(name) and name or "index-entry-main"
-    SILE.call("style:apply", { name = styleName }, content)
-  end)
-  self:registerCommand("index:pages:style", function (opts, content)
-    local name = "index-pages-" .. opts.index
-    local styleName = self:hasStyle(name) and name or "index-pages-main"
-    SILE.call("style:apply", { name = styleName }, content)
-  end)
-
   -- TRANSITIONAL:
   -- These packages should do it themselves eventually, with a proper interface
   -- to declare commands as contextual.
@@ -229,10 +105,6 @@ function class:_init (options)
   -- commands reset).
   -- We cancel reloading  in our override superclass, so we are safe.
   SILE.resilient.enforceContextualCommand("footnote")
-  SILE.resilient.enforceContextualCommand("label")
-  SILE.resilient.enforceContextualCommand("indexentry")
-  SILE.resilient.enforceContextChangingCommand("ref", "ref")
-  SILE.resilient.enforceContextChangingCommand("indexer", "printindex")
 end
 
 --- (Override) Declare class options.
@@ -491,14 +363,6 @@ function class:registerStyles ()
     paragraph = { align = "right" }
   })
 
-  -- quotes
-  self:registerStyle("blockquote", {}, {
-    font = { size = "0.95em" },
-    paragraph = { before = { skip = "smallskip" },
-                  margin = { left = "2em", right = "2em" },
-                  after = { skip = "smallskip" } }
-  })
-
   -- captioned elements
   self:registerStyle("figure", {}, {
     paragraph = { before = { skip = "smallskip", indent = false },
@@ -625,43 +489,6 @@ function class:registerStyles ()
     numbering = { before = { text = "listing " } }
   })
 
-  -- code
-  -- Default is similar to the original plain \code command, and quite as bad, but at
-  -- least uses a font-relative size.
-  self:registerStyle("code", {}, {
-    font = {
-      family = "Hack",
-      adjust = "ex-height",
-    }
-  })
-
-  -- url style
-  self:registerStyle("url", { inherit = "code"}, {
-  })
-
-  -- display math equation numberstyle
-  self:registerStyle("eqno", {}, {
-    numbering = {
-      before = { text = "(" },
-      display = "arabic",
-      after = { text = ")" }
-    }
-  })
-
-  -- Special non-standard style for dropcaps (for commands initial-joined and initial-unjoined)
-  self:registerStyle("dropcap", {}, {
-    font = { family = "Zallman Caps" },
-    special = {
-      lines = 2
-    }
-  })
-
-  -- index styles
-  self:registerStyle("index-entry-main", {}, {
-  })
-  self:registerStyle("index-pages-main", {}, {
-    font = { features = "+onum" }
-  })
 end
 
 --- (Override) End-of-page custom hook.
@@ -893,14 +720,6 @@ function class:registerCommands ()
     SILE.call("sectioning", options, content)
   end, "Begin a new subsubsection.")
 
-  -- Quotes
-
-  self:registerCommand("blockquote", function (options, content)
-    local variant = options.variant and "blockquote-" .. options.variant or nil
-    local style = variant and self.styles:hasStyle(variant) and variant or "blockquote"
-    SILE.call("style:apply:paragraph", { name = style }, content)
-  end, "Typeset its contents in a styled blockquote.")
-
   -- Captioned elements
   -- N.B. Despite the similar naming to LaTeX, these are not "floats"
 
@@ -1009,42 +828,6 @@ function class:registerCommands ()
     SILE.call("tableofcontents", { start = start, depth = 0 })
   end, "Output the list of listings.")
 
-  -- Special dropcaps (provided as convenience)
-  -- Also useful as pseudo custom style in Markdown or Djot.
-
-  self:registerCommand("book:dropcap", function (options, content)
-    local join = SU.boolean(options.join, true)
-    local style = options.style or "dropcap"
-
-    if type(content) ~= "table" then SU.error("Expected a table content in dropcap environment") end
-    if #content ~= 1 then SU.error("Expected a single letter in dropcap environment") end
-    local letter = content[1]
-
-    local dropcapSty = self.styles:resolveStyle(style)
-    local lines = dropcapSty.special and dropcapSty.special.lines
-    if not lines then
-      -- Fallback to regular style
-      SILE.call('style:apply', { name = style }, { letter })
-    else
-      local color = dropcapSty.color
-      local family = dropcapSty.font and dropcapSty.font.family
-      if dropcapSty.properties or dropcapSty.decoration then
-        -- I am not convinced the extra complexity is worth it for such an edge case.
-        SU.warn("Dropcap style does not support properties and decoration")
-      end
-      SILE.call("use", { module = "packages.dropcaps" })
-      SILE.call("dropcap", { family = family, lines = lines, join = join, color = color }, { letter })
-    end
-  end, "Style-aware initial capital letter (normally and internal command)")
-
-  self:registerCommand("initial-joined", function (options, content)
-    SILE.call("book:dropcap", { style = options.style, join = true }, content)
-  end, "Style-aware initial capital letter, joined to the following text.")
-
-  self:registerCommand("initial-unjoined", function (options, content)
-    SILE.call("book:dropcap", { style = options.style, join = false }, content)
-  end, "Style-aware initial capital letter, not joined to the following text.")
-
   -- Layouts
 
   self:registerCommand("showlayout", function (options, _)
@@ -1090,9 +873,6 @@ function class:registerCommands ()
     self:switchMaster(self:oddPage() and "right" or "left")
   end, "Set the page layout")
 
-  self:registerCommand('code', function(_, content)
-    SILE.call('style:apply', { name = 'code' }, content)
-  end, "Style the content as code")
 end
 
 return class
