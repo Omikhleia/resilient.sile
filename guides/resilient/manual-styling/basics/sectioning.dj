@@ -58,7 +58,7 @@ Here is, therefore, the style specification.
       pagestyle:
         open: "unset|any|odd"
         background:
-          color: "⟨color specification⟩"
+          color: "⟨color specification|gradient name⟩"
           image: "⟨string⟩" | ⟨image specification⟩
       numberstyle:
         main: "⟨number style name⟩"

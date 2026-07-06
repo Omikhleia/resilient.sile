@@ -268,3 +268,8 @@ class writers.
 ``` =sile
 \package-documentation{resilient.forms}
 ```
+
+## Support for gradients
+
+``` =sile
+\package-documentation{resilient.gradients}

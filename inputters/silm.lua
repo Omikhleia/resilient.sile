@@ -427,7 +427,7 @@ function inputter:parse (doc)
     content[#content+1] = SU.ast.createCommand("bookmatters:back-cover", {
       image = cover and cover.image or book.cover.image,
       background = background,
-      bgcontent = cover and cover["content-background"] or background,
+      bgcontent = cover and cover["content-background"],
       metadata = metadataOptions
     }, doBackCoverContent(coverContent, metadataOptions))
   end
