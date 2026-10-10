@@ -297,6 +297,7 @@ function package:registerCommands ()
         height = options.height,
         width = not options.height and (options.width or "default")
       }
+      SILE.call("novbreak")
       SILE.call("smallskip")
       SILE.call("couyard", opts)
     elseif not hasClass(options, "none") then
@@ -725,7 +726,7 @@ function package:registerCommands ()
       local handler = SILE.rawHandlers.highlight
       handler(options, content)
     end
-    SILE.call("par")
+    SILE.typesetter:leaveHmode()
   end, "(Fenced) code block in Markdown (internal)")
 
   self:registerCommand("markdown:internal:lineblock", function (_, content)
@@ -837,7 +838,7 @@ function package:registerCommands ()
     SILE.call("noindent")
     SILE.call("font", { weight = 700 }, content)
     SILE.call("novbreak")
-    SILE.call("par")
+    SILE.typesetter:leaveHmode()
     SILE.call("novbreak")
   end, "A fallback default header if none exists for the requested sectioning level")
 
@@ -894,7 +895,9 @@ function package:registerCommands ()
       SU.debug("markdown.commands", "Feature detection: ignoring unknown custom style:", name)
       SILE.process(content)
       if scope == "block" then
-        SILE.call("par")
+        -- TODO NO SURE ABOUT THIS ONE
+        -- SILE.call("par")
+        SILE.typesetter:leaveHmode()
       end
     end
   end, "Default hook for custom style support in Markdown")

@@ -74,7 +74,13 @@ function package:registerCommands ()
   for k, _ in pairs(skips) do
     self:registerCommand(k .. "skip", function (_, _)
       SILE.typesetter:leaveHmode()
-      SILE.typesetter:pushExplicitVglue(SILE.settings:get("plain." .. k .. "skipamount"))
+      -- RESILIENT
+      -- In resilient, make these "predefined" skips collapsible
+      -- instead of explicit glues.
+      -- This does solve some issues (e.g. consecutive skips before/after a section)
+      -- but this may be bad design and introduce other concerns in some contexts.
+      -- See comments in the resilient typesetter ("sile·nt")
+      SILE.typesetter:pushCollapsibleVglue(SILE.settings:get("plain." .. k .. "skipamount"))
     end, "Skip vertically by a " .. k .. " amount")
   end
 
@@ -227,7 +233,7 @@ function package:registerCommands ()
       SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
       SILE.settings:set("document.spaceskip", SILE.types.length("1spc", 0, 0))
       SILE.process(content)
-      SILE.call("par")
+      SILE.typesetter:leaveHmode()
     end)
   end, "Typeset its contents in a centered block (keeping margins).")
 
@@ -240,7 +246,7 @@ function package:registerCommands ()
       SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
       SILE.settings:set("document.spaceskip", SILE.types.length("1spc", 0, 0))
       SILE.process(content)
-      SILE.call("par")
+      SILE.typesetter:leaveHmode()
     end)
   end, "Typeset its contents in a left aligned block (keeping margins).")
 
@@ -253,7 +259,7 @@ function package:registerCommands ()
       SILE.settings:set("typesetter.parfillskip", SILE.types.node.glue())
       SILE.settings:set("document.spaceskip", SILE.types.length("1spc", 0, 0))
       SILE.process(content)
-      SILE.call("par")
+      SILE.typesetter:leaveHmode()
     end)
   end, "Typeset its contents in a right aligned block (keeping margins).")
 
@@ -269,7 +275,7 @@ function package:registerCommands ()
       SILE.settings:set("typesetter.parfillskip", nil, false, true)
       SILE.settings:set("document.spaceskip", nil)
       SILE.process(content)
-      SILE.call("par")
+      SILE.typesetter:leaveHmode()
     end)
   end, "Typeset its contents in a justified block (keeping margins).")
 

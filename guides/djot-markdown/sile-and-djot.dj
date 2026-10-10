@@ -1236,6 +1236,7 @@ As for raw inlines (§[](#djot-raw-inlines)), this converter supports the `=sile
 Other annotations are ignored, and the block content is skipped.
 
 Let's combine several of the extensibility techniques we have seen so far, and do something cool.
+Why not "style" an EAN-13 ISBN as a nice barcode?
 
 ```=sile
 \use[module=packages.barcodes.ean13]
@@ -1249,8 +1250,6 @@ class:registerCommand("MyEan13", function (_, content)
   SILE.call("ean13", { scale="SC0", code = code })
 end)
 ```
-
-Why not "style" an EAN-13 ISBN as a nice barcode?
 
 [[978-2-9539896-6-3]{custom-style=MyEan13}]{custom-style=center}
 
@@ -1572,6 +1571,17 @@ A "readonly" boolean attribute is also supported, to make the element non-intera
 Note that the content of such form elements, if any, is ignored.
 It may still be useful, though, to provide some fallback content for other converters not supporting this feature.
 
+Name: []{.form}.
+
+Gender:
+
+ {.form}
+ - (X) Unspecified
+ - ( ) Male
+ - ( ) Female
+
+Language: []{.form choices="English, French, Other"}.
+
 {custom-style=CodeBlock}
 :::
 ```
@@ -1588,17 +1598,6 @@ Language: []{.form choices="English, French, Other"}.
 
 ```
 :::
-
-Name: []{.form}.
-
-Gender:
-
- {.form}
- - (X) Unspecified
- - ( ) Male
- - ( ) Female
-
-Language: []{.form choices="English, French, Other"}.
 
 As may be seen here, text fields and choice menus have a minimal width by default, but they expand to
 the full available line width.
