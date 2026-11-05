@@ -111,3 +111,5 @@ Modified subsets of the following Lua libraries are distributed alongside this c
  - [lunamark](https://github.com/jgm/lunamark), released under the MIT license, (c) 2009 John MacFarlane, _et al._
  - [djot.lua](https://github.com/jgm/djot.lua), released under the MIT license, (c) 2022 John MacFarlane.
  - tinyyaml.lua, released under the MIT license, (c) 2017 peposso and others.
+
+ ![logo](./logos/resilient-banner.png)
