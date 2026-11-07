@@ -27,7 +27,7 @@ language: fr
 book:
   enabled: true
   cover:
-    background: "#9ebd76"
+    background: anthracites
     front:
       template: cover
     back:

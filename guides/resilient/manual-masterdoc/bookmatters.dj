@@ -144,7 +144,7 @@ book:
   cover:
     back:
       image: mycover-back.jpg
-      background: ⟨named color⟩|"#⟨RGB color⟩"
+      background: "⟨color specification|gradient name⟩"
       content: mybackcover.dj
 ```
 
@@ -158,9 +158,9 @@ You also have the option to specify a separate background color specifically for
 book:
   cover:
     back:
-      background: ⟨named color⟩|"#⟨RGB color⟩"
+      background: "⟨color specification|gradient name⟩"
       content: mybackcover.dj
-      content-background: ⟨named color⟩|"#⟨RGB color⟩"
+      content-background: "⟨color specification|gradient name⟩"
 ```
 
 ## Configuring the front cover
