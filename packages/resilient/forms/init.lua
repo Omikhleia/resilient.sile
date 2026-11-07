@@ -102,13 +102,13 @@ function package:_init (options)
   self._objectsToRelease = {} -- List of PDF objects to release at end
 
   if SILE.outputter._name ~= "libtexpdf" then
-    SU.warn("The resilient.forms package only does something with the libtexpdf backend.")
+    SU.debug("resilient.forms", "The resilient.forms package only does something with the libtexpdf backend.")
     print(SILE.outputter._name)
     self._hasFormSupport = false
   else
     pdf = require("justenoughlibtexpdf")
     if not pdf.add_page_annotation then
-      SU.warn("The resilient.forms package requires a recent version of SILE.")
+      SU.debug("resilient.forms", "The resilient.forms package requires a recent version of SILE.")
       self._hasFormSupport = false
     else
       self._hasFormSupport = true
