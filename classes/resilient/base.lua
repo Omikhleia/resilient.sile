@@ -100,7 +100,7 @@ being available (as the resilient version may use styles instead), or commands
 having different options.
 Please consider using resilient-compatible style-aware packages when available!
 ]])
-    packname = alternateVariant[packname]
+    packname = alternateVariant[name]
   end
   return parent.loadPackage(self, packname, options)
 end
