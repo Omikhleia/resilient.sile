@@ -29,12 +29,12 @@ function package:_init (options)
   self._objectsToRelease = {} -- List of lingering PDF objects to release at end
 
   if SILE.outputter._name ~= "libtexpdf" then
-    SU.warn("The resilient.forms package only does something with the libtexpdf backend.")
+    SU.debug("resilient.gradients", "The resilient.gradients package only does something with the libtexpdf backend.")
     self._hasGradientsSupport = false
   else
     pdf = require("justenoughlibtexpdf")
     if not pdf.get_page_resources then
-      SU.warn("The resilient.gradients package requires a recent version of SILE.")
+      SU.debug("resilient.gradients", "The resilient.gradients package requires a recent version of SILE.")
       self._hasGradientsSupport = false
     else
       self._hasGradientsSupport = true
@@ -274,7 +274,7 @@ function package:registerCommands ()
 
   self:registerCommand("gradients:demo", function ()
     if not self._hasGradientsSupport then
-      SU.error("The resilient.gradients package requires the libtexpdf outputter to create gradients.")
+      SU.warn("The resilient.gradients package requires the libtexpdf outputter to create gradients.")
       return
     end
     self:loadPackage("framebox")

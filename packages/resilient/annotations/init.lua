@@ -21,11 +21,17 @@ local pdf -- Loaded later only if needed
 function package:_init (options)
   base._init(self, options)
   if SILE.outputter._name ~= "libtexpdf" then
-    SU.warn("The resilient.annotations package only does something with the libtexpdf backend.")
-    self._hasLibTeXPdfSupport = false
+    SU.debug("resilient.annotations", "The resilient.annotations package only does something with the libtexpdf backend.")
+    self._hasAnnotationSupport = false
   else
-    self._hasLibTeXPdfSupport = true
     pdf = require("justenoughlibtexpdf")
+    if not pdf.add_page_annotation then
+      SU.debug("resilient.annotations", "The resilient.annotations package requires a recent version of SILE.")
+      self._hasAnnotationSupport = false
+    else
+      self._hasAnnotationSupport = true
+      SU.debug("resilient.annotations", "PDF outputter supports annotations, package enabled.")
+    end
   end
 end
 
@@ -107,7 +113,7 @@ end
 --
 function package:registerCommands ()
   self:registerCommand("tooltip", function (options, content)
-    if not self._hasLibTeXPdfSupport then
+    if not self._hasAnnotationSupport then
       SU.warn("The resilient.annotations package requires the libtexpdf outputter to create PDF annotations.")
       SILE.process(content)
       return
