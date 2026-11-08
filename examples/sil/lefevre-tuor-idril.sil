@@ -12,12 +12,12 @@
 \set[parameter=typesetter.italicCorrection, value=true]
 %
 \language[main=fr]
-\font[family=EB Garamond, size=12pt]
+\font[family=Garamontio, size=12pt]
 %
 \define[command=proper]{\hbox{\process}}
 \define[command=smallcaps]{\font[features=+smcp]{\process}}
 \define[command=foreign:en]{\em{\language[main=en]{\process}}}
-\define[command=foreign:gr]{\font[family=Libertinus Serif, style=italic, adjust=ex-height]{\language[main=und]{\process}}}
+\define[command=foreign:gr]{\font[style=italic, adjust=ex-height]{\language[main=und]{\process}}}
 \define[command=JRR]{J.{\abbr:nbsp}R.{\abbr:nbsp}R}
 %
 % Wrapper around the dropcaps...
@@ -74,7 +74,7 @@ end, "Wrapper around dropcap, for baselineskip adjustment")
 \begin[size=10pt]{font}
 \begin[style=italic]{font}
 Le présent document est composé, pour le texte principal, en EB Garamond de corps 12 points; de corps 9 à 11  ½ points pour les notes de bas de page et les citations en exergue.
-Les textes en grec et les titres sont en Libertinus Serif ; la lettrine est en Zallman Caps.
+La lettrine est en Zallman Caps.
 
 L’empagement suit le Canon des Ateliers en format dit « demi-luxe », avec disposition des marges selon la règle des \font[features=+frac]{10/12}.
 Les espacements des titres en haut de page et des folios sont distribués selon le nombre d’or.

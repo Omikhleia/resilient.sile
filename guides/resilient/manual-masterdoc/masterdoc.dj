@@ -41,7 +41,7 @@ metadata:
   copyright: © 2023, Omikhleia.
   legal: Tous droits réservés.
 font:
-  family: [EB Garamond, Libertinus Serif]
+  family: [Garamontio, Libertinus Serif]
   size: 12pt
 language: fr
 sile:

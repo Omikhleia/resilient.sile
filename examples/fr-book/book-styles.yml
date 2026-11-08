@@ -17,9 +17,6 @@ Fractional:
 
 Greek:
   style:
-    font:
-      family: "Libertinus Serif"
-      adjust: "ex-height"
 
 blockquote:
   style:
@@ -826,8 +823,6 @@ sectioning-appendix-ref-number:
 
 sectioning-base:
   style:
-    font:
-      family: "Libertinus Serif"
     paragraph:
       after:
         indent: false
