@@ -714,8 +714,6 @@ sectioning-appendix-ref-number:
 
 sectioning-base:
   style:
-    font:
-      family: "Libertinus Serif"
     paragraph:
       after:
         indent: false
